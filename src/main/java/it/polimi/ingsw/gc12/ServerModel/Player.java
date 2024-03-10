@@ -1,3 +1,4 @@
+package it.polimi.ingsw.gc12.ServerModel;
 
 public class Player {
     private String nickname;

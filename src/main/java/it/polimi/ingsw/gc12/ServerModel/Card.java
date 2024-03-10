@@ -1,3 +1,4 @@
+package it.polimi.ingsw.gc12.ServerModel;
 
 public class Card {
     public static final int ID = 0; // Placeholder for unique ID

@@ -1,4 +1,4 @@
-
+package it.polimi.ingsw.gc12.ServerModel;
 import java.util.ArrayList;
 import java.util.Stack;
 

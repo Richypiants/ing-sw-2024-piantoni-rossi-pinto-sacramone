@@ -1,4 +1,4 @@
-
+package it.polimi.ingsw.gc12.ServerModel;
 public abstract class ObjectiveCard {
     // Assuming ObjectiveCard might have common properties and methods for subclasses
 

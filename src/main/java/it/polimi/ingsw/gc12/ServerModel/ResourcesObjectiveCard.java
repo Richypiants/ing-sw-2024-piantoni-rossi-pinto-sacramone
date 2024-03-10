@@ -1,4 +1,4 @@
-
+package it.polimi.ingsw.gc12.ServerModel;
 import java.util.ArrayList;
 
 public class ResourcesObjectiveCard extends ObjectiveCard {

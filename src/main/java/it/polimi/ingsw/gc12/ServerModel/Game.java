@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+package it.polimi.ingsw.gc12.ServerModel;
 
 public class Game {
     private int currentPlayer;
