@@ -2,16 +2,22 @@ package it.polimi.ingsw.gc12.ServerModel;
 import java.util.ArrayList;
 
 public class ResourcesGoldCard extends GoldCard {
-    public static final ArrayList<Resource> CONDITION = new ArrayList<>();
+    private ArrayList<Resource> condition = new ArrayList<Resource>();
 
-    public ResourcesGoldCard(int id, int points, Image frontSprite, Image backSprite, Resource[] cornerResources, boolean[] cornerValidity, ArrayList<Resource> neededResources, ArrayList<Resource> condition) {
+    protected ResourcesGoldCard(int id, int points, Image frontSprite, Image backSprite, Resource[] cornerResources, boolean[] cornerValidity, ArrayList<Resource> neededResources, ArrayList<Resource> loadedCondition) {
         super(id, frontSprite, backSprite, points, cornerResources, cornerValidity, neededResources);
-        CONDITION.addAll(condition);
+        condition.addAll(loadedCondition);
     }
 
     @Override
-    public int calculatePoints() {
+    protected int calculatePoints() {
         // Implementation for calculating points based on resources condition
         return 0; // Placeholder
     }
+
+    protected ArrayList<Resource> getCondition(){
+        return new ArrayList<Resource>(condition);
+    }
+
+
 }

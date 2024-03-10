@@ -3,15 +3,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Field {
-    public static final HashMap<Pair<Integer, Integer>, PlayableCard> FIELD = new HashMap<>();
-    public static final ArrayList<Pair<Integer, Integer>> OPEN_CORNERS = new ArrayList<>();
+    private HashMap<Pair<Integer, Integer>, PlayableCard> field = new HashMap< Pair<Integer, Integer>, PlayableCard >();
+    private ArrayList<Pair<Integer, Integer>> openCorners = new ArrayList< Pair<Integer, Integer> >();
 
-    public Field() {
+    protected Field() {
         // Field initialization logic
     }
 
-    public void addCard(Pair<Integer, Integer> position, PlayableCard card) {
-        FIELD.put(position, card);
+    protected Field(Field field){
+    }
+
+    protected void addCard(Pair<Integer, Integer> position, PlayableCard card) {
+        field.put(position, card);
         // Further logic to handle open corners if necessary
     }
+
+    protected ArrayList< Pair<Integer, Integer> > getOpenCorners(){
+        return new ArrayList<Pair<Integer, Integer>>(openCorners);
+    }
+
+
 }

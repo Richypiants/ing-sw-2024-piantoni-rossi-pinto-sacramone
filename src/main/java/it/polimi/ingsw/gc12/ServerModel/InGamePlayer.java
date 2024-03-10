@@ -4,19 +4,52 @@ import java.util.HashMap;
 
 public class InGamePlayer extends Player {
     public static final Color COLOR = null; // Placeholder for ENUM_Color
-    private int currentPoints;
+    private int points;
     private ArrayList<PlayableCard> cardsInHand;
     private HashMap<Resource, Integer> ownedResources;
-    public static final Field OWN_FIELD = null; // Placeholder
-    public static final ObjectiveCard SECRET_OBJECTIVE = null; // Placeholder
+    private Field ownField = null; // Placeholder
+    private ObjectiveCard secretObjective = null; // Placeholder
 
-    public InGamePlayer(String nickname) {
+    protected InGamePlayer(String nickname) {
         super(nickname);
         cardsInHand = new ArrayList<>();
         ownedResources = new HashMap<>();
     }
 
-    public void placeCard(Card card) {
+    protected void increasePoints(int pointsToAdd){
+        points += pointsToAdd;
+    }
+
+    protected int getPoints(){
+        return points;
+    }
+
+    protected ArrayList<PlayableCard> getCardsInHand(){
+        return new ArrayList<PlayableCard>( cardsInHand);
+    }
+
+    protected void placeCard(Card card) {
         // Implementation depends on game logic
     }
+
+    protected void addCardToHand(PlayableCard pickedCard){
+    }
+
+    protected void incrementOwnedResource(Resource resource, int numberToBeIncreased){
+    }
+
+    protected HashMap<Resource, Integer> getOwnedResourced(){
+        return new HashMap<Resource, Integer>(ownedResources);
+    }
+
+    protected Field getOwnField(){
+        return new Field(ownField);
+    }
+
+    protected void setSecretObjective(ObjectiveCard objectiveCard){
+    }
+
+    protected ObjectiveCard getSecretObjective(){
+    }
+
 }
