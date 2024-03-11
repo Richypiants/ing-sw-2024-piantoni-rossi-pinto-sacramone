@@ -1,8 +1,12 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import java.util.ArrayList;
+
+// This class models a standard Resource card
 public class ResourceCard extends PlayableCard {
-    public ResourceCard(int id, int points, Image frontSprite, Image backSprite, Resource[] cornerResources, boolean[] cornerValidity) {
-        super(id, points, frontSprite, backSprite, cornerResources, cornerValidity);
-        // Further initialization if necessary
+    // Constructor for a resource card, in fact this is the same as the one of playable cards
+    public ResourceCard(int id, int pointsGranted, Image frontSprite, Image backSprite, Resource[][] corners,
+                        ArrayList<Resource> centerBackResources) {
+        super(id, pointsGranted, frontSprite, backSprite, corners, centerBackResources);
     }
 }

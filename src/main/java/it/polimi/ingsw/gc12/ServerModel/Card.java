@@ -1,28 +1,34 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
-public class Card {
-    public static final int ID = 0; // Placeholder for unique ID
-    public static final int POINTS = 0; // Placeholder for points
+// The following class represents a general card template, with all the game cards' common attributes and methods
+public abstract class Card {
+    public final int ID; // Unique card identifier to easily retrieve card from "DB"
+    public final int POINTS_GRANTED; // Points granted to player upon playing this card (0 for not specified)
+    public final Image FRONT_SPRITE; // Front image for this card
+    public final Image BACK_SPRITE; // Back image for this card
+    private Side shownSide;
 
-    //public static final Image FRONT_SPRITE = null; // Placeholder for image
-
-    //public static final Image BACK_SPRITE = null; // Placeholder for image
-    private Side playedShownSide;
-
-    protected Card(int id, int points, Image frontSprite, Image backSprite) {
-        // Initialization logic goes here
+    // Generic card constructor, will receive parameters parsed from JSON
+    public Card(int id, int pointsGranted, Image frontSprite, Image backSprite) {
+        this.ID = id;
+        this.POINTS_GRANTED = pointsGranted;
+        //FIXME: don't know if they should be passed like this...
+        this.FRONT_SPRITE = frontSprite;
+        this.BACK_SPRITE = backSprite;
     }
 
-    protected Side getShownSide() {
-        return playedShownSide;
+    // Getter method for "side"
+    public Side getShownSide() {
+        return shownSide;
     }
 
-    protected void setShownSide(Side side) {
-        this.playedShownSide = side;
+    // Setter method for "side"
+    public void setShownSide(Side side) {
+        this.shownSide = side;
     }
 
-    protected int calculatePoints() {
-        // Implementation depends on card logic
-        return 0; // Placeholder
+    // Generic template for awarding card points to the player upon playing this card
+    public int awardPoints() {
+        return this.POINTS_GRANTED;
     }
 }

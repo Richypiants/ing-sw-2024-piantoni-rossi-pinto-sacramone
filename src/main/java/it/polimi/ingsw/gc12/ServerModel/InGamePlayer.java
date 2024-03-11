@@ -2,6 +2,8 @@ package it.polimi.ingsw.gc12.ServerModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+//TODO: complete from UML and add comments for documentation
+
 public class InGamePlayer extends Player {
     public static final Color COLOR = null; // Placeholder for ENUM_Color
     private int points;

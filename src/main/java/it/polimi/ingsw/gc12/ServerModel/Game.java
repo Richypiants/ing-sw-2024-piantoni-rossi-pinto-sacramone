@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+//TODO: complete from UML and add comments for documentation
+
 public class Game {
     private int currentPlayer;
     private int currentTurn;

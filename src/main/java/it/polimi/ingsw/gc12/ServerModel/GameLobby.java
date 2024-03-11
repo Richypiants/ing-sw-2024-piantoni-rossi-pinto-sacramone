@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc12.ServerModel;
 import java.util.ArrayList;
 
+//TODO: complete from UML and add comments for documentation
+
 public class GameLobby {
     private int maxPlayers;
     private ArrayList<Player> setOfPlayers;
