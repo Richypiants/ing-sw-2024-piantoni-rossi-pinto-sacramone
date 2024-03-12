@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import java.util.ArrayList;
+
 //TODO: add documentation comments
 
 public class PatternCondition implements PointsCondition {
