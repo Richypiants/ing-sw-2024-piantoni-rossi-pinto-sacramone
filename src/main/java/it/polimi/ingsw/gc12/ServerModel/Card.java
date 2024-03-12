@@ -15,6 +15,7 @@ public abstract class Card {
         //FIXME: don't know if they should be passed like this...
         this.FRONT_SPRITE = frontSprite;
         this.BACK_SPRITE = backSprite;
+        this.shownSide = Side.UNDEFINED;
     }
 
     // Getter method for "side"
@@ -28,7 +29,7 @@ public abstract class Card {
     }
 
     // Generic template for awarding card points to the player upon playing this card
-    public int awardPoints() {
+    public int awardPoints(InGamePlayer target) {
         return this.POINTS_GRANTED;
     }
 }

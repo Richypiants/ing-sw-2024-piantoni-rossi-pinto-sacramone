@@ -4,14 +4,28 @@ import java.util.ArrayList;
 //TODO: complete from UML and add comments for documentation
 
 public class GoldCard extends PlayableCard {
-    public static final ArrayList<Resource> NEEDED_RESOURCES_TO_PLAY = new ArrayList<>();
+    public PointsCondition pointsCondition;
+    public ResourcesCondition resourcesNeededToPlay;
 
-    public GoldCard(int id, Image frontSprite, Image backSprite, int points, Resource[] cornerResources, boolean[] cornerValidity, ArrayList<Resource> neededResources) {
-        super(id, points, frontSprite, backSprite, cornerResources, cornerValidity);
-        NEEDED_RESOURCES_TO_PLAY.addAll(neededResources);
+
+    // Constructor for generating GoldCards, expected parameters retrieved from the JSON Card File.
+    public GoldCard(int id, int pointsGranted, Image frontSprite, Image backSprite, Resource[][] corners,
+                    ArrayList<Resource> centerBackResources, PointsCondition pointsCondition,
+                    ResourcesCondition resourcesNeededToPlay) {
+        super(id, pointsGranted, frontSprite, backSprite, corners, centerBackResources);
+        this.resourcesNeededToPlay = resourcesNeededToPlay;
     }
 
+    // Getter method for neededResourcesToPlay
     public ArrayList<Resource> getNeededResourcesToPlay() {
-        return new ArrayList<>(NEEDED_RESOURCES_TO_PLAY);
+        return resourcesNeededToPlay.getConditionParameters();
+    }
+
+    // Returns the number of points the target InGamePlayer is awarded from playing the specific Gold Card,
+    // satisfying its specified condition
+    @Override
+    public int awardPoints(InGamePlayer target){
+        return POINTS_GRANTED * pointsCondition.numberOfTimesSatisfied(target);
+
     }
 }

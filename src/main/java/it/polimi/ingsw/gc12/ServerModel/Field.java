@@ -27,10 +27,14 @@ public class Field {
         return true;
     }
 
+    // Getter method for field of already placed cards
+    public HashMap<Pair<Integer, Integer>, PlayableCard> getField(){
+        return new HashMap<Pair<Integer, Integer>, PlayableCard>(field);
+    }
+
     // Getter method for open corners where a card can be placed
     public ArrayList<Pair<Integer, Integer>> getOpenCorners() {
         return new ArrayList<Pair<Integer, Integer>>(openCorners);
     }
-
 
 }

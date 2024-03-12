@@ -8,17 +8,23 @@ public class ResourcesCondition implements PointsCondition {
     private ArrayList<Resource> condition;
 
     public ResourcesCondition(ArrayList<Resource> condition) {
-        //TODO: safe copy of the condition arraylist?
-        //this.condition = condition;
+        this.condition = new ArrayList<Resource>(condition);
     }
 
     protected ArrayList<Resource> getConditionParameters() {
         return new ArrayList<Resource>(condition);
     }
 
-    //FIXME: interfaces only allow public methods...
-    protected int numberOfTimesSatisfied(InGamePlayer of) {
-        //TODO: pattern match logic here
-        return 0;
+    public int numberOfTimesSatisfied(InGamePlayer target) {
+        //TODO: add try catch here?
+        return condition.stream()
+                .distinct()
+                .mapToInt((resourceType) -> target.getOwnedResourced().get(resourceType)
+                        /
+                        (int) condition.stream()
+                                .filter((conditionResource) -> conditionResource.equals(resourceType))
+                                .count()
+                ).min()
+                .getAsInt();
     }
 }
