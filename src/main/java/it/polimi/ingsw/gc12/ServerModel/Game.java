@@ -11,7 +11,7 @@ public class Game {
     private GoldCard[] placedGoldCards = new GoldCard[2];
     private ObjectiveCard[] commonObjectives = new ObjectiveCard[2];
 
-    public Game() {
+    public Game(GameLobby lobby) {
         // Initialization logic goes here
     }
 
@@ -58,7 +58,7 @@ public class Game {
         return null; // Placeholder
     }
 
-    public PlayableCard drawFromVisibleCards(PlayableCard[] cards) {
+    public PlayableCard drawFromVisibleCards(String whichType, int poistion) {
         // Implementation depends on game logic
         return null; // Placeholder
     }

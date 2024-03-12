@@ -1,17 +1,22 @@
 package it.polimi.ingsw.gc12.ServerModel;
+
+import javafx.util.Pair;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 // This class implements a generic field structure to store cards played from a player
 public class Field {
     // Collection to store pairs of coordinates as keys to the card placed in that position
-    private HashMap<Pair<Integer, Integer>, PlayableCard> field = new HashMap<Pair<Integer, Integer>, PlayableCard>();
+    private HashMap<Pair<Integer, Integer>, PlayableCard> field;
     // Collection to store coordinates that correspond to available moves, that are free corners on the field
-    private ArrayList<Pair<Integer, Integer>> openCorners = new ArrayList<Pair<Integer, Integer>>();
+    private ArrayList<Pair<Integer, Integer>> openCorners;
 
     // Constructor for a field that initializes it
     protected Field() {
         //TODO: Field initialization logic
+        this.field = new HashMap<Pair<Integer, Integer>, PlayableCard>();
+        this.openCorners = new ArrayList<Pair<Integer, Integer>>();
     }
 
     // Interface method for external callers to place a card on the field

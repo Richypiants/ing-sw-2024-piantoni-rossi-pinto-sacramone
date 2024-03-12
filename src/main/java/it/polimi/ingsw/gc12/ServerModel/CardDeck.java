@@ -8,17 +8,17 @@ public class CardDeck {
 
     // Constructor for a CardDeck: it receives a list of cards from the parsed JSON, then it randomly
     // extracts them and pushes them into the stack to form the deck
-    protected CardDeck(ArrayList<Card> cards) {
+    protected CardDeck(ArrayList<Card> deck) {
         int index = 0;
         this.deck = new Stack<>();
 
-        while (cards.isEmpty()) {
+        while (deck.isEmpty()) {
             //TODO: index to be set randomly here
 
             //FIXME: make cards or their attributes final?
             //FIXME: should we wrap the Stack.deck() call by adding a private method in this class?
             //FIXME: this ArrayList should be passed as a copy so that we can remove elements...s
-            deck.push(cards.remove(index));
+            this.deck.push(deck.remove(index));
         }
     }
 
