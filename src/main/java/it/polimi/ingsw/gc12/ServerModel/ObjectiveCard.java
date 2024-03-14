@@ -2,6 +2,8 @@ package it.polimi.ingsw.gc12.ServerModel;
 
 //TODO: complete from UML and add comments for documentation
 
+import it.polimi.ingsw.gc12.Utilities.Image;
+
 public class ObjectiveCard extends Card {
     // Assuming ObjectiveCard might have common properties and methods for subclasses
 

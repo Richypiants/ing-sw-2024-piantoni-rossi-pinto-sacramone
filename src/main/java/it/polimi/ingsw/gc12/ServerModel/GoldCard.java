@@ -1,4 +1,8 @@
 package it.polimi.ingsw.gc12.ServerModel;
+
+import it.polimi.ingsw.gc12.Utilities.Image;
+import it.polimi.ingsw.gc12.Utilities.Resource;
+
 import java.util.ArrayList;
 
 //TODO: complete from UML and add comments for documentation

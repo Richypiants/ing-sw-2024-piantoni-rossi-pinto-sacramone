@@ -1,4 +1,9 @@
 package it.polimi.ingsw.gc12.ServerModel;
+
+import it.polimi.ingsw.gc12.Utilities.Color;
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.Resource;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 

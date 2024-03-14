@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc12.ServerModel;
+package it.polimi.ingsw.gc12.Utilities;
 
 public class GenericPair<T1, T2> {
     // first attribute

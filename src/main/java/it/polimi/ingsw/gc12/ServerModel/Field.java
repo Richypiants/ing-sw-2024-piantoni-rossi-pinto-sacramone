@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 

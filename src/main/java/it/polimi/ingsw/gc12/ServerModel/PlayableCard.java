@@ -1,4 +1,9 @@
 package it.polimi.ingsw.gc12.ServerModel;
+
+import it.polimi.ingsw.gc12.Utilities.Image;
+import it.polimi.ingsw.gc12.Utilities.Resource;
+import it.polimi.ingsw.gc12.Utilities.Side;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 

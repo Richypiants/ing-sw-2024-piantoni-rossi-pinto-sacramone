@@ -2,6 +2,8 @@ package it.polimi.ingsw.gc12.ServerModel;
 
 //TODO: add documentation comments
 
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
+
 import java.util.Map;
 
 public class CornersCondition implements PointsCondition {
@@ -19,8 +21,10 @@ public class CornersCondition implements PointsCondition {
             for(int j = -1; j <= 1; j += 2){
                 if (target.getOwnField()
                         .containsKey(new GenericPair<Integer, Integer>(
-                                cardCoords.getX() + i, cardCoords.getY() + j)
-                        ))
+                                        cardCoords.getX() + i, cardCoords.getY() + j
+                                )
+                        )
+                )
                     count++;
             }
         }

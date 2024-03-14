@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc12.ServerModel;
+package it.polimi.ingsw.gc12.Utilities;
 
 // A simple Enum class to list all the possible "resources" values in card corners and back-centers
 public enum Resource {

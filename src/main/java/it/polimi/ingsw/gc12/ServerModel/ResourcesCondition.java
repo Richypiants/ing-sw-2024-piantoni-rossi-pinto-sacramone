@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import it.polimi.ingsw.gc12.Utilities.Resource;
+
 import java.util.ArrayList;
 
 //TODO: add documentation comments
