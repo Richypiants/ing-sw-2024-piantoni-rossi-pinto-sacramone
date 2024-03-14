@@ -29,18 +29,18 @@ public class Triplet<T1, T2, T3> {
     }
 
     // Getter method for x, y coordinates
-    public Pair<T1, T2> getXY() {
-        return new Pair<T1, T2>();
+    public GenericPair<T1, T2> getXY() {
+        return new GenericPair<T1, T2>();
     }
 
     // Getter method for x, z coordinates
-    public Pair<T1, T3> getXZ() {
-        return new Pair<T1, T3>();
+    public GenericPair<T1, T3> getXZ() {
+        return new GenericPair<T1, T3>();
     }
 
     // Getter method for y, z coordinates
-    public Pair<T2, T3> getYZ() {
-        return new Pair<T2, T3>();
+    public GenericPair<T2, T3> getYZ() {
+        return new GenericPair<T2, T3>();
     }
 
 

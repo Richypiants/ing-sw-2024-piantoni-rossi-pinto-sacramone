@@ -17,7 +17,7 @@ public class PatternCondition implements PointsCondition {
     }
 
     //FIXME: interfaces only allow public methods...
-    protected int numberOfTimesSatisfied(InGamePlayer of) {
+    public int numberOfTimesSatisfied(Card thisCard, InGamePlayer of) {
         //TODO: pattern match logic here
         return 0;
     }

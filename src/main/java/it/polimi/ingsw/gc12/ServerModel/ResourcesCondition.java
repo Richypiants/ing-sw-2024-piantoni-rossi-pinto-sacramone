@@ -15,7 +15,7 @@ public class ResourcesCondition implements PointsCondition {
         return new ArrayList<Resource>(condition);
     }
 
-    public int numberOfTimesSatisfied(InGamePlayer target) {
+    public int numberOfTimesSatisfied(Card thisCard, InGamePlayer target) {
         //TODO: add try catch here?
         return condition.stream()
                 .distinct()

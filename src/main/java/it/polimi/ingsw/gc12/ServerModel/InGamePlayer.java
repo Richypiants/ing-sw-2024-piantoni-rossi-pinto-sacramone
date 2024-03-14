@@ -44,7 +44,7 @@ public class InGamePlayer extends Player {
         return new HashMap<Resource, Integer>(ownedResources);
     }
 
-    protected HashMap<Pair<Integer, Integer>, PlayableCard> getOwnField(){
+    protected HashMap<GenericPair<Integer, Integer>, PlayableCard> getOwnField() {
         return ownField.getField();
     }
 
@@ -52,6 +52,7 @@ public class InGamePlayer extends Player {
     }
 
     protected ObjectiveCard getSecretObjective(){
+        return null;
     }
 
 }
