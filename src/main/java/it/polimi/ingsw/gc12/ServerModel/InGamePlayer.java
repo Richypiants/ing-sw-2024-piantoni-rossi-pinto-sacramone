@@ -35,14 +35,18 @@ public class InGamePlayer extends Player {
         return new ArrayList<PlayableCard>( cardsInHand);
     }
 
-    protected void placeCard(Card card) {
+    //FIXME: add parameter to uml
+    protected void placeCard(Card card, GenericPair<Integer, Integer> pair) {
         // Implementation depends on game logic
     }
 
     protected void addCardToHand(PlayableCard pickedCard){
+        //FIXME: check for exception!
+        cardsInHand.add(pickedCard);
     }
 
     protected void incrementOwnedResource(Resource resource, int numberToBeIncreased){
+        ownedResources.put(resource, ownedResources.get(resource) + numberToBeIncreased);
     }
 
     protected HashMap<Resource, Integer> getOwnedResourced(){
