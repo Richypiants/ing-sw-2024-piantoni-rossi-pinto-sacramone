@@ -35,9 +35,9 @@ public class InGamePlayer extends Player {
         return new ArrayList<PlayableCard>( cardsInHand);
     }
 
-    //FIXME: add parameter to uml
-    protected void placeCard(Card card, GenericPair<Integer, Integer> pair) {
-        // Implementation depends on game logic
+    //FIXME: add parameter to uml , fix uml parameter card in playable card
+    protected void placeCard(PlayableCard card, GenericPair<Integer, Integer> pair) {
+        ownField.addCard(pair, card);
     }
 
     protected void addCardToHand(PlayableCard pickedCard){
