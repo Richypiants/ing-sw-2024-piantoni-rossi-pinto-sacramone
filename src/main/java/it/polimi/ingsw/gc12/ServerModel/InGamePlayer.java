@@ -45,7 +45,6 @@ public class InGamePlayer extends Player {
     //Given the card and the desired position,
     // wrapped in a GenericPair structure meaning <x,y> coordinates on the field,
     // places the card into the ownField HashMap
-    //FIXME: DONE? fix uml parameter card in playable card
     protected void placeCard(PlayableCard card, GenericPair<Integer, Integer> pair) {
         OWN_FIELD.addCard(pair, card);
     }
