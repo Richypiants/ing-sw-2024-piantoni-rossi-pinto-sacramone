@@ -12,19 +12,19 @@ import java.util.HashMap;
 public class InGamePlayer extends Player {
     public static final Color COLOR = null; // Placeholder for Color
     private int points;
-    private ArrayList<PlayableCard> cardsInHand;
-    private HashMap<Resource, Integer> ownedResources;
-    private Field ownField;
+    private final ArrayList<PlayableCard> CARDS_IN_HAND;
+    private final HashMap<Resource, Integer> OWNED_RESOURCES;
+    private final Field OWN_FIELD;
     private ObjectiveCard secretObjective;
 
 
     //Constructor method
-    protected InGamePlayer(String nickname) {
-        super(nickname);
-        cardsInHand = new ArrayList<>();
-        ownedResources = new HashMap<>();
+    protected InGamePlayer(Player player) {
+        super(player);
+        CARDS_IN_HAND = new ArrayList<>();
+        OWNED_RESOURCES = new HashMap<>();
         secretObjective = null;
-        ownField = new Field();
+        OWN_FIELD = new Field();
     }
 
     //Given the desired amount to be increased by, updates the player's points
@@ -39,7 +39,7 @@ public class InGamePlayer extends Player {
 
     //Getter cardsInHand method returned by copy
     protected ArrayList<PlayableCard> getCardsInHand(){
-        return new ArrayList<PlayableCard>(cardsInHand);
+        return new ArrayList<PlayableCard>(CARDS_IN_HAND);
     }
 
     //Given the card and the desired position,
@@ -47,37 +47,37 @@ public class InGamePlayer extends Player {
     // places the card into the ownField HashMap
     //FIXME: DONE? fix uml parameter card in playable card
     protected void placeCard(PlayableCard card, GenericPair<Integer, Integer> pair) {
-        ownField.addCard(pair, card);
+        OWN_FIELD.addCard(pair, card);
     }
 
     //Adds the pickedCard to the current player's hand
     protected void addCardToHand(PlayableCard pickedCard){
         //FIXME: check for exception!
-        cardsInHand.add(pickedCard);
+        CARDS_IN_HAND.add(pickedCard);
     }
 
     //Given a specific resource type and the quantity to be increased by, updates the HashMap
     protected void incrementOwnedResource(Resource resource, int numberToBeIncreased){
-        ownedResources.put(resource, ownedResources.get(resource) + numberToBeIncreased);
+        OWNED_RESOURCES.put(resource, OWNED_RESOURCES.get(resource) + numberToBeIncreased);
     }
 
     //Getter ownedResource method returned by copy
     protected HashMap<Resource, Integer> getOwnedResources() {
-        return new HashMap<Resource, Integer>(ownedResources);
+        return new HashMap<Resource, Integer>(OWNED_RESOURCES);
     }
 
     //Getter ownField method relying on Field class
     protected Field getOwnField() {
         //FIXME: avoid reference escaping?
-        return this.ownField;
+        return this.OWN_FIELD;
     }
 
     protected HashMap<GenericPair<Integer, Integer>, PlayableCard> getPlacedCards() {
-        return ownField.getPlacedCards();
+        return OWN_FIELD.getPlacedCards();
     }
 
     protected ArrayList<GenericPair<Integer, Integer>> getOpenCorners() {
-        return ownField.getOpenCorners();
+        return OWN_FIELD.getOpenCorners();
     }
 
     //Setter secretObjective method assigned directly

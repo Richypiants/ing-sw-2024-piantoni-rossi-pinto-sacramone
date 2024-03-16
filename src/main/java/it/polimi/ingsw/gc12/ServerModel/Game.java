@@ -1,27 +1,55 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import java.util.ArrayList;
+
 //TODO: complete from UML and add comments for documentation
 
-public class Game {
+import it.polimi.ingsw.gc12.Utilities.Resource;
+
+public class Game{
+    //FIXME: should we make it a set?
+    private final ArrayList<InGamePlayer> LIST_OF_GAME_PLAYERS = new ArrayList<InGamePlayer>();
     private int currentPlayer;
     private int currentTurn;
-    private CardDeck resourceCardsDeck;
-    private CardDeck goldCardsDeck;
-    private ResourceCard[] placedResourceCards = new ResourceCard[2];
-    private GoldCard[] placedGoldCards = new GoldCard[2];
-    private ObjectiveCard[] commonObjectives = new ObjectiveCard[2];
+    private final CardDeck RESOURCE_CARDS_DECK;
+    private final CardDeck GOLD_CARDS_DECK;
+    private final ResourceCard[] PLACED_RESOURCE_CARDS = new ResourceCard[2];
+    private final GoldCard[] PLACED_GOLD_CARDS = new GoldCard[2];
+    private final ObjectiveCard[] COMMON_OBJECTIVES = new ObjectiveCard[2];
 
+    //FIXME: assuming that the GameLobby we are evolving from is full and there are maxPlayers ready to go
     public Game(GameLobby lobby) {
-        // Initialization logic goes here
+
+        ArrayList<Player> copyOfLobby = lobby.getListOfPlayers();
+
+        for(int i = 0; i < lobby.getPlayersNumber(); i++){
+            LIST_OF_GAME_PLAYERS.add( new InGamePlayer( copyOfLobby.remove( (int) (Math.random() * copyOfLobby.size()) )));
+        }
+
+        currentPlayer = 0;
+        currentTurn = 0;
+
+        RESOURCE_CARDS_DECK = new CardDeck( JSONParser.fromJSONtoCardDeckConstructor() );
+        GOLD_CARDS_DECK = new CardDeck(JSONParser.fromJSONtoCardDeckConstructor() );
+
+        PLACED_RESOURCE_CARDS[0]= (ResourceCard) RESOURCE_CARDS_DECK.draw();
+        PLACED_RESOURCE_CARDS[1]= (ResourceCard) RESOURCE_CARDS_DECK.draw();
+        PLACED_GOLD_CARDS[0]= (GoldCard) GOLD_CARDS_DECK.draw();
+        PLACED_GOLD_CARDS[1]= (GoldCard) GOLD_CARDS_DECK.draw();
+
+        CardDeck objectiveCardsDeck = new CardDeck( JSONParser.fromJSONtoCardDeckConstructor() );
+        COMMON_OBJECTIVES[0]= (ObjectiveCard) objectiveCardsDeck.draw();
+        COMMON_OBJECTIVES[1]= (ObjectiveCard) objectiveCardsDeck.draw();
     }
 
     public void nextPlayer() {
-        // Implementation depends on game logic
+        if(currentPlayer == 3)
+            this.increaseTurn();
+        currentPlayer = (currentPlayer+1) % LIST_OF_GAME_PLAYERS.size();
     }
 
     public Player getCurrentPlayer() {
-        // Implementation depends on game logic
-        return null; // Placeholder
+        return LIST_OF_GAME_PLAYERS.get(currentPlayer);
     }
 
     public void increaseTurn() {
@@ -32,34 +60,39 @@ public class Game {
         return currentTurn;
     }
 
-    public CardDeck getResourceDeck() {
-        return resourceCardsDeck;
-    }
-
-    public CardDeck getGoldDeck() {
-        return goldCardsDeck;
-    }
-
     public ResourceCard[] getPlacedResources() {
-        return placedResourceCards;
+        return PLACED_RESOURCE_CARDS;
     }
 
     public GoldCard[] getPlacedGold() {
-        return placedGoldCards;
+        return PLACED_GOLD_CARDS;
     }
 
     public ObjectiveCard[] getCommonObjectives() {
-        return commonObjectives;
+        return COMMON_OBJECTIVES;
     }
 
-    // Note: The drawFromDeck and drawFromVisibleCards methods' implementations depend on further details not provided in the UML diagram
-    public PlayableCard drawFromDeck(CardDeck deck) {
-        // Implementation depends on deck logic
-        return null; // Placeholder
+    public PlayableCard drawFrom(CardDeck deck) {
+        return (PlayableCard) deck.draw();
     }
 
-    public PlayableCard drawFromVisibleCards(String whichType, int poistion) {
-        // Implementation depends on game logic
-        return null; // Placeholder
+    //Given a pattern matching string { gold, resource} and a valid position {0, 1}, returns the selected card and replaces it on the board
+    //FIXME: The card isn't copied, but passed directly, but it shouldn't be a problem
+    public PlayableCard drawFromVisibleCards(String whichType, int position) {
+        PlayableCard returnedCard = null;
+
+        if( position != 0 && position != 1) {
+            //TODO: InvalidPositionException
+        }
+        if( whichType.trim().equalsIgnoreCase("gold")){
+            returnedCard = PLACED_GOLD_CARDS[position];
+            PLACED_GOLD_CARDS[position] = (GoldCard) GOLD_CARDS_DECK.draw();
+        } else if( whichType.trim().equalsIgnoreCase("resource")){
+            returnedCard = PLACED_RESOURCE_CARDS[position];
+            PLACED_RESOURCE_CARDS[position] = (ResourceCard) RESOURCE_CARDS_DECK.draw();
+        } else {
+            //TODO: UnmatchedStringException
+        }
+        return returnedCard;
     }
 }

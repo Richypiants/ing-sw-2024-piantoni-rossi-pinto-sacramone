@@ -9,7 +9,7 @@ public class CornersCondition implements PointsCondition {
     public int numberOfTimesSatisfied(Card thisCard, InGamePlayer target) {
         //TODO: corners logic here, add try catches?
         int count = 0;
-        GenericPair<Integer, Integer> cardCoords = target.getOwnField()
+        GenericPair<Integer, Integer> coordinates = target.getOwnField()
                 .getCardCoordinates((PlayableCard) thisCard);
         //FIXME: try catch here?
 
@@ -17,7 +17,7 @@ public class CornersCondition implements PointsCondition {
             for(int j = -1; j <= 1; j += 2){
                 if (target.getPlacedCards()
                         .containsKey(new GenericPair<Integer, Integer>(
-                                        cardCoords.getX() + i, cardCoords.getY() + j
+                                        coordinates.getX() + i, coordinates.getY() + j
                                 )
                         )
                 )

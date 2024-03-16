@@ -3,37 +3,37 @@ import java.util.ArrayList;
 
 //TODO: complete from UML and add comments for documentation
 
-public class GameLobby {
+public class    GameLobby {
     private int maxPlayers;
-    private ArrayList<Player> setOfPlayers;
+    private final ArrayList<Player> LIST_OF_PLAYERS;
 
     public GameLobby(int maxPlayers, Player creatorPlayer) {
         this.maxPlayers = maxPlayers;
-        this.setOfPlayers = new ArrayList<Player>();
+        this.LIST_OF_PLAYERS = new ArrayList<Player>();
         addPlayer(creatorPlayer);
     }
 
     public GameLobby(GameLobby copyFrom) {
         this.maxPlayers = copyFrom.getMaxPlayers();
-        this.setOfPlayers = new ArrayList<Player>(copyFrom.getSetOfPlayers());
+        this.LIST_OF_PLAYERS = new ArrayList<Player>(copyFrom.getListOfPlayers());
     }
 
     public void addPlayer(Player player) {
-        if(setOfPlayers.size() < maxPlayers) {
-            setOfPlayers.add(player);
+        if(LIST_OF_PLAYERS.size() < maxPlayers) {
+            LIST_OF_PLAYERS.add(player);
         }
     }
 
     public void removePlayer(Player player) {
-        setOfPlayers.remove(player);
+        LIST_OF_PLAYERS.remove(player);
     }
 
-    public ArrayList<Player> getSetOfPlayers() {
-        return new ArrayList<Player>(setOfPlayers);
+    public ArrayList<Player> getListOfPlayers() {
+        return new ArrayList<Player>(LIST_OF_PLAYERS);
     }
 
     public int getPlayersNumber() {
-        return setOfPlayers.size();
+        return LIST_OF_PLAYERS.size();
     }
 
     public void setMaxPlayers(int numOfMaxPlayers) {

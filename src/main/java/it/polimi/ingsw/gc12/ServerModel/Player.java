@@ -9,6 +9,10 @@ public class Player {
         this.nickname = nickname;
     }
 
+    public Player(Player copyFrom){
+        this.nickname = copyFrom.getNickname();
+    }
+
     // Getter method for nickname
     public String getNickname() {
         return this.nickname;

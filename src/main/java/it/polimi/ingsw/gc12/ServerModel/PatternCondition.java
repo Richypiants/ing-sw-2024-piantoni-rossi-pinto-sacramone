@@ -13,15 +13,15 @@ import static java.util.Collections.disjoint;
 //TODO: add documentation comments
 
 public class PatternCondition implements PointsCondition {
-    private ArrayList<Triplet<Integer, Integer, Resource>> condition;
+    private final ArrayList<Triplet<Integer, Integer, Resource>> CONDITION;
 
     public PatternCondition(ArrayList<Triplet<Integer, Integer, Resource>> condition) {
         //TODO: should we keep safe copy of the condition arraylist?
-        this.condition = new ArrayList<Triplet<Integer, Integer, Resource>>(condition);
+        this.CONDITION = new ArrayList<Triplet<Integer, Integer, Resource>>(condition);
     }
 
     protected ArrayList<Triplet<Integer, Integer, Resource>> getConditionParameters() {
-        return new ArrayList<Triplet<Integer, Integer, Resource>>(condition);
+        return new ArrayList<Triplet<Integer, Integer, Resource>>(CONDITION);
     }
 
     // The same-type patterns should be considered in a way such that the points obtained from them is maxed
@@ -41,11 +41,11 @@ public class PatternCondition implements PointsCondition {
                         // We only keep the cards which are the same type of the start of the considered pattern
                         .filter((entry) -> entry.getValue()
                                 .getCenterBackResources().getFirst()
-                                .equals(condition.getFirst().getZ())
+                                .equals(CONDITION.getFirst().getZ())
                         )
                         // We only keep the ones that actually form the pattern
                         //FIXME: can we merge this filter and the one above in a single one?
-                        .filter((entry) -> getConditionParameters().subList(1, condition.size()).stream()
+                        .filter((entry) -> getConditionParameters().subList(1, CONDITION.size()).stream()
                                 .map((offset) -> target.getPlacedCards().get(
                                         new GenericPair<Integer, Integer>(
                                                 entry.getKey().getX() + offset.getX(),
@@ -143,7 +143,7 @@ public class PatternCondition implements PointsCondition {
     // position offsets in the condition
     private ArrayList<GenericPair<Integer, Integer>> fullPatternCoordinates(
             PlayableCard pattern, Field playerField) {
-        return condition.stream()
+        return CONDITION.stream()
                 .map((triplet) -> {
                     GenericPair<Integer, Integer> thisPosition = playerField.getCardCoordinates(pattern);
                             return new GenericPair<Integer, Integer>(
