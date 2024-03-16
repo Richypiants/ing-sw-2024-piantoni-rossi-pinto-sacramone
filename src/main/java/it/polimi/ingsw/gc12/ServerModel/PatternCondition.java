@@ -30,7 +30,7 @@ public class PatternCondition implements PointsCondition {
         //FIXME: sacra might be right, is it better to save all the cards of a pattern to avoid
         // propagating target? Or maybe should we add a map in the opposite direction?
         return largestMaximumCompatibilityClass(
-                new ArrayList<PlayableCard>(target.getOwnField().entrySet().stream()
+                target.getPlacedCards().entrySet().stream()
                         .filter((entry) -> !entry.getKey()
                                 .equals(new GenericPair<Integer, Integer>(0, 0))
                         )
@@ -41,7 +41,7 @@ public class PatternCondition implements PointsCondition {
                         )
                         .filter((entry) -> getConditionParameters().subList(1, condition.size())
                                 .stream()
-                                .map((a) -> target.getOwnField().get(
+                                .map((a) -> target.getPlacedCards().get(
                                         new GenericPair<Integer, Integer>(
                                                 entry.getKey().getX() + a.getX(),
                                                 entry.getKey().getY() + a.getY()
@@ -50,8 +50,7 @@ public class PatternCondition implements PointsCondition {
                                 .reduce(true, (a, b) -> a && b)
                         )
                         .map(Map.Entry::getValue)
-                        .collect(Collectors.toList())
-                ),
+                        .collect(Collectors.toCollection(ArrayList::new)),
                 target
         );
     }
@@ -121,36 +120,22 @@ public class PatternCondition implements PointsCondition {
         //FIXME: add try checks or exceptions?
         //FIXME: this isn't DRY, probably separate functions after cleaning up code?
         return disjoint(
-                new ArrayList<GenericPair<Integer, Integer>>(
-                        condition.stream()
-                                .map((triplet) -> {
-                                            GenericPair<Integer, Integer> thisPosition = target.getOwnField()
-                                                    .entrySet().stream()
-                                                    .filter((entry) -> entry.getValue().equals(pattern1))
-                                                    .findFirst().get().getKey();
-                                            return new GenericPair<Integer, Integer>(
-                                                    thisPosition.getX() + triplet.getX(),
-                                                    thisPosition.getY() + triplet.getY()
-                                            );
-                                        }
-                                )
-                                .collect(Collectors.toList())
-                ),
-                new ArrayList<GenericPair<Integer, Integer>>(
-                        condition.stream()
-                                .map((triplet) -> {
-                                            GenericPair<Integer, Integer> thisPosition = target.getOwnField()
-                                                    .entrySet().stream()
-                                                    .filter((entry) -> entry.getValue().equals(pattern2))
-                                                    .findFirst().get().getKey();
-                                            return new GenericPair<Integer, Integer>(
-                                                    thisPosition.getX() + triplet.getX(),
-                                                    thisPosition.getY() + triplet.getY()
-                                            );
-                                        }
-                                )
-                                .collect(Collectors.toList())
-                )
+                fullPatternCoordinates(pattern1, target),
+                fullPatternCoordinates(pattern2, target)
         );
+    }
+
+    private ArrayList<GenericPair<Integer, Integer>> fullPatternCoordinates(
+            PlayableCard pattern, InGamePlayer target) {
+        return condition.stream()
+                .map((triplet) -> {
+                            GenericPair<Integer, Integer> thisPosition = target.getOwnField()
+                                    .getCardCoordinates(pattern);
+                            return new GenericPair<Integer, Integer>(
+                                    thisPosition.getX() + triplet.getX(),
+                                    thisPosition.getY() + triplet.getY()
+                            );
+                        }
+                ).collect(Collectors.toCollection(ArrayList::new));
     }
 }

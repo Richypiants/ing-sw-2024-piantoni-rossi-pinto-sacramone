@@ -17,7 +17,8 @@ public class GoldCard extends PlayableCard {
                     ArrayList<Resource> centerBackResources, PointsCondition pointsCondition,
                     ResourcesCondition resourcesNeededToPlay) {
         super(id, pointsGranted, frontSprite, backSprite, corners, centerBackResources);
-        this.resourcesNeededToPlay = resourcesNeededToPlay;
+        this.pointsCondition = pointsCondition; //FIXME: should we copy this?
+        this.resourcesNeededToPlay = resourcesNeededToPlay; //FIXME: and should we copy this too?
     }
 
     // Getter method for neededResourcesToPlay
@@ -29,7 +30,6 @@ public class GoldCard extends PlayableCard {
     // satisfying its specified condition
     @Override
     public int awardPoints(InGamePlayer target){
-        return POINTS_GRANTED * pointsCondition.numberOfTimesSatisfied(target);
-
+        return POINTS_GRANTED * pointsCondition.numberOfTimesSatisfied(this, target);
     }
 }

@@ -21,7 +21,7 @@ public class ResourcesCondition implements PointsCondition {
         //TODO: add try catch here?
         return condition.stream()
                 .distinct()
-                .mapToInt((resourceType) -> target.getOwnedResourced().get(resourceType)
+                .mapToInt((resourceType) -> target.getOwnedResources().get(resourceType)
                         /
                         (int) condition.stream()
                                 .filter((conditionResource) -> conditionResource.equals(resourceType))

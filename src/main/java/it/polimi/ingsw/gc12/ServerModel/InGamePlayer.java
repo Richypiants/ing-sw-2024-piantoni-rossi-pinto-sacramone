@@ -39,7 +39,7 @@ public class InGamePlayer extends Player {
 
     //Getter cardsInHand method returned by copy
     protected ArrayList<PlayableCard> getCardsInHand(){
-        return new ArrayList<PlayableCard>( cardsInHand);
+        return new ArrayList<PlayableCard>(cardsInHand);
     }
 
     //Given the card and the desired position,
@@ -62,13 +62,22 @@ public class InGamePlayer extends Player {
     }
 
     //Getter ownedResource method returned by copy
-    protected HashMap<Resource, Integer> getOwnedResourced(){
+    protected HashMap<Resource, Integer> getOwnedResources() {
         return new HashMap<Resource, Integer>(ownedResources);
     }
 
     //Getter ownField method relying on Field class
-    protected HashMap<GenericPair<Integer, Integer>, PlayableCard> getOwnField() {
-        return ownField.getField();
+    protected Field getOwnField() {
+        //FIXME: avoid reference escaping?
+        return this.ownField;
+    }
+
+    protected HashMap<GenericPair<Integer, Integer>, PlayableCard> getPlacedCards() {
+        return ownField.getPlacedCards();
+    }
+
+    protected ArrayList<GenericPair<Integer, Integer>> getOpenCorners() {
+        return ownField.getOpenCorners();
     }
 
     //Setter secretObjective method assigned directly

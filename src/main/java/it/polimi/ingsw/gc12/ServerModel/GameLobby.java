@@ -7,9 +7,10 @@ public class GameLobby {
     private int maxPlayers;
     private ArrayList<Player> setOfPlayers;
 
-    public GameLobby(int numOfMaxPlayers, Player creatorPlayer) {
-        this.maxPlayers = numOfMaxPlayers;
-        this.setOfPlayers = new ArrayList<>();
+    public GameLobby(int maxPlayers, Player creatorPlayer) {
+        this.maxPlayers = maxPlayers;
+        this.setOfPlayers = new ArrayList<Player>();
+        addPlayer(creatorPlayer);
     }
 
     public void addPlayer(Player player) {
@@ -23,7 +24,7 @@ public class GameLobby {
     }
 
     public ArrayList<Player> getSetOfPlayers() {
-        return new ArrayList<>(setOfPlayers);
+        return new ArrayList<Player>(setOfPlayers);
     }
 
     public int getPlayersNumber() {
@@ -36,10 +37,5 @@ public class GameLobby {
 
     public int getMaxPlayers() {
         return this.maxPlayers;
-    }
-
-    // Note: The startGame method implementation depends on further details not provided in the UML diagram
-    public void startGame() {
-        // Implementation depends on game logic
     }
 }
