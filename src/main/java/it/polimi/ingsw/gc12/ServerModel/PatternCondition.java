@@ -24,6 +24,9 @@ public class PatternCondition implements PointsCondition {
         return new ArrayList<Triplet<Integer, Integer, Resource>>(condition);
     }
 
+    // The same-type patterns should be considered in a way such that the points obtained from them is maxed
+    // Thus, we want to find the largest maximum compatibility class between all the same-type patterns,
+    // that is the choice of patterns such that we consider the most possible amount of them
     //FIXME: ALL THIS CODE SHOULD BE CLEANED AND OPTIMIZED, IT IS TOO INTRICATE
     // AND PROBABLY REPEATS OPERATION AND IS NOT DRY
     public int numberOfTimesSatisfied(Card thisCard, InGamePlayer target) {
@@ -31,32 +34,41 @@ public class PatternCondition implements PointsCondition {
         // propagating target? Or maybe should we add a map in the opposite direction?
         return largestMaximumCompatibilityClass(
                 target.getPlacedCards().entrySet().stream()
+                        // We don't want to consider the initial card
                         .filter((entry) -> !entry.getKey()
                                 .equals(new GenericPair<Integer, Integer>(0, 0))
                         )
+                        // We only keep the cards which are the same type of the start of the considered pattern
                         .filter((entry) -> entry.getValue()
-                                .getCenterBackResources()
-                                .getFirst()
+                                .getCenterBackResources().getFirst()
                                 .equals(condition.getFirst().getZ())
                         )
-                        .filter((entry) -> getConditionParameters().subList(1, condition.size())
-                                .stream()
-                                .map((a) -> target.getPlacedCards().get(
+                        // We only keep the ones that actually form the pattern
+                        //FIXME: can we merge this filter and the one above in a single one?
+                        .filter((entry) -> getConditionParameters().subList(1, condition.size()).stream()
+                                .map((offset) -> target.getPlacedCards().get(
                                         new GenericPair<Integer, Integer>(
-                                                entry.getKey().getX() + a.getX(),
-                                                entry.getKey().getY() + a.getY()
+                                                entry.getKey().getX() + offset.getX(),
+                                                entry.getKey().getY() + offset.getY()
                                         )
-                                ).getCenterBackResources().getFirst().equals(a.getZ()))
-                                .reduce(true, (a, b) -> a && b)
+                                                )
+                                                .getCenterBackResources().getFirst()
+                                                .equals(offset.getZ())
+                                )
+                                .reduce(true,
+                                        (accumulator, isColorCorrect) -> accumulator && isColorCorrect
+                                )
                         )
                         .map(Map.Entry::getValue)
                         .collect(Collectors.toCollection(ArrayList::new)),
-                target
+                target.getOwnField()
         );
     }
 
+    // This function is an implementation of the tree algorithm seen in RL course in order to find
+    // all the maximum compatibility classes and keep the largest one
     private int largestMaximumCompatibilityClass(ArrayList<PlayableCard> patternStartingCards,
-                                                 InGamePlayer target) {
+                                                 Field playerField) {
         ArrayList<ArrayList<PlayableCard>> frontier = new ArrayList<ArrayList<PlayableCard>>();
         ArrayList<ArrayList<PlayableCard>> result = new ArrayList<ArrayList<PlayableCard>>();
         int nodesInLastLevel = 1, depth = 0;
@@ -70,7 +82,7 @@ public class PatternCondition implements PointsCondition {
                 ArrayList<PlayableCard> tmp = frontier.removeFirst();
                 if (tmp.contains(currentPattern)) {
                     frontier.add(new ArrayList<PlayableCard>(tmp.subList(1, tmp.size())));
-                    tmp.removeIf((pattern) -> !compatibleWith(pattern, currentPattern, target));
+                    tmp.removeIf((pattern) -> !compatibleWith(pattern, currentPattern, playerField));
                 }
                 frontier.add(new ArrayList<PlayableCard>(tmp));
             }
@@ -116,21 +128,24 @@ public class PatternCondition implements PointsCondition {
                 .getAsInt();
     }
 
-    private boolean compatibleWith(PlayableCard pattern1, PlayableCard pattern2, InGamePlayer target) {
+    // This function performs a compatibility check between the patterns that start with the cards passed
+    // as parameters
+    private boolean compatibleWith(PlayableCard pattern1, PlayableCard pattern2, Field playerField) {
         //FIXME: add try checks or exceptions?
         //FIXME: this isn't DRY, probably separate functions after cleaning up code?
         return disjoint(
-                fullPatternCoordinates(pattern1, target),
-                fullPatternCoordinates(pattern2, target)
+                fullPatternCoordinates(pattern1, playerField),
+                fullPatternCoordinates(pattern2, playerField)
         );
     }
 
+    // This function gets all the coordinates of the pattern by summing the initial card position to the
+    // position offsets in the condition
     private ArrayList<GenericPair<Integer, Integer>> fullPatternCoordinates(
-            PlayableCard pattern, InGamePlayer target) {
+            PlayableCard pattern, Field playerField) {
         return condition.stream()
                 .map((triplet) -> {
-                            GenericPair<Integer, Integer> thisPosition = target.getOwnField()
-                                    .getCardCoordinates(pattern);
+                    GenericPair<Integer, Integer> thisPosition = playerField.getCardCoordinates(pattern);
                             return new GenericPair<Integer, Integer>(
                                     thisPosition.getX() + triplet.getX(),
                                     thisPosition.getY() + triplet.getY()

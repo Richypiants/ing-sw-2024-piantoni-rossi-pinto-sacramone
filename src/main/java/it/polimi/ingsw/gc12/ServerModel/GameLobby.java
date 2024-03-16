@@ -13,6 +13,11 @@ public class GameLobby {
         addPlayer(creatorPlayer);
     }
 
+    public GameLobby(GameLobby copyFrom) {
+        this.maxPlayers = copyFrom.getMaxPlayers();
+        this.setOfPlayers = new ArrayList<Player>(copyFrom.getSetOfPlayers());
+    }
+
     public void addPlayer(Player player) {
         if(setOfPlayers.size() < maxPlayers) {
             setOfPlayers.add(player);
