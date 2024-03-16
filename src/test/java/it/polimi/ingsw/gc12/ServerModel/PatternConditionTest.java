@@ -19,8 +19,8 @@ class PatternConditionTest {
         //TODO: come back here after implementing ObjectiveCard and InGamePlayer
         assertThrows(p.numberOfTimesSatisfied(
                         //TODO: add exception here
-                        new ObjectiveCard(0, 0, null, null),
-                        new InGamePlayer()
+                        new ObjectiveCard(0, 0, null, null, null),
+                        new InGamePlayer("tester")
                 )
         );
     }
@@ -34,8 +34,8 @@ class PatternConditionTest {
 
         //TODO: come back here after implementing ObjectiveCard and InGamePlayer
         assertX(p.numberOfTimesSatisfied(
-                        new ObjectiveCard(0, 0, null, null),
-                        new InGamePlayer()
+                        new ObjectiveCard(0, 0, null, null, null),
+                        new InGamePlayer("tester")
                 )
         );
     }
@@ -49,8 +49,8 @@ class PatternConditionTest {
 
         //TODO: come back here after implementing ObjectiveCard and InGamePlayer
         assertX(p.numberOfTimesSatisfied(
-                        new ObjectiveCard(0, 0, null, null),
-                        new InGamePlayer()
+                        new ObjectiveCard(0, 0, null, null, null),
+                        new InGamePlayer("tester")
                 )
         );
     }

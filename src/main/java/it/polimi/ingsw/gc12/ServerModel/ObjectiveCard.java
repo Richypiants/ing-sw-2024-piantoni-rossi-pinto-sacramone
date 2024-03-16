@@ -5,14 +5,21 @@ package it.polimi.ingsw.gc12.ServerModel;
 import it.polimi.ingsw.gc12.Utilities.Image;
 
 public class ObjectiveCard extends Card {
-    // Assuming ObjectiveCard might have common properties and methods for subclasses
-
     private PointsCondition pointsCondition;
-    
-    public ObjectiveCard(int id, int points, Image frontSprite, Image backSprite) {
+
+
+    public ObjectiveCard(int id, int points, Image frontSprite, Image backSprite, PointsCondition condition) {
         super(id, points, frontSprite, backSprite);
-        // Initialization logic (if necessary)
+        this.pointsCondition = condition;
     }
-    
-    // Placeholder for common methods (if any)
+
+    public ObjectiveCard( ObjectiveCard card){
+        super(card.ID, card.POINTS_GRANTED, card.FRONT_SPRITE, card.BACK_SPRITE);
+        this.pointsCondition = card.pointsCondition;
+    }
+
+    //Specific Override for Super Class Method
+    public int awardPoints(InGamePlayer target){
+        return (this.POINTS_GRANTED * pointsCondition.numberOfTimesSatisfied(this, target));
+    }
 }
