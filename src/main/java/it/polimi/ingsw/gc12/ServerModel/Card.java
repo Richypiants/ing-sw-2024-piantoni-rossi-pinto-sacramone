@@ -36,3 +36,7 @@ public abstract class Card {
         return this.POINTS_GRANTED;
     }
 }
+
+// getShownSide() (Getter) -> No test
+// setShownSide() (Setter no condizioni speciali) -> No test
+// awardPoints() -> No test

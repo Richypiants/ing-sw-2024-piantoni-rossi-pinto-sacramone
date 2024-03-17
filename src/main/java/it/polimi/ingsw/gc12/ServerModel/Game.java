@@ -2,10 +2,6 @@ package it.polimi.ingsw.gc12.ServerModel;
 
 import java.util.ArrayList;
 
-//TODO: complete from UML and add comments for documentation
-
-import it.polimi.ingsw.gc12.Utilities.Resource;
-
 public class Game{
     //FIXME: should we make it a set?
     private final ArrayList<InGamePlayer> LIST_OF_GAME_PLAYERS = new ArrayList<InGamePlayer>();
@@ -76,7 +72,7 @@ public class Game{
         return (PlayableCard) deck.draw();
     }
 
-    //Given a pattern matching string { gold, resource} and a valid position {0, 1}, returns the selected card and replaces it on the board
+    //Given a pattern matching string {gold, resource} and a valid position {0, 1}, returns the selected card and replaces it on the board
     //FIXME: The card isn't copied, but passed directly, but it shouldn't be a problem
     public PlayableCard drawFromVisibleCards(String whichType, int position) {
         PlayableCard returnedCard = null;
@@ -96,3 +92,29 @@ public class Game{
         return returnedCard;
     }
 }
+
+// nextPlayer() -> Si test (verificare se funziona bene / i due casi per l'if)
+//                 Statement coverage
+//                 currentPlayer = 3
+//
+//                 Edge Coverage (anche se già con lo statement coverage vengono eseguite tutte le righe ...
+//                 ... e non credo che this.increaseTurn() crei problemi)
+//                 currentPlayer != 3 (2)
+//
+// getCurrentPlayer() (Getter) -> No test
+// increaseTurn() -> No test
+// getTurnNumber() (Getter) -> No test
+// getPlacedResources() (Getter) -> No test
+// getPlacedGold()  (Getter) -> No test
+// getCommonObjectives() (Getter) -> No test
+// drawFrom() -> No test
+// drawFromVisibleCards() -> Si test
+//                           Statement coverage
+//                           position = 0
+//                           position = 2
+//                           whichType = gold
+//                           whichType = resource
+//                           whichType = CavoloCappuccioRosso
+//
+//                           Edge and Condition coverage (Non necessario)
+//                           position = 1

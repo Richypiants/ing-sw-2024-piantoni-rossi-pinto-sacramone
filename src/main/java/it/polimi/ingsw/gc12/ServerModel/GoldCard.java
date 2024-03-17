@@ -33,3 +33,6 @@ public class GoldCard extends PlayableCard {
         return POINTS_GRANTED * pointsCondition.numberOfTimesSatisfied(this, target);
     }
 }
+
+// getNeededresourcesToPlay() (Getter) -> No test
+// awardPoints() -> No test (i test per numberOfTimesSatisfied() sono sufficienti)

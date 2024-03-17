@@ -3,7 +3,7 @@ import java.util.ArrayList;
 
 //TODO: complete from UML and add comments for documentation
 
-public class    GameLobby {
+public class GameLobby {
     private int maxPlayers;
     private final ArrayList<Player> LIST_OF_PLAYERS;
 
@@ -44,3 +44,10 @@ public class    GameLobby {
         return this.maxPlayers;
     }
 }
+
+// addPlayer() -> No test (l'if non dovrebbe creare problemi dato che è un check banale)
+// removePlayer() -> No test
+// getListOfPlayer() (Getter) -> No test
+// getPlayersNumber() (Getter) -> No test
+// setMaxPlayer() (Setter senza condizioni particolari) -> No test
+// getMaxPlayers() (Getter) -> No test

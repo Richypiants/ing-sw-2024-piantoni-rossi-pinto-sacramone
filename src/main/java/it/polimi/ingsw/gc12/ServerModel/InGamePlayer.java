@@ -91,3 +91,16 @@ public class InGamePlayer extends Player {
     }
 
 }
+
+// increasePoints() -> No test
+// getPoints() (Getter) -> No test
+// getCardsInHand() (Getter) -> No test
+// placeCard() -> No test
+// addCardToHand() -> No test
+// incrementOwnedResource() -> No test
+// getOwnedResources() (Getter) -> No test
+// getOwnField() (Getter) -> No test
+// getPlacedCards() (Getter) -> No test
+// getOpenCorners() (Getter) -> No test
+// setSecretObjective() (Setter senza condizioni particolari) -> No test
+// getSecretObjective() (Getter) -> No test

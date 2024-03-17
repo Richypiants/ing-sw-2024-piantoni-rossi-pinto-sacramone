@@ -21,8 +21,9 @@ public class Field {
 
     // Interface method for external callers to place a card on the field
     protected boolean addCard(GenericPair<Integer, Integer> coordinates, PlayableCard card) {
-        if(!OPEN_CORNERS.contains(coordinates))
+        if (!OPEN_CORNERS.contains(coordinates)) {
             return false;
+        }
 
         PLACED_CARDS.put(coordinates, card);
         OPEN_CORNERS.remove( coordinates);
@@ -58,3 +59,15 @@ public class Field {
     }
 
 }
+
+// addCard() -> Si test
+//              Statement coverage (edge coverage)
+//              OPEN_CORNERS.contains(coordinates) = TRUE
+//              OPEN_CORNERS.contains(coordinates) = FALSE
+//
+//              PLACED_CARDS.containsKey(newOpenCorner) = TRUE
+//              PLACED_CARDS.containsKey(newOpenCorner) = FALSE
+//
+// getPlacedCards() (Getter) -> No test
+// getOpenCorners() (Getter) -> No test
+// getCardCoordinates() (Getter) -> No test

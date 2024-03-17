@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc12.ServerModel;
 
 import java.util.ArrayList;
 import java.util.Stack;
-import java.lang.Math;
 
 // This class implements a standard card deck to draw from during a game
 public class CardDeck {
@@ -42,3 +41,7 @@ public class CardDeck {
         return DECK.isEmpty();
     }
 }
+
+// push -> No test
+// draw -> No test
+// empty -> No test
