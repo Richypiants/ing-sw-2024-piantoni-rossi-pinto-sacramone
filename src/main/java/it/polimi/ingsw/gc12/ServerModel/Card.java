@@ -38,7 +38,10 @@ public abstract class Card {
 }
 
 // getShownSide() (Getter) -> No test
-// setShownSide() (Setter no condizioni speciali) -> No test
+// setShownSide() (Setter) -> Si test
+//                            - Casi limite
+//                              side undefined
+//
 // awardPoints() -> Si test
 //                  - Casi limite
 //                    target undefined

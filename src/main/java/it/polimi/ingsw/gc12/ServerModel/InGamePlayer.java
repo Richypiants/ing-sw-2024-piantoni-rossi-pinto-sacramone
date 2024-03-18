@@ -42,7 +42,7 @@ public class InGamePlayer extends Player {
         return new ArrayList<PlayableCard>(CARDS_IN_HAND);
     }
 
-    //Given the card and the desired position,
+    // Given the card and the desired position,
     // wrapped in a GenericPair structure meaning <x,y> coordinates on the field,
     // places the card into the ownField HashMap
     protected void placeCard(PlayableCard card, GenericPair<Integer, Integer> pair) {
@@ -55,7 +55,7 @@ public class InGamePlayer extends Player {
         CARDS_IN_HAND.add(pickedCard);
     }
 
-    //Given a specific resource type and the quantity to be increased by, updates the HashMap
+    // Given a specific resource type and the quantity to be increased by, updates the HashMap
     protected void incrementOwnedResource(Resource resource, int numberToBeIncreased){
         OWNED_RESOURCES.put(resource, OWNED_RESOURCES.get(resource) + numberToBeIncreased);
     }

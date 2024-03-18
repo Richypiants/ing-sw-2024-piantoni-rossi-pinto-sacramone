@@ -46,5 +46,7 @@ public class CardDeck {
 //         - Casi limite
 //           toInsert undefined
 //
-// draw -> No test
+// draw -> Si test
+//         DECK.isEmpty() = TRUE
+//
 // empty -> No test

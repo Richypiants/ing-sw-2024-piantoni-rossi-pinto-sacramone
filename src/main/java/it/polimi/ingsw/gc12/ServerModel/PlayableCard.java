@@ -27,7 +27,7 @@ public class PlayableCard extends Card {
     public Resource getCornerResource(int cornerPosition, Side side) {
         if(side.equals(Side.FRONT)) return corners[0][cornerPosition];
         if(side.equals(Side.BACK)) return corners[1][cornerPosition];
-        //TODO: add UndefinedCardSideException?
+        // TODO: add UndefinedCardSideException?
         return null;
     }
 
@@ -45,7 +45,12 @@ public class PlayableCard extends Card {
     }
 }
 
-// getCornerresource() -> __ test
+// getCornerResource() -> __ test
 //                        Try if we need excpetion
+//                        side undefined
+//
+// getCorners() -> Si test
+//                 - Casi limite
+//                   side undefined
 //
 // getCenterBackResources() (Getter) -> No test

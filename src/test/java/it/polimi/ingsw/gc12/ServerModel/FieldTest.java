@@ -35,4 +35,9 @@ class FieldTest {
         boolean value = Field.addCard(corner, card);
 
     }
+
+    @Test
+    void getCardCoordinates() {
+
+    }
 }

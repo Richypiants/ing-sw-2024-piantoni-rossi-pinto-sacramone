@@ -154,3 +154,14 @@ public class PatternCondition implements PointsCondition {
                 ).collect(Collectors.toCollection(ArrayList::new));
     }
 }
+
+// Test
+// - Casi limite
+//   thisCard undefined
+//   target undefined
+//
+//   Zero tiles on field
+//   One tile on field
+//   More than one tiles on field
+//   No pattern
+

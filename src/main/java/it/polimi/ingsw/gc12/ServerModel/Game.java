@@ -39,9 +39,10 @@ public class Game{
     }
 
     public void nextPlayer() {
-        if(currentPlayer == 3)
+        if (currentPlayer == 3) {
             this.increaseTurn();
-        currentPlayer = (currentPlayer+1) % LIST_OF_GAME_PLAYERS.size();
+        }
+        currentPlayer = (currentPlayer + 1) % LIST_OF_GAME_PLAYERS.size();
     }
 
     public Player getCurrentPlayer() {
