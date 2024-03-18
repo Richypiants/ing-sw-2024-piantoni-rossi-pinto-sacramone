@@ -3,35 +3,69 @@ package it.polimi.ingsw.gc12.ServerModel;
 import it.polimi.ingsw.gc12.Utilities.Image;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
-// The following class represents a general card template, with all the game cards' common attributes and methods
+/*
+A template for a standard card object
+ */
 public abstract class Card {
-    public final int ID; // Unique card identifier to easily retrieve card from "DB"
-    public final int POINTS_GRANTED; // Points granted to player upon playing this card (0 for not specified)
-    public final Image FRONT_SPRITE; // Front image for this card
-    public final Image BACK_SPRITE; // Back image for this card
+
+    /*
+    A unique card identifier that facilitates the card's retrieval
+     */
+    //FIXME: is this really necessary?
+    public final int ID;
+
+    /*
+    The number of points granted to a player upon playing this card (0 for cards that do not have points physically
+    portrayed on the artwork)
+     */
+    public final int POINTS_GRANTED;
+
+    /*
+    The front image for this card
+     */
+    public final Image FRONT_SPRITE;
+
+    /*
+    The back image for this card
+     */
+    public final Image BACK_SPRITE;
+
+    /*
+    The side facing upwards after the card has been played (undefined when the card still hasn't been played)
+     */
     private Side shownSide;
 
-    // Generic card constructor, will receive parameters parsed from JSON
+    /*
+    Constructs instances of Card's subclasses by initializing the attributes they have in common
+     */
+    //FIXME: I don't particularly like this description...
     public Card(int id, int pointsGranted, Image frontSprite, Image backSprite) {
         this.ID = id;
         this.POINTS_GRANTED = pointsGranted;
-        //FIXME: don't know if they should be passed like this...
+        //FIXME: this will depend on how Images will be implemented
         this.FRONT_SPRITE = frontSprite;
         this.BACK_SPRITE = backSprite;
         this.shownSide = Side.UNDEFINED;
     }
 
-    // Getter method for "side"
+    /*
+    Returns the side which is facing upwards (undefined when card hasn't been played)
+     */
     public Side getShownSide() {
-        return shownSide;
+        return this.shownSide;
     }
 
-    // Setter method for "side"
-    public void setShownSide(Side side) {
-        this.shownSide = side;
+    /*
+    Changes the side which is facing upwards
+     */
+    public void setShownSide(Side newSide) {
+        this.shownSide = newSide;
     }
 
-    // Generic template for awarding card points to the player upon playing this card
+    /*
+    Returns the number of points granted to player target who has just played the card (default for cards
+    without points conditions)
+     */
     public int awardPoints(InGamePlayer target) {
         return this.POINTS_GRANTED;
     }

@@ -1,47 +1,81 @@
 package it.polimi.ingsw.gc12.ServerModel;
+
 import java.util.ArrayList;
 
-//TODO: complete from UML and add comments for documentation
-
+/*
+A template for a game lobby where players wait for new games to start
+ */
 public class GameLobby {
-    private int maxPlayers;
-    private final ArrayList<Player> LIST_OF_PLAYERS;
 
+    /*
+    The list of players who have already joined this lobby
+     */
+    private final ArrayList<Player> LIST_OF_PLAYERS;
+    /*
+    The maximum number of players which can join this lobby
+     */
+    private int maxPlayers;
+
+    /*
+    Constructs a game lobby of at most maxPlayers players and which contains the player who has created it
+     */
     public GameLobby(int maxPlayers, Player creatorPlayer) {
         this.maxPlayers = maxPlayers;
         this.LIST_OF_PLAYERS = new ArrayList<Player>();
         addPlayer(creatorPlayer);
     }
 
+    /*
+    Constructs a lobby from another lobby passed as parameter
+     */
     public GameLobby(GameLobby copyFrom) {
         this.maxPlayers = copyFrom.getMaxPlayers();
         this.LIST_OF_PLAYERS = new ArrayList<Player>(copyFrom.getListOfPlayers());
     }
 
+    /*
+    If this lobby is not full, adds player to it
+     */
     public void addPlayer(Player player) {
         if(LIST_OF_PLAYERS.size() < maxPlayers) {
             LIST_OF_PLAYERS.add(player);
         }
     }
 
+    /*
+    Removes player from this lobby
+     */
     public void removePlayer(Player player) {
         LIST_OF_PLAYERS.remove(player);
     }
 
+    /*
+    Returns a copy of the list of players in the lobby
+     */
     public ArrayList<Player> getListOfPlayers() {
         return new ArrayList<Player>(LIST_OF_PLAYERS);
     }
 
+    /*
+    Returns the number of players currently in the lobby
+     */
     public int getPlayersNumber() {
         return LIST_OF_PLAYERS.size();
     }
 
-    public void setMaxPlayers(int numOfMaxPlayers) {
-        this.maxPlayers = numOfMaxPlayers;
-    }
-
+    /*
+    Returns the maximum number of players for this lobby
+     */
     public int getMaxPlayers() {
         return this.maxPlayers;
+    }
+
+    /*
+    Sets the maximum number of players in the lobby to a new value
+     */
+    //FIXME: add a maximum value (4)?
+    public void setMaxPlayers(int numOfMaxPlayers) {
+        this.maxPlayers = numOfMaxPlayers;
     }
 }
 

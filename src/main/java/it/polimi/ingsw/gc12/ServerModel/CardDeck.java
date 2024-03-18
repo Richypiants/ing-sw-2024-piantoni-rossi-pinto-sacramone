@@ -1,44 +1,57 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Stack;
 
-// This class implements a standard card deck to draw from during a game
+/*
+A card deck from which to draw cards during games
+ */
 public class CardDeck {
-    private final Stack<Card> DECK; // Data structure chosen to delegate the card deck functionalities
 
-    // Constructor for a CardDeck: it receives a list of cards from the parsed JSON, then it randomly
-    // extracts them and pushes them into the stack to form the deck
+    /*
+    The group of cards which form the deck
+     */
+    private final Stack<Card> DECK;
+
+    /*
+    Constructs a deck of cards by copying the passed cards, shuffling and then pushing them into the card stack
+     */
     protected CardDeck(ArrayList<Card> deck) {
-        int index = 0;
+        //FIXME: Remove side attribute from Card and make Card final
         ArrayList<Card> copy = new ArrayList<Card>(deck);
 
-        //FIXME: make cards or their attributes final?
-
+        Collections.shuffle(copy);
         this.DECK = new Stack<Card>();
         while (copy.isEmpty()) {
-            index = (int) (Math.random() * copy.size());
-            this.push(copy.remove(index));
+            this.push(copy.removeFirst());
         }
     }
 
+    /*
+    Pushes a card into the stack
+     */
     private void push(Card toInsert){
         this.DECK.push(toInsert);
     }
 
-    // Pop the first card of the stack and return it to the caller
+    /*
+    Pops the first card of the stack and returns it to the caller
+     */
     protected Card draw() {
-        if (!DECK.isEmpty()) {
-            return DECK.pop();
+        if (!this.DECK.isEmpty()) {
+            return this.DECK.pop();
         }
 
         //TODO: add EmptyDeckException?
         return null; // Placeholder for empty deck scenario
     }
 
-    // Empty-stack checker to delegate control
-    public boolean empty() {
-        return DECK.isEmpty();
+    /*
+    Returns true if the deck has no cards, false otherwise
+     */
+    public boolean isEmpty() {
+        return this.DECK.isEmpty();
     }
 }
 

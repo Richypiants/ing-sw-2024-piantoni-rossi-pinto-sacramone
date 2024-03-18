@@ -10,9 +10,14 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.disjoint;
 
-//TODO: add documentation comments
-
+/*
+A condition that counts how many "disjoint" times the condition pattern can be found among the played cards
+ */
 public class PatternCondition implements PointsCondition {
+
+    /*
+    The pattern to be found among the played cards
+     */
     private final ArrayList<Triplet<Integer, Integer, Resource>> CONDITION;
 
     public PatternCondition(ArrayList<Triplet<Integer, Integer, Resource>> condition) {
@@ -20,13 +25,21 @@ public class PatternCondition implements PointsCondition {
         this.CONDITION = new ArrayList<Triplet<Integer, Integer, Resource>>(condition);
     }
 
+    /*
+    Returns a copy of this card's condition pattern
+     */
+    //FIXME: make this collection immutable (all the other ones in PointsCondition subclasses too?
+    // somewhere else too?)
     protected ArrayList<Triplet<Integer, Integer, Resource>> getConditionParameters() {
         return new ArrayList<Triplet<Integer, Integer, Resource>>(CONDITION);
     }
 
-    // The same-type patterns should be considered in a way such that the points obtained from them is maxed
-    // Thus, we want to find the largest maximum compatibility class between all the same-type patterns,
-    // that is the choice of patterns such that we consider the most possible amount of them
+    /*
+    Counts how many corners are covered when playing the associated card.
+    The same-type patterns should be considered in a way such that the points obtained from them is maxed.
+    Thus, we want to find the largest maximum compatibility class between all the same-type patterns,
+    that is the choice of patterns such that we consider the most possible amount of them
+     */
     //FIXME: ALL THIS CODE SHOULD BE CLEANED AND OPTIMIZED, IT IS TOO INTRICATE
     // AND PROBABLY REPEATS OPERATION AND IS NOT DRY
     public int numberOfTimesSatisfied(Card thisCard, InGamePlayer target) {
@@ -65,8 +78,10 @@ public class PatternCondition implements PointsCondition {
         );
     }
 
-    // This function is an implementation of the tree algorithm seen in RL course in order to find
-    // all the maximum compatibility classes and keep the largest one
+    /*
+    Using the tree algorithm from Digital Circuits Design course, finds the size of the largest compatibility
+    class, that is the maximum number of patterns that are disjoint
+     */
     private int largestMaximumCompatibilityClass(ArrayList<PlayableCard> patternStartingCards,
                                                  Field playerField) {
         ArrayList<ArrayList<PlayableCard>> frontier = new ArrayList<ArrayList<PlayableCard>>();
@@ -122,25 +137,28 @@ public class PatternCondition implements PointsCondition {
             nodesInLastLevel = frontier.size();
         }
 
+        //FIXME: add Optional<> managmement and eventual exceptions?
         return result.stream()
                 .mapToInt(ArrayList::size)
                 .max()
                 .getAsInt();
     }
 
-    // This function performs a compatibility check between the patterns that start with the cards passed
-    // as parameters
+    /*
+    Checks whether the patterns passed as parameters are compatible (disjoint)
+     */
+    //FIXME: maybe a BiMap would solve this problem?
     private boolean compatibleWith(PlayableCard pattern1, PlayableCard pattern2, Field playerField) {
         //FIXME: add try checks or exceptions?
-        //FIXME: this isn't DRY, probably separate functions after cleaning up code?
         return disjoint(
                 fullPatternCoordinates(pattern1, playerField),
                 fullPatternCoordinates(pattern2, playerField)
         );
     }
 
-    // This function gets all the coordinates of the pattern by summing the initial card position to the
-    // position offsets in the condition
+    /*
+    Returns the list of coordinates of all the cards in the pattern passed as parameter
+     */
     private ArrayList<GenericPair<Integer, Integer>> fullPatternCoordinates(
             PlayableCard pattern, Field playerField) {
         return CONDITION.stream()

@@ -7,18 +7,41 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//TODO: complete from UML and add comments for documentation
-
+/*
+A structure for a player which is currently playing a game
+ */
 public class InGamePlayer extends Player {
-    public static final Color COLOR = null; // Placeholder for Color
-    private int points;
+
+    /*
+    This player's color
+     */
+    public static final Color COLOR = null; //TODO: implement color selection logic
+    /*
+    The cards in this player's hand
+     */
     private final ArrayList<PlayableCard> CARDS_IN_HAND;
+    /*
+    The resources owned by this player currently
+     */
+    //TODO: maybe we could use EnumMap?
     private final HashMap<Resource, Integer> OWNED_RESOURCES;
+    /*
+    The field of this player
+     */
     private final Field OWN_FIELD;
+    /*
+    The points currently gained bby this player
+     */
+    private int points;
+    /*
+    The secret Objective Card chosen by this player
+     */
     private ObjectiveCard secretObjective;
 
 
-    //Constructor method
+    /*
+    Constructs an InGamePlayer from the player passed as parameter
+     */
     protected InGamePlayer(Player player) {
         super(player);
         CARDS_IN_HAND = new ArrayList<>();
@@ -27,67 +50,92 @@ public class InGamePlayer extends Player {
         OWN_FIELD = new Field();
     }
 
-    //Given the desired amount to be increased by, updates the player's points
+    /*
+    Given the desired amount to be increased by, updates the player's points
+     */
     protected void increasePoints(int pointsToAdd){
         points += pointsToAdd;
     }
 
-    //Getter points method
+    /*
+    Returns this player's current points
+     */
     protected int getPoints(){
         return points;
     }
 
-    //Getter cardsInHand method returned by copy
+    /*
+    Returns a copy of the list of cards in this player's hand
+     */
     protected ArrayList<PlayableCard> getCardsInHand(){
         return new ArrayList<PlayableCard>(CARDS_IN_HAND);
     }
 
-    // Given the card and the desired position,
-    // wrapped in a GenericPair structure meaning <x,y> coordinates on the field,
-    // places the card into the ownField HashMap
+    /* Given the card and the desired position, wrapped in a GenericPair structure meaning <x,y> coordinates on
+     the field, places the card into the ownField HashMap
+     */
     protected void placeCard(PlayableCard card, GenericPair<Integer, Integer> pair) {
         OWN_FIELD.addCard(pair, card);
     }
 
-    //Adds the pickedCard to the current player's hand
+    /*
+    Adds the pickedCard to the current player's hand
+     */
     protected void addCardToHand(PlayableCard pickedCard){
         //FIXME: check for exception!
         CARDS_IN_HAND.add(pickedCard);
     }
 
-    // Given a specific resource type and the quantity to be increased by, updates the HashMap
+    /*
+    Given a specific resource type and the quantity to be increased by, updates the HashMap
+     */
     protected void incrementOwnedResource(Resource resource, int numberToBeIncreased){
         OWNED_RESOURCES.put(resource, OWNED_RESOURCES.get(resource) + numberToBeIncreased);
     }
 
-    //Getter ownedResource method returned by copy
+    /*
+    Returns a copy of the map of resources owned by this player
+     */
     protected HashMap<Resource, Integer> getOwnedResources() {
         return new HashMap<Resource, Integer>(OWNED_RESOURCES);
     }
 
-    //Getter ownField method relying on Field class
+    /*
+    Returns this player's own field
+     */
     protected Field getOwnField() {
         //FIXME: avoid reference escaping?
         return this.OWN_FIELD;
     }
 
+    /*
+    Returns the cards placed by this player
+     */
+    //FIXME: having method calls like these is strange, maybe ask the teacher?
     protected HashMap<GenericPair<Integer, Integer>, PlayableCard> getPlacedCards() {
         return OWN_FIELD.getPlacedCards();
     }
 
+    /*
+    Returns the available positions where this player can place cards next
+     */
     protected ArrayList<GenericPair<Integer, Integer>> getOpenCorners() {
         return OWN_FIELD.getOpenCorners();
     }
 
-    //Setter secretObjective method assigned directly
-    protected void setSecretObjective(ObjectiveCard objectiveCard){
-        //FIXME: directly assigned from the parameter, but the getter method is Safe, so should be good.
-        this.secretObjective = objectiveCard;
+    /*
+    Returns this player's secret Objective card
+     */
+    protected ObjectiveCard getSecretObjective(){
+        return secretObjective;
     }
 
-    //Getter secretObjective method returned by copy
-    protected ObjectiveCard getSecretObjective(){
-        return new ObjectiveCard(this.secretObjective);
+    /*
+    Sets this player's secret Objective card
+     */
+    protected void setSecretObjective(ObjectiveCard objectiveCard){
+        //FIXME: if Cards classes are final, this is fine.
+        this.secretObjective = objectiveCard;
     }
 
 }

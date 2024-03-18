@@ -5,9 +5,14 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 
 import java.util.ArrayList;
 
-// This class models a standard Resource card
+/*
+A template for an Initial card from the game's cards set
+ */
 public class InitialCard extends PlayableCard {
-    // Constructor for a resource card, in fact this is the same as the playable cards one.
+
+    /*
+    Generates an Initial card from the given parameters
+     */
     public InitialCard(int id, int pointsGranted, Image frontSprite, Image backSprite, Resource[][] corners,
                        ArrayList<Resource> centerBackResources) {
         super(id, pointsGranted, frontSprite, backSprite, corners, centerBackResources);

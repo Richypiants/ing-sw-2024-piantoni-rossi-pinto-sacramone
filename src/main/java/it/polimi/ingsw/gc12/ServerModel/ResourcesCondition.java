@@ -7,6 +7,11 @@ import java.util.ArrayList;
 //TODO: add documentation comments
 
 public class ResourcesCondition implements PointsCondition {
+
+    /*
+    The resources to be evaluated
+     */
+    //FIXME: maybe using a map would make things simpler in other classes?
     private final ArrayList<Resource> CONDITION;
 
     public ResourcesCondition(ArrayList<Resource> condition) {

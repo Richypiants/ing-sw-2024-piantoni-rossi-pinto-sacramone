@@ -1,18 +1,28 @@
 package it.polimi.ingsw.gc12.Utilities;
 
-// Class that model the cartesian plan with coordinates x, y, z
-
+/*
+A triplet of generic elements
+ */
 public class Triplet<T1, T2, T3> {
 
-    // First attribute
+    /*
+    The first attribute of this triplet
+     */
     private T1 x;
 
-    // Second attribute
+    /*
+    The second attribute of this triplet
+     */
     private T2 y;
 
-    // Third coordinate
+    /*
+    The third attribute of this triplet
+     */
     private T3 z;
 
+    /*
+    Generates a triplet from the given parameters
+     */
     //FIXME: possible reference escape (in GenericPair too?)
     public Triplet(T1 x, T2 y, T3 z) {
         this.x = x;
@@ -20,32 +30,46 @@ public class Triplet<T1, T2, T3> {
         this.z = z;
     }
 
-    // Getter method for first attribute
+    /*
+    Returns the first attribute of this triplet
+     */
     public T1 getX() {
         return x;
     }
 
-    // Getter method for second attribute
+    /*
+    Returns the second attribute of this triplet
+     */
     public T2 getY() {
         return y;
     }
 
-    // Getter method for third attributee
+    /*
+    Returns the third attribute of this triplet
+     */
     public T3 getZ() {
         return z;
     }
 
-    // Getter method for attributes 1,2
+    //FIXME: delete these methods below?
+
+    /*
+    Returns a pair composed of the first and second attributes of this triplet
+     */
     public GenericPair<T1, T2> getXY() {
         return new GenericPair<T1, T2>(x, y);
     }
 
-    // Getter method for attributes 1,3
+    /*
+    Returns a pair composed of the first and third attributes of this triplet
+     */
     public GenericPair<T1, T3> getXZ() {
         return new GenericPair<T1, T3>(x, z);
     }
 
-    // Getter method for attributes 2,3
+    /*
+    Returns a pair composed of the second and third attributes of this triplet
+     */
     public GenericPair<T2, T3> getYZ() {
         return new GenericPair<T2, T3>(y, z);
     }

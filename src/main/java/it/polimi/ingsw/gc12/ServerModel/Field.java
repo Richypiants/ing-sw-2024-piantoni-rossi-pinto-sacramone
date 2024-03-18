@@ -5,32 +5,47 @@ import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-// This class implements a generic field structure to store cards played from a player
+/*
+A field that stores the cards played by a player and the open corners where next cards can be played
+ */
 public class Field {
-    // Collection to store pairs of coordinates as keys to the card placed in that position
+
+    /*
+    The map from coordinates to the card played in that position
+     */
     private final HashMap<GenericPair<Integer, Integer>, PlayableCard> PLACED_CARDS;
-    // Collection to store coordinates that correspond to available moves, that are free corners on the field
+
+    /*
+    Available position where the next cards can be played
+     */
     private final ArrayList<GenericPair<Integer, Integer>> OPEN_CORNERS;
 
-    // Constructor for a field that initializes it
+    /*
+    Constructs an empty Field
+     */
     protected Field() {
-        //TODO: Field initialization logic
         this.PLACED_CARDS = new HashMap<GenericPair<Integer, Integer>, PlayableCard>();
         this.OPEN_CORNERS = new ArrayList<GenericPair<Integer, Integer>>();
     }
 
-    // Interface method for external callers to place a card on the field
+    /*
+    Adds a card to the played cards on the field
+     */
     protected boolean addCard(GenericPair<Integer, Integer> coordinates, PlayableCard card) {
         if (!OPEN_CORNERS.contains(coordinates)) {
             return false;
         }
 
+        //FIXME: if instanceof GoldCard check resourcesNeededToPlay
         PLACED_CARDS.put(coordinates, card);
-        OPEN_CORNERS.remove( coordinates);
+        OPEN_CORNERS.remove(coordinates);
 
         for(int i = -1; i <= 1; i += 2){
             for(int j = -1; j <= 1; j += 2){
-                GenericPair<Integer, Integer> newOpenCorner = new GenericPair<Integer, Integer>( coordinates.getX() + i, coordinates.getY() + j);
+                GenericPair<Integer, Integer> newOpenCorner = new GenericPair<Integer, Integer>(
+                        coordinates.getX() + i,
+                        coordinates.getY() + j
+                );
                 if (!PLACED_CARDS.containsKey(newOpenCorner)){
                     OPEN_CORNERS.add(newOpenCorner);
                 }
@@ -40,19 +55,25 @@ public class Field {
         return true;
     }
 
-
-
-    // Getter method for already placed cards FIXME: rename method to getPlacedCards!
+    /*
+    Returns a copy of the map of placed cards, addressed by their position as key
+     */
     public HashMap<GenericPair<Integer, Integer>, PlayableCard> getPlacedCards() {
         return new HashMap<GenericPair<Integer, Integer>, PlayableCard>(PLACED_CARDS);
     }
 
-    // Getter method for open corners where a card can be placed
+    /*
+    Returns a copy of the list of corners where cards can be placed
+     */
     public ArrayList<GenericPair<Integer, Integer>> getOpenCorners() {
         return new ArrayList<GenericPair<Integer, Integer>>(OPEN_CORNERS);
     }
 
+    /*
+    Returns the coordinates for a given card, inverting the map
+     */
     public GenericPair<Integer, Integer> getCardCoordinates(PlayableCard placedCard) {
+        //TODO: check for exceptions and Optional<> value when card hasn't been played!
         return PLACED_CARDS.entrySet().stream()
                 .filter((entry) -> entry.getValue().equals(placedCard))
                 .findFirst().get().getKey();

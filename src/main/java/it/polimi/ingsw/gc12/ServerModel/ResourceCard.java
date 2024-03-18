@@ -5,9 +5,14 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 
 import java.util.ArrayList;
 
-// This class models a standard Resource card
+/*
+ A model for a standard Resource card
+ */
 public class ResourceCard extends PlayableCard {
-    // Constructor for a resource card, in fact this is the same as the playable cards one.
+
+    /*
+    Generates a resource card from the given parameters (in fact, this is the same as the playable cards' one).
+     */
     public ResourceCard(int id, int pointsGranted, Image frontSprite, Image backSprite, Resource[][] corners,
                         ArrayList<Resource> centerBackResources) {
         super(id, pointsGranted, frontSprite, backSprite, corners, centerBackResources);

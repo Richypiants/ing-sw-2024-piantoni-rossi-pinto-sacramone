@@ -5,32 +5,46 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 
 import java.util.ArrayList;
 
-//TODO: complete from UML and add comments for documentation
-
+/*
+A template for a Gold card in the game's card set
+ */
 public class GoldCard extends PlayableCard {
-    public PointsCondition pointsCondition;
-    public ResourcesCondition resourcesNeededToPlay;
 
+    /*
+    The condition which is evaluated when calculating total points granted upon playing this card
+     */
+    public final PointsCondition POINTS_CONDITION;
 
-    // Constructor for generating GoldCards, expected parameters retrieved from the JSON Card File.
+    /*
+    The resources needed to play this card
+     */
+    public ResourcesCondition RESOURCES_NEEDED_TO_PLAY;
+
+    /*
+    Generates a gold card from the passed parameters
+     */
     public GoldCard(int id, int pointsGranted, Image frontSprite, Image backSprite, Resource[][] corners,
                     ArrayList<Resource> centerBackResources, PointsCondition pointsCondition,
                     ResourcesCondition resourcesNeededToPlay) {
         super(id, pointsGranted, frontSprite, backSprite, corners, centerBackResources);
-        this.pointsCondition = pointsCondition; //FIXME: should we copy this?
-        this.resourcesNeededToPlay = resourcesNeededToPlay; //FIXME: and should we copy this too?
+        this.POINTS_CONDITION = pointsCondition; //FIXME: should we copy this?
+        this.RESOURCES_NEEDED_TO_PLAY = resourcesNeededToPlay; //FIXME: and should we copy this too?
     }
 
-    // Getter method for neededResourcesToPlay
+    /*
+    Returns the list of resources needed to play this card
+     */
     public ArrayList<Resource> getNeededResourcesToPlay() {
-        return resourcesNeededToPlay.getConditionParameters();
+        return RESOURCES_NEEDED_TO_PLAY.getConditionParameters();
     }
 
-    // Returns the number of points the target InGamePlayer is awarded from playing the specific Gold Card,
-    // satisfying its specified condition
+    /*
+    Returns the number of points the target InGamePlayer is awarded upon playing this Gold Card by calculating
+    how many times the points' condition is satisfied
+     */
     @Override
     public int awardPoints(InGamePlayer target){
-        return POINTS_GRANTED * pointsCondition.numberOfTimesSatisfied(this, target);
+        return POINTS_GRANTED * POINTS_CONDITION.numberOfTimesSatisfied(this, target);
     }
 }
 

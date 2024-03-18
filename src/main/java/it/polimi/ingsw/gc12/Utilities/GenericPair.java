@@ -1,22 +1,38 @@
 package it.polimi.ingsw.gc12.Utilities;
 
+/*
+A pair of generic elements
+ */
 public class GenericPair<T1, T2> {
-    // first attribute
+
+    /*
+    The first attribute of this pair
+     */
     private T1 x;
-    // second attribute
+
+    /*
+    The second attribute of this pair
+     */
     private T2 y;
 
+    /*
+    Generates a pair from the given parameters
+     */
     public GenericPair(T1 x, T2 y) {
         this.x = x;
         this.y = y;
     }
 
-    //Getter method for first attribute
+    /*
+    Returns the first attribute of this pair
+     */
     public T1 getX() {
         return x;
     }
 
-    //Getter method for second attribute
+    /*
+    Returns the second attribute of this pair
+     */
     public T2 getY() {
         return y;
     }
