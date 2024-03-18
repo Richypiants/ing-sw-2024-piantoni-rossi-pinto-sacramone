@@ -45,8 +45,16 @@ public class GameLobby {
     }
 }
 
-// addPlayer() -> No test (l'if non dovrebbe creare problemi dato che è un check banale)
-// removePlayer() -> No test
+// addPlayer() -> Si test
+//                - Statement coverage (l'if non dovrebbe creare problemi dato che è un check banale)
+//
+//                - Casi limite
+//                  Player undefined
+//
+// removePlayer() -> Si test
+//                 - Casi limite
+//                   Player undefined
+//
 // getListOfPlayer() (Getter) -> No test
 // getPlayersNumber() (Getter) -> No test
 // setMaxPlayer() (Setter senza condizioni particolari) -> No test

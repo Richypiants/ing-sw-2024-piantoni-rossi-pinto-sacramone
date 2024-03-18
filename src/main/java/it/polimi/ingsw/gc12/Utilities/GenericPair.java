@@ -21,3 +21,5 @@ public class GenericPair<T1, T2> {
         return y;
     }
 }
+
+// No test needed

@@ -35,4 +35,8 @@ public class GoldCard extends PlayableCard {
 }
 
 // getNeededresourcesToPlay() (Getter) -> No test
-// awardPoints() -> No test (i test per numberOfTimesSatisfied() sono sufficienti)
+// awardPoints() -> Si test
+//                  - Statement coverage (i test per numberOfTimesSatisfied() sono sufficienti)
+//
+//                  - Casi limite
+//                    target undefined

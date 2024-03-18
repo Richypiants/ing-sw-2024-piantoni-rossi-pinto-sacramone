@@ -44,3 +44,8 @@ public class PlayableCard extends Card {
         return new ArrayList<Resource>(centerBackResources);
     }
 }
+
+// getCornerresource() -> __ test
+//                        Try if we need excpetion
+//
+// getCenterBackResources() (Getter) -> No test

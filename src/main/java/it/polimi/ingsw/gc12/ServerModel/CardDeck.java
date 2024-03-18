@@ -42,6 +42,9 @@ public class CardDeck {
     }
 }
 
-// push -> No test
+// push -> Si test
+//         - Casi limite
+//           toInsert undefined
+//
 // draw -> No test
 // empty -> No test

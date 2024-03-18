@@ -13,13 +13,18 @@ public class ObjectiveCard extends Card {
         this.POINTS_CONDITION = condition;
     }
 
-    public ObjectiveCard( ObjectiveCard card){
+    public ObjectiveCard(ObjectiveCard card) {
         super(card.ID, card.POINTS_GRANTED, card.FRONT_SPRITE, card.BACK_SPRITE);
         this.POINTS_CONDITION = card.POINTS_CONDITION;
     }
 
     //Specific Override for Super Class Method
+    @Override
     public int awardPoints(InGamePlayer target){
         return (this.POINTS_GRANTED * POINTS_CONDITION.numberOfTimesSatisfied(this, target));
     }
 }
+
+// awardPoints() -> Si test
+//                  - Casi limite (awardPoints è un ovverride)
+//                    target undefined

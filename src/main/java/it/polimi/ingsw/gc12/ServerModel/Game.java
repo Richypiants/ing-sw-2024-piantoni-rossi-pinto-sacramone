@@ -107,7 +107,10 @@ public class Game{
 // getPlacedResources() (Getter) -> No test
 // getPlacedGold()  (Getter) -> No test
 // getCommonObjectives() (Getter) -> No test
-// drawFrom() -> No test
+// drawFrom() -> Si test
+//               - Casi limite
+//                 deck undefined
+//
 // drawFromVisibleCards() -> Si test
 //                           Statement coverage
 //                           position = 0

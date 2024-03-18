@@ -87,7 +87,7 @@ public class InGamePlayer extends Player {
 
     //Getter secretObjective method returned by copy
     protected ObjectiveCard getSecretObjective(){
-        return new ObjectiveCard( this.secretObjective );
+        return new ObjectiveCard(this.secretObjective);
     }
 
 }
@@ -95,12 +95,21 @@ public class InGamePlayer extends Player {
 // increasePoints() -> No test
 // getPoints() (Getter) -> No test
 // getCardsInHand() (Getter) -> No test
-// placeCard() -> No test
-// addCardToHand() -> No test
+// placeCard() -> Si test
+//                - Casi limite
+//                  card undefined
+//
+// addCardToHand() -> Si test
+//                    - Casi limite
+//                      pickedCard undefined
+//
 // incrementOwnedResource() -> No test
 // getOwnedResources() (Getter) -> No test
 // getOwnField() (Getter) -> No test
 // getPlacedCards() (Getter) -> No test
 // getOpenCorners() (Getter) -> No test
-// setSecretObjective() (Setter senza condizioni particolari) -> No test
+// setSecretObjective() (Setter senza condizioni particolari) -> Si test
+//                                                               - Casi limite
+//                                                                 objectiveCard undefined
+//
 // getSecretObjective() (Getter) -> No test

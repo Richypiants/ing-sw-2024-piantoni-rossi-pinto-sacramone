@@ -23,3 +23,6 @@ public class Player {
         this.nickname = nickname;
     }
 }
+
+// getNickname() (Getter) -> No test
+// setNickname() (Setter senza condizioni particolari) -> No test

@@ -30,3 +30,8 @@ public class ResourcesCondition implements PointsCondition {
                 .getAsInt();
     }
 }
+
+// numberOfTimesSatisfied() -> Si test
+//                             - Casi limite
+//                               thisCard undefined
+//                               target undedined

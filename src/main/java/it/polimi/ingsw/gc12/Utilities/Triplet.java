@@ -49,6 +49,7 @@ public class Triplet<T1, T2, T3> {
     public GenericPair<T2, T3> getYZ() {
         return new GenericPair<T2, T3>(y, z);
     }
-
-
 }
+
+// No test needed
+

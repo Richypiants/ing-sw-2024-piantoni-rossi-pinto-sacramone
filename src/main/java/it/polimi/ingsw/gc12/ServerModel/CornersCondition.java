@@ -27,3 +27,8 @@ public class CornersCondition implements PointsCondition {
         return count;
     }
 }
+
+// numberOfTimesSatisfied() -> Si test
+//                             - Casi limite
+//                               thisCard undefined
+//                               target undefined

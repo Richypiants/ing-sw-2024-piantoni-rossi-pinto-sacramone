@@ -61,13 +61,18 @@ public class Field {
 }
 
 // addCard() -> Si test
-//              Statement coverage (edge coverage)
-//              OPEN_CORNERS.contains(coordinates) = TRUE
-//              OPEN_CORNERS.contains(coordinates) = FALSE
+//              - Statement coverage (edge coverage)
+//                OPEN_CORNERS.contains(coordinates) = TRUE
+//                OPEN_CORNERS.contains(coordinates) = FALSE
 //
-//              PLACED_CARDS.containsKey(newOpenCorner) = TRUE
-//              PLACED_CARDS.containsKey(newOpenCorner) = FALSE
+//                PLACED_CARDS.containsKey(newOpenCorner) = TRUE
+//                PLACED_CARDS.containsKey(newOpenCorner) = FALSE
+//
+//              - Casi limite
+//                card undefined
 //
 // getPlacedCards() (Getter) -> No test
 // getOpenCorners() (Getter) -> No test
-// getCardCoordinates() (Getter) -> No test
+// getCardCoordinates() (Getter) -> Si test
+//                                  - Casi limite
+//                                    placedCard undefined
