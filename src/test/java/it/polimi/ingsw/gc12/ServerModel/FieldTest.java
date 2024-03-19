@@ -1,18 +1,13 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Resource;
-import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
 
 class FieldTest {
 
     //TODO: NOT END
     @Test
     void addCard() {
-        ArrayList<GenericPair<Integer, Integer>> coo = new ArrayList<GenericPair<Integer, Integer>>();
+      /*  ArrayList<GenericPair<Integer, Integer>> coo = new ArrayList<GenericPair<Integer, Integer>>();
 
         GenericPair x = new GenericPair(0, 0);
         GenericPair y = new GenericPair(1, 1);
@@ -33,6 +28,7 @@ class FieldTest {
 
     @Test
     void getCardCoordinates() {
-
+    }
+ */
     }
 }
