@@ -36,6 +36,10 @@ public class GenericPair<T1, T2> {
     public T2 getY() {
         return y;
     }
+
+    public boolean equals(GenericPair<T1, T2> x, GenericPair<T1, T2> y) {
+        return (x.getX().equals(y.getX())) && (x.getY().equals(y.getY()));
+    }
 }
 
 // No test needed
