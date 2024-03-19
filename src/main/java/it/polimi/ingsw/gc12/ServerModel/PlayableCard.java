@@ -4,13 +4,13 @@ import it.polimi.ingsw.gc12.Utilities.Image;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 
 /*
 A standard playable card (that is, all cards except Objective cards)
  */
-public class PlayableCard extends Card {
+public abstract class PlayableCard extends Card {
 
     /*
     The corners of both this card's front and back, four corners each:
@@ -21,18 +21,18 @@ public class PlayableCard extends Card {
     /*
     The list of resources in this card's center back
      */
-    private final ArrayList<Resource> CENTER_BACK_RESOURCES;
+    private final EnumMap<Resource, Integer> CENTER_BACK_RESOURCES;
 
     /*
     Creates a playable card from the passed parameters
      */
     public PlayableCard(int id, int pointsGranted, Image frontSprite, Image backSprite, Resource[][] corners,
-                        ArrayList<Resource> centerBackResources) {
+                        EnumMap<Resource, Integer> centerBackResources) {
         super(id, pointsGranted, frontSprite, backSprite);
         this.CORNERS = new Resource[2][];
         this.CORNERS[0] = Arrays.copyOf(corners[0], corners[0].length);
         this.CORNERS[1] = Arrays.copyOf(corners[1], corners[1].length);
-        this.CENTER_BACK_RESOURCES = new ArrayList<Resource>(centerBackResources);
+        this.CENTER_BACK_RESOURCES = new EnumMap<>(centerBackResources);
     }
 
     /*
@@ -58,8 +58,8 @@ public class PlayableCard extends Card {
     /*
     returns a copy of the list of resources on this card's center back
      */
-    public ArrayList<Resource> getCenterBackResources() {
-        return new ArrayList<Resource>(CENTER_BACK_RESOURCES);
+    public EnumMap<Resource, Integer> getCenterBackResources() {
+        return new EnumMap<>(CENTER_BACK_RESOURCES);
     }
 }
 

@@ -5,7 +5,6 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.disjoint;
@@ -22,7 +21,7 @@ public class PatternCondition implements PointsCondition {
 
     public PatternCondition(ArrayList<Triplet<Integer, Integer, Resource>> condition) {
         //TODO: should we keep safe copy of the condition arraylist?
-        this.CONDITION = new ArrayList<Triplet<Integer, Integer, Resource>>(condition);
+        this.CONDITION = new ArrayList<>(condition);
     }
 
     /*
@@ -31,7 +30,7 @@ public class PatternCondition implements PointsCondition {
     //FIXME: make this collection immutable (all the other ones in PointsCondition subclasses too?
     // somewhere else too?)
     protected ArrayList<Triplet<Integer, Integer, Resource>> getConditionParameters() {
-        return new ArrayList<Triplet<Integer, Integer, Resource>>(CONDITION);
+        return new ArrayList<>(CONDITION);
     }
 
     /*
@@ -49,30 +48,52 @@ public class PatternCondition implements PointsCondition {
                 target.getPlacedCards().entrySet().stream()
                         // We don't want to consider the initial card
                         .filter((entry) -> !entry.getKey()
-                                .equals(new GenericPair<Integer, Integer>(0, 0))
+                                .equals(new GenericPair<>(0, 0))
                         )
-                        // We only keep the cards which are the same type of the start of the considered pattern
-                        .filter((entry) -> entry.getValue()
-                                .getCenterBackResources().getFirst()
-                                .equals(CONDITION.getFirst().getZ())
-                        )
-                        // We only keep the ones that actually form the pattern
-                        //FIXME: can we merge this filter and the one above in a single one?
-                        .filter((entry) -> getConditionParameters().subList(1, CONDITION.size()).stream()
-                                .map((offset) -> target.getPlacedCards().get(
-                                        new GenericPair<Integer, Integer>(
-                                                entry.getKey().getX() + offset.getX(),
-                                                entry.getKey().getY() + offset.getY()
-                                        )
+                        .filter((entry) -> getConditionParameters().stream()
+                                .map((offset) -> target.getPlacedCards().containsKey(
+                                                new GenericPair<>(
+                                                        entry.getKey().getX() + offset.getX(),
+                                                        entry.getKey().getY() + offset.getY()
                                                 )
-                                                .getCenterBackResources().getFirst()
-                                                .equals(offset.getZ())
+                                        )
+                                                && target.getPlacedCards().get(
+                                                        new GenericPair<>(
+                                                                entry.getKey().getX() + offset.getX(),
+                                                                entry.getKey().getY() + offset.getY()
+                                                        )
+                                                ).getX().getCenterBackResources()
+                                                .containsKey(offset.getZ())
                                 )
                                 .reduce(true,
                                         (accumulator, isColorCorrect) -> accumulator && isColorCorrect
                                 )
                         )
-                        .map(Map.Entry::getValue)
+
+                        /*// We only keep the cards which are the same type of the start of the considered pattern
+.filter((entry) -> entry.getValue().getX()
+        .getCenterBackResources()
+        .containsKey(CONDITION.getFirst().getZ())
+)
+// We only keep the ones that actually form the pattern
+//FIXME: can we merge this filter and the one above in a single one?
+.filter((entry) -> getConditionParameters().subList(1, CONDITION.size()).stream()
+        .map((offset) -> target.getPlacedCards().get(
+                new GenericPair<>(
+                        entry.getKey().getX() + offset.getX(),
+                        entry.getKey().getY() + offset.getY()
+                )
+                        ).getX()
+                        .getCenterBackResources()
+                        .containsKey(offset.getZ())
+        )
+        .reduce(true,
+                (accumulator, isColorCorrect) -> accumulator && isColorCorrect
+        )
+)
+*/
+
+                        .map((entry) -> entry.getValue().getX())
                         .collect(Collectors.toCollection(ArrayList::new)),
                 target.getOwnField()
         );
@@ -84,8 +105,8 @@ public class PatternCondition implements PointsCondition {
      */
     private int largestMaximumCompatibilityClass(ArrayList<PlayableCard> patternStartingCards,
                                                  Field playerField) {
-        ArrayList<ArrayList<PlayableCard>> frontier = new ArrayList<ArrayList<PlayableCard>>();
-        ArrayList<ArrayList<PlayableCard>> result = new ArrayList<ArrayList<PlayableCard>>();
+        ArrayList<ArrayList<PlayableCard>> frontier = new ArrayList<>();
+        ArrayList<ArrayList<PlayableCard>> result = new ArrayList<>();
         int nodesInLastLevel = 1, depth = 0;
 
         frontier.add(patternStartingCards);
@@ -96,10 +117,10 @@ public class PatternCondition implements PointsCondition {
             for (int i = 0; i < nodesInLastLevel; i++) {
                 ArrayList<PlayableCard> tmp = frontier.removeFirst();
                 if (tmp.contains(currentPattern)) {
-                    frontier.add(new ArrayList<PlayableCard>(tmp.subList(1, tmp.size())));
+                    frontier.add(new ArrayList<>(tmp.subList(1, tmp.size())));
                     tmp.removeIf((pattern) -> !compatibleWith(pattern, currentPattern, playerField));
                 }
-                frontier.add(new ArrayList<PlayableCard>(tmp));
+                frontier.add(new ArrayList<>(tmp));
             }
 
             depth++; // We can put this here because we've already removed all nodes at the previous depth
@@ -137,7 +158,7 @@ public class PatternCondition implements PointsCondition {
             nodesInLastLevel = frontier.size();
         }
 
-        //FIXME: add Optional<> managmement and eventual exceptions?
+        //FIXME: add Optional<> management and eventual exceptions?
         return result.stream()
                 .mapToInt(ArrayList::size)
                 .max()
@@ -164,7 +185,7 @@ public class PatternCondition implements PointsCondition {
         return CONDITION.stream()
                 .map((triplet) -> {
                     GenericPair<Integer, Integer> thisPosition = playerField.getCardCoordinates(pattern);
-                            return new GenericPair<Integer, Integer>(
+                    return new GenericPair<>(
                                     thisPosition.getX() + triplet.getX(),
                                     thisPosition.getY() + triplet.getY()
                             );

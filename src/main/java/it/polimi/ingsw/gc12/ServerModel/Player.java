@@ -18,7 +18,7 @@ public class Player {
     }
 
     /*
-    Constructs a player from another given player (needed to be called by InGamePlayer's contructor
+    Constructs a player from another given player (needed to be called by InGamePlayer's constructor
      */
     public Player(Player copyFrom){
         this.nickname = copyFrom.getNickname();

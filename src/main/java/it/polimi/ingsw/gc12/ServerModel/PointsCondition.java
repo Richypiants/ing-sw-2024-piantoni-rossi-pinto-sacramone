@@ -9,5 +9,5 @@ public interface PointsCondition {
     /*
     Computes how many times a condition is satisfied
      */
-    public int numberOfTimesSatisfied(Card thisCard, InGamePlayer of);
+    int numberOfTimesSatisfied(Card thisCard, InGamePlayer of);
 }

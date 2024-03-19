@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
 import it.polimi.ingsw.gc12.Utilities.Image;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 /*
 A template for a standard card object
@@ -31,11 +30,6 @@ public abstract class Card {
     public final Image BACK_SPRITE;
 
     /*
-    The side facing upwards after the card has been played (undefined when the card still hasn't been played)
-     */
-    private Side shownSide;
-
-    /*
     Constructs instances of Card's subclasses by initializing the attributes they have in common
      */
     //FIXME: I don't particularly like this description...
@@ -45,21 +39,6 @@ public abstract class Card {
         //FIXME: this will depend on how Images will be implemented
         this.FRONT_SPRITE = frontSprite;
         this.BACK_SPRITE = backSprite;
-        this.shownSide = Side.UNDEFINED;
-    }
-
-    /*
-    Returns the side which is facing upwards (undefined when card hasn't been played)
-     */
-    public Side getShownSide() {
-        return this.shownSide;
-    }
-
-    /*
-    Changes the side which is facing upwards
-     */
-    public void setShownSide(Side newSide) {
-        this.shownSide = newSide;
     }
 
     /*

@@ -21,7 +21,7 @@ public class CornersCondition implements PointsCondition {
         for(int i = -1; i <= 1; i += 2){
             for(int j = -1; j <= 1; j += 2){
                 if (target.getPlacedCards()
-                        .containsKey(new GenericPair<Integer, Integer>(
+                        .containsKey(new GenericPair<>(
                                 coordinates.getX() + i,
                                 coordinates.getY() + j
                                 )

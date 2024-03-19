@@ -13,7 +13,6 @@ public class Game{
     /*
     The list of player participating in this game
      */
-    //FIXME: should we make it a set?
     private final ArrayList<InGamePlayer> LIST_OF_GAME_PLAYERS;
     /*
     The deck of Resource cards of this game
@@ -141,7 +140,6 @@ public class Game{
     Given a pattern matching string {gold, resource} and a valid position {0, 1}, returns the selected card and
     replaces it on the board
      */
-    //FIXME: The card isn't copied, but passed directly, but it shouldn't be a problem after it is made final
     public PlayableCard drawFromVisibleCards(String whichType, int position) {
         PlayableCard returnedCard = null;
 

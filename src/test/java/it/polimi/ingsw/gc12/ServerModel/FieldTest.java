@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.ServerModel;
 
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
+import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -24,9 +25,9 @@ class FieldTest {
         Resource[][] corners = new Resource[2][4];
         ArrayList<Resource> centerBackResources = new ArrayList<Resource>();
 
-        PlayableCard card = new PlayableCard(10, 0, null, null, corners, centerBackResources);
+        PlayableCard card = new ResourceCard(10, 0, null, null, corners, centerBackResources);
 
-        boolean value = Field.addCard(coo, card);
+        boolean value = Field.addCard(coo, card, Side.FRONT);
 
     }
 

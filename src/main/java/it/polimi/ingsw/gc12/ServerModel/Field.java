@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ public class Field {
     /*
     The map from coordinates to the card played in that position
      */
-    private final HashMap<GenericPair<Integer, Integer>, PlayableCard> PLACED_CARDS;
+    private final HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> PLACED_CARDS;
 
     /*
     Available position where the next cards can be played
@@ -24,25 +25,26 @@ public class Field {
     Constructs an empty Field
      */
     protected Field() {
-        this.PLACED_CARDS = new HashMap<GenericPair<Integer, Integer>, PlayableCard>();
-        this.OPEN_CORNERS = new ArrayList<GenericPair<Integer, Integer>>();
+        this.PLACED_CARDS = new HashMap<>();
+        this.OPEN_CORNERS = new ArrayList<>();
     }
 
     /*
     Adds a card to the played cards on the field
      */
-    protected boolean addCard(GenericPair<Integer, Integer> coordinates, PlayableCard card) {
+    protected boolean addCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide) {
         if (!OPEN_CORNERS.contains(coordinates)) {
             return false;
         }
 
-        //FIXME: if instanceof GoldCard check resourcesNeededToPlay
-        PLACED_CARDS.put(coordinates, card);
+        //FIXME: decrease resources covered in open_corners
+
+        PLACED_CARDS.put(coordinates, new GenericPair<>(card, playedSide));
         OPEN_CORNERS.remove(coordinates);
 
         for(int i = -1; i <= 1; i += 2){
             for(int j = -1; j <= 1; j += 2){
-                GenericPair<Integer, Integer> newOpenCorner = new GenericPair<Integer, Integer>(
+                GenericPair<Integer, Integer> newOpenCorner = new GenericPair<>(
                         coordinates.getX() + i,
                         coordinates.getY() + j
                 );
@@ -58,15 +60,15 @@ public class Field {
     /*
     Returns a copy of the map of placed cards, addressed by their position as key
      */
-    public HashMap<GenericPair<Integer, Integer>, PlayableCard> getPlacedCards() {
-        return new HashMap<GenericPair<Integer, Integer>, PlayableCard>(PLACED_CARDS);
+    public HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
+        return new HashMap<>(PLACED_CARDS);
     }
 
     /*
     Returns a copy of the list of corners where cards can be placed
      */
     public ArrayList<GenericPair<Integer, Integer>> getOpenCorners() {
-        return new ArrayList<GenericPair<Integer, Integer>>(OPEN_CORNERS);
+        return new ArrayList<>(OPEN_CORNERS);
     }
 
     /*
@@ -75,7 +77,7 @@ public class Field {
     public GenericPair<Integer, Integer> getCardCoordinates(PlayableCard placedCard) {
         //TODO: check for exceptions and Optional<> value when card hasn't been played!
         return PLACED_CARDS.entrySet().stream()
-                .filter((entry) -> entry.getValue().equals(placedCard))
+                .filter((entry) -> entry.getValue().getX().equals(placedCard))
                 .findFirst().get().getKey();
     }
 

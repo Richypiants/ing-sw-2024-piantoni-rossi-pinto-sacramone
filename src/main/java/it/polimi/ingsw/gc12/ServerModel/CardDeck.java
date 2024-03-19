@@ -18,11 +18,10 @@ public class CardDeck {
     Constructs a deck of cards by copying the passed cards, shuffling and then pushing them into the card stack
      */
     protected CardDeck(ArrayList<Card> deck) {
-        //FIXME: Remove side attribute from Card and make Card final
-        ArrayList<Card> copy = new ArrayList<Card>(deck);
+        ArrayList<Card> copy = new ArrayList<>(deck);
 
         Collections.shuffle(copy);
-        this.DECK = new Stack<Card>();
+        this.DECK = new Stack<>();
         while (copy.isEmpty()) {
             this.push(copy.removeFirst());
         }

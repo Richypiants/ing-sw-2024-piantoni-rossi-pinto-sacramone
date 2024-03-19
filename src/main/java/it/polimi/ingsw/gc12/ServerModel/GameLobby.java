@@ -21,7 +21,7 @@ public class GameLobby {
      */
     public GameLobby(int maxPlayers, Player creatorPlayer) {
         this.maxPlayers = maxPlayers;
-        this.LIST_OF_PLAYERS = new ArrayList<Player>();
+        this.LIST_OF_PLAYERS = new ArrayList<>();
         addPlayer(creatorPlayer);
     }
 
@@ -30,7 +30,7 @@ public class GameLobby {
      */
     public GameLobby(GameLobby copyFrom) {
         this.maxPlayers = copyFrom.getMaxPlayers();
-        this.LIST_OF_PLAYERS = new ArrayList<Player>(copyFrom.getListOfPlayers());
+        this.LIST_OF_PLAYERS = new ArrayList<>(copyFrom.getListOfPlayers());
     }
 
     /*
@@ -53,7 +53,7 @@ public class GameLobby {
     Returns a copy of the list of players in the lobby
      */
     public ArrayList<Player> getListOfPlayers() {
-        return new ArrayList<Player>(LIST_OF_PLAYERS);
+        return new ArrayList<>(LIST_OF_PLAYERS);
     }
 
     /*
@@ -73,9 +73,10 @@ public class GameLobby {
     /*
     Sets the maximum number of players in the lobby to a new value
      */
-    //FIXME: add a maximum value (4)?
     public void setMaxPlayers(int numOfMaxPlayers) {
-        this.maxPlayers = numOfMaxPlayers;
+        if (numOfMaxPlayers <= 4) {
+            this.maxPlayers = numOfMaxPlayers;
+        }
     }
 }
 

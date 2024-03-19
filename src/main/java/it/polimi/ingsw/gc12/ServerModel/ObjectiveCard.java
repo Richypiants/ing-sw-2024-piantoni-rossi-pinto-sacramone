@@ -5,7 +5,7 @@ import it.polimi.ingsw.gc12.Utilities.Image;
 /*
 A template for a generic Objective Card in this game's cards set
  */
-public class ObjectiveCard extends Card {
+public final class ObjectiveCard extends Card {
 
     /*
     The condition to be evaluated when calculating objective points

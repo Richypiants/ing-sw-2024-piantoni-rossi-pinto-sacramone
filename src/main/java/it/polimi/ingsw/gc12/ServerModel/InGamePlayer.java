@@ -3,8 +3,10 @@ package it.polimi.ingsw.gc12.ServerModel;
 import it.polimi.ingsw.gc12.Utilities.Color;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
+import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 
 /*
@@ -23,14 +25,13 @@ public class InGamePlayer extends Player {
     /*
     The resources owned by this player currently
      */
-    //TODO: maybe we could use EnumMap?
-    private final HashMap<Resource, Integer> OWNED_RESOURCES;
+    private final EnumMap<Resource, Integer> OWNED_RESOURCES;
     /*
     The field of this player
      */
     private final Field OWN_FIELD;
     /*
-    The points currently gained bby this player
+    The points currently gained by this player
      */
     private int points;
     /*
@@ -45,7 +46,7 @@ public class InGamePlayer extends Player {
     protected InGamePlayer(Player player) {
         super(player);
         CARDS_IN_HAND = new ArrayList<>();
-        OWNED_RESOURCES = new HashMap<>();
+        OWNED_RESOURCES = new EnumMap<>(Resource.class);
         secretObjective = null;
         OWN_FIELD = new Field();
     }
@@ -68,16 +69,29 @@ public class InGamePlayer extends Player {
     Returns a copy of the list of cards in this player's hand
      */
     protected ArrayList<PlayableCard> getCardsInHand(){
-        return new ArrayList<PlayableCard>(CARDS_IN_HAND);
+        return new ArrayList<>(CARDS_IN_HAND);
     }
 
     /* Given the card and the desired position, wrapped in a GenericPair structure meaning <x,y> coordinates on
-     the field, places the card into the ownField HashMap
+     the field, places the card into the ownField HashMap, also incrementing the ownedResources by the correct number
      */
-    protected void placeCard(PlayableCard card, GenericPair<Integer, Integer> pair) {
-        OWN_FIELD.addCard(pair, card);
-    }
+    protected boolean placeCard(PlayableCard card, Side playedSide, GenericPair<Integer, Integer> pair) {
+        if (card instanceof GoldCard)
+            if (((GoldCard) card).getNeededResourcesToPlay().numberOfTimesSatisfied(card, this) <= 0)
+                return false;
 
+        if (OWN_FIELD.addCard(pair, card, playedSide)) {
+            if (playedSide == Side.FRONT) {
+                for (Resource r : card.getCorners(playedSide)) {
+                    incrementOwnedResource(r, 1);
+                }
+            } else {
+                card.getCenterBackResources()
+                        .forEach(this::incrementOwnedResource);
+            }
+        }
+        return true;
+    }
     /*
     Adds the pickedCard to the current player's hand
      */
@@ -96,8 +110,8 @@ public class InGamePlayer extends Player {
     /*
     Returns a copy of the map of resources owned by this player
      */
-    protected HashMap<Resource, Integer> getOwnedResources() {
-        return new HashMap<Resource, Integer>(OWNED_RESOURCES);
+    protected EnumMap<Resource, Integer> getOwnedResources() {
+        return new EnumMap<>(OWNED_RESOURCES);
     }
 
     /*
@@ -112,7 +126,7 @@ public class InGamePlayer extends Player {
     Returns the cards placed by this player
      */
     //FIXME: having method calls like these is strange, maybe ask the teacher?
-    protected HashMap<GenericPair<Integer, Integer>, PlayableCard> getPlacedCards() {
+    protected HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
         return OWN_FIELD.getPlacedCards();
     }
 
@@ -134,7 +148,7 @@ public class InGamePlayer extends Player {
     Sets this player's secret Objective card
      */
     protected void setSecretObjective(ObjectiveCard objectiveCard){
-        //FIXME: if Cards classes are final, this is fine.
+        //FIXME: if Cards classes' attributes are final, this is fine.
         this.secretObjective = objectiveCard;
     }
 

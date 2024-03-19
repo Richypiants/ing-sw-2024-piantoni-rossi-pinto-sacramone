@@ -2,35 +2,44 @@ package it.polimi.ingsw.gc12.ServerModel;
 
 import it.polimi.ingsw.gc12.Utilities.Resource;
 
-import java.util.ArrayList;
+import java.util.EnumMap;
 
-//TODO: add documentation comments
-
+/*
+A condition that counts how many sets of resources of the specified type the player has
+ */
 public class ResourcesCondition implements PointsCondition {
 
     /*
     The resources to be evaluated
      */
-    //FIXME: maybe using a map would make things simpler in other classes?
-    private final ArrayList<Resource> CONDITION;
+    private final EnumMap<Resource, Integer> CONDITION;
 
-    public ResourcesCondition(ArrayList<Resource> condition) {
-        this.CONDITION = new ArrayList<Resource>(condition);
+    /*
+    Generates the condition from the list of resources passed as parameter
+     */
+    public ResourcesCondition(EnumMap<Resource, Integer> condition) {
+        this.CONDITION = new EnumMap<>(condition);
     }
 
-    protected ArrayList<Resource> getConditionParameters() {
-        return new ArrayList<Resource>(CONDITION);
+    /*
+    Returns the list of resources of this condition
+     */
+    protected EnumMap<Resource, Integer> getConditionParameters() {
+        return new EnumMap<>(CONDITION);
     }
 
+    /*
+    Counts how many disjoint sets of resources can be set apart among the target player's resources
+     */
     public int numberOfTimesSatisfied(Card thisCard, InGamePlayer target) {
         //TODO: add try catch here?
-        return CONDITION.stream()
-                .distinct()
-                .mapToInt((resourceType) -> target.getOwnedResources().get(resourceType)
+        return CONDITION.keySet().stream()
+                .mapToInt((resourceType) -> (int) (
+                                target.getOwnedResources()
+                                        .get(resourceType)
                         /
-                        (int) CONDITION.stream()
-                                .filter((conditionResource) -> conditionResource.equals(resourceType))
-                                .count()
+                                        CONDITION.get(resourceType)
+                        )
                 ).min()
                 .getAsInt();
     }
@@ -39,4 +48,4 @@ public class ResourcesCondition implements PointsCondition {
 // numberOfTimesSatisfied() -> Si test
 //                             - Casi limite
 //                               thisCard undefined
-//                               target undedined
+//                               target undefined
