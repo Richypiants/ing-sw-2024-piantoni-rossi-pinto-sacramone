@@ -6,8 +6,10 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /*
 A structure for a player which is currently playing a game
@@ -47,6 +49,12 @@ public class InGamePlayer extends Player {
         super(player);
         CARDS_IN_HAND = new ArrayList<>();
         OWNED_RESOURCES = new EnumMap<>(Resource.class);
+        for (Resource r : Arrays.stream(Resource.values())
+                .filter((resource) -> !(resource == Resource.EMPTY || resource == Resource.NOT_A_CORNER))
+                .collect(Collectors.toCollection(ArrayList::new))
+        ) {
+            OWNED_RESOURCES.put(r, 0);
+        }
         secretObjective = null;
         OWN_FIELD = new Field();
     }

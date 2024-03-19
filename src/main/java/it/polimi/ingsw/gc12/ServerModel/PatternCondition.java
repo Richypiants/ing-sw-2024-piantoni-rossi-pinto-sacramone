@@ -55,17 +55,17 @@ public class PatternCondition implements PointsCondition {
                                 .equals(new GenericPair<>(0, 0))
                         )
                         .filter((entry) -> getConditionParameters().stream()
-                                .map((offset) ->
+                                .map((triplet) ->
                                         Optional.ofNullable(target.getPlacedCards().get(
                                                 new GenericPair<>(
-                                                        entry.getKey().getX() + offset.getX(),
-                                                        entry.getKey().getY() + offset.getY()
+                                                        entry.getKey().getX() + triplet.getX(),
+                                                        entry.getKey().getY() + triplet.getY()
                                                 )
                                                 )
                                         ).flatMap((cardPair) ->
                                                 Optional.of(cardPair.getX()
                                                         .getCenterBackResources()
-                                                        .containsKey(offset.getZ())
+                                                        .containsKey(triplet.getZ())
                                                 )
                                         ).orElse(false)
                                 )
