@@ -50,7 +50,7 @@ public class Game{
 
         this.LIST_OF_GAME_PLAYERS = lobby.getListOfPlayers()
                 .stream()
-                .map((player) -> (InGamePlayer) player)
+                .map(InGamePlayer::new)
                 .collect(Collectors.toCollection(ArrayList::new));
 
         Collections.shuffle(this.LIST_OF_GAME_PLAYERS);

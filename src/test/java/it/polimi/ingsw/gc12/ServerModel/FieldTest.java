@@ -40,9 +40,9 @@ class FieldTest {
 
         InGamePlayer p1_g = new InGamePlayer(p1);
 
-        p1_g.getOwnField().addCard(new GenericPair<>(0, 0), c1, Side.FRONT);
-        p1_g.getOwnField().addCard(new GenericPair<>(0, -2), c2, Side.FRONT);
-        p1_g.getOwnField().addCard(new GenericPair<>(1, 1), c3, Side.FRONT);
+        p1_g.placeCard(c1, Side.FRONT, new GenericPair<>(0, 0));
+        p1_g.placeCard(c2, Side.FRONT, new GenericPair<>(0, -2));
+        p1_g.placeCard(c3, Side.FRONT, new GenericPair<>(1, 1));
 
         GenericPair<Integer, Integer> coo = new GenericPair<>(0, 0);
 
@@ -61,7 +61,8 @@ class FieldTest {
     @Test
     void getCardCoordinates() {
 
-        Resource[][] corner = {{Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF}};
+        Resource[][] corner = {{Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF},
+                {Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF}};
 
         Triplet<Integer, Integer, Resource> T1 = new Triplet<Integer, Integer, Resource>(0, 0, Resource.WOLF);
         Triplet<Integer, Integer, Resource> T2 = new Triplet<Integer, Integer, Resource>(0, -2, Resource.WOLF);
@@ -89,11 +90,14 @@ class FieldTest {
         p1_g.placeCard(c2, Side.FRONT, new GenericPair<>(0, -2));
         p1_g.placeCard(c3, Side.FRONT, new GenericPair<>(1, 1));
 
+        System.out.println(p1_g.getPlacedCards().keySet());
+
         GenericPair<Integer, Integer> result = p1_g.getOwnField().getCardCoordinates(c1);
 
         GenericPair<Integer, Integer> expected = new GenericPair<>(0, 0);
 
         assertEquals(expected, result);
 
+        //TODO: RIVEDERE
     }
 }
