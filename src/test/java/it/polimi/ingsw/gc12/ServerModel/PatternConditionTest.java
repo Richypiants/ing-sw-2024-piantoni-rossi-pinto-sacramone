@@ -1,11 +1,39 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.Resource;
+import it.polimi.ingsw.gc12.Utilities.Side;
+import it.polimi.ingsw.gc12.Utilities.Triplet;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 //TODO: think about all possible fails and tests
 
 class PatternConditionTest {
-
+    void PatternTest() {
+        Resource[][] corner = {{Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF}};
+        Triplet<Integer, Integer, Resource> T1 = new Triplet<Integer, Integer, Resource>(0, 0, Resource.WOLF);
+        Triplet<Integer, Integer, Resource> T2 = new Triplet<Integer, Integer, Resource>(0, -2, Resource.WOLF);
+        Triplet<Integer, Integer, Resource> T3 = new Triplet<Integer, Integer, Resource>(1, 1, Resource.WOLF);
+        ArrayList<Triplet<Integer, Integer, Resource>> Array = new ArrayList<Triplet<Integer, Integer, Resource>>();
+        Array.add(T1);
+        Array.add(T2);
+        Array.add(T3);
+        PatternCondition p = new PatternCondition(Array);
+        ObjectiveCard c_o = new ObjectiveCard(3, 1, null, null, p);
+        ResourceCard c1 = new ResourceCard(1, 2, null, null, corner, null);
+        ResourceCard c2 = new ResourceCard(2, 1, null, null, corner, null);
+        ResourceCard c3 = new ResourceCard(3, 0, null, null, corner, null);
+        Player p1 = new Player("giovanni");
+        InGamePlayer p1_g = new InGamePlayer(p1);
+        p1_g.getOwnField().addCard(new GenericPair<>(0, 0), c1, Side.FRONT);
+        p1_g.getOwnField().addCard(new GenericPair<>(0, -2), c2, Side.FRONT);
+        p1_g.getOwnField().addCard(new GenericPair<>(1, 1), c3, Side.FRONT);
+        assertEquals(p.numberOfTimesSatisfied(c_o, p1_g), 1);
+    }
     @Test
     void patternWithNoTiles() {
         /*PatternCondition p = new PatternCondition(
