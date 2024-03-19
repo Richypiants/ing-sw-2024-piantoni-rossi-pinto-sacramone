@@ -37,8 +37,13 @@ public class GenericPair<T1, T2> {
         return y;
     }
 
-    public boolean equals(GenericPair<T1, T2> x, GenericPair<T1, T2> y) {
-        return (x.getX().equals(y.getX())) && (x.getY().equals(y.getY()));
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof GenericPair<?, ?>)) return false;
+        GenericPair<T1, T2> otherGenericPair = (GenericPair<T1, T2>) other;
+        return (this.getX().equals(otherGenericPair.getX())) && (this.getY().equals(otherGenericPair.getY()));
     }
 }
 
