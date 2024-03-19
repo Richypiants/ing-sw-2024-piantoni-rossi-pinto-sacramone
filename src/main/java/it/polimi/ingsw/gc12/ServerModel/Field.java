@@ -27,6 +27,7 @@ public class Field {
     protected Field() {
         this.PLACED_CARDS = new HashMap<>();
         this.OPEN_CORNERS = new ArrayList<>();
+        OPEN_CORNERS.add(new GenericPair<>(0, 0));
     }
 
     /*

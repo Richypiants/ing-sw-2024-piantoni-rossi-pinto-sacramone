@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.disjoint;
@@ -19,6 +20,9 @@ public class PatternCondition implements PointsCondition {
      */
     private final ArrayList<Triplet<Integer, Integer, Resource>> CONDITION;
 
+    /*
+    Generates an instance of a pattern condition from the given condition in parameters
+     */
     public PatternCondition(ArrayList<Triplet<Integer, Integer, Resource>> condition) {
         //TODO: should we keep safe copy of the condition arraylist?
         this.CONDITION = new ArrayList<>(condition);
@@ -51,19 +55,19 @@ public class PatternCondition implements PointsCondition {
                                 .equals(new GenericPair<>(0, 0))
                         )
                         .filter((entry) -> getConditionParameters().stream()
-                                .map((offset) -> target.getPlacedCards().containsKey(
+                                .map((offset) ->
+                                        Optional.ofNullable(target.getPlacedCards().get(
                                                 new GenericPair<>(
                                                         entry.getKey().getX() + offset.getX(),
                                                         entry.getKey().getY() + offset.getY()
                                                 )
-                                        )
-                                                && target.getPlacedCards().get(
-                                                        new GenericPair<>(
-                                                                entry.getKey().getX() + offset.getX(),
-                                                                entry.getKey().getY() + offset.getY()
-                                                        )
-                                                ).getX().getCenterBackResources()
-                                                .containsKey(offset.getZ())
+                                                )
+                                        ).flatMap((cardPair) ->
+                                                Optional.of(cardPair.getX()
+                                                        .getCenterBackResources()
+                                                        .containsKey(offset.getZ())
+                                                )
+                                        ).orElse(false)
                                 )
                                 .reduce(true,
                                         (accumulator, isColorCorrect) -> accumulator && isColorCorrect
@@ -203,4 +207,3 @@ public class PatternCondition implements PointsCondition {
 //   One tile on field
 //   More than one tiles on field
 //   No pattern
-
