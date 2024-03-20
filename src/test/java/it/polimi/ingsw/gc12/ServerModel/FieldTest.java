@@ -16,7 +16,8 @@ class FieldTest {
     @Test
     void carduUndefined() {  // addCard()
 
-        Resource[][] corner = {{Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF}};
+        Resource[][] corner = {{Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF},
+                {Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF}};
 
         Triplet<Integer, Integer, Resource> T1 = new Triplet<Integer, Integer, Resource>(0, 0, Resource.WOLF);
         Triplet<Integer, Integer, Resource> T2 = new Triplet<Integer, Integer, Resource>(0, -2, Resource.WOLF);
@@ -51,7 +52,7 @@ class FieldTest {
 
         PlayableCard card = new ResourceCard(10, 0, null, null, corners, centerBackResources);
 
-        assertEquals(p1_g.getOwnField().addCard(coo, null, Side.BACK), false);
+        assertEquals(false, p1_g.getOwnField().addCard(coo, null, Side.BACK));
 
         // ERRORE:
         // Il test da come risultato "false" ma dovrebbe restituire una nullPointerException dato che

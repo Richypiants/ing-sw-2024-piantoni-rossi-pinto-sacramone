@@ -1,0 +1,7 @@
+[
+{
+  "ID": "87",
+  "POINTS_GRANTED": "2",
+  "CONDITION": {"PATTERN": [{"MUSHROOM": [0 , 0]}, {"MUSHROOM": [1 , 1]}, {"MUSHROOM": [2 , 2]}]}
+}
+]

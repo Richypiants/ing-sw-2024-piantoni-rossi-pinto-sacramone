@@ -15,6 +15,16 @@ public final class InitialCard extends PlayableCard {
      */
     public InitialCard(int id, int pointsGranted, Image frontSprite, Image backSprite, Resource[][] corners,
                        EnumMap<Resource, Integer> centerBackResources) {
-        super(id, pointsGranted, frontSprite, backSprite, corners, centerBackResources);
+        super(id, pointsGranted, frontSprite, backSprite, centerBackResources, corners);
+    }
+
+    @Override
+    public String toString() {
+        return "InitialCard{" +
+                "ID=" + ID +
+                ", POINTS_GRANTED=" + POINTS_GRANTED +
+                ", FRONT_SPRITE=" + FRONT_SPRITE +
+                ", BACK_SPRITE=" + BACK_SPRITE +
+                '}';
     }
 }

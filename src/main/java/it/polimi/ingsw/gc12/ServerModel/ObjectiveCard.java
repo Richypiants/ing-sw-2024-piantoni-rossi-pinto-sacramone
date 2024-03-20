@@ -10,7 +10,8 @@ public final class ObjectiveCard extends Card {
     /*
     The condition to be evaluated when calculating objective points
      */
-    private final PointsCondition POINTS_CONDITION;
+    //PRIVATE?
+    public final PointsCondition POINTS_CONDITION;
 
     /*
     Generates an Objective card from the given parameters
@@ -19,6 +20,7 @@ public final class ObjectiveCard extends Card {
         super(id, points, frontSprite, backSprite);
         this.POINTS_CONDITION = condition; //FIXME: copy this?
     }
+
 
     /*
     Generates an Objective card from the one passed as parameter
@@ -36,6 +38,13 @@ public final class ObjectiveCard extends Card {
     @Override
     public int awardPoints(InGamePlayer target){
         return (this.POINTS_GRANTED * POINTS_CONDITION.numberOfTimesSatisfied(this, target));
+    }
+
+    @Override
+    public String toString() {
+        return "ObjectiveCard{" +
+                "POINTS_CONDITION=" + POINTS_CONDITION +
+                "} " + super.toString();
     }
 }
 

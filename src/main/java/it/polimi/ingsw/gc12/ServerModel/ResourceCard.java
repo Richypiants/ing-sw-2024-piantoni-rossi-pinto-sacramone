@@ -15,6 +15,11 @@ public final class ResourceCard extends PlayableCard {
      */
     public ResourceCard(int id, int pointsGranted, Image frontSprite, Image backSprite, Resource[][] corners,
                         EnumMap<Resource, Integer> centerBackResources) {
-        super(id, pointsGranted, frontSprite, backSprite, corners, centerBackResources);
+        super(id, pointsGranted, frontSprite, backSprite, centerBackResources, corners);
+    }
+
+    @Override
+    public String toString() {
+        return "ResourceCard{} " + super.toString();
     }
 }

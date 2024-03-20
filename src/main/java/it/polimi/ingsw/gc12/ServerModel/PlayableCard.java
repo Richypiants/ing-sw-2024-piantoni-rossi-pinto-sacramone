@@ -26,8 +26,7 @@ public abstract class PlayableCard extends Card {
     /*
     Creates a playable card from the passed parameters
      */
-    public PlayableCard(int id, int pointsGranted, Image frontSprite, Image backSprite, Resource[][] corners,
-                        EnumMap<Resource, Integer> centerBackResources) {
+    public PlayableCard(int id, int pointsGranted, Image frontSprite, Image backSprite, EnumMap<Resource, Integer> centerBackResources,Resource[][] corners) {
         super(id, pointsGranted, frontSprite, backSprite);
         this.CORNERS = new Resource[2][];
         this.CORNERS[0] = Arrays.copyOf(corners[0], corners[0].length);
@@ -60,6 +59,14 @@ public abstract class PlayableCard extends Card {
      */
     public EnumMap<Resource, Integer> getCenterBackResources() {
         return new EnumMap<>(CENTER_BACK_RESOURCES);
+    }
+
+    @Override
+    public String toString() {
+        return "PlayableCard{" +
+                "CORNERS=" + Arrays.toString(CORNERS) +
+                ", CENTER_BACK_RESOURCES=" + CENTER_BACK_RESOURCES +
+                "} " + super.toString();
     }
 }
 
