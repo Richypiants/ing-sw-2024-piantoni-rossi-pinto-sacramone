@@ -1,0 +1,724 @@
+[
+  {
+    "ID": 1,
+    "POINTS_GRANTED": 0,
+    "CENTER_BACK_RESOURCES": {
+      "MUSHROOM": 1
+    },
+    "CORNERS": [[
+        "MUSHROOM",
+        "EMPTY",
+        "NOT_A_CORNER",
+        "MUSHROOM"
+      ],[
+        "EMPTY",
+        "EMPTY",
+        "EMPTY",
+        "EMPTY"
+      ]]
+  },
+
+  {
+    "ID": "2",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "MUSHROOM": 1
+    },
+    "CORNERS": [[
+      "MUSHROOM",
+      "MUSHROOM",
+      "EMPTY",
+      "NOT_A_CORNER"
+      ],[
+        "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+      ]]
+  },
+
+  {
+    "ID": "3",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "MUSHROOM": 1
+    },
+    "CORNERS": [[
+      "EMPTY",
+      "NOT_A_CORNER",
+      "MUSHROOM",
+      "MUSHROOM"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "4",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "MUSHROOM": 1
+    },
+    "CORNERS": [[
+      "NOT_A_CORNER",
+      "MUSHROOM",
+      "MUSHROOM",
+      "EMPTY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "5",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "MUSHROOM": 1
+    },
+    "CORNERS": [[
+      "NOT_A_CORNER",
+      "FEATHER",
+      "MUSHROOM",
+      "GRASS"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "6",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "MUSHROOM": 1
+    },
+    "CORNERS": [[
+      "INK",
+      "MUSHROOM",
+      "WOLF",
+      "NOT_A_CORNER"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "7",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "MUSHROOM": 1
+    },
+    "CORNERS": [[
+      "MUSHROOM",
+      "BUTTERFLY",
+      "EMPTY",
+      "SCROLL"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "8",
+    "POINTS_GRANTED": "1",
+    "CENTER_BACK_RESOURCES": {
+      "MUSHROOM": 1
+    },
+    "CORNERS": [[
+      "EMPTY",
+      "MUSHROOM",
+      "NOT_A_CORNER",
+      "EMPTY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "9",
+    "POINTS_GRANTED": "1",
+    "CENTER_BACK_RESOURCES": {
+      "MUSHROOM": 1
+    },
+    "CORNERS": [[
+      "MUSHROOM",
+      "NOT_A_CORNER",
+      "EMPTY",
+      "EMPTY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "10",
+    "POINTS_GRANTED": "1",
+    "CENTER_BACK_RESOURCES": {
+      "GRASS": 1
+    },
+    "CORNERS": [[
+      "NOT_A_CORNER",
+      "EMPTY",
+      "EMPTY",
+      "MUSHROOM"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "11",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "GRASS": 1
+    },
+    "CORNERS": [[
+      "GRASS",
+      "EMPTY",
+      "NOT_A_CORNER",
+      "GRASS"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "12",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "GRASS": 1
+    },
+    "CORNERS": [[
+      "GRASS",
+      "GRASS",
+      "EMPTY",
+      "NOT_A_CORNER"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "13",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "GRASS": 1
+    },
+    "CORNERS": [[
+      "EMPTY",
+      "NOT_A_CORNER",
+      "GRASS",
+      "GRASS"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "14",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "GRASS": 1
+    },
+    "CORNERS": [[
+      "NOT_A_CORNER",
+      "GRASS",
+      "GRASS",
+      "EMPTY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "15",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "GRASS": 1
+    },
+    "CORNERS": [[
+      "NOT_A_CORNER",
+      "BUTTERFLY",
+      "GRASS",
+      "FEATHER"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "16",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "GRASS": 1
+    },
+    "CORNERS": [[
+      "MUSHROOM",
+      "GRASS",
+      "INK",
+      "NOT_A_CORNER"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "17",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "GRASS": 1
+    },
+    "CORNERS": [[
+      "SCROLL",
+      "NOT_A_CORNER",
+      "WOLF",
+      "GRASS"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "18",
+    "POINTS_GRANTED": "1",
+    "CENTER_BACK_RESOURCES": {
+      "GRASS": 1
+    },
+    "CORNERS": [[
+      "EMPTY",
+      "EMPTY",
+      "NOT_A_CORNER",
+      "GRASS"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "19",
+    "POINTS_GRANTED": "1",
+    "CENTER_BACK_RESOURCES": {
+      "GRASS": 1
+    },
+    "CORNERS": [[
+      "EMPTY",
+      "EMPTY",
+      "GRASS",
+      "NOT_A_CORNER"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "20",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "GRASS": 1
+    },
+    "CORNERS": [[
+      "NOT_A_CORNER",
+      "GRASS",
+      "EMPTY",
+      "EMPTY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "21",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "WOLF": 1
+    },
+    "CORNERS": [[
+      "WOLF",
+      "WOLF",
+      "NOT_A_CORNER",
+      "EMPTY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "22",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "WOLF": 1
+    },
+    "CORNERS": [[
+      "NOT_A_CORNER",
+      "EMPTY",
+      "WOLF",
+      "WOLF"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "23",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "WOLF": 1
+    },
+    "CORNERS": [[
+      "WOLF",
+      "NOT_A_CORNER",
+      "EMPTY",
+      "WOLF"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "24",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "WOLF": 1
+    },
+    "CORNERS": [[
+      "EMPTY",
+      "WOLF",
+      "WOLF",
+      "NOT_A_CORNER"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "25",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "WOLF": 1
+    },
+    "CORNERS": [[
+      "NOT_A_CORNER",
+      "BUTTERFLY",
+      "WOLF",
+      "INK"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "26",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "WOLF": 1
+    },
+    "CORNERS": [[
+      "GRASS",
+      "WOLF",
+      "SCROLL",
+      "NOT_A_CORNER"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "27",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "WOLF": 1
+    },
+    "CORNERS": [[
+      "FEATHER",
+      "NOT_A_CORNER",
+      "MUSHROOM",
+      "WOLF"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+
+  {
+    "ID": "28",
+    "POINTS_GRANTED": "1",
+    "CENTER_BACK_RESOURCES": {
+      "WOLF": 1
+    },
+    "CORNERS": [[
+      "NOT_A_CORNER",
+      "EMPTY",
+      "EMPTY",
+      "WOLF"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "29",
+    "POINTS_GRANTED": "1",
+    "CENTER_BACK_RESOURCES": {
+      "WOLF": 1
+    },
+    "CORNERS": [[
+      "EMPTY",
+      "NOT_A_CORNER",
+      "WOLF",
+      "EMPTY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "30",
+    "POINTS_GRANTED": "1",
+    "CENTER_BACK_RESOURCES": {
+      "WOLF": 1
+    },
+    "CORNERS": [[
+      "EMPTY",
+      "WOLF",
+      "NOT_A_CORNER",
+      "EMPTY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "31",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "BUTTERFLY": 1
+    },
+    "CORNERS": [[
+      "BUTTERFLY",
+      "BUTTERFLY",
+      "NOT_A_CORNER",
+      "EMPTY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "32",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "BUTTERFLY": 1
+    },
+    "CORNERS": [[
+      "NOT_A_CORNER",
+      "EMPTY",
+      "BUTTERFLY",
+      "BUTTERFLY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "33",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "BUTTERFLY": 1
+    },
+    "CORNERS": [[
+      "BUTTERFLY",
+      "NOT_A_CORNER",
+      "EMPTY",
+      "BUTTERFLY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "34",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "BUTTERFLY": 1
+    },
+    "CORNERS": [[
+      "EMPTY",
+      "BUTTERFLY",
+      "BUTTERFLY",
+      "NOT_A_CORNER"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "35",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "BUTTERFLY": 1
+    },
+    "CORNERS": [[
+      "NOT_A_CORNER",
+      "FEATHER",
+      "BUTTERFLY",
+      "WOLF"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "36",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "BUTTERFLY": 1
+    },
+    "CORNERS": [[
+      "SCROLL",
+      "BUTTERFLY",
+      "MUSHROOM",
+      "EMPTY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "37",
+    "POINTS_GRANTED": "0",
+    "CENTER_BACK_RESOURCES": {
+      "BUTTERFLY": 1
+    },
+    "CORNERS": [[
+      "BUTTERFLY",
+      "GRASS",
+      "EMPTY",
+      "INK"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "38",
+    "POINTS_GRANTED": "1",
+    "CENTER_BACK_RESOURCES": {
+      "BUTTERFLY": 1
+    },
+    "CORNERS": [[
+      "BUTTERFLY",
+      "NOT_A_CORNER",
+      "EMPTY",
+      "EMPTY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "39",
+    "POINTS_GRANTED": "1",
+    "CENTER_BACK_RESOURCES": {
+      "BUTTERFLY": 1
+    },
+    "CORNERS": [[
+      "EMPTY",
+      "EMPTY",
+      "BUTTERFLY",
+      "NOT_A_CORNER"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  },
+
+  {
+    "ID": "40",
+    "POINTS_GRANTED": "1",
+    "CENTER_BACK_RESOURCES": {
+      "BUTTERFLY": 1
+    },
+    "CORNERS": [[
+      "NOT_A_CORNER",
+      "BUTTERFLY",
+      "EMPTY",
+      "EMPTY"],[
+      "EMPTY",
+      "EMPTY",
+      "EMPTY",
+      "EMPTY"
+    ]]
+  }
+]

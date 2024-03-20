@@ -26,7 +26,7 @@ public class GoldCard extends PlayableCard {
     public GoldCard(int id, int pointsGranted, Image frontSprite, Image backSprite, Resource[][] corners,
                     EnumMap<Resource, Integer> centerBackResources, PointsCondition pointsCondition,
                     ResourcesCondition resourcesNeededToPlay) {
-        super(id, pointsGranted, frontSprite, backSprite, corners, centerBackResources);
+        super(id, pointsGranted, frontSprite, backSprite, centerBackResources, corners);
         this.POINTS_CONDITION = pointsCondition; //FIXME: should we copy this?
         this.RESOURCES_NEEDED_TO_PLAY = resourcesNeededToPlay; //FIXME: and should we copy this too?
     }
@@ -46,6 +46,14 @@ public class GoldCard extends PlayableCard {
     @Override
     public int awardPoints(InGamePlayer target){
         return POINTS_GRANTED * POINTS_CONDITION.numberOfTimesSatisfied(this, target);
+    }
+
+    @Override
+    public String toString() {
+        return "GoldCard{" +
+                "POINTS_CONDITION=" + POINTS_CONDITION +
+                ", RESOURCES_NEEDED_TO_PLAY=" + RESOURCES_NEEDED_TO_PLAY +
+                "} " + super.toString();
     }
 }
 
