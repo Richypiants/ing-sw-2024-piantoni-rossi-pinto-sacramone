@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.Utilities;
 
+import java.util.Objects;
+
 /*
 A pair of generic elements
  */
@@ -8,12 +10,12 @@ public class GenericPair<T1, T2> {
     /*
     The first attribute of this pair
      */
-    private T1 x;
+    private final T1 x;
 
     /*
     The second attribute of this pair
      */
-    private T2 y;
+    private final T2 y;
 
     /*
     Generates a pair from the given parameters
@@ -41,9 +43,14 @@ public class GenericPair<T1, T2> {
     public boolean equals(Object other) {
         if (other == null) return false;
         if (other == this) return true;
-        if (!(other instanceof GenericPair<?, ?>)) return false;
-        GenericPair<T1, T2> otherGenericPair = (GenericPair<T1, T2>) other;
+        if (!(other instanceof GenericPair<?, ?> otherGenericPair)) return false;
         return (this.getX().equals(otherGenericPair.getX())) && (this.getY().equals(otherGenericPair.getY()));
+    }
+
+    //FIXME: is this hashCode function good? maybe we should use preexistent pair classes?
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getX(), this.getY());
     }
 }
 

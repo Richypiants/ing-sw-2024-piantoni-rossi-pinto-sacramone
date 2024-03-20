@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.ArrayList;
@@ -38,18 +39,35 @@ public class Field {
             return false;
         }
 
-        //FIXME: decrease resources covered in open_corners
-
         PLACED_CARDS.put(coordinates, new GenericPair<>(card, playedSide));
         OPEN_CORNERS.remove(coordinates);
 
-        for(int i = -1; i <= 1; i += 2){
-            for(int j = -1; j <= 1; j += 2){
+        //FIXME: maybe having corners = Resource[][][] might help? finding f(i) and g(i)?
+        // change mapping coordinates function...?
+        for (int i = 0; i < 4; i++) {
+            if (!card.getCornerResource(i, playedSide).equals(Resource.NOT_A_CORNER)) {
                 GenericPair<Integer, Integer> newOpenCorner = new GenericPair<>(
-                        coordinates.getX() + i,
-                        coordinates.getY() + j
+                        coordinates.getX() + (i / 2) * 2 - 1, //TODO: f(i)
+                        coordinates.getY() + (i % 2) * 2 - 1 //TODO: g(i)
                 );
-                if (!PLACED_CARDS.containsKey(newOpenCorner)){
+
+                if (!(PLACED_CARDS.containsKey(newOpenCorner) || OPEN_CORNERS.contains(newOpenCorner))) {
+                    for (int row = -1; row <= 1; row += 2) {
+                        for (int column = -1; column <= 1; column += 2) {
+                            GenericPair<PlayableCard, Side> coveredCard = PLACED_CARDS.get(
+                                    new GenericPair<>(
+                                            coordinates.getX() + column,
+                                            coordinates.getY() + row
+                                    )
+                            );
+
+                            if (coveredCard.getX()
+                                    .getCornerResource((-1 * row + 1) + (-1 * column + 1) / 2,
+                                            coveredCard.getY()
+                                    ).equals(Resource.NOT_A_CORNER)
+                            ) continue; //TODO: implement skip addCorner
+                        }
+                    }
                     OPEN_CORNERS.add(newOpenCorner);
                 }
             }

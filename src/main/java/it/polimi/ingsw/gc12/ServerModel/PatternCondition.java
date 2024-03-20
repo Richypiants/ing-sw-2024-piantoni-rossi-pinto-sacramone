@@ -51,9 +51,9 @@ public class PatternCondition implements PointsCondition {
         return largestMaximumCompatibilityClass(
                 target.getPlacedCards().entrySet().stream()
                         // We don't want to consider the initial card
-                        .filter((entry) -> !entry.getKey()
-                                .equals(new GenericPair<>(0, 0))
-                        )
+                        .filter((entry) -> !(entry.getValue().getX() instanceof InitialCard))
+                        // We only want to keep the cards that actually make a valid pattern, and we only keep
+                        // the starting one for each pattern
                         .filter((entry) -> getConditionParameters().stream()
                                 .map((triplet) ->
                                         Optional.ofNullable(target.getPlacedCards().get(

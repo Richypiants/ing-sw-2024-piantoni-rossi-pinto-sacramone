@@ -8,17 +8,17 @@ public class Triplet<T1, T2, T3> {
     /*
     The first attribute of this triplet
      */
-    private T1 x;
+    private final T1 x;
 
     /*
     The second attribute of this triplet
      */
-    private T2 y;
+    private final T2 y;
 
     /*
     The third attribute of this triplet
      */
-    private T3 z;
+    private final T3 z;
 
     /*
     Generates a triplet from the given parameters

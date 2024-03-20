@@ -50,7 +50,9 @@ public class InGamePlayer extends Player {
         CARDS_IN_HAND = new ArrayList<>();
         OWNED_RESOURCES = new EnumMap<>(Resource.class);
         for (Resource r : Arrays.stream(Resource.values())
-                .filter((resource) -> !(resource == Resource.EMPTY || resource == Resource.NOT_A_CORNER))
+                .filter((resource) ->
+                        !(resource.equals(Resource.EMPTY) || resource.equals(Resource.NOT_A_CORNER))
+                )
                 .collect(Collectors.toCollection(ArrayList::new))
         ) {
             OWNED_RESOURCES.put(r, 0);
@@ -89,16 +91,49 @@ public class InGamePlayer extends Player {
                 return false;
 
         if (OWN_FIELD.addCard(pair, card, playedSide)) {
-            if (playedSide == Side.FRONT) {
-                for (Resource r : card.getCorners(playedSide)) {
-                    incrementOwnedResource(r, 1);
-                }
-            } else {
+            for (Resource r : Arrays.stream(card.getCorners(playedSide))
+                    .filter((resource) ->
+                            !(resource.equals(Resource.EMPTY) || resource.equals(Resource.NOT_A_CORNER))
+                    )
+                    .collect(Collectors.toCollection(ArrayList::new))) {
+                incrementOwnedResource(r, 1);
+            }
+
+            if (playedSide.equals(Side.BACK)) {
                 card.getCenterBackResources()
                         .forEach(this::incrementOwnedResource);
             }
+
+            //FIXME: this needs to be improved and refactored!
+            for (int row = -1; row <= 1; row += 2) {
+                for (int column = -1; column <= 1; column += 2) {
+                    GenericPair<PlayableCard, Side> coveredCorner = OWN_FIELD.getPlacedCards().get(
+                            new GenericPair<>(
+                                    pair.getX() + column,
+                                    pair.getY() + row
+                            )
+                    );
+
+                    /*
+                    //FIXME: substitute function below with cornerIndex here?
+                    int cornerIndex =
+                            (row == -1 ?
+                                    (column == -1 ? 0 : 1)
+                                    :
+                                    (column == -1 ? 2 : 3)
+                            );
+                     */
+
+                    Resource coveredResource = coveredCorner.getX()
+                            .getCornerResource((row + 1) + (column + 1) / 2, coveredCorner.getY());
+                    if (!(coveredResource.equals(Resource.NOT_A_CORNER) || coveredResource.equals(Resource.EMPTY)))
+                        incrementOwnedResource(coveredResource, -1);
+                }
+            }
+
+            return true;
         }
-        return true;
+        return false;
     }
     /*
     Adds the pickedCard to the current player's hand
@@ -133,7 +168,6 @@ public class InGamePlayer extends Player {
     /*
     Returns the cards placed by this player
      */
-    //FIXME: having method calls like these is strange, maybe ask the teacher?
     protected HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
         return OWN_FIELD.getPlacedCards();
     }

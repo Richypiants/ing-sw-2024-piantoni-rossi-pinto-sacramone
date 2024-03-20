@@ -18,12 +18,12 @@ public class CornersCondition implements PointsCondition {
 
         // If the card thisCard has been played in position (x, y), the (at most) four covered cards in the
         // corners must be in position (x +- 1, y +- 1) (if they are present)
-        for(int i = -1; i <= 1; i += 2){
-            for(int j = -1; j <= 1; j += 2){
+        for (int row = -1; row <= 1; row += 2) {
+            for (int column = -1; column <= 1; column += 2) {
                 if (target.getPlacedCards()
                         .containsKey(new GenericPair<>(
-                                coordinates.getX() + i,
-                                coordinates.getY() + j
+                                coordinates.getX() + column,
+                                coordinates.getY() + row
                                 )
                         )
                 )
