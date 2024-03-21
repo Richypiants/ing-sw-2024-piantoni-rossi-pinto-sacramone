@@ -10,33 +10,33 @@ public class GenericPair<T1, T2> {
     /*
     The first attribute of this pair
      */
-    private final T1 x;
+    public T1 X;
 
     /*
     The second attribute of this pair
      */
-    private final T2 y;
+    public T2 Y;
 
     /*
     Generates a pair from the given parameters
      */
     public GenericPair(T1 x, T2 y) {
-        this.x = x;
-        this.y = y;
+        this.X = x;
+        this.Y = y;
     }
 
     /*
     Returns the first attribute of this pair
      */
     public T1 getX() {
-        return x;
+        return X;
     }
 
     /*
     Returns the second attribute of this pair
      */
     public T2 getY() {
-        return y;
+        return Y;
     }
 
     @Override

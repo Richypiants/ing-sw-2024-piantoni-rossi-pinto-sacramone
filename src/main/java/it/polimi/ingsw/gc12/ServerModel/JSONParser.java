@@ -29,10 +29,10 @@ public class JSONParser {
     public void cardsBuilder(){
         try{
             Gson gson = new Gson();
-            Reader resourceReader = Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/JSON_Files/resource_cards.json"));
+            Reader resourceReader = Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/JSON_Files/resource_cards_final.json"));
             ArrayList<ResourceCard> resourceCards = gson.fromJson(resourceReader, new TypeToken<ArrayList<ResourceCard>>(){});
 
-            Reader goldReader = Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/JSON_Files/test.json"));
+            Reader goldReader = Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/JSON_Files/gold_cards_final.json"));
 
             Gson builder = new GsonBuilder().registerTypeAdapter(PointsCondition.class, new PointsConditionAdapter()).create();
             ArrayList<GoldCard> goldCards = builder.fromJson(goldReader, new TypeToken<ArrayList<GoldCard>>(){});
@@ -41,6 +41,7 @@ public class JSONParser {
             ArrayList<ObjectiveCard> objectiveCards = builder.fromJson(objectiveReader, new TypeToken<ArrayList<ObjectiveCard>>(){});
             System.out.println(objectiveCards.getFirst().POINTS_CONDITION);
 
+            //.enableComplexMapKeySerialization() ?????
 
         }catch(Exception e){
             e.printStackTrace();
