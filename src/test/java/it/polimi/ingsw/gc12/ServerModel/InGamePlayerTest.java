@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -16,15 +17,23 @@ class InGamePlayerTest {
     @Test
     void placeCard() {
 
-        Resource[][] corner = {{Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF},
-                {Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF}};
+        HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
+        resource.put(new GenericPair<>(0, 0), Resource.WOLF);
+        resource.put(new GenericPair<>(1, 0), Resource.WOLF);
+        resource.put(new GenericPair<>(0, 1), Resource.WOLF);
+        resource.put(new GenericPair<>(1, 1), Resource.WOLF);
+        HashMap<Side, HashMap<GenericPair<Integer, Integer>, Resource>> corner = new HashMap<>();
+        corner.put(Side.FRONT, resource);
+        corner.put(Side.BACK, resource);
 
         ResourceCard c1 = new ResourceCard(1, 2, null, null, corner, new EnumMap<>(Resource.class));
 
         Player p1 = new Player("SACRI");
         InGamePlayer p1_g = new InGamePlayer(p1);
 
-        assertEquals(true, p1_g.placeCard(c1, Side.FRONT, new GenericPair<>(0, 0)));
+        assertEquals(true, p1_g.placeCard(new GenericPair<>(0, 0), c1, Side.FRONT));
+
+
 
         // TODO: WIP (Finire metodo addCard() in Field e testare di nuovo)
 
@@ -33,8 +42,14 @@ class InGamePlayerTest {
     @Test
     void addCardToHand() {  // OK
 
-        Resource[][] corner = {{Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF},
-                {Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF}};
+        HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
+        resource.put(new GenericPair<>(0, 0), Resource.WOLF);
+        resource.put(new GenericPair<>(1, 0), Resource.WOLF);
+        resource.put(new GenericPair<>(0, 1), Resource.WOLF);
+        resource.put(new GenericPair<>(1, 1), Resource.WOLF);
+        HashMap<Side, HashMap<GenericPair<Integer, Integer>, Resource>> corner = new HashMap<>();
+        corner.put(Side.FRONT, resource);
+        corner.put(Side.BACK, resource);
 
         Triplet<Integer, Integer, Resource> T1 = new Triplet<Integer, Integer, Resource>(0, 0, Resource.WOLF);
         Triplet<Integer, Integer, Resource> T2 = new Triplet<Integer, Integer, Resource>(0, -2, Resource.WOLF);
@@ -50,6 +65,8 @@ class InGamePlayerTest {
         boolean result = p1_g.getCardsInHand().contains(c1);
 
         assertEquals(true, result);
+
+
     }
 
     @Test
@@ -66,8 +83,6 @@ class InGamePlayerTest {
     @Test
     void setSecretObjective() {  // OK
 
-        Resource[][] corner = {{Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF},
-                {Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF}};
 
         Triplet<Integer, Integer, Resource> T1 = new Triplet<Integer, Integer, Resource>(0, 0, Resource.WOLF);
         Triplet<Integer, Integer, Resource> T2 = new Triplet<Integer, Integer, Resource>(0, -2, Resource.WOLF);
@@ -89,5 +104,7 @@ class InGamePlayerTest {
         p1_g.setSecretObjective(c_o);
 
         assertEquals(c_o, p1_g.getSecretObjective());
+
+
     }
 }
