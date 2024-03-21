@@ -1,9 +1,12 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Image;
 import it.polimi.ingsw.gc12.Utilities.Resource;
+import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 
 /*
 A template for a Gold card in the game's card set
@@ -23,7 +26,7 @@ public class GoldCard extends PlayableCard {
     /*
     Generates a gold card from the passed parameters
      */
-    public GoldCard(int id, int pointsGranted, Image frontSprite, Image backSprite, Resource[][] corners,
+    public GoldCard(int id, int pointsGranted, Image frontSprite, Image backSprite, HashMap<Side, HashMap<GenericPair<Integer, Integer>, Resource>> corners,
                     EnumMap<Resource, Integer> centerBackResources, PointsCondition pointsCondition,
                     ResourcesCondition resourcesNeededToPlay) {
         super(id, pointsGranted, frontSprite, backSprite, centerBackResources, corners);

@@ -1,9 +1,12 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Image;
 import it.polimi.ingsw.gc12.Utilities.Resource;
+import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 
 /*
 A template for an Initial card from the game's cards set
@@ -13,7 +16,7 @@ public final class InitialCard extends PlayableCard {
     /*
     Generates an Initial card from the given parameters
      */
-    public InitialCard(int id, int pointsGranted, Image frontSprite, Image backSprite, Resource[][] corners,
+    public InitialCard(int id, int pointsGranted, Image frontSprite, Image backSprite, HashMap<Side, HashMap<GenericPair<Integer, Integer>, Resource>> corners,
                        EnumMap<Resource, Integer> centerBackResources) {
         super(id, pointsGranted, frontSprite, backSprite, centerBackResources, corners);
     }
