@@ -9,31 +9,28 @@ class GameTest {
     @Test
     void nextPlayer() {
 
-        Player player = new Player("SACRI");
-        InGamePlayer playerGame = new InGamePlayer(player);
-        GameLobby lobby = new GameLobby(4, player);
+        Player player = new Player("test");
+        GameLobby lobby = new GameLobby(2, player);
+        Player player1 = new Player("test1");
+        lobby.addPlayer(player1);
         Game game = new Game(lobby);
 
         game.nextPlayer();
-        assertEquals(game.getCurrentPlayer(), 1);
+        assertEquals(player1, game.getCurrentPlayer());
 
     }
 
     @Test
     void getCurrentPlayer() {
 
-        Player player = new Player("SACRI");
-        InGamePlayer playerGame = new InGamePlayer(player);
-        GameLobby lobby = new GameLobby(4, player);
+        Player player = new Player("test");
+        GameLobby lobby = new GameLobby(2, player);
+        Player player1 = new Player("test1");
+        lobby.addPlayer(player1);
         Game game = new Game(lobby);
 
-        assertEquals(game.getCurrentPlayer(), 0);
 
-        game.nextPlayer();
-        assertEquals(game.getCurrentPlayer(), 1);
-
-        game.nextPlayer();
-        assertEquals(game.getCurrentPlayer(), 2);
+        assertEquals(player, game.getCurrentPlayer());
 
     }
 

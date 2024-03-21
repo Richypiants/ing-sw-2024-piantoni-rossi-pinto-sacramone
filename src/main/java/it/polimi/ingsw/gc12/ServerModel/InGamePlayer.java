@@ -114,6 +114,9 @@ public class InGamePlayer extends Player {
                         )
                 );
 
+                // FIXME: write as Optional
+                if (coveredCorner == null) continue;
+
                 Resource coveredResource = coveredCorner.getX()
                         .getCornerResource(coveredCorner.getY(), offset.getX(), offset.getY());
                 if (!(coveredResource.equals(Resource.NOT_A_CORNER) || coveredResource.equals(Resource.EMPTY)))
