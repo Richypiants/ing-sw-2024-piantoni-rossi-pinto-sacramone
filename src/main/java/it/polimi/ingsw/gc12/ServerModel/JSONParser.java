@@ -34,12 +34,12 @@ public class JSONParser {
 
             Reader goldReader = Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/JSON_Files/test.json"));
 
-            Gson builder = new GsonBuilder().registerTypeHierarchyAdapter(PointsCondition.class, new PointsConditionAdapter()).create();
+            Gson builder = new GsonBuilder().registerTypeAdapter(PointsCondition.class, new PointsConditionAdapter()).create();
             ArrayList<GoldCard> goldCards = builder.fromJson(goldReader, new TypeToken<ArrayList<GoldCard>>(){});
 
             Reader objectiveReader = Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/JSON_Files/objective_cards.json"));
             ArrayList<ObjectiveCard> objectiveCards = builder.fromJson(objectiveReader, new TypeToken<ArrayList<ObjectiveCard>>(){});
-            System.out.println(objectiveCards.get(0).POINTS_CONDITION);
+            System.out.println(objectiveCards.getFirst().POINTS_CONDITION);
 
 
         }catch(Exception e){

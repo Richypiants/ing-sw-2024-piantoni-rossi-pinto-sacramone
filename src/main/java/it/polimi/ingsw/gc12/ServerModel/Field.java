@@ -50,8 +50,8 @@ public class Field {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
                 .forEach((key, value) -> {
                             GenericPair<Integer, Integer> newOpenCorner = new GenericPair<>(
-                                    coordinates.getX() + key.getX(), //TODO: f(i)
-                                    coordinates.getY() + key.getY() //TODO: g(i)
+                                    coordinates.getX() + key.getX(),
+                                    coordinates.getY() + key.getY()
                             );
 
                             //FIXME: double break is bad!
