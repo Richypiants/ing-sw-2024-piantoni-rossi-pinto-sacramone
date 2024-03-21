@@ -67,11 +67,18 @@ public class Field {
                                                 )
                                         );
 
+                                        // FIXME: write as Optiona
+                                        if (coveredCard == null) continue;
+
                                         if (coveredCard.getX()
                                                 .getCornerResource(coveredCard.getY(), -1 * row, -1 * column)
                                                 .equals(Resource.NOT_A_CORNER)
                                         ) break; //TODO: implement skip addCorner
                                     }
+
+                                    // FIXME: write as Optiona
+                                    if (coveredCard == null) continue;
+
                                     if (coveredCard.getX()
                                             .getCornerResource(coveredCard.getY(), -1 * row, -1 * column)
                                             .equals(Resource.NOT_A_CORNER)

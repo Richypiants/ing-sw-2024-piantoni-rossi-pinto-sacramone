@@ -8,16 +8,18 @@ import org.junit.jupiter.api.Test;
 import java.util.EnumMap;
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FieldTest {
     @Test
-    void addInitialCardTest() {
+    void addInitialCardTest() {  // OK
+
         HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
         resource.put(new GenericPair<>(0, 0), Resource.WOLF);
         resource.put(new GenericPair<>(1, 0), Resource.WOLF);
         resource.put(new GenericPair<>(0, 1), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 1), Resource.WOLF);
+        resource.put(new GenericPair<>(1, 1), Resource.SCROLL);
         HashMap<Side, HashMap<GenericPair<Integer, Integer>, Resource>> corner = new HashMap<>();
         corner.put(Side.FRONT, resource);
         corner.put(Side.BACK, resource);
@@ -52,7 +54,7 @@ class FieldTest {
 
         PlayableCard card = new ResourceCard(10, 0, null, null, corner, centerBackResources);
 
-        assertFalse(p1_g.getOwnField().addCard(coo, null, Side.BACK));
+        assertEquals(null, p1_g.getOwnField().addCard(coo, null, Side.BACK));
 
         // ERRORE:
         // Il test da come risultato "false" ma dovrebbe restituire una nullPointerException dato che
