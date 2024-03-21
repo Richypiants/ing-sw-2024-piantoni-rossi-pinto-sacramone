@@ -85,18 +85,20 @@ public class InGamePlayer extends Player {
     /* Given the card and the desired position, wrapped in a GenericPair structure meaning <x,y> coordinates on
      the field, places the card into the ownField HashMap, also incrementing the ownedResources by the correct number
      */
-    protected boolean placeCard(PlayableCard card, Side playedSide, GenericPair<Integer, Integer> pair) {
+    protected boolean placeCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide) {
         if (card instanceof GoldCard)
             if (((GoldCard) card).getNeededResourcesToPlay().numberOfTimesSatisfied(card, this) <= 0)
                 return false;
 
-        if (OWN_FIELD.addCard(pair, card, playedSide)) {
-            for (Resource r : Arrays.stream(card.getCorners(playedSide))
+        if (OWN_FIELD.addCard(coordinates, card, playedSide)) {
+            for (Resource res : card.getCorners(playedSide)
+                    .values().stream()
                     .filter((resource) ->
                             !(resource.equals(Resource.EMPTY) || resource.equals(Resource.NOT_A_CORNER))
                     )
-                    .collect(Collectors.toCollection(ArrayList::new))) {
-                incrementOwnedResource(r, 1);
+                    .collect(Collectors.toCollection(ArrayList::new))
+            ) {
+                incrementOwnedResource(res, 1);
             }
 
             if (playedSide.equals(Side.BACK)) {
@@ -104,31 +106,18 @@ public class InGamePlayer extends Player {
                         .forEach(this::incrementOwnedResource);
             }
 
-            //FIXME: this needs to be improved and refactored!
-            for (int row = -1; row <= 1; row += 2) {
-                for (int column = -1; column <= 1; column += 2) {
-                    GenericPair<PlayableCard, Side> coveredCorner = OWN_FIELD.getPlacedCards().get(
-                            new GenericPair<>(
-                                    pair.getX() + column,
-                                    pair.getY() + row
-                            )
-                    );
+            for (GenericPair<Integer, Integer> offset : card.getCorners(playedSide).keySet()) {
+                GenericPair<PlayableCard, Side> coveredCorner = OWN_FIELD.getPlacedCards().get(
+                        new GenericPair<>(
+                                coordinates.getX() + offset.getX(),
+                                coordinates.getY() + offset.getY()
+                        )
+                );
 
-                    /*
-                    //FIXME: substitute function below with cornerIndex here?
-                    int cornerIndex =
-                            (row == -1 ?
-                                    (column == -1 ? 0 : 1)
-                                    :
-                                    (column == -1 ? 2 : 3)
-                            );
-                     */
-
-                    Resource coveredResource = coveredCorner.getX()
-                            .getCornerResource((row + 1) + (column + 1) / 2, coveredCorner.getY());
-                    if (!(coveredResource.equals(Resource.NOT_A_CORNER) || coveredResource.equals(Resource.EMPTY)))
-                        incrementOwnedResource(coveredResource, -1);
-                }
+                Resource coveredResource = coveredCorner.getX()
+                        .getCornerResource(coveredCorner.getY(), offset.getX(), offset.getY());
+                if (!(coveredResource.equals(Resource.NOT_A_CORNER) || coveredResource.equals(Resource.EMPTY)))
+                    incrementOwnedResource(coveredResource, -1);
             }
 
             return true;
