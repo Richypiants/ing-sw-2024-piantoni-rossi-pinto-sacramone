@@ -21,9 +21,9 @@ class CardTest {
 
         InGamePlayer playerGame = new InGamePlayer(player);
 
-        System.out.print("value: " + c1.awardPoints(playerGame));
+        // System.out.print("value: " + c1.awardPoints(playerGame));
 
-        assertEquals(c1.awardPoints(playerGame), 4);
+        assertEquals(4, c1.awardPoints(playerGame));
     }
 }
 

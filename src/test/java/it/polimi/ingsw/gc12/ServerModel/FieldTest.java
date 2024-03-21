@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class FieldTest {
 
     @Test
-    void carduUndefined() {  // addCard()
+    void cardUndefined() {  // addCard()
 
         Resource[][] corner = {{Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF},
                 {Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF}};
@@ -38,7 +38,6 @@ class FieldTest {
         ResourceCard c3 = new ResourceCard(3, 0, null, null, corner, new EnumMap<>(Resource.class));
 
         Player p1 = new Player("SACRI");
-
         InGamePlayer p1_g = new InGamePlayer(p1);
 
         p1_g.placeCard(c1, Side.FRONT, new GenericPair<>(0, 0));
@@ -84,7 +83,6 @@ class FieldTest {
         ResourceCard c3 = new ResourceCard(3, 0, null, null, corner, new EnumMap<>(Resource.class));
 
         Player p1 = new Player("SACRI");
-
         InGamePlayer p1_g = new InGamePlayer(p1);
 
         p1_g.placeCard(c1, Side.FRONT, new GenericPair<>(0, 0));
