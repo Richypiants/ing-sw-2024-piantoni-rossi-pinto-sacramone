@@ -14,8 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 //TODO: think about all possible fails and tests
 
 class PatternConditionTest {
+
     @Test
-    void PatternTest() {
+    void genericPatternTest() {
         Resource[][] corner = {{Resource.WOLF, Resource.WOLF, Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF, Resource.WOLF, Resource.WOLF}};
         Triplet<Integer, Integer, Resource> T1 = new Triplet<>(0, 0, Resource.WOLF);
         Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -2, Resource.WOLF);
@@ -26,21 +27,24 @@ class PatternConditionTest {
         Array.add(T1);
         Array.add(T2);
         Array.add(T3);
-        System.out.println(Array.get(0).getX());
         PatternCondition p = new PatternCondition(Array);
         ObjectiveCard c_o = new ObjectiveCard(3, 1, null, null, p);
-        System.out.println(p.getConditionParameters().size());
+        InitialCard c0 = new InitialCard(0, 2, null, null, corner, back);
         ResourceCard c1 = new ResourceCard(1, 2, null, null, corner, back);
         ResourceCard c2 = new ResourceCard(2, 1, null, null, corner, back);
         ResourceCard c3 = new ResourceCard(3, 0, null, null, corner, back);
         Player p1 = new Player("giovanni");
         InGamePlayer p1_g = new InGamePlayer(p1);
-        p1_g.placeCard(c1, Side.FRONT, new GenericPair<>(1, 1));
-        p1_g.placeCard(c2, Side.FRONT, new GenericPair<>(1, -1));
-        p1_g.placeCard(c3, Side.FRONT, new GenericPair<>(2, 2));
-        System.out.println(p1_g.getNickname());
-        assertEquals(p.numberOfTimesSatisfied(c_o, p1_g), 1);
+        p1_g.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
+        p1_g.placeCard(new GenericPair<>(1, -1), c1, Side.FRONT);
+        p1_g.placeCard(new GenericPair<>(1, 1), c2, Side.FRONT);
+        p1_g.placeCard(new GenericPair<>(2, 2), c3, Side.FRONT);
+
+
+        assertEquals(1, p.numberOfTimesSatisfied(c_o, p1_g));
     }
+
+
     @Test
     void patternWithNoTiles() {
         /*PatternCondition p = new PatternCondition(
