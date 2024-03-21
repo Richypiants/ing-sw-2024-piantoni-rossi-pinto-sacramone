@@ -3,12 +3,15 @@
     "ID": "41",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": [
-      "MUSHROOM"
+      {
+        "MUSHROOM": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "MUSHROOM",
-      "MUSHROOM",
-      "WOLF"
+      {
+        "MUSHROOM": 2,
+        "WOLF": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -80,12 +83,15 @@
     "ID": "42",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": [
-      "MUSHROOM"
+      {
+        "MUSHROOM": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "MUSHROOM",
-      "MUSHROOM",
-      "GRASS"
+      {
+        "MUSHROOM": 2,
+        "GRASS": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -155,12 +161,15 @@
     "ID": "43",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": [
-      "MUSHROOM"
+      {
+        "MUSHROOM": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "MUSHROOM",
-      "MUSHROOM",
-      "BUTTERFLY"
+      {
+        "MUSHROOM": 2,
+        "BUTTERFLY": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -233,13 +242,15 @@
     "ID": "44",
     "POINTS_GRANTED": "2",
     "CENTER_BACK_RESOURCES": [
-      "MUSHROOM"
+      {
+        "MUSHROOM": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "MUSHROOM",
-      "MUSHROOM",
-      "MUSHROOM",
-      "WOLF"
+      {
+        "MUSHROOM": 3,
+        "WOLF": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -309,13 +320,15 @@
     "ID": "45",
     "POINTS_GRANTED": "2",
     "CENTER_BACK_RESOURCES": [
-      "MUSHROOM"
+      {
+        "MUSHROOM": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "MUSHROOM",
-      "MUSHROOM",
-      "MUSHROOM",
-      "GRASS"
+      {
+        "MUSHROOM": 3,
+        "GRASS": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -385,13 +398,15 @@
     "ID": "46",
     "POINTS_GRANTED": "2",
     "CENTER_BACK_RESOURCES": [
-      "MUSHROOM"
+      {
+        "MUSHROOM": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "MUSHROOM",
-      "MUSHROOM",
-      "MUSHROOM",
-      "BUTTERFLY"
+      {
+        "MUSHROOM": 3,
+        "BUTTERFLY": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -461,12 +476,14 @@
     "ID": "47",
     "POINTS_GRANTED": "3",
     "CENTER_BACK_RESOURCES": [
-      "MUSHROOM"
+      {
+        "MUSHROOM": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "MUSHROOM",
-      "MUSHROOM",
-      "MUSHROOM"
+      {
+        "MUSHROOM": 3
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -535,12 +552,14 @@
     "ID": "48",
     "POINTS_GRANTED": "3",
     "CENTER_BACK_RESOURCES": [
-      "MUSHROOM"
+      {
+        "MUSHROOM": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "MUSHROOM",
-      "MUSHROOM",
-      "MUSHROOM"
+      {
+        "MUSHROOM": 3
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -609,12 +628,14 @@
     "ID": "49",
     "POINTS_GRANTED": "3",
     "CENTER_BACK_RESOURCES": [
-      "MUSHROOM"
+      {
+        "MUSHROOM": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "MUSHROOM",
-      "MUSHROOM",
-      "MUSHROOM"
+      {
+        "MUSHROOM": 3
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -683,14 +704,14 @@
     "ID": "50",
     "POINTS_GRANTED": "5",
     "CENTER_BACK_RESOURCES": [
-      "MUSHROOM"
+      {
+        "MUSHROOM": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "MUSHROOM",
-      "MUSHROOM",
-      "MUSHROOM",
-      "MUSHROOM",
-      "MUSHROOM"
+      {
+        "MUSHROOM": 5
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -759,12 +780,15 @@
     "ID": "51",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": [
-      "GRASS"
+      {
+        "GRASS": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "GRASS",
-      "GRASS",
-      "BUTTERFLY"
+      {
+        "GRASS": 2,
+        "BUTTERFLY": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -829,20 +853,23 @@
       ]
     },
     "POINTS_CONDITION": "resource",
-    "resource_POINTS_CONDITION": [
-      "FEATHER"
-    ]
+    "resource_POINTS_CONDITION": {
+      "FEATHER": 1
+    }
   },
   {
     "ID": "52",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": [
-      "GRASS"
+      {
+        "GRASS": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "GRASS",
-      "GRASS",
-      "MUSHROOM"
+      {
+        "GRASS": 2,
+        "MUSHROOM": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -915,12 +942,15 @@
     "ID": "53",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": [
-      "GRASS"
+      {
+        "GRASS": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "GRASS",
-      "GRASS",
-      "WOLF"
+      {
+        "GRASS": 2,
+        "WOLF": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -993,13 +1023,15 @@
     "ID": "54",
     "POINTS_GRANTED": "2",
     "CENTER_BACK_RESOURCES": [
-      "GRASS"
+      {
+        "GRASS": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "GRASS",
-      "GRASS",
-      "GRASS",
-      "BUTTERFLY"
+      {
+        "GRASS": 3,
+        "BUTTERFLY": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -1069,13 +1101,15 @@
     "ID": "55",
     "POINTS_GRANTED": "2",
     "CENTER_BACK_RESOURCES": [
-      "GRASS"
+      {
+        "GRASS": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "GRASS",
-      "GRASS",
-      "GRASS",
-      "WOLF"
+      {
+        "GRASS": 3,
+        "WOLF": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -1145,13 +1179,15 @@
     "ID": "56",
     "POINTS_GRANTED": "2",
     "CENTER_BACK_RESOURCES": [
-      "GRASS"
+      {
+        "GRASS": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "GRASS",
-      "GRASS",
-      "GRASS",
-      "MUSHROOM"
+      {
+        "GRASS": 3,
+        "MUSHROOM": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -1221,12 +1257,14 @@
     "ID": "57",
     "POINTS_GRANTED": "3",
     "CENTER_BACK_RESOURCES": [
-      "GRASS"
+      {
+        "GRASS": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "GRASS",
-      "GRASS",
-      "GRASS"
+      {
+        "GRASS": 3
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -1295,12 +1333,14 @@
     "ID": "58",
     "POINTS_GRANTED": "3",
     "CENTER_BACK_RESOURCES": [
-      "GRASS"
+      {
+        "GRASS": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "GRASS",
-      "GRASS",
-      "GRASS"
+      {
+        "GRASS": 3
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -1369,12 +1409,14 @@
     "ID": "59",
     "POINTS_GRANTED": "3",
     "CENTER_BACK_RESOURCES": [
-      "GRASS"
+      {
+        "GRASS": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "GRASS",
-      "GRASS",
-      "GRASS"
+      {
+        "GRASS": 3
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -1443,14 +1485,14 @@
     "ID": "60",
     "POINTS_GRANTED": "5",
     "CENTER_BACK_RESOURCES": [
-      "GRASS"
+      {
+        "GRASS": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "GRASS",
-      "GRASS",
-      "GRASS",
-      "GRASS",
-      "GRASS"
+      {
+        "GRASS": 5
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -1519,12 +1561,15 @@
     "ID": "61",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": [
-      "WOLF"
+      {
+        "WOLF": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "WOLF",
-      "WOLF",
-      "BUTTERFLY"
+      {
+        "WOLF": 2,
+        "BUTTERFLY"
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -1597,12 +1642,15 @@
     "ID": "62",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": [
-      "WOLF"
+      {
+        "WOLF": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "WOLF",
-      "WOLF",
-      "GRASS"
+      {
+        "WOLF": 2,
+        "GRASS": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -1675,12 +1723,15 @@
     "ID": "63",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": [
-      "WOLF"
+      {
+        "WOLF": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "WOLF",
-      "WOLF",
-      "MUSHROOM"
+      {
+        "WOLF": 2,
+        "MUSHROOM": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -1753,13 +1804,15 @@
     "ID": "64",
     "POINTS_GRANTED": "2",
     "CENTER_BACK_RESOURCES": [
-      "WOLF"
+      {
+        "WOLF": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "WOLF",
-      "WOLF",
-      "WOLF",
-      "BUTTERFLY"
+      {
+        "WOLF": 3,
+        "BUTTERFLY": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -1829,13 +1882,15 @@
     "ID": "65",
     "POINTS_GRANTED": "2",
     "CENTER_BACK_RESOURCES": [
-      "WOLF"
+      {
+        "WOLF": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "WOLF",
-      "WOLF",
-      "WOLF",
-      "MUSHROOM"
+      {
+        "WOLF": 3,
+        "MUSHROOM": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -1905,13 +1960,15 @@
     "ID": "66",
     "POINTS_GRANTED": "2",
     "CENTER_BACK_RESOURCES": [
-      "WOLF"
+      {
+        "WOLF": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "WOLF",
-      "WOLF",
-      "WOLF",
-      "GRASS"
+      {
+        "WOLF": 3,
+        "GRASS": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -1981,12 +2038,14 @@
     "ID": "67",
     "POINTS_GRANTED": "3",
     "CENTER_BACK_RESOURCES": [
-      "WOLF"
+      {
+        "WOLF": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "WOLF",
-      "WOLF",
-      "WOLF"
+      {
+        "WOLF": 3
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -2056,12 +2115,14 @@
     "ID": "68",
     "POINTS_GRANTED": "3",
     "CENTER_BACK_RESOURCES": [
-      "WOLF"
+      {
+        "WOLF": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "WOLF",
-      "WOLF",
-      "WOLF"
+      {
+        "WOLF": 3
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -2130,12 +2191,14 @@
     "ID": "69",
     "POINTS_GRANTED": "3",
     "CENTER_BACK_RESOURCES": [
-      "WOLF"
+      {
+        "WOLF": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "WOLF",
-      "WOLF",
-      "WOLF"
+      {
+        "WOLF": 3
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -2204,14 +2267,14 @@
     "ID": "70",
     "POINTS_GRANTED": "5",
     "CENTER_BACK_RESOURCES": [
-      "WOLF"
+      {
+        "WOLF": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "WOLF",
-      "WOLF",
-      "WOLF",
-      "WOLF",
-      "WOLF"
+      {
+        "WOLF": 5
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -2280,12 +2343,15 @@
     "ID": "71",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": [
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "GRASS"
+      {
+        "BUTTERFLY": 2,
+        "GRASS": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -2358,12 +2424,15 @@
     "ID": "72",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": [
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "WOLF"
+      {
+        "BUTTERFLY": 2,
+        "WOLF": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -2436,12 +2505,15 @@
     "ID": "73",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": [
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "MUSHROOM"
+      {
+        "BUTTERFLY": 2,
+        "MUSHROOM": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -2514,13 +2586,15 @@
     "ID": "74",
     "POINTS_GRANTED": "2",
     "CENTER_BACK_RESOURCES": [
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "WOLF"
+      {
+        "BUTTERFLY": 3,
+        "WOLF": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -2590,13 +2664,15 @@
     "ID": "75",
     "POINTS_GRANTED": "2",
     "CENTER_BACK_RESOURCES": [
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "GRASS"
+      {
+        "BUTTERFLY": 3,
+        "GRASS": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -2666,13 +2742,15 @@
     "ID": "76",
     "POINTS_GRANTED": "2",
     "CENTER_BACK_RESOURCES": [
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "MUSHROOM"
+      {
+        "BUTTERFLY": 3,
+        "MUSHROOM": 1
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -2742,12 +2820,14 @@
     "ID": "77",
     "POINTS_GRANTED": "3",
     "CENTER_BACK_RESOURCES": [
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 3
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -2816,12 +2896,14 @@
     "ID": "78",
     "POINTS_GRANTED": "3",
     "CENTER_BACK_RESOURCES": [
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 3
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -2890,12 +2972,14 @@
     "ID": "79",
     "POINTS_GRANTED": "3",
     "CENTER_BACK_RESOURCES": [
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 3
+      }
     ],
     "CORNERS": {
       "FRONT": [
@@ -2964,14 +3048,14 @@
     "ID": "80",
     "POINTS_GRANTED": "5",
     "CENTER_BACK_RESOURCES": [
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 1
+      }
     ],
     "RESOURCES_NEEDED_TO_PLAY": [
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "BUTTERFLY",
-      "BUTTERFLY"
+      {
+        "BUTTERFLY": 5
+      }
     ],
     "CORNERS": {
       "FRONT": [
