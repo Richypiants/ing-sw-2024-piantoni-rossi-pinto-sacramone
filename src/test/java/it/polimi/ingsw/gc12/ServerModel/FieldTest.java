@@ -88,7 +88,5 @@ class FieldTest {
         GenericPair<Integer, Integer> expected = new GenericPair<>(0, 0);
 
         assertEquals(expected, result);
-
-
     }
 }
