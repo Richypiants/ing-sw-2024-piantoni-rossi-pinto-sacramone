@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -17,7 +18,14 @@ class PatternConditionTest {
 
     @Test
     void genericPatternTest() {
-        Resource[][] corner = {{Resource.WOLF, Resource.WOLF, Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF, Resource.WOLF, Resource.WOLF}};
+        HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
+        resource.put(new GenericPair<>(0, 0), Resource.WOLF);
+        resource.put(new GenericPair<>(1, 0), Resource.WOLF);
+        resource.put(new GenericPair<>(0, 1), Resource.WOLF);
+        resource.put(new GenericPair<>(1, 1), Resource.WOLF);
+        HashMap<Side, HashMap<GenericPair<Integer, Integer>, Resource>> corner = new HashMap<>();
+        corner.put(Side.FRONT, resource);
+        corner.put(Side.BACK, resource);
         Triplet<Integer, Integer, Resource> T1 = new Triplet<>(0, 0, Resource.WOLF);
         Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -2, Resource.WOLF);
         Triplet<Integer, Integer, Resource> T3 = new Triplet<>(1, 1, Resource.WOLF);

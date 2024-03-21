@@ -1,11 +1,14 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
+import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -14,8 +17,14 @@ class GoldCardTest {
     @Test
     void awardPoints() {
 
-        Resource[][] corner = {{Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF},
-                {Resource.WOLF, Resource.WOLF}, {Resource.WOLF, Resource.WOLF}};
+        HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
+        resource.put(new GenericPair<>(0, 0), Resource.WOLF);
+        resource.put(new GenericPair<>(1, 0), Resource.WOLF);
+        resource.put(new GenericPair<>(0, 1), Resource.WOLF);
+        resource.put(new GenericPair<>(1, 1), Resource.WOLF);
+        HashMap<Side, HashMap<GenericPair<Integer, Integer>, Resource>> corner = new HashMap<>();
+        corner.put(Side.FRONT, resource);
+        corner.put(Side.BACK, resource);
 
         Triplet<Integer, Integer, Resource> T1 = new Triplet<Integer, Integer, Resource>(0, 0, Resource.WOLF);
         Triplet<Integer, Integer, Resource> T2 = new Triplet<Integer, Integer, Resource>(0, -2, Resource.WOLF);
@@ -37,6 +46,9 @@ class GoldCardTest {
 
         assertEquals(1, gold.awardPoints(p1_g));
 
+
         //TODO: WIP (IndexOutOfBoundsException)
     }
+
+
 }
