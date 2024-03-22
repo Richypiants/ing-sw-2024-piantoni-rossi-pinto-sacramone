@@ -5,10 +5,7 @@ import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.HashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /*
@@ -19,7 +16,7 @@ public class InGamePlayer extends Player {
     /*
     This player's color
      */
-    public static final Color COLOR = null; //TODO: implement color selection logic
+    public final Color COLOR = null; //TODO: implement color selection logic
     /*
     The cards in this player's hand
      */
@@ -86,6 +83,9 @@ public class InGamePlayer extends Player {
      the field, places the card into the ownField HashMap, also incrementing the ownedResources by the correct number
      */
     protected boolean placeCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide) {
+        if (!getCardsInHand().contains(card))
+            //TODO: add exception?
+            return false;
         if (card instanceof GoldCard)
             if (((GoldCard) card).getNeededResourcesToPlay().numberOfTimesSatisfied(card, this) <= 0)
                 return false;
@@ -106,22 +106,26 @@ public class InGamePlayer extends Player {
                         .forEach(this::incrementOwnedResource);
             }
 
-            for (GenericPair<Integer, Integer> offset : card.getCorners(playedSide).keySet()) {
-                GenericPair<PlayableCard, Side> coveredCorner = OWN_FIELD.getPlacedCards().get(
-                        new GenericPair<>(
-                                coordinates.getX() + offset.getX(),
-                                coordinates.getY() + offset.getY()
-                        )
-                );
-
-                // FIXME: write as Optional
-                if (coveredCorner == null) continue;
-
-                Resource coveredResource = coveredCorner.getX()
-                        .getCornerResource(coveredCorner.getY(), offset.getX(), offset.getY());
-                if (!(coveredResource.equals(Resource.NOT_A_CORNER) || coveredResource.equals(Resource.EMPTY)))
-                    incrementOwnedResource(coveredResource, -1);
-            }
+            card.getCorners(playedSide).keySet().stream()
+                    .map((offset) ->
+                            Optional.ofNullable(
+                                    OWN_FIELD.getPlacedCards().get(
+                                            new GenericPair<>(
+                                                    coordinates.getX() + offset.getX(),
+                                                    coordinates.getY() + offset.getY()
+                                            )
+                                    )
+                            ).flatMap((coveredCorner) -> Optional.of(
+                                            coveredCorner.getX()
+                                                    .getCornerResource(coveredCorner.getY(), offset.getX(), offset.getY())
+                                    )
+                            )
+                    )
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .filter((coveredResource) ->
+                            !(coveredResource.equals(Resource.NOT_A_CORNER) || coveredResource.equals(Resource.EMPTY))
+                    ).forEach((coveredResource) -> incrementOwnedResource(coveredResource, -1));
 
             return true;
         }
@@ -147,14 +151,6 @@ public class InGamePlayer extends Player {
      */
     protected EnumMap<Resource, Integer> getOwnedResources() {
         return new EnumMap<>(OWNED_RESOURCES);
-    }
-
-    /*
-    Returns this player's own field
-     */
-    protected Field getOwnField() {
-        //FIXME: avoid reference escaping?
-        return this.OWN_FIELD;
     }
 
     /*
@@ -186,6 +182,9 @@ public class InGamePlayer extends Player {
         this.secretObjective = objectiveCard;
     }
 
+    public GenericPair<Integer, Integer> getCardCoordinates(PlayableCard placedCard) {
+        return OWN_FIELD.getCardCoordinates(placedCard);
+    }
 }
 
 // increasePoints() -> No test

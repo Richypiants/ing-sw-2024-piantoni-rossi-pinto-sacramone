@@ -19,9 +19,9 @@ class PatternConditionTest {
     @Test
     void genericPatternTest() {
         HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
-        resource.put(new GenericPair<>(0, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(0, 1), Resource.WOLF);
+        resource.put(new GenericPair<>(-1, -1), Resource.WOLF);
+        resource.put(new GenericPair<>(1, -1), Resource.WOLF);
+        resource.put(new GenericPair<>(-1, 1), Resource.WOLF);
         resource.put(new GenericPair<>(1, 1), Resource.WOLF);
         HashMap<Side, HashMap<GenericPair<Integer, Integer>, Resource>> corner = new HashMap<>();
         corner.put(Side.FRONT, resource);

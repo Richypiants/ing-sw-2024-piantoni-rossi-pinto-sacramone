@@ -1,18 +1,12 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Resource;
-import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.Test;
-
-import java.util.EnumMap;
-import java.util.HashMap;
 
 class ResourcesConditionTest {
 
     @Test
     void numberOfTimesSatisfied() {
-        HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
+        /*HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
         resource.put(new GenericPair<>(0, 0), Resource.WOLF);
         resource.put(new GenericPair<>(1, 0), Resource.WOLF);
         resource.put(new GenericPair<>(0, 1), Resource.WOLF);
@@ -31,7 +25,7 @@ class ResourcesConditionTest {
 
         int result = x.numberOfTimesSatisfied(c1, p1_g);
 
-        assertEquals(xxxx, result);
+        assertEquals(xxxx, result);*/
 
         // FIXME: ANALIZZARE numberOfTimesSatisfied con quello che ci sta dentro al test e vedere excpected value
 

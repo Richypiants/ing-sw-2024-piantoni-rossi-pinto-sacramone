@@ -6,8 +6,7 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /*
 A field that stores the cards played by a player and the open corners where next cards can be played
@@ -47,48 +46,34 @@ public class Field {
         card.getCorners(playedSide)
                 .entrySet().stream()
                 .filter((entry) -> !entry.getValue().equals(Resource.NOT_A_CORNER))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                .forEach((key, value) -> {
-                            GenericPair<Integer, Integer> newOpenCorner = new GenericPair<>(
-                                    coordinates.getX() + key.getX(),
-                                    coordinates.getY() + key.getY()
-                            );
-
-                            //FIXME: double break is bad!
-                            if (!(PLACED_CARDS.containsKey(newOpenCorner) || OPEN_CORNERS.contains(newOpenCorner))) {
-                                int row = 0, column = 0;
-                                for (row = -1; row <= 1; row += 2) {
-                                    GenericPair<PlayableCard, Side> coveredCard = null;
-                                    for (column = -1; column <= 1; column += 2) {
-                                        coveredCard = PLACED_CARDS.get(
+                .map((entry) -> new GenericPair<>(
+                                coordinates.getX() + entry.getKey().getX(),
+                                coordinates.getY() + entry.getKey().getY()
+                        )
+                )
+                .filter((openCorner) -> !(PLACED_CARDS.containsKey(openCorner) || OPEN_CORNERS.contains(openCorner)))
+                .filter((openCorner) -> card.getCorners(playedSide).keySet().stream()
+                        .map((offset) ->
+                                Optional.ofNullable(
+                                        PLACED_CARDS.get(
                                                 new GenericPair<>(
-                                                        coordinates.getX() + column,
-                                                        coordinates.getY() + row
+                                                        openCorner.getX() + offset.getX(),
+                                                        openCorner.getY() + offset.getY()
                                                 )
-                                        );
-
-                                        // FIXME: write as Optiona
-                                        if (coveredCard == null) continue;
-
-                                        if (coveredCard.getX()
-                                                .getCornerResource(coveredCard.getY(), -1 * row, -1 * column)
+                                        )
+                                ).flatMap((optionalCard) ->
+                                        Optional.of(optionalCard.getX()
+                                                .getCornerResource(
+                                                        optionalCard.getY(),
+                                                        offset.getX(),
+                                                        offset.getY()
+                                                )
                                                 .equals(Resource.NOT_A_CORNER)
-                                        ) break; //TODO: implement skip addCorner
-                                    }
-
-                                    // FIXME: write as Optiona
-                                    if (coveredCard == null) continue;
-
-                                    if (coveredCard.getX()
-                                            .getCornerResource(coveredCard.getY(), -1 * row, -1 * column)
-                                            .equals(Resource.NOT_A_CORNER)
-                                    ) break; //TODO: implement skip addCorner
-                                }
-                                if (row == 3 && column == 3)
-                                    OPEN_CORNERS.add(newOpenCorner);
-                            }
-                        }
-                );
+                                        )
+                                ).orElse(false)
+                        )
+                        .reduce(true, (a, b) -> a && b)
+                ).forEach(OPEN_CORNERS::add);
 
         return true;
     }

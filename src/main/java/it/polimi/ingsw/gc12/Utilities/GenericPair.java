@@ -6,6 +6,7 @@ import java.util.Objects;
 A pair of generic elements
  */
 public class GenericPair<T1, T2> {
+    //TODO: make everything private final again once JSONParser is fixed
 
     /*
     The first attribute of this pair

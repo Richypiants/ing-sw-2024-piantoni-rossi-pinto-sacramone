@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc12.ServerModel;
 
 import it.polimi.ingsw.gc12.Utilities.Resource;
 
-import java.util.EnumMap;
+import java.util.Map;
 
 /*
 A condition that counts how many sets of resources of the specified type the player has
@@ -12,20 +12,20 @@ public class ResourcesCondition implements PointsCondition {
     /*
     The resources to be evaluated
      */
-    private final EnumMap<Resource, Integer> CONDITION;
+    private final Map<Resource, Integer> CONDITION;
 
     /*
     Generates the condition from the list of resources passed as parameter
      */
-    public ResourcesCondition(EnumMap<Resource, Integer> condition) {
-        this.CONDITION = new EnumMap<>(condition);
+    public ResourcesCondition(Map<Resource, Integer> condition) {
+        this.CONDITION = Map.copyOf(condition);
     }
 
     /*
     Returns the list of resources of this condition
      */
-    protected EnumMap<Resource, Integer> getConditionParameters() {
-        return new EnumMap<>(CONDITION);
+    protected Map<Resource, Integer> getConditionParameters() {
+        return CONDITION;
     }
 
     /*
@@ -34,12 +34,9 @@ public class ResourcesCondition implements PointsCondition {
     public int numberOfTimesSatisfied(Card thisCard, InGamePlayer target) {
         //TODO: add try catch here?
         return CONDITION.keySet().stream()
-                .mapToInt((resourceType) -> (int) (
-                                target.getOwnedResources()
-                                        .get(resourceType)
+                .mapToInt((resourceType) -> target.getOwnedResources().get(resourceType)
                         /
-                                        CONDITION.get(resourceType)
-                        )
+                        CONDITION.get(resourceType)
                 ).min()
                 .getAsInt();
     }

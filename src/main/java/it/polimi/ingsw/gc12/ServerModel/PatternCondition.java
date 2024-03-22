@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -18,14 +19,14 @@ public class PatternCondition implements PointsCondition {
     /*
     The pattern to be found among the played cards
      */
-    private final ArrayList<Triplet<Integer, Integer, Resource>> CONDITION;
+    private final List<Triplet<Integer, Integer, Resource>> CONDITION;
 
     /*
     Generates an instance of a pattern condition from the given condition in parameters
      */
-    public PatternCondition(ArrayList<Triplet<Integer, Integer, Resource>> condition) {
+    public PatternCondition(List<Triplet<Integer, Integer, Resource>> condition) {
         //TODO: should we keep safe copy of the condition arraylist?
-        this.CONDITION = new ArrayList<>(condition);
+        this.CONDITION = List.copyOf(condition);
     }
 
     /*
@@ -33,8 +34,8 @@ public class PatternCondition implements PointsCondition {
      */
     //FIXME: make this collection immutable (all the other ones in PointsCondition subclasses too?
     // somewhere else too?)
-    protected ArrayList<Triplet<Integer, Integer, Resource>> getConditionParameters() {
-        return new ArrayList<>(CONDITION);
+    protected List<Triplet<Integer, Integer, Resource>> getConditionParameters() {
+        return CONDITION;
     }
 
     /*
@@ -72,34 +73,9 @@ public class PatternCondition implements PointsCondition {
                                 .reduce(true,
                                         (accumulator, isColorCorrect) -> accumulator && isColorCorrect
                                 )
-                        )
-
-                        /*// We only keep the cards which are the same type of the start of the considered pattern
-.filter((entry) -> entry.getValue().getX()
-        .getCenterBackResources()
-        .containsKey(CONDITION.getFirst().getZ())
-)
-// We only keep the ones that actually form the pattern
-//FIXME: can we merge this filter and the one above in a single one?
-.filter((entry) -> getConditionParameters().subList(1, CONDITION.size()).stream()
-        .map((offset) -> target.getPlacedCards().get(
-                new GenericPair<>(
-                        entry.getKey().getX() + offset.getX(),
-                        entry.getKey().getY() + offset.getY()
-                )
-                        ).getX()
-                        .getCenterBackResources()
-                        .containsKey(offset.getZ())
-        )
-        .reduce(true,
-                (accumulator, isColorCorrect) -> accumulator && isColorCorrect
-        )
-)
-*/
-
-                        .map((entry) -> entry.getValue().getX())
+                        ).map((entry) -> entry.getValue().getX())
                         .collect(Collectors.toCollection(ArrayList::new)),
-                target.getOwnField()
+                target
         );
     }
 
@@ -108,7 +84,7 @@ public class PatternCondition implements PointsCondition {
     class, that is the maximum number of patterns that are disjoint
      */
     private int largestMaximumCompatibilityClass(ArrayList<PlayableCard> patternStartingCards,
-                                                 Field playerField) {
+                                                 InGamePlayer target) {
         ArrayList<ArrayList<PlayableCard>> frontier = new ArrayList<>();
         ArrayList<ArrayList<PlayableCard>> result = new ArrayList<>();
         int nodesInLastLevel = 1, depth = 0;
@@ -122,7 +98,7 @@ public class PatternCondition implements PointsCondition {
                 ArrayList<PlayableCard> tmp = frontier.removeFirst();
                 if (tmp.contains(currentPattern)) {
                     frontier.add(new ArrayList<>(tmp.subList(1, tmp.size())));
-                    tmp.removeIf((pattern) -> !compatibleWith(pattern, currentPattern, playerField));
+                    tmp.removeIf((pattern) -> !compatibleWith(pattern, currentPattern, target));
                 }
                 frontier.add(new ArrayList<>(tmp));
             }
@@ -173,28 +149,28 @@ public class PatternCondition implements PointsCondition {
     Checks whether the patterns passed as parameters are compatible (disjoint)
      */
     //FIXME: maybe a BiMap would solve this problem?
-    private boolean compatibleWith(PlayableCard pattern1, PlayableCard pattern2, Field playerField) {
+    private boolean compatibleWith(PlayableCard pattern1, PlayableCard pattern2, InGamePlayer target) {
         //FIXME: add try checks or exceptions?
         return disjoint(
-                fullPatternCoordinates(pattern1, playerField),
-                fullPatternCoordinates(pattern2, playerField)
+                fullPatternCoordinates(pattern1, target),
+                fullPatternCoordinates(pattern2, target)
         );
     }
 
     /*
     Returns the list of coordinates of all the cards in the pattern passed as parameter
      */
-    private ArrayList<GenericPair<Integer, Integer>> fullPatternCoordinates(
-            PlayableCard pattern, Field playerField) {
+    private List<GenericPair<Integer, Integer>> fullPatternCoordinates(
+            PlayableCard pattern, InGamePlayer target) {
         return CONDITION.stream()
                 .map((triplet) -> {
-                    GenericPair<Integer, Integer> thisPosition = playerField.getCardCoordinates(pattern);
+                    GenericPair<Integer, Integer> thisPosition = target.getCardCoordinates(pattern);
                     return new GenericPair<>(
                                     thisPosition.getX() + triplet.getX(),
                                     thisPosition.getY() + triplet.getY()
                             );
                         }
-                ).collect(Collectors.toCollection(ArrayList::new));
+                ).toList();
     }
 }
 

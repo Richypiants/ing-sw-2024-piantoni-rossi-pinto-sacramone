@@ -5,8 +5,10 @@ import it.polimi.ingsw.gc12.Utilities.Image;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
-import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.Collections.unmodifiableMap;
 
 /*
 A standard playable card (that is, all cards except Objective cards)
@@ -14,25 +16,28 @@ A standard playable card (that is, all cards except Objective cards)
 public abstract class PlayableCard extends Card {
 
     /*
-    The corners of both this card's front and back, four corners each:
-    0 = NW, 1 = NE, 2 = SE, 3 = SW
+    The corners of both this card's front and back, four corners each: the key indicates the offset by which
+    coordinates must be moved in order to get to the connected card
      */
-    private final HashMap<Side, HashMap<GenericPair<Integer, Integer>, Resource>> CORNERS;
+    private final Map<Side, Map<GenericPair<Integer, Integer>, Resource>> CORNERS;
 
     /*
     The list of resources in this card's center back
      */
-    private final EnumMap<Resource, Integer> CENTER_BACK_RESOURCES;
+    private final Map<Resource, Integer> CENTER_BACK_RESOURCES;
 
     /*
     Creates a playable card from the passed parameters
      */
     public PlayableCard(int id, int pointsGranted, Image frontSprite, Image backSprite,
-                        EnumMap<Resource, Integer> centerBackResources,
-                        HashMap<Side, HashMap<GenericPair<Integer, Integer>, Resource>> corners) {
+                        Map<Resource, Integer> centerBackResources,
+                        Map<Side, Map<GenericPair<Integer, Integer>, Resource>> corners) {
         super(id, pointsGranted, frontSprite, backSprite);
-        this.CORNERS = new HashMap<>(corners);
-        this.CENTER_BACK_RESOURCES = new EnumMap<>(centerBackResources);
+        //TODO: add check for pair coordinates (only +-1, +-1)
+        Map<Side, Map<GenericPair<Integer, Integer>, Resource>> cornersCopy = new HashMap<>(corners);
+        cornersCopy.replaceAll((k, v) -> unmodifiableMap(v));
+        this.CORNERS = Map.copyOf(cornersCopy);
+        this.CENTER_BACK_RESOURCES = Map.copyOf(centerBackResources);
     }
 
     /*
@@ -47,7 +52,7 @@ public abstract class PlayableCard extends Card {
     /*
     Returns the array of resources of this card on the specified side
      */
-    public HashMap<GenericPair<Integer, Integer>, Resource> getCorners(Side side) {
+    public Map<GenericPair<Integer, Integer>, Resource> getCorners(Side side) {
         return CORNERS.get(side);
         //TODO: add UndefinedCardSideException ?
         // return null;
@@ -56,8 +61,8 @@ public abstract class PlayableCard extends Card {
     /*
     Returns a copy of the list of resources on this card's center back
      */
-    public EnumMap<Resource, Integer> getCenterBackResources() {
-        return new EnumMap<>(CENTER_BACK_RESOURCES);
+    public Map<Resource, Integer> getCenterBackResources() {
+        return CENTER_BACK_RESOURCES;
     }
 
     @Override
