@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.Utilities;
 
+import java.util.Objects;
+
 /*
 A triplet of generic elements
  */
@@ -72,6 +74,20 @@ public class Triplet<T1, T2, T3> {
      */
     public GenericPair<T2, T3> getYZ() {
         return new GenericPair<T2, T3>(y, z);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof Triplet<?, ?, ?> otherTriple)) return false;
+        return (this.getX().equals(otherTriple.getX())) && (this.getY().equals(otherTriple.getY())) && (this.getZ().equals(otherTriple.getZ()));
+    }
+
+    //FIXME: is this hashCode function good? maybe we should use preexistent pair classes?
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getX(), this.getY(), this.getZ());
     }
 }
 
