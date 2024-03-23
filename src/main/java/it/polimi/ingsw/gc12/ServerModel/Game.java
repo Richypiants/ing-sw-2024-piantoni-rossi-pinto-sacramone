@@ -1,5 +1,8 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import com.google.gson.reflect.TypeToken;
+import it.polimi.ingsw.gc12.Utilities.JSONParser;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -58,8 +61,8 @@ public class Game{
         this.currentPlayer = 0;
         this.currentTurn = 0;
 
-        this.RESOURCE_CARDS_DECK = new CardDeck(JSONParser.fromJSONtoCardDeckConstructor());
-        this.GOLD_CARDS_DECK = new CardDeck(JSONParser.fromJSONtoCardDeckConstructor());
+        this.RESOURCE_CARDS_DECK = new CardDeck( JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>(){}));
+        this.GOLD_CARDS_DECK = new CardDeck( JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<ArrayList<GoldCard>>(){}));
 
         this.PLACED_RESOURCE_CARDS = new ResourceCard[2];
         PLACED_RESOURCE_CARDS[0]= (ResourceCard) RESOURCE_CARDS_DECK.draw();
@@ -68,8 +71,7 @@ public class Game{
         this.PLACED_GOLD_CARDS = new GoldCard[2];
         PLACED_GOLD_CARDS[0]= (GoldCard) GOLD_CARDS_DECK.draw();
         PLACED_GOLD_CARDS[1]= (GoldCard) GOLD_CARDS_DECK.draw();
-
-        CardDeck objectiveCardsDeck = new CardDeck(JSONParser.fromJSONtoCardDeckConstructor());
+        CardDeck objectiveCardsDeck = new CardDeck( JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<ArrayList<ObjectiveCard>>(){}));
         this.COMMON_OBJECTIVES = new ObjectiveCard[2];
         COMMON_OBJECTIVES[0]= (ObjectiveCard) objectiveCardsDeck.draw();
         COMMON_OBJECTIVES[1]= (ObjectiveCard) objectiveCardsDeck.draw();

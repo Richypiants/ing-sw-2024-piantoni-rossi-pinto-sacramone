@@ -11,12 +11,12 @@ public class GenericPair<T1, T2> {
     /*
     The first attribute of this pair
      */
-    public T1 X;
+    private T1 X;
 
     /*
     The second attribute of this pair
      */
-    public T2 Y;
+    private T2 Y;
 
     /*
     Generates a pair from the given parameters

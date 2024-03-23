@@ -10,8 +10,7 @@ public final class ObjectiveCard extends Card {
     /*
     The condition to be evaluated when calculating objective points
      */
-    //PRIVATE?
-    public final PointsCondition POINTS_CONDITION;
+    private final PointsCondition POINTS_CONDITION;
 
     /*
     Generates an Objective card from the given parameters

@@ -7,8 +7,9 @@ module it.polimi.ingsw.gc12 {
     requires com.google.gson;
 
     opens it.polimi.ingsw.gc12.ServerModel to com.google.gson;
+    opens it.polimi.ingsw.gc12.Utilities to com.google.gson;
     exports it.polimi.ingsw.gc12.Utilities to com.google.gson;
+    exports it.polimi.ingsw.gc12.ServerModel to com.google.gson;
     opens it.polimi.ingsw.gc12 to javafx.fxml;
     exports it.polimi.ingsw.gc12;
-
 }

@@ -22,7 +22,7 @@ public class CardDeck {
 
         Collections.shuffle(copy);
         this.DECK = new Stack<>();
-        while (copy.isEmpty()) {
+        while (!copy.isEmpty()) {
             this.push(copy.removeFirst());
         }
     }

@@ -15,12 +15,12 @@ public class GoldCard extends PlayableCard {
     /*
     The condition which is evaluated when calculating total points granted upon playing this card
      */
-    public final PointsCondition POINTS_CONDITION;
+    private final PointsCondition POINTS_CONDITION;
 
     /*
     The resources needed to play this card
      */
-    public final ResourcesCondition RESOURCES_NEEDED_TO_PLAY;
+    private final ResourcesCondition RESOURCES_NEEDED_TO_PLAY;
 
     /*
     Generates a gold card from the passed parameters
