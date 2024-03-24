@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc12.ServerModel;
+package it.polimi.ingsw.gc12.ServerModel.Cards;
 
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Image;

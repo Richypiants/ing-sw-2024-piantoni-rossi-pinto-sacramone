@@ -1,5 +1,8 @@
-package it.polimi.ingsw.gc12.ServerModel;
+package it.polimi.ingsw.gc12.ServerModel.Cards;
 
+import it.polimi.ingsw.gc12.ServerModel.Conditions.PointsCondition;
+import it.polimi.ingsw.gc12.ServerModel.Conditions.ResourcesCondition;
+import it.polimi.ingsw.gc12.ServerModel.InGamePlayer;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Image;
 import it.polimi.ingsw.gc12.Utilities.Resource;

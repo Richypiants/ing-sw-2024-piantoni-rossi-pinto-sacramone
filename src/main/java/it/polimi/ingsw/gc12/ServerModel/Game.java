@@ -1,6 +1,9 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
 import com.google.gson.reflect.TypeToken;
+import it.polimi.ingsw.gc12.ServerModel.Cards.*;
+import it.polimi.ingsw.gc12.ServerModel.GameStates.GameState;
+import it.polimi.ingsw.gc12.ServerModel.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
 
 import java.util.ArrayList;
@@ -38,19 +41,19 @@ public class Game{
      */
     private final ObjectiveCard[] COMMON_OBJECTIVES;
     /*
-    The index which points to the player which is playing right now (starting from 0 when the game starts)
      */
-    private int currentPlayer;
+    private GameState currentState;
     /*
     The current turn's number (starting from 1 in the first turn)
      */
-    private int currentTurn;
+    private int currentRound;
 
     /*
     Constructs a new game instance from the lobby passed as parameter
      */
     public Game(GameLobby lobby) {
 
+        //TODO: make this unmodifiable
         this.LIST_OF_GAME_PLAYERS = lobby.getListOfPlayers()
                 .stream()
                 .map(InGamePlayer::new)
@@ -58,8 +61,8 @@ public class Game{
 
         Collections.shuffle(this.LIST_OF_GAME_PLAYERS);
 
-        this.currentPlayer = 0;
-        this.currentTurn = 0;
+        this.currentRound = 0;
+        this.currentState = new SetupState(this);
 
         this.RESOURCE_CARDS_DECK = new CardDeck( JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>(){}));
         this.GOLD_CARDS_DECK = new CardDeck( JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<ArrayList<GoldCard>>(){}));
@@ -78,35 +81,38 @@ public class Game{
     }
 
     /*
-    Increases the current player counter, making it point to the next player, increasing the turn after everyone
-    has played in the current turn
-     */
-    public void nextPlayer() {
-        if (currentPlayer == LIST_OF_GAME_PLAYERS.size()) {
-            this.increaseTurn();
-        }
-        currentPlayer = (currentPlayer + 1) % LIST_OF_GAME_PLAYERS.size();
-    }
-
-    /*
     Returns the player who is currently playing
      */
-    public Player getCurrentPlayer() {
-        return LIST_OF_GAME_PLAYERS.get(currentPlayer);
+    public ArrayList<InGamePlayer> getPlayers() {
+        return new ArrayList<>(LIST_OF_GAME_PLAYERS);
     }
 
     /*
     Increases the turn number
      */
     public void increaseTurn() {
-        currentTurn++;
+        currentRound++;
+    }
+
+    /*
+    Changes the currentState of this game to newState
+     */
+    public void changeState(GameState newState) {
+        currentState = newState;
+    }
+
+    /*
+    Returns the current game state (of type GameState)
+     */
+    public GameState getCurrentState() {
+        return currentState;
     }
 
     /*
     Returns the turn number
      */
     public int getTurnNumber() {
-        return currentTurn;
+        return currentRound;
     }
 
     //FIXME: are these below unsafe returns? (Reference escaping?)

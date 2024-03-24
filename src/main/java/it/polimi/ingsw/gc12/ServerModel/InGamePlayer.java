@@ -1,5 +1,8 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import it.polimi.ingsw.gc12.ServerModel.Cards.GoldCard;
+import it.polimi.ingsw.gc12.ServerModel.Cards.ObjectiveCard;
+import it.polimi.ingsw.gc12.ServerModel.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Utilities.Color;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
@@ -21,6 +24,10 @@ public class InGamePlayer extends Player {
     The cards in this player's hand
      */
     private final ArrayList<PlayableCard> CARDS_IN_HAND;
+    /*
+
+     */
+    private boolean isActive = true; //TODO: implement activity management
     /*
     The resources owned by this player currently
      */
@@ -61,28 +68,43 @@ public class InGamePlayer extends Player {
     /*
     Given the desired amount to be increased by, updates the player's points
      */
-    protected void increasePoints(int pointsToAdd){
+    public void increasePoints(int pointsToAdd) {
         points += pointsToAdd;
     }
 
     /*
     Returns this player's current points
      */
-    protected int getPoints(){
+    public int getPoints() {
         return points;
+    }
+
+    /*
+    Returns this player's current points
+     */
+    public boolean isActive() {
+        return isActive;
+    }
+
+    /*
+    Returns this player's current points
+     */
+    protected void toggleActive() {
+        isActive = !isActive;
+        //TODO: controllare, se tutti sono inattivi tranne uno sospendere il gioco!
     }
 
     /*
     Returns a copy of the list of cards in this player's hand
      */
-    protected ArrayList<PlayableCard> getCardsInHand(){
+    public ArrayList<PlayableCard> getCardsInHand() {
         return new ArrayList<>(CARDS_IN_HAND);
     }
 
     /* Given the card and the desired position, wrapped in a GenericPair structure meaning <x,y> coordinates on
      the field, places the card into the ownField HashMap, also incrementing the ownedResources by the correct number
      */
-    protected boolean placeCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide) {
+    public boolean placeCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide) {
         if (!getCardsInHand().contains(card))
             //TODO: add exception?
             return false;
@@ -134,7 +156,7 @@ public class InGamePlayer extends Player {
     /*
     Adds the pickedCard to the current player's hand
      */
-    protected void addCardToHand(PlayableCard pickedCard){
+    public void addCardToHand(PlayableCard pickedCard) {
         //FIXME: check for exception!
         CARDS_IN_HAND.add(pickedCard);
     }
@@ -170,14 +192,14 @@ public class InGamePlayer extends Player {
     /*
     Returns this player's secret Objective card
      */
-    protected ObjectiveCard getSecretObjective(){
+    public ObjectiveCard getSecretObjective() {
         return secretObjective;
     }
 
     /*
     Sets this player's secret Objective card
      */
-    protected void setSecretObjective(ObjectiveCard objectiveCard){
+    public void setSecretObjective(ObjectiveCard objectiveCard) {
         //FIXME: if Cards classes' attributes are final, this is fine.
         this.secretObjective = objectiveCard;
     }

@@ -1,5 +1,8 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import it.polimi.ingsw.gc12.ServerModel.Cards.InitialCard;
+import it.polimi.ingsw.gc12.ServerModel.Cards.PlayableCard;
+import it.polimi.ingsw.gc12.ServerModel.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;

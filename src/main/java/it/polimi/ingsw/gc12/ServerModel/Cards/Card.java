@@ -1,5 +1,6 @@
-package it.polimi.ingsw.gc12.ServerModel;
+package it.polimi.ingsw.gc12.ServerModel.Cards;
 
+import it.polimi.ingsw.gc12.ServerModel.InGamePlayer;
 import it.polimi.ingsw.gc12.Utilities.Image;
 
 /*

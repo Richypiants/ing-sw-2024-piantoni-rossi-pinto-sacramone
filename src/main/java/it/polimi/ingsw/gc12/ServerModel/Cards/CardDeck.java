@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc12.ServerModel;
+package it.polimi.ingsw.gc12.ServerModel.Cards;
 
 import java.util.ArrayList;
 import java.util.Collections;

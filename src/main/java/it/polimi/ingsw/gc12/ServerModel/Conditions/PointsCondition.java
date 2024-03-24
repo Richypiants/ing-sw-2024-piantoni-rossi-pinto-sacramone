@@ -1,4 +1,7 @@
-package it.polimi.ingsw.gc12.ServerModel;
+package it.polimi.ingsw.gc12.ServerModel.Conditions;
+
+import it.polimi.ingsw.gc12.ServerModel.Cards.Card;
+import it.polimi.ingsw.gc12.ServerModel.InGamePlayer;
 
 /*
 A standard method to compute conditions to assign points.

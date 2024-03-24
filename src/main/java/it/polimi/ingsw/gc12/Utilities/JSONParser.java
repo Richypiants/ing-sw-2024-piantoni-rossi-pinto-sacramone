@@ -6,7 +6,11 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import it.polimi.ingsw.gc12.ServerModel.*;
+import it.polimi.ingsw.gc12.ServerModel.Cards.Card;
+import it.polimi.ingsw.gc12.ServerModel.Conditions.CornersCondition;
+import it.polimi.ingsw.gc12.ServerModel.Conditions.PatternCondition;
+import it.polimi.ingsw.gc12.ServerModel.Conditions.PointsCondition;
+import it.polimi.ingsw.gc12.ServerModel.Conditions.ResourcesCondition;
 
 import java.io.IOException;
 import java.nio.file.Files;
