@@ -45,7 +45,6 @@ public class InGamePlayer extends Player {
      */
     private ObjectiveCard secretObjective;
 
-
     /*
     Constructs an InGamePlayer from the player passed as parameter
      */

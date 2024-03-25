@@ -17,7 +17,7 @@ public class CardDeck {
     /*
     Constructs a deck of cards by copying the passed cards, shuffling and then pushing them into the card stack
      */
-    protected CardDeck(ArrayList<Card> deck) {
+    public CardDeck(ArrayList<Card> deck) {
         ArrayList<Card> copy = new ArrayList<>(deck);
 
         Collections.shuffle(copy);
@@ -37,7 +37,7 @@ public class CardDeck {
     /*
     Pops the first card of the stack and returns it to the caller
      */
-    protected Card draw() {
+    public Card draw() {
         if (!this.DECK.isEmpty()) {
             return this.DECK.pop();
         }

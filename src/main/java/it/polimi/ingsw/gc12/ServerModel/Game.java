@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc12.ServerModel.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -74,10 +75,8 @@ public class Game{
         this.PLACED_GOLD_CARDS = new GoldCard[2];
         PLACED_GOLD_CARDS[0]= (GoldCard) GOLD_CARDS_DECK.draw();
         PLACED_GOLD_CARDS[1]= (GoldCard) GOLD_CARDS_DECK.draw();
-        CardDeck objectiveCardsDeck = new CardDeck( JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<ArrayList<ObjectiveCard>>(){}));
+
         this.COMMON_OBJECTIVES = new ObjectiveCard[2];
-        COMMON_OBJECTIVES[0]= (ObjectiveCard) objectiveCardsDeck.draw();
-        COMMON_OBJECTIVES[1]= (ObjectiveCard) objectiveCardsDeck.draw();
     }
 
     /*
@@ -119,6 +118,14 @@ public class Game{
     /*
     Returns the Resource cards placed on the table
      */
+    public CardDeck getResourceCardsDeck() {
+        return RESOURCE_CARDS_DECK;
+    }
+
+    public CardDeck getGoldCardsDeck() {
+        return GOLD_CARDS_DECK;
+    }
+
     public ResourceCard[] getPlacedResources() {
         return PLACED_RESOURCE_CARDS;
     }
@@ -137,6 +144,12 @@ public class Game{
         return COMMON_OBJECTIVES;
     }
 
+    public void setCommonObjectives(ObjectiveCard[] objectives) {
+        if (objectives.length == 2) {
+            COMMON_OBJECTIVES[0] = objectives[0];
+            COMMON_OBJECTIVES[1] = objectives[1];
+        }
+    }
     /*
     Draws from the deck passed as parameter and returns the drawn card
      */
@@ -148,16 +161,13 @@ public class Game{
     Given a pattern matching string {gold, resource} and a valid position {0, 1}, returns the selected card and
     replaces it on the board
      */
-    public PlayableCard drawFromVisibleCards(String whichType, int position) {
+    public PlayableCard drawFromVisibleCards(Card[] deck, int position) {
         PlayableCard returnedCard = null;
 
-        if( position != 0 && position != 1) {
-            //TODO: InvalidPositionException
-        }
-        if( whichType.trim().equalsIgnoreCase("gold")){
+        if (Arrays.equals(deck, PLACED_GOLD_CARDS)) {
             returnedCard = PLACED_GOLD_CARDS[position];
             PLACED_GOLD_CARDS[position] = (GoldCard) GOLD_CARDS_DECK.draw();
-        } else if( whichType.trim().equalsIgnoreCase("resource")){
+        } else if (Arrays.equals(deck, PLACED_RESOURCE_CARDS)) {
             returnedCard = PLACED_RESOURCE_CARDS[position];
             PLACED_RESOURCE_CARDS[position] = (ResourceCard) RESOURCE_CARDS_DECK.draw();
         } else {
