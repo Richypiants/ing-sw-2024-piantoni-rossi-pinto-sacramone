@@ -17,8 +17,8 @@ public final class ObjectiveCard extends Card {
     /*
     Generates an Objective card from the given parameters
      */
-    public ObjectiveCard(int id, int points, Image frontSprite, Image backSprite, PointsCondition condition) {
-        super(id, points, frontSprite, backSprite);
+    public ObjectiveCard(int id, int pointsGranted, Image frontSprite, Image backSprite, PointsCondition condition) {
+        super(id, pointsGranted, frontSprite, backSprite);
         this.POINTS_CONDITION = condition; //FIXME: copy this?
     }
 
