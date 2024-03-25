@@ -32,6 +32,24 @@ public abstract class PlayableCard extends Card {
     public PlayableCard(int id, int pointsGranted, Image frontSprite, Image backSprite,
                         Map<Resource, Integer> centerBackResources,
                         Map<Side, Map<GenericPair<Integer, Integer>, Resource>> corners) {
+        /*if(!corners.keySet().equals())
+        for(Map<> map : corners){
+            if(corners.keySet().size() != 4)
+                throw new MalformedCardException();
+            //TODO: find a better name for this: maybe use IllegalArgumentException?
+
+            if(map.keySet().stream()
+                    .anyMatch((coordinates) -> !(
+                            coordinates.equals(new GenericPair<Integer, Integer>(-1, -1)) ||
+                                    coordinates.equals(new GenericPair<Integer, Integer>(-1, 1)) ||
+                                    coordinates.equals(new GenericPair<Integer, Integer>(1, -1)) ||
+                                    coordinates.equals(new GenericPair<Integer, Integer>(1, 1))
+                            )
+                    )
+            )
+                throw new MalformedCardException();
+        }*/
+
         super(id, pointsGranted, frontSprite, backSprite);
         //TODO: add check for pair coordinates (only +-1, +-1)
         Map<Side, Map<GenericPair<Integer, Integer>, Resource>> cornersCopy = new HashMap<>(corners);

@@ -171,14 +171,14 @@ public class InGamePlayer extends Player {
     /*
     Returns a copy of the map of resources owned by this player
      */
-    protected EnumMap<Resource, Integer> getOwnedResources() {
+    public EnumMap<Resource, Integer> getOwnedResources() {
         return new EnumMap<>(OWNED_RESOURCES);
     }
 
     /*
     Returns the cards placed by this player
      */
-    protected HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
+    public HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
         return OWN_FIELD.getPlacedCards();
     }
 

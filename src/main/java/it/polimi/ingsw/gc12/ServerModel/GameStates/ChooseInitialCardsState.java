@@ -33,9 +33,9 @@ public class ChooseInitialCardsState extends GameState {
     }
 
     @Override
-    public GameState transition() {
+    public void transition() {
         super.transition();
 
-        return new DrawStartingHandsState(GAME);
+        GAME.changeState(new DrawStartingHandsState(GAME));
     }
 }

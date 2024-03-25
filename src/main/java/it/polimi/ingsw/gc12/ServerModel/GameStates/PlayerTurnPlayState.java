@@ -25,13 +25,13 @@ public class PlayerTurnPlayState extends GameState {
     }
 
     @Override
-    public GameState transition() {
+    public void transition() {
         super.transition();
 
         if (counter == -1)
             if (GAME.getPlayers().get(currentPlayer).getPoints() >= 20)
                 counter = 2 * GAME.getPlayers().size() - currentPlayer;
 
-        return new PlayerTurnDrawState(GAME, currentPlayer, counter);
+        GAME.changeState(new PlayerTurnDrawState(GAME, currentPlayer, counter));
     }
 }

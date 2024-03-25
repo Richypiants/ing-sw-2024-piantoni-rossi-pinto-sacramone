@@ -23,9 +23,9 @@ public class ChooseObjectiveCardsState extends GameState {
 
 
     @Override
-    public GameState transition() {
+    public void transition() {
         super.transition();
 
-        return new PlayerTurnPlayState(GAME, 0, -1);
+        GAME.changeState(new PlayerTurnPlayState(GAME, 0, -1));
     }
 }

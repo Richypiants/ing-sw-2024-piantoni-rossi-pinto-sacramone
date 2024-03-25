@@ -14,9 +14,9 @@ public class SetupState extends GameState {
     }
 
     @Override
-    public GameState transition() {
+    public void transition() {
         super.transition();
 
-        return new ChooseInitialCardsState(GAME);
+        GAME.changeState(new ChooseInitialCardsState(GAME));
     }
 }

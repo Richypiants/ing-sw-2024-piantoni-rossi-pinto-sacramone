@@ -21,7 +21,7 @@ public class VictoryCalculationState extends GameState {
     }
 
     @Override
-    public GameState transition() {
+    public void transition() {
         //FIXME: dichiarare ogni volta un nuovo array è abbastanza orribile... togliere functional?
         ArrayList<InGamePlayer> players = GAME.getPlayers();
         for (InGamePlayer target : players) {
@@ -63,6 +63,5 @@ public class VictoryCalculationState extends GameState {
         //TODO: here we should destroy the file with the saved serialized data
 
         //FIXME: Che fare qui con transition? crash? chiamare fine gioco?
-        return null;
     }
 }

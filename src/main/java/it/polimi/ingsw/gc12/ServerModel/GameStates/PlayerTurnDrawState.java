@@ -42,7 +42,7 @@ public class PlayerTurnDrawState extends GameState {
     }
 
     @Override
-    public GameState transition() {
+    public void transition() {
         super.transition();
 
         if (counter != -1)
@@ -50,10 +50,12 @@ public class PlayerTurnDrawState extends GameState {
         else if (GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty())
             counter = 2 * GAME.getPlayers().size() - currentPlayer - 1;
 
-        if (counter == 0)
-            return new VictoryCalculationState(GAME, currentPlayer, counter);
+        if (counter == 0) {
+            GAME.changeState(new VictoryCalculationState(GAME, currentPlayer, counter));
+            return;
+        }
 
         nextPlayer();
-        return new PlayerTurnPlayState(GAME, currentPlayer, counter);
+        GAME.changeState(new PlayerTurnPlayState(GAME, currentPlayer, counter));
     }
 }
