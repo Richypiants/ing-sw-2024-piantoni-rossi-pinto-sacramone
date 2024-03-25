@@ -105,7 +105,6 @@ public class InGamePlayer extends Player {
      */
     public boolean placeCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide) {
         if (!getCardsInHand().contains(card))
-            //TODO: add exception?
             return false;
         if (card instanceof GoldCard)
             if (((GoldCard) card).getNeededResourcesToPlay().numberOfTimesSatisfied(card, this) <= 0)

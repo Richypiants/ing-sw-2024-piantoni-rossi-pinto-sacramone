@@ -24,11 +24,11 @@ public class Game{
     /*
     The deck of Resource cards of this game
      */
-    private final CardDeck RESOURCE_CARDS_DECK;
+    private final CardDeck<ResourceCard> RESOURCE_CARDS_DECK;
     /*
     The deck of Gold cards of this game
      */
-    private final CardDeck GOLD_CARDS_DECK;
+    private final CardDeck<GoldCard> GOLD_CARDS_DECK;
     /*
     The two Resource cards placed on the table
      */
@@ -118,11 +118,11 @@ public class Game{
     /*
     Returns the Resource cards placed on the table
      */
-    public CardDeck getResourceCardsDeck() {
+    public CardDeck<ResourceCard> getResourceCardsDeck() {
         return RESOURCE_CARDS_DECK;
     }
 
-    public CardDeck getGoldCardsDeck() {
+    public CardDeck<GoldCard> getGoldCardsDeck() {
         return GOLD_CARDS_DECK;
     }
 
@@ -153,7 +153,7 @@ public class Game{
     /*
     Draws from the deck passed as parameter and returns the drawn card
      */
-    public PlayableCard drawFrom(CardDeck deck) {
+    public PlayableCard drawFrom(CardDeck<?> deck) {
         return (PlayableCard) deck.draw();
     }
 
@@ -176,6 +176,9 @@ public class Game{
         return returnedCard;
     }
 }
+
+
+
 
 // nextPlayer() -> Si test (verificare se funziona bene / i due casi per l'if)
 //                 Statement coverage

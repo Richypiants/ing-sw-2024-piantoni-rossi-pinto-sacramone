@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.ServerModel.GameStates;
 
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.ServerModel.Cards.CardDeck;
+import it.polimi.ingsw.gc12.ServerModel.Cards.InitialCard;
 import it.polimi.ingsw.gc12.ServerModel.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.ServerModel.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.ServerModel.Game;
@@ -20,7 +21,7 @@ public class ChooseInitialCardsState extends GameState {
 
     @Override
     public void generateInitialCard() {
-        CardDeck initialCardsDeck = new CardDeck(JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<ArrayList<ObjectiveCard>>() {
+        CardDeck<InitialCard> initialCardsDeck = new CardDeck(JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<ArrayList<ObjectiveCard>>() {
         }));
         for (InGamePlayer target : super.GAME.getPlayers())
             target.addCardToHand((PlayableCard) initialCardsDeck.draw());

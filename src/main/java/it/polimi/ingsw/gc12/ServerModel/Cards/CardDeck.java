@@ -7,18 +7,18 @@ import java.util.Stack;
 /*
 A card deck from which to draw cards during games
  */
-public class CardDeck {
+public class CardDeck<T extends Card>{
 
     /*
     The group of cards which form the deck
      */
-    private final Stack<Card> DECK;
+    private final Stack<T> DECK;
 
     /*
     Constructs a deck of cards by copying the passed cards, shuffling and then pushing them into the card stack
      */
-    public CardDeck(ArrayList<Card> deck) {
-        ArrayList<Card> copy = new ArrayList<>(deck);
+    public CardDeck(ArrayList<T> deck) {
+        ArrayList<T> copy = new ArrayList<>(deck);
 
         Collections.shuffle(copy);
         this.DECK = new Stack<>();
@@ -30,7 +30,7 @@ public class CardDeck {
     /*
     Pushes a card into the stack
      */
-    private void push(Card toInsert){
+    private void push(T toInsert){
         this.DECK.push(toInsert);
     }
 
@@ -55,7 +55,7 @@ public class CardDeck {
 }
 
 // push -> Si test
-//         - Casi limite
+//         - Edge cases
 //           toInsert undefined
 //
 // draw -> Si test

@@ -36,7 +36,7 @@ public class PlayerTurnDrawState extends GameState {
         if (whichType.trim().equalsIgnoreCase("RESOURCE")) {
             target.addCardToHand(GAME.drawFromVisibleCards(GAME.getPlacedResources(), position));
         } else if (whichType.trim().equalsIgnoreCase("GOLD")) {
-            target.addCardToHand(GAME.drawFromVisibleCards(GAME.getPlacedResources(), position));
+            target.addCardToHand(GAME.drawFromVisibleCards(GAME.getPlacedGold(), position));
         } else
             throw new UnknownStringException();
     }
