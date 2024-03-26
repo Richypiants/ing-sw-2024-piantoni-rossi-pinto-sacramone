@@ -23,6 +23,6 @@ public class DrawStartingHandsState extends GameState {
     public void transition() {
         super.transition();
 
-        GAME.changeState(new ChooseObjectiveCardsState(GAME));
+        GAME.setState(new ChooseObjectiveCardsState(GAME));
     }
 }

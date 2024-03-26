@@ -51,11 +51,11 @@ public class PlayerTurnDrawState extends GameState {
             counter = 2 * GAME.getPlayers().size() - currentPlayer - 1;
 
         if (counter == 0) {
-            GAME.changeState(new VictoryCalculationState(GAME, currentPlayer, counter));
+            GAME.setState(new VictoryCalculationState(GAME, currentPlayer, counter));
             return;
         }
 
         nextPlayer();
-        GAME.changeState(new PlayerTurnPlayState(GAME, currentPlayer, counter));
+        GAME.setState(new PlayerTurnPlayState(GAME, currentPlayer, counter));
     }
 }

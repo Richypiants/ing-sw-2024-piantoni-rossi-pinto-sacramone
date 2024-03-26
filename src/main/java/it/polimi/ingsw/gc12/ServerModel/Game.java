@@ -98,7 +98,7 @@ public class Game{
     /*
     Changes the currentState of this game to newState
      */
-    public void changeState(GameState newState) {
+    public void setState(GameState newState) {
         currentState = newState;
     }
 
@@ -107,6 +107,13 @@ public class Game{
      */
     public GameState getCurrentState() {
         return currentState;
+    }
+
+    /*
+    Returns the player that is currently playing
+     */
+    public Player getCurrentPlayer() {
+        return currentState.getCurrentPlayer();
     }
 
     /*

@@ -32,6 +32,6 @@ public class PlayerTurnPlayState extends GameState {
             if (GAME.getPlayers().get(currentPlayer).getPoints() >= 20)
                 counter = 2 * GAME.getPlayers().size() - currentPlayer;
 
-        GAME.changeState(new PlayerTurnDrawState(GAME, currentPlayer, counter));
+        GAME.setState(new PlayerTurnDrawState(GAME, currentPlayer, counter));
     }
 }

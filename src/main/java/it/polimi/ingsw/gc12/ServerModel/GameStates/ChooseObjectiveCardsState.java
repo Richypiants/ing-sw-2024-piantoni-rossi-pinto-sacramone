@@ -52,6 +52,6 @@ public class ChooseObjectiveCardsState extends GameState {
     public void transition() {
         super.transition();
 
-        GAME.changeState(new PlayerTurnPlayState(GAME, 0, -1));
+        GAME.setState(new PlayerTurnPlayState(GAME, 0, -1));
     }
 }

@@ -17,6 +17,6 @@ public class SetupState extends GameState {
     public void transition() {
         super.transition();
 
-        GAME.changeState(new ChooseInitialCardsState(GAME));
+        GAME.setState(new ChooseInitialCardsState(GAME));
     }
 }
