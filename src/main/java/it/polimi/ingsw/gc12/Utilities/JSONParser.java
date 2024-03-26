@@ -26,7 +26,7 @@ public class JSONParser {
             .create();
 
     //Generic method which returns an ArrayList<Card> made of a specific card hierarchy subtype, provided the filename and the TypeToken which represents the generic type
-    public static <E extends Card> ArrayList<Card> deckFromJSONConstructor(String filename, TypeToken<ArrayList<E>> type){
+    public static <E extends Card> ArrayList<E> deckFromJSONConstructor(String filename, TypeToken<ArrayList<E>> type) {
         try{
             return new ArrayList<>(GSON_CARD_BUILDER.fromJson(Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/JSON_Files/" + filename)), type));
         }catch(Exception e){

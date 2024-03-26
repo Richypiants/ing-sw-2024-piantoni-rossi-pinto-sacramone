@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.ServerModel.Cards;
 
+import it.polimi.ingsw.gc12.ServerModel.InGamePlayer;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Image;
 import it.polimi.ingsw.gc12.Utilities.Resource;
@@ -81,6 +82,15 @@ public abstract class PlayableCard extends Card {
      */
     public Map<Resource, Integer> getCenterBackResources() {
         return CENTER_BACK_RESOURCES;
+    }
+
+    //FIXME: abbastanza orribile, sistemare?
+    @Override
+    public int awardPoints(InGamePlayer target) {
+        if (target.getPlacedCards().get(target.getCardCoordinates(this)).getY().equals(Side.BACK))
+            return 0;
+        else
+            return this.POINTS_GRANTED;
     }
 
     @Override

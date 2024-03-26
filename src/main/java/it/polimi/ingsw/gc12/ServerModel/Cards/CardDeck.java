@@ -37,7 +37,7 @@ public class CardDeck<T extends Card>{
     /*
     Pops the first card of the stack and returns it to the caller
      */
-    public Card draw() {
+    public T draw() {
         if (!this.DECK.isEmpty()) {
             return this.DECK.pop();
         }

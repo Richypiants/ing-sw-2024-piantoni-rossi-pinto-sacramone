@@ -46,9 +46,7 @@ public abstract class Card {
     Returns the number of points granted to player target who has just played the card (default for cards
     without points conditions)
      */
-    public int awardPoints(InGamePlayer target) {
-        return this.POINTS_GRANTED;
-    }
+    public abstract int awardPoints(InGamePlayer target);
 }
 
 // getShownSide() (Getter) -> No test

@@ -65,8 +65,10 @@ public class Game{
         this.currentRound = 0;
         this.currentState = new SetupState(this);
 
-        this.RESOURCE_CARDS_DECK = new CardDeck( JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>(){}));
-        this.GOLD_CARDS_DECK = new CardDeck( JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<ArrayList<GoldCard>>(){}));
+        this.RESOURCE_CARDS_DECK = new CardDeck<>(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
+        }));
+        this.GOLD_CARDS_DECK = new CardDeck<>(JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
+        }));
 
         this.PLACED_RESOURCE_CARDS = new ResourceCard[2];
         PLACED_RESOURCE_CARDS[0]= (ResourceCard) RESOURCE_CARDS_DECK.draw();
