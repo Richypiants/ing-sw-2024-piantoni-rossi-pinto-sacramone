@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import it.polimi.ingsw.gc12.ServerModel.Cards.InitialCard;
 import it.polimi.ingsw.gc12.ServerModel.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.ServerModel.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.ServerModel.Conditions.PatternCondition;
@@ -109,6 +110,33 @@ class InGamePlayerTest {
 
         assertEquals(c_o, p1_g.getSecretObjective());
 
+
+    }
+
+    @Test
+    void ResourceRecalcTest() {
+        HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
+        resource.put(new GenericPair<>(-1, -1), Resource.WOLF);
+        resource.put(new GenericPair<>(1, -1), Resource.WOLF);
+        resource.put(new GenericPair<>(-1, 1), Resource.WOLF);
+        resource.put(new GenericPair<>(1, 1), Resource.WOLF);
+        Map<Side, Map<GenericPair<Integer, Integer>, Resource>> corner = new HashMap<>();
+        corner.put(Side.FRONT, resource);
+        corner.put(Side.BACK, resource);
+        Map<Resource, Integer> back = new EnumMap<>(Resource.class);
+        back.put(Resource.WOLF, 1);
+        InitialCard c0 = new InitialCard(0, 2, null, null, corner, back);
+        ResourceCard c1 = new ResourceCard(1, 2, null, null, corner, back);
+        ResourceCard c2 = new ResourceCard(2, 1, null, null, corner, back);
+        Player p1 = new Player("giovanni");
+        InGamePlayer p1_g = new InGamePlayer(p1);
+
+        p1_g.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
+        p1_g.placeCard(new GenericPair<>(1, -1), c1, Side.FRONT);
+        p1_g.placeCard(new GenericPair<>(1, 1), c2, Side.FRONT);
+
+
+        assertEquals(10, p1_g.getOwnedResources().get(Resource.WOLF));
 
     }
 }
