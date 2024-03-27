@@ -48,6 +48,10 @@ class PatternConditionTest {
         ResourceCard c3 = new ResourceCard(3, 0, null, null, corner, back);
         Player p1 = new Player("giovanni");
         InGamePlayer p1_g = new InGamePlayer(p1);
+        p1_g.addCardToHand(c0);
+        p1_g.addCardToHand(c1);
+        p1_g.addCardToHand(c2);
+        p1_g.addCardToHand(c3);
         p1_g.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
         p1_g.placeCard(new GenericPair<>(1, -1), c1, Side.FRONT);
         p1_g.placeCard(new GenericPair<>(1, 1), c2, Side.FRONT);

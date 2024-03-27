@@ -31,7 +31,6 @@ class PlayableCardTest {
 
         assertEquals(Resource.SCROLL, c1.getCornerResource(Side.FRONT, 1, 1));
 
-        // TODO: WIP (corner è stato cambiato da piants da un array ad una HashMap)
 
 
     }
