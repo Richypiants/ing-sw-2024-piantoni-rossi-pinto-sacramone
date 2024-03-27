@@ -14,7 +14,7 @@ import java.util.Map;
 
 public abstract class GameState { //TODO: make all exceptions extends RuntimeException so that you can cancel them from here
     protected final Game GAME;
-    /*
+    /**
     The index which points to the player which is playing right now (starting from 0 when the game starts)
      */
     protected int currentPlayer;
@@ -26,14 +26,14 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
         this.counter = counter;
     }
 
-    /*
+    /**
     Returns the player who is currently playing
      */
     public Player getCurrentPlayer() {
         return GAME.getPlayers().get(currentPlayer);
     }
 
-    /*
+    /**
     Increases the current player counter, making it point to the next player, increasing the turn after everyone
     has played in the current turn
      */

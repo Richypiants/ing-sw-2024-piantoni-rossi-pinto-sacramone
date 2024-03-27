@@ -10,22 +10,22 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.Map;
 
-/*
+/**
 A template for a Gold card in the game's card set
  */
 public class GoldCard extends PlayableCard {
 
-    /*
+    /**
     The condition which is evaluated when calculating total points granted upon playing this card
      */
     private final PointsCondition POINTS_CONDITION;
 
-    /*
+    /**
     The resources needed to play this card
      */
     private final ResourcesCondition RESOURCES_NEEDED_TO_PLAY;
 
-    /*
+    /**
     Generates a gold card from the passed parameters
      */
     public GoldCard(int id, int pointsGranted, Image frontSprite, Image backSprite, Map<Side, Map<GenericPair<Integer, Integer>, Resource>> corners,
@@ -36,7 +36,7 @@ public class GoldCard extends PlayableCard {
         this.RESOURCES_NEEDED_TO_PLAY = resourcesNeededToPlay; //FIXME: and should we copy this too?
     }
 
-    /*
+    /**
     Returns the list of resources needed to play this card
      */
     public ResourcesCondition getNeededResourcesToPlay() {
@@ -44,7 +44,7 @@ public class GoldCard extends PlayableCard {
         return RESOURCES_NEEDED_TO_PLAY;
     }
 
-    /*
+    /**
     Returns the number of points the target InGamePlayer is awarded upon playing this Gold Card by calculating
     how many times the points' condition is satisfied
      */

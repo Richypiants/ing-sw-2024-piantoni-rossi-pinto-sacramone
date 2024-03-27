@@ -1,0 +1,17 @@
+GC02 - Model UML per Peer Review
+
+Ciao,
+allego l'UML del model come da consegna.
+
+Abbiamo optato per un "fat model", che gestisce operazioni quali la pescata, la giocata e il check obiettivi; nel controller metteremo principalmente il protocollo di comunicazione rete e i comandi che attiveranno i metodi del model.
+La classe principale, attorno a cui ruota la partita, è la classe Match, la quale istanzia tutte le altre classi principali quali Player (da 2 a 4) e un *Deck per ogni tipo (Resource, Start, ecc), e gestisce l'inizio partita e l'ordine dei turni.
+La classe Player istanzia una sua mano, un suo campo, un suo inventario e possiede un colore (final). Il giocatore di turno è riconosciuto da un attributo di Player.
+La classe Field utilizza come oggetto di rappresentazione una HashMap, che tiene come value la carta giocata e come chiave un oggetto di classe Coords, semplice contenitore per due coordinate (x,y).
+L'inventario è rappresentato dalla classe ResourceCounter, classe che è in realtà un generico contenitore di "quantità associate a ogni risorsa", e viene riutilizzata per situazioni come il controllo obiettivi e requisiti di giocata delle carte.
+La classe Hand contiene la mano del giocatore (3 carte giocabili), e quella contenente il suo obiettivo personale.
+Infine, la classe astratta Deck definisce un mazzo, di cui esistono 4 tipi: ResourceDeck (carte risorsa), GoldDeck (carte oro), StartDeck (carte iniziali) e QuestDeck (carte obiettivo).
+Istanzia una lista di Card, altro oggetto astratto di cui esistono le quattro variazioni come sopra. A ogni *Deck vengono associate solo *Card dello stesso tipo, e il costruttore di Deck funge anche da factory per generare tutte le Card da un file JSON pre-impostato.
+La classe Card istanzia otto oggetti Corner, in questo ordine: fronte nord-ovest, fronte sud-ovest, fronte nord-est, fronte sud-est, retro stesso ordine. Metodi sono forniti per lavorare sull'angolo visibile, e un attributo di Card regola il verso della carta.
+La QuestCard possiede un obiettivo che conferisce punti al giocatore di turno, che viene controllato a seconda dei parametri inseriti da costruttore.
+La GoldCard espande Card con un costo di giocata, controllato quando viene posizionata, e possiede a sua volta un obiettivo che attribuisce punti.
+Infine, le due enum rappresentano: una le risorse del gioco (funghi, animali, oggetti, ecc.) con colore annesso, e una i possibili obiettivi di GoldCard.

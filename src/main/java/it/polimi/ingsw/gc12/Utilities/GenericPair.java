@@ -2,23 +2,23 @@ package it.polimi.ingsw.gc12.Utilities;
 
 import java.util.Objects;
 
-/*
+/**
 A pair of generic elements
  */
 public class GenericPair<T1, T2> {
     //TODO: make everything private final again once JSONParser is fixed
 
-    /*
+    /**
     The first attribute of this pair
      */
     private final T1 X;
 
-    /*
+    /**
     The second attribute of this pair
      */
     private final T2 Y;
 
-    /*
+    /**
     Generates a pair from the given parameters
      */
     public GenericPair(T1 x, T2 y) {
@@ -26,14 +26,14 @@ public class GenericPair<T1, T2> {
         this.Y = y;
     }
 
-    /*
+    /**
     Returns the first attribute of this pair
      */
     public T1 getX() {
         return X;
     }
 
-    /*
+    /**
     Returns the second attribute of this pair
      */
     public T2 getY() {

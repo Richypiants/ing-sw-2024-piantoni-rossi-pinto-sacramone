@@ -11,41 +11,41 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/*
+/**
 A structure for a player which is currently playing a game
  */
 public class InGamePlayer extends Player {
 
-    /*
+    /**
     This player's color
      */
     public final Color COLOR = null; //TODO: implement color selection logic
-    /*
+    /**
     The cards in this player's hand
      */
     private final ArrayList<PlayableCard> CARDS_IN_HAND;
-    /*
-
-     */
-    private boolean isActive = true; //TODO: implement activity management
-    /*
+    /**
     The resources owned by this player currently
      */
     private final EnumMap<Resource, Integer> OWNED_RESOURCES;
-    /*
+    /**
     The field of this player
      */
     private final Field OWN_FIELD;
-    /*
+    /**
+
+     */
+    private boolean isActive = true; //TODO: implement activity management
+    /**
     The points currently gained by this player
      */
     private int points;
-    /*
+    /**
     The secret Objective Card chosen by this player
      */
     private ObjectiveCard secretObjective;
 
-    /*
+    /**
     Constructs an InGamePlayer from the player passed as parameter
      */
     protected InGamePlayer(Player player) {
@@ -64,28 +64,28 @@ public class InGamePlayer extends Player {
         OWN_FIELD = new Field();
     }
 
-    /*
+    /**
     Given the desired amount to be increased by, updates the player's points
      */
     public void increasePoints(int pointsToAdd) {
         points += pointsToAdd;
     }
 
-    /*
+    /**
     Returns this player's current points
      */
     public int getPoints() {
         return points;
     }
 
-    /*
+    /**
     Returns this player's current points
      */
     public boolean isActive() {
         return isActive;
     }
 
-    /*
+    /**
     Returns this player's current points
      */
     protected void toggleActive() {
@@ -93,15 +93,20 @@ public class InGamePlayer extends Player {
         //TODO: controllare, se tutti sono inattivi tranne uno sospendere il gioco!
     }
 
-    /*
+    /**
     Returns a copy of the list of cards in this player's hand
      */
     public ArrayList<PlayableCard> getCardsInHand() {
         return new ArrayList<>(CARDS_IN_HAND);
     }
 
-    /* Given the card and the desired position, wrapped in a GenericPair structure meaning <x,y> coordinates on
+    /**
+     Given the card and the desired position, wrapped in a GenericPair structure meaning <x,y> coordinates on
      the field, places the card into the ownField HashMap, also incrementing the ownedResources by the correct number
+     @requires card to place is in this player's hand (contained in CARDS_IN_HAND)
+     @requires if gold card: this player has the needed resources
+     @ensures for each resource on the played side, this player's resources are incremented
+     @ensures if this card covers corners in other cards, those resources are decremented
      */
     public boolean placeCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide) {
         if (!getCardsInHand().contains(card))
@@ -151,7 +156,8 @@ public class InGamePlayer extends Player {
         }
         return false;
     }
-    /*
+
+    /**
     Adds the pickedCard to the current player's hand
      */
     public void addCardToHand(PlayableCard pickedCard) {
@@ -159,42 +165,42 @@ public class InGamePlayer extends Player {
         CARDS_IN_HAND.add(pickedCard);
     }
 
-    /*
+    /**
     Given a specific resource type and the quantity to be increased by, updates the HashMap
      */
     protected void incrementOwnedResource(Resource resource, int numberToBeIncreased){
         OWNED_RESOURCES.put(resource, OWNED_RESOURCES.get(resource) + numberToBeIncreased);
     }
 
-    /*
+    /**
     Returns a copy of the map of resources owned by this player
      */
     public EnumMap<Resource, Integer> getOwnedResources() {
         return new EnumMap<>(OWNED_RESOURCES);
     }
 
-    /*
+    /**
     Returns the cards placed by this player
      */
     public HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
         return OWN_FIELD.getPlacedCards();
     }
 
-    /*
+    /**
     Returns the available positions where this player can place cards next
      */
     protected ArrayList<GenericPair<Integer, Integer>> getOpenCorners() {
         return OWN_FIELD.getOpenCorners();
     }
 
-    /*
+    /**
     Returns this player's secret Objective card
      */
     public ObjectiveCard getSecretObjective() {
         return secretObjective;
     }
 
-    /*
+    /**
     Sets this player's secret Objective card
      */
     public void setSecretObjective(ObjectiveCard objectiveCard) {

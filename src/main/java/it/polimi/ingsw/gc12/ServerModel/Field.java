@@ -9,22 +9,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
-/*
+/**
 A field that stores the cards played by a player and the open corners where next cards can be played
  */
 public class Field {
 
-    /*
+    /**
     The map from coordinates to the card played in that position
      */
     private final HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> PLACED_CARDS;
 
-    /*
+    /**
     Available position where the next cards can be played
      */
     private final ArrayList<GenericPair<Integer, Integer>> OPEN_CORNERS;
 
-    /*
+    /**
     Constructs an empty Field
      */
     protected Field() {
@@ -33,8 +33,12 @@ public class Field {
         OPEN_CORNERS.add(new GenericPair<>(0, 0));
     }
 
-    /*
+    /**
     Adds a card to the played cards on the field
+     @requires coordinates' pair is valid (contained in OPEN_CORNERS)
+     @ensures this card is now contained in PLAYED_CARDS
+     @ensures these coordinates are no longer in OPEN_CORNERS
+     @ensures the corners of this card are added to OPEN_CORNERS but only if valid
      */
     protected boolean addCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide) {
         if (!OPEN_CORNERS.contains(coordinates)) {
@@ -63,15 +67,17 @@ public class Field {
                                                 )
                                         )
                                 ).flatMap((optionalCard) ->
-                                        Optional.of(optionalCard.getX()
-                                                .getCornerResource(
-                                                        optionalCard.getY(),
-                                                        offset.getX(),
-                                                        offset.getY()
+                                        Optional.of(
+                                                !(optionalCard.getX()
+                                                        .getCornerResource(
+                                                                optionalCard.getY(),
+                                                                offset.getX(),
+                                                                offset.getY()
+                                                        )
+                                                        .equals(Resource.NOT_A_CORNER)
                                                 )
-                                                .equals(Resource.NOT_A_CORNER)
                                         )
-                                ).orElse(false)
+                                ).orElse(true)
                         )
                         .reduce(true, (a, b) -> a && b)
                 ).forEach(OPEN_CORNERS::add);
@@ -79,21 +85,21 @@ public class Field {
         return true;
     }
 
-    /*
+    /**
     Returns a copy of the map of placed cards, addressed by their position as key
      */
     public HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
         return new HashMap<>(PLACED_CARDS);
     }
 
-    /*
+    /**
     Returns a copy of the list of corners where cards can be placed
      */
     public ArrayList<GenericPair<Integer, Integer>> getOpenCorners() {
         return new ArrayList<>(OPEN_CORNERS);
     }
 
-    /*
+    /**
     Returns the coordinates for a given card, inverting the map
      */
     public GenericPair<Integer, Integer> getCardCoordinates(PlayableCard placedCard) {

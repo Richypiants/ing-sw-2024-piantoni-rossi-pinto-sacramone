@@ -30,7 +30,10 @@ class InGamePlayerTest {
         corner.put(Side.FRONT, resource);
         corner.put(Side.BACK, resource);
 
-        ResourceCard c1 = new ResourceCard(1, 2, null, null, corner, new EnumMap<>(Resource.class));
+        EnumMap<Resource, Integer> back = new EnumMap<>(Resource.class);
+        back.put(Resource.WOLF, 1);
+
+        ResourceCard c1 = new ResourceCard(1, 2, null, null, corner, back);
 
         Player p1 = new Player("SACRI");
         InGamePlayer p1_g = new InGamePlayer(p1);

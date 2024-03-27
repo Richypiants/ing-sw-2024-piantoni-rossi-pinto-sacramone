@@ -20,12 +20,18 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class JSONParser {
-    //Creates an instance of a GsonBuilder with custom directives related to how to parse our PointsCondition interface and ResourceCondition
+    /**
+     * Creates an instance of a GsonBuilder with custom directives related to how to parse our PointsCondition
+     * interface and ResourceCondition
+     */
     private static final Gson GSON_CARD_BUILDER = new GsonBuilder().registerTypeAdapter(PointsCondition.class, new PointsConditionAdapter())
             .registerTypeAdapter(ResourcesCondition.class, new ResourcesConditionAdapter())
             .create();
 
-    //Generic method which returns an ArrayList<Card> made of a specific card hierarchy subtype, provided the filename and the TypeToken which represents the generic type
+    /**
+     *     Generic method which returns an ArrayList<Card> made of a specific card hierarchy subtype, provided the
+     *     filename and the TypeToken which represents the generic type
+     */
     public static <E extends Card> ArrayList<E> deckFromJSONConstructor(String filename, TypeToken<ArrayList<E>> type) {
         try{
             return new ArrayList<>(GSON_CARD_BUILDER.fromJson(Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/JSON_Files/" + filename)), type));
@@ -35,7 +41,9 @@ public class JSONParser {
         }
     }
 
-    //Helper Method which converts the String in the effective Resource.ENUM
+    /**
+     *     Helper Method which converts the String in the effective Resource.ENUM
+     */
     private static Resource conversionHelper(String resource){
         return switch (resource) {
             case "MUSHROOM" -> Resource.MUSHROOM;
@@ -49,7 +57,9 @@ public class JSONParser {
         };
     }
 
-    //Custom TypeAdapter to handle the PointsCondition hierarchy serialization and deserialization
+    /**
+     * Custom TypeAdapter to handle the PointsCondition hierarchy serialization and deserialization
+     */
     private static class PointsConditionAdapter extends TypeAdapter<PointsCondition> {
         //This method is unused and only implemented due to the extends.
         @Override
@@ -98,7 +108,9 @@ public class JSONParser {
         }
     }
 
-    //Custom TypeAdapter to handle the ResourceCondition serialization and deserialization
+    /**
+     *     Custom TypeAdapter to handle the ResourceCondition serialization and deserialization
+     */
     private static class ResourcesConditionAdapter extends TypeAdapter<ResourcesCondition> {
         //This method is unused and only implemented due to the extends.
         @Override
