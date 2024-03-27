@@ -14,8 +14,13 @@ import java.util.Map;
 
 public class ChooseObjectiveCardsState extends GameState {
 
-    private final CardDeck OBJECTIVE_CARD_DECK = new CardDeck(JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<ArrayList<ObjectiveCard>>() {
-    }));
+    private final CardDeck OBJECTIVE_CARD_DECK = new CardDeck(
+            JSONParser.deckFromJSONConstructor(
+                    "objective_cards.json",
+                    new TypeToken<ArrayList<ObjectiveCard>>() {
+                    }
+            )
+    );
 
     public ChooseObjectiveCardsState(Game thisGame) {
         super(thisGame, 0, -1);
@@ -39,7 +44,7 @@ public class ChooseObjectiveCardsState extends GameState {
         return objectivesSelection;
     }
 
-    //TODO: Check if the given ObjectiveCard was in the possible choice for the targeted InGamePlayer
+    //TODO: Check if the given ObjectiveCard was in the possible choice for the targeted InGamePlayer (in hand?)
     @Override
     public void pickObjective(InGamePlayer player, ObjectiveCard objective) throws AlreadySetCardException {
         if (player.getSecretObjective() == null)

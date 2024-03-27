@@ -1,0 +1,45 @@
+(N): From Network
+
+//ALWAYS
+
+keepAlive(Player) //(o addirittura Socket)
+
+//LOBBY SECTION
+
+setNickname(Player, String(N))
+
+joinLobby(Player, GameLobby(N))
+
+leave(Player)
+
+//GAME SECTION
+
+placeInitialCard(InGamePlayer, Side(N))
+
+pickObjective(InGamePlayer, ObjectiveCard(N))
+
+placeCard(InGamePlayer, GenericPair<Integer, Integer>(N), PlayableCard(N), Side(N))
+
+drawFrom(InGamePlayer, String(N))
+
+drawFrom(InGamePlayer, String(N), int(N))
+
+leave(InGamePlayer, ???) //manca il flag per tenere traccia delle disconnessioni ---> chiama leave(Player) della lobby
+//...ma non riusciamo proprio a tenere Game e GameLobby ereditate???
+
+//CHAT SECTION
+
+directMessage(InGamePlayer, InGamePlayer(N))
+
+broadcastMessage(InGamePlayer)
+
+
+
+
+
+
+
+
+
+
+

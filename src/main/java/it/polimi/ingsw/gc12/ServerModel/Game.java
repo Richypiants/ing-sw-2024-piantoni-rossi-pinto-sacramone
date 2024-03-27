@@ -172,18 +172,21 @@ public class Game{
     Given a pattern matching string {gold, resource} and a valid position {0, 1}, returns the selected card and
     replaces it on the board
      */
-    public PlayableCard drawFromVisibleCards(Card[] deck, int position) {
+
+    //FIXME: change in UML
+    public PlayableCard drawFrom(Card[] deck, int position) {
         PlayableCard returnedCard = null;
 
         if (Arrays.equals(deck, PLACED_GOLD_CARDS)) {
             returnedCard = PLACED_GOLD_CARDS[position];
-            PLACED_GOLD_CARDS[position] = (GoldCard) GOLD_CARDS_DECK.draw();
+            PLACED_GOLD_CARDS[position] = GOLD_CARDS_DECK.draw();
         } else if (Arrays.equals(deck, PLACED_RESOURCE_CARDS)) {
             returnedCard = PLACED_RESOURCE_CARDS[position];
-            PLACED_RESOURCE_CARDS[position] = (ResourceCard) RESOURCE_CARDS_DECK.draw();
+            PLACED_RESOURCE_CARDS[position] = RESOURCE_CARDS_DECK.draw();
         } else {
             //TODO: UnmatchedStringException
         }
+        //TODO: DrawnCardIsNullException
         return returnedCard;
     }
 }

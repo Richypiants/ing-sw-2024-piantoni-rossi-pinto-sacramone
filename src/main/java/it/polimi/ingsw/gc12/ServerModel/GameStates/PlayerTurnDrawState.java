@@ -24,8 +24,9 @@ public class PlayerTurnDrawState extends GameState {
         }
     }
 
+    //FIXME: change in UML
     @Override
-    public void selectFromVisibleCards(InGamePlayer target, String whichType, int position)
+    public void drawFrom(InGamePlayer target, String whichType, int position)
             throws UnexpectedPlayerException, InvalidPositionException, UnknownStringException {
         if (!target.equals(GAME.getPlayers().get(currentPlayer)))
             throw new UnexpectedPlayerException();
@@ -34,9 +35,9 @@ public class PlayerTurnDrawState extends GameState {
             throw new InvalidPositionException();
         }
         if (whichType.trim().equalsIgnoreCase("RESOURCE")) {
-            target.addCardToHand(GAME.drawFromVisibleCards(GAME.getPlacedResources(), position));
+            target.addCardToHand(GAME.drawFrom(GAME.getPlacedResources(), position));
         } else if (whichType.trim().equalsIgnoreCase("GOLD")) {
-            target.addCardToHand(GAME.drawFromVisibleCards(GAME.getPlacedGold(), position));
+            target.addCardToHand(GAME.drawFrom(GAME.getPlacedGold(), position));
         } else
             throw new UnknownStringException();
     }
