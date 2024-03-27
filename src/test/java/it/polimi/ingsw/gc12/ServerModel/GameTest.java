@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import it.polimi.ingsw.gc12.ServerModel.Cards.GoldCard;
 import it.polimi.ingsw.gc12.ServerModel.Cards.ResourceCard;
 import org.junit.jupiter.api.Test;
 
@@ -48,10 +49,20 @@ class GameTest {
     }
 
     @Test
-    void drawFromVisibleCards() {
+    void drawFromVisibleCardsResource() {
         Player p1 = new Player("P1");
         GameLobby lobby = new GameLobby(1, p1);
         Game game = new Game(lobby);
         assertInstanceOf(ResourceCard.class, game.drawFromVisibleCards(game.getPlacedResources(), 0));
     }
+
+    @Test
+    void drawFromVisibleCardsGold() {
+        Player p1 = new Player("P1");
+        GameLobby lobby = new GameLobby(1, p1);
+        Game game = new Game(lobby);
+        assertInstanceOf(GoldCard.class, game.drawFromVisibleCards(game.getPlacedGold(), 0));
+    }
+
+
 }
