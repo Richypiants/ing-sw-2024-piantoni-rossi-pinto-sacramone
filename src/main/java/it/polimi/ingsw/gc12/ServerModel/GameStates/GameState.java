@@ -79,7 +79,8 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
         throw new ForbiddenActionException();
     }
 
-    public void selectFromVisibleCards(InGamePlayer target, String whichType, int position)
+    //FIXME: change in UML
+    public void drawFrom(InGamePlayer target, String whichType, int position)
             throws ForbiddenActionException, UnexpectedPlayerException, InvalidPositionException,
             UnknownStringException, UnexpectedPlayerException {
         throw new ForbiddenActionException();
