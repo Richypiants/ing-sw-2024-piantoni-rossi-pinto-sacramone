@@ -53,7 +53,7 @@ class GameTest {
         Player p1 = new Player("P1");
         GameLobby lobby = new GameLobby(1, p1);
         Game game = new Game(lobby);
-        assertInstanceOf(ResourceCard.class, game.drawFromVisibleCards(game.getPlacedResources(), 0));
+        assertInstanceOf(ResourceCard.class, game.drawFrom(game.getPlacedResources(), 0));
     }
 
     @Test
@@ -61,7 +61,7 @@ class GameTest {
         Player p1 = new Player("P1");
         GameLobby lobby = new GameLobby(1, p1);
         Game game = new Game(lobby);
-        assertInstanceOf(GoldCard.class, game.drawFromVisibleCards(game.getPlacedGold(), 0));
+        assertInstanceOf(GoldCard.class, game.drawFrom(game.getPlacedGold(), 0));
     }
 
 

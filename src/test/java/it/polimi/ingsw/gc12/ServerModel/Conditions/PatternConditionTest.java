@@ -1,9 +1,11 @@
-package it.polimi.ingsw.gc12.ServerModel;
+package it.polimi.ingsw.gc12.ServerModel.Conditions;
 
 import it.polimi.ingsw.gc12.ServerModel.Cards.InitialCard;
 import it.polimi.ingsw.gc12.ServerModel.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.ServerModel.Cards.ResourceCard;
-import it.polimi.ingsw.gc12.ServerModel.Conditions.PatternCondition;
+import it.polimi.ingsw.gc12.ServerModel.Game;
+import it.polimi.ingsw.gc12.ServerModel.GameLobby;
+import it.polimi.ingsw.gc12.ServerModel.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -47,18 +49,19 @@ class PatternConditionTest {
         ResourceCard c2 = new ResourceCard(2, 1, null, null, corner, back);
         ResourceCard c3 = new ResourceCard(3, 0, null, null, corner, back);
         Player p1 = new Player("giovanni");
-        InGamePlayer p1_g = new InGamePlayer(p1);
-        p1_g.addCardToHand(c0);
-        p1_g.addCardToHand(c1);
-        p1_g.addCardToHand(c2);
-        p1_g.addCardToHand(c3);
-        p1_g.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
-        p1_g.placeCard(new GenericPair<>(1, -1), c1, Side.FRONT);
-        p1_g.placeCard(new GenericPair<>(1, 1), c2, Side.FRONT);
-        p1_g.placeCard(new GenericPair<>(2, 2), c3, Side.FRONT);
+        GameLobby lobby = new GameLobby(1, p1);
+        Game game = new Game(lobby);
+        game.getPlayers().get(0).addCardToHand(c0);
+        game.getPlayers().get(0).addCardToHand(c1);
+        game.getPlayers().get(0).addCardToHand(c2);
+        game.getPlayers().get(0).addCardToHand(c3);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(1, -1), c1, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(1, 1), c2, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(2, 2), c3, Side.FRONT);
 
 
-        assertEquals(1, p.numberOfTimesSatisfied(c_o, p1_g));
+        assertEquals(1, p.numberOfTimesSatisfied(c_o, game.getPlayers().get(0)));
     }
 
 

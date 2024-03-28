@@ -1,9 +1,9 @@
-package it.polimi.ingsw.gc12.ServerModel;
+package it.polimi.ingsw.gc12.ServerModel.Cards;
 
 import com.google.gson.reflect.TypeToken;
-import it.polimi.ingsw.gc12.ServerModel.Cards.Card;
-import it.polimi.ingsw.gc12.ServerModel.Cards.CardDeck;
-import it.polimi.ingsw.gc12.ServerModel.Cards.ResourceCard;
+import it.polimi.ingsw.gc12.ServerModel.Game;
+import it.polimi.ingsw.gc12.ServerModel.GameLobby;
+import it.polimi.ingsw.gc12.ServerModel.Player;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import org.junit.jupiter.api.Test;
 
@@ -31,12 +31,13 @@ class CardDeckTest {
     @Test
     void correctDraw() {
         Player p1 = new Player("giovanni");
-        InGamePlayer p1_g = new InGamePlayer(p1);
+        GameLobby lobby = new GameLobby(1, p1);
+        Game game = new Game(lobby);
         CardDeck<ResourceCard> deck = new CardDeck<>(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
         }));
 
-        p1_g.addCardToHand(deck.draw());
-        assert (!p1_g.getCardsInHand().isEmpty());
+        game.getPlayers().get(0).addCardToHand(deck.draw());
+        assert (!game.getPlayers().get(0).getCardsInHand().isEmpty());
     }
 
     @Test

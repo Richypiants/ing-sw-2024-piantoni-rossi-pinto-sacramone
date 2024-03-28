@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc12.ServerModel;
+package it.polimi.ingsw.gc12.ServerModel.Conditions;
 
 import org.junit.jupiter.api.Test;
 

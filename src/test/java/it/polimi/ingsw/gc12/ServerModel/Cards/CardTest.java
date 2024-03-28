@@ -1,6 +1,8 @@
-package it.polimi.ingsw.gc12.ServerModel;
+package it.polimi.ingsw.gc12.ServerModel.Cards;
 
-import it.polimi.ingsw.gc12.ServerModel.Cards.ResourceCard;
+import it.polimi.ingsw.gc12.ServerModel.Game;
+import it.polimi.ingsw.gc12.ServerModel.GameLobby;
+import it.polimi.ingsw.gc12.ServerModel.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -30,11 +32,11 @@ class CardTest {
 
         Player player = new Player("SACRI");
 
-        InGamePlayer playerGame = new InGamePlayer(player);
-
+        GameLobby lobby = new GameLobby(1, player);
+        Game game = new Game(lobby);
         // System.out.print("value: " + c1.awardPoints(playerGame));
 
-        assertEquals(4, c1.awardPoints(playerGame));
+        assertEquals(4, c1.awardPoints(game.getPlayers().get(0)));
 
 
     }

@@ -1,8 +1,10 @@
-package it.polimi.ingsw.gc12.ServerModel;
+package it.polimi.ingsw.gc12.ServerModel.Cards;
 
-import it.polimi.ingsw.gc12.ServerModel.Cards.GoldCard;
 import it.polimi.ingsw.gc12.ServerModel.Conditions.PatternCondition;
 import it.polimi.ingsw.gc12.ServerModel.Conditions.PointsCondition;
+import it.polimi.ingsw.gc12.ServerModel.Game;
+import it.polimi.ingsw.gc12.ServerModel.GameLobby;
+import it.polimi.ingsw.gc12.ServerModel.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -46,9 +48,10 @@ class GoldCardTest {
         GoldCard gold = new GoldCard(3, 1, null, null, corner, new EnumMap<>(Resource.class), p, null);
 
         Player p1 = new Player("SACRI");
-        InGamePlayer p1_g = new InGamePlayer(p1);
+        GameLobby lobby = new GameLobby(1, p1);
+        Game game = new Game(lobby);
 
-        assertEquals(1, gold.awardPoints(p1_g));
+        assertEquals(1, gold.awardPoints(game.getPlayers().get(0)));
 
 
         //TODO: WIP (IndexOutOfBoundsException)
