@@ -35,8 +35,5 @@ class PlayableCardTest {
 
     }
 
-    @Test
-    void getCorners() {
 
-    }
 }
