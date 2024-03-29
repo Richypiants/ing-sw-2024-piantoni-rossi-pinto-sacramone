@@ -1,12 +1,18 @@
 package it.polimi.ingsw.gc12.ServerController;
 
+import it.polimi.ingsw.gc12.ServerModel.Player;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClientHandler<V, A> implements CompletionHandler<V, A> {
 
+    private final static Map<AsynchronousSocketChannel, Player> socketsToPlayers = new HashMap<>();
     private final ObjectInputStream objectInputStream;
     private final ObjectOutputStream objectOutputStream;
     private final ByteArrayOutputStream byteOutputStream;
@@ -24,20 +30,27 @@ public class ClientHandler<V, A> implements CompletionHandler<V, A> {
 
     }
 
-    //TODO: questo è solo per leggere client e rispondere... manca l'handler per update! (se ci sarà...)
-    @Override
-    public void completed(V result, A attachment) {
-        /*ArrayList<Object> receivedCommand = (ArrayList<Object>) readObject();
+    public static void main(String[] args) throws Throwable {
 
-        Map<String, Command> commandsMap.get(receivedCommand.getFirst())
-                .execute(receivedCommand.subList(1, receivedCommand.size()));
+        System.out.println(Controller.commandHandles.keySet());
+        //Controller.commandHandles.get("createHandles").invoke();
 
-        Player player = function(clientSocket)...
+        /*final int[] pos = {0};
 
-        command.execute(Player player, ArrayList<Object> objects);
-
-        //nel command se nickname ricevuto valido: put(this) in Map
-        */
+        System.out.println(currentState.getClass().getMethod(
+                                "placeInitialCard",
+                                parameters.stream()
+                                        .map(Object::getClass)
+                                        .collect(() -> new Class<?>[parameters.size()],
+                                                (c1, c2) -> {
+                                                    c1[pos[0]] = c2;
+                                                    pos[0]++;
+                                                },
+                                                (c1, c2) -> System.out.println()
+                                        )
+                        )
+                        .invoke(currentState, parameters.toArray())
+        );*/
     }
 
     @Override
@@ -54,5 +67,32 @@ public class ClientHandler<V, A> implements CompletionHandler<V, A> {
     private ByteBuffer writeObject(Object obj) throws IOException {
         objectOutputStream.writeObject(obj);
         return ByteBuffer.wrap(byteOutputStream.toByteArray());
+    }
+
+    //TODO: questo è solo per leggere client e rispondere... manca l'handler per update! (se ci sarà...)
+    @Override
+    public void completed(V result, A attachment) {
+        //TODO: clean input (or nickname only)???
+        ArrayList<Object> receivedCommand = null;
+        try {
+            receivedCommand = (ArrayList<Object>) readObject();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        receivedCommand.add(1, Controller.players.get(clientSocket));
+        //FIXME: e se non lo trova? exception... ma per createPlayer?
+
+        //TODO: riferimento al Game?
+        try {
+            Controller.commandHandles.get((String) receivedCommand.removeFirst())
+                    .invokeWithArguments(receivedCommand);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+
+        //nel command se nickname ricevuto valido: put(this) in Map
     }
 }

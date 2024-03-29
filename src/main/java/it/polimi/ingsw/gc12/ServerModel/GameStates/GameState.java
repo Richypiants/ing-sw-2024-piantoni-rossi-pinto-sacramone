@@ -11,6 +11,7 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.UUID;
 
 public abstract class GameState { //TODO: make all exceptions extends RuntimeException so that you can cancel them from here
     protected final Game GAME;
@@ -43,6 +44,22 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
         }
         while (!GAME.getPlayers().get(currentPlayer).isActive())
             currentPlayer = (currentPlayer + 1) % GAME.getPlayers().size();
+    }
+
+    public static void createLobby(Player player, int maxPlayers) throws ForbiddenActionException {
+        throw new ForbiddenActionException();
+    }
+
+    public void setNickname(Player player, String nickname) throws ForbiddenActionException {
+        throw new ForbiddenActionException();
+    }
+
+    public void joinLobby(Player player, UUID lobbyUUID) throws ForbiddenActionException {
+        throw new ForbiddenActionException();
+    }
+
+    public void leaveLobby(Player player) throws ForbiddenActionException {
+        throw new ForbiddenActionException();
     }
 
     public void placeCommonCards() throws ForbiddenActionException {

@@ -1,7 +1,13 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
-import java.util.ArrayList;
+import it.polimi.ingsw.gc12.ServerModel.GameStates.GameState;
+import it.polimi.ingsw.gc12.ServerModel.GameStates.NotStartedState;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+//FIXME: fix UML
 /**
 A template for a game lobby where players wait for new games to start
  */
@@ -10,11 +16,15 @@ public class GameLobby {
     /**
     The list of players who have already joined this lobby
      */
-    private final ArrayList<Player> LIST_OF_PLAYERS;
+    protected final List<Player> LIST_OF_PLAYERS;
     /**
     The maximum number of players which can join this lobby
      */
     private int maxPlayers;
+    /**
+     *
+     */
+    private GameState currentState;
 
     /**
     Constructs a game lobby of at most maxPlayers players and which contains the player who has created it
@@ -23,14 +33,16 @@ public class GameLobby {
         this.maxPlayers = maxPlayers;
         this.LIST_OF_PLAYERS = new ArrayList<>();
         addPlayer(creatorPlayer);
+        this.currentState = new NotStartedState();
     }
 
     /**
     Constructs a lobby from another lobby passed as parameter
      */
-    public GameLobby(GameLobby copyFrom) {
-        this.maxPlayers = copyFrom.getMaxPlayers();
-        this.LIST_OF_PLAYERS = new ArrayList<>(copyFrom.getListOfPlayers());
+    protected GameLobby(int maxPlayers, List<? extends Player> players) {
+        this.maxPlayers = maxPlayers;
+        Collections.shuffle(players);
+        this.LIST_OF_PLAYERS = Collections.unmodifiableList(players);
     }
 
     /**
@@ -77,6 +89,20 @@ public class GameLobby {
         if (numOfMaxPlayers <= 4) {
             this.maxPlayers = numOfMaxPlayers;
         }
+    }
+
+    /**
+     * Changes the currentState of this game to newState
+     */
+    public void setState(GameState newState) {
+        currentState = newState;
+    }
+
+    /**
+     * Returns the current game state (of type GameState)
+     */
+    public GameState getCurrentState() {
+        return currentState;
     }
 }
 

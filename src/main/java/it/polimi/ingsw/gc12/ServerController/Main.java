@@ -3,9 +3,11 @@ package it.polimi.ingsw.gc12.ServerController;
 public class Main {
 
     public static void main(String[] args) {
-        //Caricare le carte
+        //TODO: Caricare le carte
 
-        //fare un nuovo thread per il server e poi interruptarlo
+        //Caricamento di tutti i comandi validi
+
+        //fare un nuovo thread per poter poi interruptare il server
         Server server = Server.getInstance();
         server.run();
     }

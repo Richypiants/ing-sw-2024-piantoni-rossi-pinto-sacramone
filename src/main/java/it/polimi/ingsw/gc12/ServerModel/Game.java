@@ -2,25 +2,19 @@ package it.polimi.ingsw.gc12.ServerModel;
 
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.ServerModel.Cards.*;
-import it.polimi.ingsw.gc12.ServerModel.GameStates.GameState;
 import it.polimi.ingsw.gc12.ServerModel.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
 A structure for games after they have started
  */
-//FIXME: should inherit from GameLobby to manage the start of games more easily in the Controller...
-public class Game{
+//FIXME: should inherit from GameLobby to manage the start of games more easily in the Controller... fix UML
+public class Game extends GameLobby {
 
-    /**
-    The list of player participating in this game
-     */
-    private final ArrayList<InGamePlayer> LIST_OF_GAME_PLAYERS;
     /**
     The deck of Resource cards of this game
      */
@@ -42,9 +36,6 @@ public class Game{
      */
     private final ObjectiveCard[] COMMON_OBJECTIVES;
     /**
-     */
-    private GameState currentState;
-    /**
     The current turn's number (starting from 1 in the first turn)
      */
     private int currentRound;
@@ -53,17 +44,13 @@ public class Game{
     Constructs a new game instance from the lobby passed as parameter
      */
     public Game(GameLobby lobby) {
-
-        //TODO: make this unmodifiable
-        this.LIST_OF_GAME_PLAYERS = lobby.getListOfPlayers()
+        super(lobby.getMaxPlayers(), lobby.getListOfPlayers()
                 .stream()
                 .map(InGamePlayer::new)
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        Collections.shuffle(this.LIST_OF_GAME_PLAYERS);
+                .toList());
 
         this.currentRound = 0;
-        this.currentState = new SetupState(this);
+        setState(new SetupState(this));
 
         this.RESOURCE_CARDS_DECK = new CardDeck<>(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
         }));
@@ -85,7 +72,10 @@ public class Game{
     Returns the player who is currently playing
      */
     public ArrayList<InGamePlayer> getPlayers() {
-        return new ArrayList<>(LIST_OF_GAME_PLAYERS);
+        return super.getListOfPlayers()
+                .stream()
+                .map((player) -> (InGamePlayer) player)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -96,24 +86,10 @@ public class Game{
     }
 
     /**
-    Changes the currentState of this game to newState
-     */
-    public void setState(GameState newState) {
-        currentState = newState;
-    }
-
-    /**
-    Returns the current game state (of type GameState)
-     */
-    public GameState getCurrentState() {
-        return currentState;
-    }
-
-    /**
     Returns the player that is currently playing
      */
     public Player getCurrentPlayer() {
-        return currentState.getCurrentPlayer();
+        return getCurrentState().getCurrentPlayer();
     }
 
     /**
