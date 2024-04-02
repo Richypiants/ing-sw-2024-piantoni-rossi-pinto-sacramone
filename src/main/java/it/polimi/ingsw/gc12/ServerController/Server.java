@@ -5,6 +5,9 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,11 +26,22 @@ public class Server {
     }
 
     public void run() {
+        //RMI server setup
+        Controller controller = Controller.getInstance();
+        Registry registry = null;
+        try {
+            registry = LocateRegistry.createRegistry(5001);
+            registry.rebind("codex_naturalis_rmi_controller", controller);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+
+        //Socket server setup
         try (
                 AsynchronousServerSocketChannel serverSocket = AsynchronousServerSocketChannel.open()
                         .bind(new InetSocketAddress("codexnaturalis.polimi.it", 5000));
-                ExecutorService executorsPool = Executors.newCachedThreadPool(/*thread factory here to change default keepAlive timeout
-            and set maximum number of Threads*/)
+                ExecutorService executorsPool = Executors.newCachedThreadPool(/*thread factory here to change default
+                keepAlive timeout and set maximum number of Threads*/)
         ) {
             //FIXME: how about the ip?
 
@@ -66,19 +80,5 @@ public class Server {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-        /*listener.accept(null, new CompletionHandler<AsynchronousSocketChannel,Void>() {
-            public void completed(AsynchronousSocketChannel ch, Void att) {
-                // accept the next connection
-                listener.accept(null, this);
-
-                // handle this connection
-                handle(ch);
-            }
-            public void failed(Throwable exc, Void att) {
-          ...
-            }
-        });*/
-
     }
 }

@@ -31,6 +31,8 @@ public class ClientHandler<V, A> implements CompletionHandler<V, A> {
     }
 
     public static void main(String[] args) throws Throwable {
+        //TODO: trasformare in test che stampa tutti i nomi dei metodi nella mappa per verificare che si possano
+        // chiamare tutti e soli i metodi validi
 
         System.out.println(Controller.commandHandles.keySet());
         //Controller.commandHandles.get("createHandles").invoke();
@@ -51,11 +53,6 @@ public class ClientHandler<V, A> implements CompletionHandler<V, A> {
                         )
                         .invoke(currentState, parameters.toArray())
         );*/
-    }
-
-    @Override
-    public void failed(Throwable exc, A attachment) {
-
     }
 
     //TODO: Handle Exceptions
@@ -94,5 +91,10 @@ public class ClientHandler<V, A> implements CompletionHandler<V, A> {
         }
 
         //nel command se nickname ricevuto valido: put(this) in Map
+    }
+
+    @Override
+    public void failed(Throwable exc, A attachment) {
+
     }
 }
