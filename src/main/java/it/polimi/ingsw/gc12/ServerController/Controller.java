@@ -1,8 +1,6 @@
 package it.polimi.ingsw.gc12.ServerController;
 
 import it.polimi.ingsw.gc12.ServerModel.Cards.Card;
-import it.polimi.ingsw.gc12.ServerModel.Cards.ObjectiveCard;
-import it.polimi.ingsw.gc12.ServerModel.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.ServerModel.Game;
 import it.polimi.ingsw.gc12.ServerModel.GameLobby;
 import it.polimi.ingsw.gc12.ServerModel.InGamePlayer;
@@ -14,7 +12,6 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Modifier;
-import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,24 +19,16 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 //FIXME: abstract with static methods or singleton? METTERE GLI OVERRIDE!
-public class Controller {
-
-    private static final Controller SINGLETON_CONTROLLER = new Controller();
+public abstract class Controller {
 
     //TODO: caricare le carte
     public static final Map<Integer, Card> cardsList = null;
     public static final MethodHandles.Lookup lookup = MethodHandles.lookup(); //FIXME: why does publicLookup() not work?
     public static final Map<String, MethodHandle> commandHandles = createHandles();
-    public static final Map<AsynchronousSocketChannel, Player> players = new HashMap<>();
+    //FIXME: maybe create interface VirtualClient to uniform Sockets and RMI better and define Message methods
+    public static final Map<Object, Player> players = new HashMap<>();
     public static final Map<UUID, GameLobby> lobbiesAndGames = new HashMap<>();
     public static final Map<Player, GameLobby> playersToLobbiesAndGames = new HashMap<>();
-
-    private Controller() {
-    }
-
-    public static Controller getInstance() {
-        return SINGLETON_CONTROLLER;
-    }
 
     //TODO: keep lambda or not?
     private static Map<String, MethodHandle> createHandles() {
@@ -61,15 +50,17 @@ public class Controller {
                 );
     }
 
-    public void createPlayer(String nickname) {
+    public static void createPlayer(String nickname) {
         //FIXME: null is bad, maybe we should have a map<nicknames, players>?
         if (playersToLobbiesAndGames.containsValue(nickname)) //non va bene così...
             //throw new AlreadyExistingPlayerException();
 
             playersToLobbiesAndGames.put(new Player(nickname), null);
+        //FIXME: gestire nel RMIServerStub
+        // players.put(target, result);
     }
 
-    public void setNickname(Player target, String nickname) {
+    public static void setNickname(Player target, String nickname) {
         if (playersToLobbiesAndGames.containsValue(nickname))
             //throw new AlreadyExistingPlayerException();
 
@@ -81,7 +72,7 @@ public class Controller {
 
     }
 
-    public void createLobby(Player player, int maxPlayers) {
+    public static void createLobby(Player player, int maxPlayers) {
         //TODO: exceptions? invalidMaxPlayers, ...
         // e tutte le varie eccezioni se il player è in Game e non in lobby?
         // si potrebbe risolvere mettendo un GameState "NotStartedState o IdleState"...
@@ -98,7 +89,7 @@ public class Controller {
         //playersToLobbiesAndGames.put(player, lobby);
     }
 
-    public void joinLobby(Player player, UUID lobbyUUID) {
+    public static void joinLobby(Player player, UUID lobbyUUID) {
         //TODO: exceptions? lobby non trovata, lobby piena, ...
 
         GameLobby lobby = lobbiesAndGames.get(lobbyUUID);
@@ -106,7 +97,7 @@ public class Controller {
         playersToLobbiesAndGames.put(player, lobby);
     }
 
-    public void leaveLobby(Player player) {
+    public static void leaveLobby(Player player) {
         //TODO: exceptions? not in lobby, ...
 
         GameLobby lobby = playersToLobbiesAndGames.get(player);
@@ -120,33 +111,33 @@ public class Controller {
         playersToLobbiesAndGames.remove(player);
     }
 
-    public void placeInitialCard(InGamePlayer player, Side side) throws ForbiddenActionException {
+    public static void placeInitialCard(InGamePlayer player, Side side) throws ForbiddenActionException {
         playersToLobbiesAndGames.get(player).getCurrentState()
                 .placeInitialCard(player, side);
     }
 
-    public void pickObjective(InGamePlayer player, ObjectiveCard card) throws ForbiddenActionException, AlreadySetCardException {
+    public static void pickObjective(InGamePlayer player, int cardID) throws ForbiddenActionException, AlreadySetCardException {
         playersToLobbiesAndGames.get(player).getCurrentState()
                 .pickObjective(player, card);
     }
 
-    public void placeCard(InGamePlayer player, GenericPair<Integer, Integer> pair, PlayableCard card,
+    public static void placeCard(InGamePlayer player, GenericPair<Integer, Integer> pair, int cardID,
                           Side side) throws UnexpectedPlayerException, ForbiddenActionException {
         playersToLobbiesAndGames.get(player).getCurrentState()
                 .placeCard(player, pair, card, side);
     }
 
-    public void drawFromDeck(InGamePlayer player, String deck) throws UnexpectedPlayerException, ForbiddenActionException {
+    public static void drawFromDeck(InGamePlayer player, String deck) throws UnexpectedPlayerException, ForbiddenActionException {
         playersToLobbiesAndGames.get(player).getCurrentState()
                 .drawFrom(player, deck);
     }
 
-    public void drawFromVisibleCards(InGamePlayer player, String deck, int position) throws UnexpectedPlayerException, ForbiddenActionException, InvalidPositionException, UnknownStringException {
+    public static void drawFromVisibleCards(InGamePlayer player, String deck, int position) throws UnexpectedPlayerException, ForbiddenActionException, InvalidPositionException, UnknownStringException {
         playersToLobbiesAndGames.get(player).getCurrentState()
                 .drawFrom(player, deck, position);
     }
 
-    public void leaveGame(InGamePlayer inGamePlayer) {
+    public static void leaveGame(InGamePlayer inGamePlayer) {
         //TODO: exceptions? not in game, ...
 
         Game game = (Game) playersToLobbiesAndGames.get(inGamePlayer);
@@ -161,11 +152,11 @@ public class Controller {
         playersToLobbiesAndGames.remove(inGamePlayer);
     }
 
-    public void directMessage(InGamePlayer sender, InGamePlayer receiver, String message) {
+    public static void directMessage(InGamePlayer sender, InGamePlayer receiver, String message) {
 
     }
 
-    public void broadcastMessage(InGamePlayer sender, String message) {
+    public static void broadcastMessage(InGamePlayer sender, String message) {
 
     }
 }

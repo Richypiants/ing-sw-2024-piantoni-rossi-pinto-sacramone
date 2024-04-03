@@ -2,30 +2,26 @@ package it.polimi.ingsw.gc12.Client.ClientController;
 
 import it.polimi.ingsw.gc12.Client.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Client.ClientModel.ClientPlayer;
-import it.polimi.ingsw.gc12.ServerController.RMIVirtualClient;
-import it.polimi.ingsw.gc12.ServerController.RMIVirtualServer;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
+import it.polimi.ingsw.gc12.Utilities.*;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Map;
 import java.util.UUID;
 
 //TODO: singleton!
-public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
+public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
 
-    public RMIVirtualServer controller;
+    public Map<String, RMIVirtualMethod> methods;
 
     public RMIClientSkeleton() {
         try {
             Registry registry = LocateRegistry.getRegistry("???", 5001);
-            this.controller = (RMIVirtualServer) registry.lookup("codex_naturalis_rmi_controller");
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        } catch (NotBoundException e) {
+            this.methods = ((RMIVirtualServer) registry.lookup("codex_naturalis_rmi_methods")).getMap();
+        } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
         }
     }
@@ -33,8 +29,8 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     @Override
     public void createPlayer(String nickname) {
         try {
-            controller.createPlayer(this, nickname);
-        } catch (RemoteException e) {
+            methods.get("createPlayer").invokeWithArguments(this, nickname);
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -42,8 +38,8 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     @Override
     public void setNickname(String nickname) {
         try {
-            controller.setNickname(this, nickname);
-        } catch (RemoteException e) {
+            methods.get("setNickname").invokeWithArguments(this, nickname);
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -52,8 +48,8 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     @Override
     public void keepAlive() {
         try {
-            controller.keepAlive(this);
-        } catch (RemoteException e) {
+            methods.get("keepAlive").invokeWithArguments(this);
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -61,8 +57,8 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     @Override
     public void createLobby(int maxPlayers) {
         try {
-            controller.createLobby(this, maxPlayers);
-        } catch (RemoteException e) {
+            methods.get("createLobby").invokeWithArguments(this, maxPlayers);
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -70,8 +66,8 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     @Override
     public void joinLobby(UUID lobbyUUID) {
         try {
-            controller.joinLobby(this, lobbyUUID);
-        } catch (RemoteException e) {
+            methods.get("joinLobby").invokeWithArguments(this, lobbyUUID);
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -79,8 +75,8 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     @Override
     public void leaveLobby() {
         try {
-            controller.leaveLobby(this);
-        } catch (RemoteException e) {
+            methods.get("leaveLobby").invokeWithArguments(this);
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -88,8 +84,8 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     @Override
     public void placeInitialCard(Side side) throws ForbiddenActionException {
         try {
-            controller.placeInitialCard(this, side);
-        } catch (RemoteException e) {
+            methods.get("placeInitialCard").invokeWithArguments(this, side);
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -98,8 +94,9 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     public void pickObjective(ClientCard card) throws ForbiddenActionException,
             AlreadySetCardException {
         try {
-            controller.pickObjective(this, card);
-        } catch (RemoteException e) {
+            methods.get("pickObjective").invokeWithArguments(this, card);
+            ;
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -108,8 +105,9 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     public void placeCard(GenericPair<Integer, Integer> position, ClientCard card, Side side)
             throws UnexpectedPlayerException, ForbiddenActionException {
         try {
-            controller.placeCard(this, position, card, side);
-        } catch (RemoteException e) {
+            methods.get("placeCard").invokeWithArguments(this, position, card, side);
+            ;
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -118,8 +116,8 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     public void drawFromDeck(String deck) throws UnexpectedPlayerException,
             ForbiddenActionException {
         try {
-            controller.drawFromDeck(this, deck);
-        } catch (RemoteException e) {
+            methods.get("drawFromDeck").invokeWithArguments(this, deck);
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -128,8 +126,8 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     public void drawFromVisibleCards(String deck, int position) throws UnexpectedPlayerException,
             ForbiddenActionException, InvalidPositionException, UnknownStringException {
         try {
-            controller.drawFromVisibleCards(this, deck, position);
-        } catch (RemoteException e) {
+            methods.get("drawFromVisibleCards").invokeWithArguments(this, deck, position);
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -137,8 +135,8 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     @Override
     public void leaveGame() {
         try {
-            controller.leaveGame(this);
-        } catch (RemoteException e) {
+            methods.get("leaveGame").invokeWithArguments(this);
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -146,8 +144,8 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     @Override
     public void directMessage(ClientPlayer receiver, String message) {
         try {
-            controller.directMessage(this, receiver, message);
-        } catch (RemoteException e) {
+            methods.get("directMessage").invokeWithArguments(this, receiver, message);
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -155,8 +153,8 @@ public class RMIClientSkeleton implements ServerStub, RMIVirtualClient {
     @Override
     public void broadcastMessage(String message) {
         try {
-            controller.broadcastMessage(this, message);
-        } catch (RemoteException e) {
+            methods.get("broadcastMessage").invokeWithArguments(this, message);
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }

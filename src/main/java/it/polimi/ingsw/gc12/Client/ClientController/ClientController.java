@@ -7,7 +7,7 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.UUID;
 
-public interface ServerStub {
+public interface ClientController {
 
     void createPlayer(String nickname);
 

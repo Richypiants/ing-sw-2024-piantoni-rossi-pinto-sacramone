@@ -9,7 +9,6 @@ module it.polimi.ingsw.gc12 {
 
     opens it.polimi.ingsw.gc12.ServerModel to com.google.gson;
     opens it.polimi.ingsw.gc12.Utilities to com.google.gson;
-    exports it.polimi.ingsw.gc12.Utilities to com.google.gson;
     exports it.polimi.ingsw.gc12.ServerModel to com.google.gson;
     opens it.polimi.ingsw.gc12 to javafx.fxml;
     exports it.polimi.ingsw.gc12;
@@ -20,5 +19,7 @@ module it.polimi.ingsw.gc12 {
     exports it.polimi.ingsw.gc12.ServerModel.Conditions to com.google.gson;
     opens it.polimi.ingsw.gc12.ServerModel.Conditions to com.google.gson;
 
-    exports it.polimi.ingsw.gc12.ServerController to java.rmi;
+    exports it.polimi.ingsw.gc12.Utilities to com.google.gson, java.rmi;
+    exports it.polimi.ingsw.gc12.ServerController to com.google.gson, java.rmi;
+    opens it.polimi.ingsw.gc12.ServerController to com.google.gson;
 }

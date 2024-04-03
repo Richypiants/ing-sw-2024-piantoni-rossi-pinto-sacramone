@@ -11,7 +11,7 @@ public abstract class Card {
     /**
      A unique card identifier to facilitate the card's retrieval
      */
-    //FIXME: is this really necessary?
+    //FIXME: is this really necessary? ---> yes, helps debugging
     public final int ID;
 
     /**

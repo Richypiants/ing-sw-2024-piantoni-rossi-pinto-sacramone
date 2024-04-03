@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.ServerController;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandle;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -27,11 +28,11 @@ public class Server {
 
     public void run() {
         //RMI server setup
-        Controller controller = Controller.getInstance();
         Registry registry = null;
         try {
             registry = LocateRegistry.createRegistry(5001);
-            registry.rebind("codex_naturalis_rmi_controller", controller);
+            for (MethodHandle method : Controller.commandHandles.values())
+                registry.rebind("codex_naturalis_rmi_methods", RMIServerStub.getInstance());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -52,7 +53,7 @@ public class Server {
 
             /* finchè non leggiamo fine: */
             while (true) {
-                AsynchronousSocketChannel client = serverSocket.accept().get();
+                AsynchronousSocketChannel channel = serverSocket.accept().get();
 
                 try {
                     //add connection to queue
@@ -61,7 +62,9 @@ public class Server {
                                 //TODO: change size of array
                                 ByteBuffer byteBufferIn = ByteBuffer.wrap(new byte[0]);
                                 try { //FIXME: remove try/catch construct
-                                    client.read(byteBufferIn, client, new ClientHandler<>(client, byteBufferIn));
+                                    channel.read(byteBufferIn, channel,
+                                            new SocketClientHandler<>(channel, byteBufferIn)
+                                    );
                                 } catch (IOException e) {
                                     throw new RuntimeException(e);
                                 }
