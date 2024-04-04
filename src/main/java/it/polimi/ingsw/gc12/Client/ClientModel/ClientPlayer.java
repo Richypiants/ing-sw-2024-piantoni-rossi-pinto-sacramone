@@ -25,14 +25,12 @@ public class ClientPlayer {
      * The resources owned by this player currently
      */
     private final EnumMap<Resource, Integer> OWNED_RESOURCES;
+
     /**
      * The field of this player
      */
     private final HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> PLACED_CARDS;
-    /**
-     * This player's nickname
-     */
-    private String nickname;
+
     /**
      * The points currently gained by this player
      */

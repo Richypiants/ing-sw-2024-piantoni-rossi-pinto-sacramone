@@ -82,7 +82,7 @@ public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
     }
 
     @Override
-    public void placeInitialCard(Side side) throws ForbiddenActionException {
+    public void placeInitialCard(Side side) throws ForbiddenActionException, InvalidCardTypeException {
         try {
             methods.get("placeInitialCard").invokeWithArguments(this, side);
         } catch (Throwable e) {
@@ -91,7 +91,7 @@ public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
     }
 
     @Override
-    public void pickObjective(ClientCard card) throws ForbiddenActionException,
+    public void pickObjective(ClientCard card) throws ForbiddenActionException, InvalidCardTypeException,
             AlreadySetCardException {
         try {
             methods.get("pickObjective").invokeWithArguments(this, card);
@@ -103,7 +103,7 @@ public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
 
     @Override
     public void placeCard(GenericPair<Integer, Integer> position, ClientCard card, Side side)
-            throws UnexpectedPlayerException, ForbiddenActionException {
+            throws UnexpectedPlayerException, ForbiddenActionException, InvalidCardTypeException {
         try {
             methods.get("placeCard").invokeWithArguments(this, position, card, side);
             ;

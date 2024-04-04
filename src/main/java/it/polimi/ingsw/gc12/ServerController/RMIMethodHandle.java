@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc12.ServerController;
 
-import it.polimi.ingsw.gc12.ServerModel.Player;
 import it.polimi.ingsw.gc12.Utilities.RMIVirtualClient;
 import it.polimi.ingsw.gc12.Utilities.RMIVirtualMethod;
 
@@ -8,7 +7,6 @@ import java.lang.invoke.MethodHandle;
 import java.util.List;
 
 public class RMIMethodHandle implements RMIVirtualMethod {
-
     private final MethodHandle method;
 
     protected RMIMethodHandle(MethodHandle method) {

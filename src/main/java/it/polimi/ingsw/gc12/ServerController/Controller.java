@@ -1,13 +1,15 @@
 package it.polimi.ingsw.gc12.ServerController;
 
+import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.ServerModel.Cards.Card;
+import it.polimi.ingsw.gc12.ServerModel.Cards.ObjectiveCard;
+import it.polimi.ingsw.gc12.ServerModel.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.ServerModel.Game;
 import it.polimi.ingsw.gc12.ServerModel.GameLobby;
 import it.polimi.ingsw.gc12.ServerModel.InGamePlayer;
 import it.polimi.ingsw.gc12.ServerModel.Player;
+import it.polimi.ingsw.gc12.Utilities.*;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -122,9 +124,15 @@ public abstract class Controller {
     }
 
     public static void placeCard(InGamePlayer player, GenericPair<Integer, Integer> pair, int cardID,
-                          Side side) throws UnexpectedPlayerException, ForbiddenActionException {
-        playersToLobbiesAndGames.get(player).getCurrentState()
-                .placeCard(player, pair, card, side);
+                          Side side) throws UnexpectedPlayerException, ForbiddenActionException, InvalidCardTypeException {
+        Card chosenCard = cardsList.get(cardID);
+
+        if(chosenCard instanceof PlayableCard)
+            playersToLobbiesAndGames.get(player).getCurrentState()
+                    .placeCard(player, pair, (PlayableCard) chosenCard, side);
+        else
+            throw new InvalidCardTypeException();
+
     }
 
     public static void drawFromDeck(InGamePlayer player, String deck) throws UnexpectedPlayerException, ForbiddenActionException {

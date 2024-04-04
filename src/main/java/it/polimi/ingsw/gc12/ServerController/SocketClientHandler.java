@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.ServerController;
 
+import it.polimi.ingsw.gc12.Utilities.VirtualClient;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -33,7 +35,8 @@ public class SocketClientHandler<V, A> implements CompletionHandler<V, A> {
         System.out.println(Controller.commandHandles.keySet());
         //Controller.commandHandles.get("createHandles").invoke();
 
-        /*final int[] pos = {0};
+
+    }  /*final int[] pos = {0};
 
         System.out.println(currentState.getClass().getMethod(
                                 "placeInitialCard",
@@ -49,7 +52,6 @@ public class SocketClientHandler<V, A> implements CompletionHandler<V, A> {
                         )
                         .invoke(currentState, parameters.toArray())
         );*/
-    }
 
     //TODO: Handle Exceptions
     public Object readObject() throws IOException, ClassNotFoundException {

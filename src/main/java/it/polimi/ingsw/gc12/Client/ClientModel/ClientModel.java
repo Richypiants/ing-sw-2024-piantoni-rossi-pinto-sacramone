@@ -4,7 +4,11 @@ import java.util.List;
 
 public class ClientModel {
 
-    public static ClientPlayer yourself;
+    /**
+     * This player's nickname
+     */
+    private String ownNickname;
+    private List<ClientLobby> lobbies;
+    private ClientLobby currentLobby;
 
-    public static List<ClientLobby> lobbies;
 }
