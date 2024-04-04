@@ -13,29 +13,24 @@ public class RMIMethodHandle implements RMIVirtualMethod {
         this.method = method;
     }
 
-    //TODO: gestire createPlayer che non ha un player nella mappa (potremmo spostarlo nel serverStub...)
-
-    private Player getPlayerFromVirtualClient(RMIVirtualClient client) {
-        return Controller.players.get(client);
-    }
-
+    //TODO: remove these that we never use?
     @Override
     public Object invoke(RMIVirtualClient client, Object... args) throws Throwable {
-        return method.invoke(getPlayerFromVirtualClient(client), args);
+        return method.invoke(Controller.getPlayerFromVirtualClient(client), args);
     }
 
     @Override
     public Object invokeExact(RMIVirtualClient client, Object... args) throws Throwable {
-        return method.invokeExact(getPlayerFromVirtualClient(client), args);
+        return method.invokeExact(Controller.getPlayerFromVirtualClient(client), args);
     }
 
     @Override
     public Object invokeWithArguments(RMIVirtualClient client, Object... arguments) throws Throwable {
-        return method.invokeWithArguments(getPlayerFromVirtualClient(client), arguments);
+        return method.invokeWithArguments(Controller.getPlayerFromVirtualClient(client), arguments);
     }
 
     @Override
     public Object invokeWithArguments(RMIVirtualClient client, List<?> arguments) throws Throwable {
-        return method.invokeWithArguments(getPlayerFromVirtualClient(client), arguments);
+        return method.invokeWithArguments(Controller.getPlayerFromVirtualClient(client), arguments);
     }
 }

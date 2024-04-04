@@ -3,14 +3,14 @@ package it.polimi.ingsw.gc12.ServerController;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.ArrayList;
 
-public class SocketClientHandler<V, A> implements CompletionHandler<V, A> {
+public class SocketClientHandler<V, A> implements CompletionHandler<V, A>, VirtualClient {
 
-    //private final static Map<AsynchronousSocketChannel, Player> socketsToPlayers = new HashMap<>();
     private final ObjectInputStream objectInputStream;
     private final ObjectOutputStream objectOutputStream;
     private final ByteArrayOutputStream byteOutputStream;
@@ -62,6 +62,15 @@ public class SocketClientHandler<V, A> implements CompletionHandler<V, A> {
     public ByteBuffer writeObject(Object obj) throws IOException {
         objectOutputStream.writeObject(obj);
         return ByteBuffer.wrap(byteOutputStream.toByteArray());
+    }
+
+    @Override
+    void getServerMessage(ArrayList<Object> objects) {
+        try {
+            channel.write(writeObject(objects));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     //TODO: questo è solo per leggere client e rispondere... manca l'handler per update! (se ci sarà...)

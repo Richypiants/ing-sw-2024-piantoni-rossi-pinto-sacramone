@@ -14,29 +14,39 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 //FIXME: abstract with static methods or singleton? METTERE GLI OVERRIDE!
 public abstract class Controller {
 
     //TODO: caricare le carte
-    public static final Map<Integer, Card> cardsList = null;
+    public static final Map<Integer, Card> cardsList = loadCards();
     public static final MethodHandles.Lookup lookup = MethodHandles.lookup(); //FIXME: why does publicLookup() not work?
     public static final Map<String, MethodHandle> commandHandles = createHandles();
     //FIXME: maybe create interface VirtualClient to uniform Sockets and RMI better and define Message methods
-    public static final Map<Object, Player> players = new HashMap<>();
+    public static final Map<VirtualClient, Player> players = new HashMap<>();
     public static final Map<UUID, GameLobby> lobbiesAndGames = new HashMap<>();
     public static final Map<Player, GameLobby> playersToLobbiesAndGames = new HashMap<>();
+
+    private static Map<Integer, Card> loadCards() {
+        Map<Integer, Card> tmp = new HashMap<>();
+        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>(){}))
+                .forEach((card) -> tmp.put(card.ID, card));
+        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>(){}))
+                .forEach((card) -> tmp.put(card.ID, card));
+        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>(){}))
+                .forEach((card) -> tmp.put(card.ID, card));
+        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>(){}))
+                .forEach((card) -> tmp.put(card.ID, card));
+
+        return Collections.unmodifiableMap(tmp);
+    }
 
     //TODO: keep lambda or not?
     private static Map<String, MethodHandle> createHandles() {
         return Arrays.stream(Controller.class.getDeclaredMethods())
-                .filter((method) -> Modifier.isPublic(method.getModifiers()) &&
-                        !method.getName().equals("getInstance"))
+                .filter((method) -> Modifier.isPublic(method.getModifiers()))
                 .map((method) -> {
                             try {
                                 return new GenericPair<>(method.getName(), lookup.unreflect(method));
@@ -52,14 +62,26 @@ public abstract class Controller {
                 );
     }
 
-    public static void createPlayer(String nickname) {
-        //FIXME: null is bad, maybe we should have a map<nicknames, players>?
-        if (playersToLobbiesAndGames.containsValue(nickname)) //non va bene così...
-            //throw new AlreadyExistingPlayerException();
+    protected static Player getPlayerFromVirtualClient(VirtualClient client) {
+        return Controller.players.get(client);
+    }
 
-            playersToLobbiesAndGames.put(new Player(nickname), null);
-        //FIXME: gestire nel RMIServerStub
-        // players.put(target, result);
+    private static void sendLobbies(Player target) {
+        players.entrySet().stream()
+                .filter((entry) -> entry.getValue().equals(target))
+                .findAny().orElseThrow(NotExistingPlayerException::new).getKey()
+                .getServerMessage(functionName, arraylistOfLobbies);
+    }
+
+    public static void createPlayer(Player target, VirtualClient client, String nickname) {
+        if(target != null || players.values().stream().anyMatch((player) -> player.getNickname().equals(nickname)))
+            throw new AlreadyExistingPlayerException();
+
+        target = new Player(nickname);
+        players.put(client, target);
+
+        sendLobbies(target);
+
     }
 
     public static void setNickname(Player target, String nickname) {
@@ -118,9 +140,14 @@ public abstract class Controller {
                 .placeInitialCard(player, side);
     }
 
-    public static void pickObjective(InGamePlayer player, int cardID) throws ForbiddenActionException, AlreadySetCardException {
-        playersToLobbiesAndGames.get(player).getCurrentState()
-                .pickObjective(player, card);
+    public static void pickObjective(InGamePlayer player, int cardID) throws ForbiddenActionException, AlreadySetCardException, InvalidCardTypeException {
+        Card chosenCard = cardsList.get(cardID);
+
+        if(chosenCard instanceof ObjectiveCard)
+            playersToLobbiesAndGames.get(player).getCurrentState()
+                    .pickObjective(player, (ObjectiveCard) chosenCard);
+        else
+            throw new InvalidCardTypeException();
     }
 
     public static void placeCard(InGamePlayer player, GenericPair<Integer, Integer> pair, int cardID,
