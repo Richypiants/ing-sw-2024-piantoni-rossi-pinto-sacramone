@@ -93,6 +93,8 @@ public class PatternCondition implements PointsCondition {
         ArrayList<ArrayList<PlayableCard>> result = new ArrayList<>();
         int nodesInLastLevel = 1, depth = 0;
 
+        if (patternStartingCards.isEmpty()) return 0;
+
         frontier.add(patternStartingCards);
 
         while (!frontier.isEmpty()) {
@@ -102,7 +104,9 @@ public class PatternCondition implements PointsCondition {
                 ArrayList<PlayableCard> tmp = frontier.removeFirst();
                 if (tmp.contains(currentPattern)) {
                     frontier.add(new ArrayList<>(tmp.subList(1, tmp.size())));
-                    tmp.removeIf((pattern) -> !compatibleWith(pattern, currentPattern, target));
+                    tmp.removeIf((pattern) -> !pattern.equals(currentPattern) &&
+                            !compatibleWith(pattern, currentPattern, target)
+                    );
                 }
                 frontier.add(new ArrayList<>(tmp));
             }
@@ -133,7 +137,7 @@ public class PatternCondition implements PointsCondition {
 
             for (int i = 0; i < frontier.size(); i++) {
                 //FIXME: it's really horrible... functional?
-                if (patternStartingCards.indexOf(frontier.get(i).get(frontier.get(i).size() - 2)) < depth) {
+                if (frontier.get(i).size() < 2 || patternStartingCards.indexOf(frontier.get(i).get(frontier.get(i).size() - 2)) < depth) {
                     result.add(frontier.remove(i));
                     i--;
                 }

@@ -5,6 +5,11 @@ import it.polimi.ingsw.gc12.Client.ClientView.View;
 public class TUIView extends View {
 
     @Override
+    public void addListener() {
+
+    }
+
+    @Override
     public void initializeApp() {
         System.out.println("Game initialization...");
     }

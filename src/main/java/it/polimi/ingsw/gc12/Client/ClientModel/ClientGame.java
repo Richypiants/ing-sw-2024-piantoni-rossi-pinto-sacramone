@@ -24,10 +24,10 @@ public class ClientGame extends ClientLobby{
     private final ClientCard[] COMMON_OBJECTIVES;
     //TODO: costruire scoreboarde
 
-    public ClientGame(Color color, ClientLobby lobby){
-        super(lobby);
-        this.MYSELF = new ClientPlayer(color);
-        this.OTHER_PLAYERS = Collections.unmodifiableList(lobby.otherPlayers);
+    public ClientGame(Color color, ClientLobby lobby, String myNickname) {
+        super(lobby.getPlayers(), lobby.getMaxPlayers(), lobby.getCurrentPlayers());
+        this.MYSELF = new ClientPlayer(myNickname, color);
+        this.OTHER_PLAYERS = Collections.unmodifiableList(new ArrayList<>());
         this.OWN_HAND = new ArrayList<>();
         this.ownObjective = null;
         this.currentRound = 0;

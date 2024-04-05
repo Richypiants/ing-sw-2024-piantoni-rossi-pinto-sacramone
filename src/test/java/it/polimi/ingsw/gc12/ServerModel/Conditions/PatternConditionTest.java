@@ -243,8 +243,8 @@ class PatternConditionTest {
         }));
 
         Triplet<Integer, Integer, Resource> T1 = new Triplet<>(0, 0, Resource.MUSHROOM);
-        Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -1, Resource.MUSHROOM);
-        Triplet<Integer, Integer, Resource> T3 = new Triplet<>(1, -2, Resource.GRASS);
+        Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -2, Resource.MUSHROOM);
+        Triplet<Integer, Integer, Resource> T3 = new Triplet<>(1, -3, Resource.GRASS);
         ArrayList<Triplet<Integer, Integer, Resource>> Array = new ArrayList<>();
         Array.add(T1);
         Array.add(T2);
@@ -285,8 +285,8 @@ class PatternConditionTest {
         }));
 
         Triplet<Integer, Integer, Resource> T1 = new Triplet<>(0, 0, Resource.GRASS);
-        Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -1, Resource.GRASS);
-        Triplet<Integer, Integer, Resource> T3 = new Triplet<>(-1, -2, Resource.BUTTERFLY);
+        Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -2, Resource.GRASS);
+        Triplet<Integer, Integer, Resource> T3 = new Triplet<>(-1, -3, Resource.BUTTERFLY);
         ArrayList<Triplet<Integer, Integer, Resource>> Array = new ArrayList<>();
         Array.add(T1);
         Array.add(T2);
@@ -297,7 +297,7 @@ class PatternConditionTest {
         InitialCard c0 = (InitialCard) array2.get(0);
         ResourceCard c1 = (ResourceCard) array.get(10);
         ResourceCard c2 = (ResourceCard) array.get(12);
-        ResourceCard c3 = (ResourceCard) array.get(13);
+        ResourceCard c3 = (ResourceCard) array.get(30);
 
         Player p1 = new Player("giovanni");
         GameLobby lobby = new GameLobby(1, p1);
@@ -327,7 +327,7 @@ class PatternConditionTest {
         }));
 
         Triplet<Integer, Integer, Resource> T1 = new Triplet<>(0, 0, Resource.WOLF);
-        Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -1, Resource.WOLF);
+        Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -2, Resource.WOLF);
         Triplet<Integer, Integer, Resource> T3 = new Triplet<>(1, 1, Resource.MUSHROOM);
         ArrayList<Triplet<Integer, Integer, Resource>> Array = new ArrayList<>();
         Array.add(T1);
@@ -369,7 +369,7 @@ class PatternConditionTest {
         }));
 
         Triplet<Integer, Integer, Resource> T1 = new Triplet<>(0, 0, Resource.BUTTERFLY);
-        Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -1, Resource.BUTTERFLY);
+        Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -2, Resource.BUTTERFLY);
         Triplet<Integer, Integer, Resource> T3 = new Triplet<>(-1, 1, Resource.WOLF);
         ArrayList<Triplet<Integer, Integer, Resource>> Array = new ArrayList<>();
         Array.add(T1);

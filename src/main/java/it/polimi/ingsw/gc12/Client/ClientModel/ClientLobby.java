@@ -30,4 +30,16 @@ public class ClientLobby {
         this.currentPlayers = currentPlayers;
         this.currentState = new NotStartedState();
     }
+
+    public List<String> getPlayers() {
+        return OTHER_PLAYERS;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public int getCurrentPlayers() {
+        return currentPlayers;
+    }
 }

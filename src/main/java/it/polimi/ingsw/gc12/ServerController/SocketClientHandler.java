@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc12.ServerController;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
@@ -65,7 +64,7 @@ public class SocketClientHandler<V, A> implements CompletionHandler<V, A>, Virtu
     }
 
     @Override
-    void getServerMessage(ArrayList<Object> objects) {
+    public void getServerMessage(ArrayList<Object> objects) {
         try {
             channel.write(writeObject(objects));
         } catch (IOException e) {

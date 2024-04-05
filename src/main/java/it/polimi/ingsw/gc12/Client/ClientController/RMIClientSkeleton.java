@@ -120,8 +120,7 @@ public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
     }
 
     @Override
-    public void drawFromDeck(String deck) throws UnexpectedPlayerException,
-            ForbiddenActionException {
+    public void drawFromDeck(String deck) throws UnexpectedPlayerException, ForbiddenActionException {
         try {
             methods.get("drawFromDeck").invokeWithArguments(this, deck);
         } catch (Throwable e) {

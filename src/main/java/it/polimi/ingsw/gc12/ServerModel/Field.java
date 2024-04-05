@@ -71,8 +71,8 @@ public class Field {
                                                 !(optionalCard.getX()
                                                         .getCornerResource(
                                                                 optionalCard.getY(),
-                                                                offset.getX(),
-                                                                offset.getY()
+                                                                -offset.getX(),
+                                                                -offset.getY()
                                                         )
                                                         .equals(Resource.NOT_A_CORNER)
                                                 )

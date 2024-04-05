@@ -27,14 +27,14 @@ public class Main {
          */
 
         initializeApp();
-        view.addListener(this);
+        //view.addListener(this);
 
         System.out.println("Inserisci il tuo nickname (tutti potranno vederlo):");
         //TODO: Scanner
 
-        view.setNickname();
+        //view.setNickname();
 
-        primitivaDiConnessione();
+        //primitivaDiConnessione();
 
         System.out.println();
 
