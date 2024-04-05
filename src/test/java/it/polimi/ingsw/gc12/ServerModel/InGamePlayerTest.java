@@ -44,14 +44,13 @@ class InGamePlayerTest {
         Player p1 = new Player("SACRI");
         InGamePlayer p1_g = new InGamePlayer(p1);
 
+        p1_g.addCardToHand(c1);
+
         assertEquals(true, p1_g.placeCard(new GenericPair<>(0, 0), c1, Side.FRONT));
-
-
-
     }
 
     @Test
-    void addCardToHand() {  // OK
+    void addCardToHand() {
 
         HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
         resource.put(new GenericPair<>(0, 0), Resource.WOLF);
