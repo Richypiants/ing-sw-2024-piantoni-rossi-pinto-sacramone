@@ -29,10 +29,10 @@ public class Client {
                 SocketServerHandler<AsynchronousSocketChannel, ByteBuffer> serverHandler =
                         new SocketServerHandler<>(channel, byteBufferIn);
                 try { //FIXME: remove try/catch construct
-                    channel.write(serverHandler.writeObject(
-                            //TODO: formattare il messaggio
-                            new ArrayList<>()
-                    ));
+                    ArrayList<Object> parameters = new ArrayList<>();
+                    parameters.add("createPlayer");
+                    //TODO: formattare il messaggio
+                    channel.write(serverHandler.writeObject(parameters));
                     channel.read(byteBufferIn, channel, new SocketServerHandler<>(channel, byteBufferIn));
                 } catch (IOException e) {
                     throw new RuntimeException(e);

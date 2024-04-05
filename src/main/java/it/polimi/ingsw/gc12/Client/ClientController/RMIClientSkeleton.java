@@ -9,15 +9,16 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
-//TODO: singleton!
 public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
 
-    public Map<String, RMIVirtualMethod> methods;
+    private static RMIClientSkeleton SINGLETON_RMI_CLIENT = null;
+    private final Map<String, RMIVirtualMethod> methods;
 
-    public RMIClientSkeleton() {
+    protected RMIClientSkeleton() {
         try {
             Registry registry = LocateRegistry.getRegistry("???", 5001);
             this.methods = ((RMIVirtualServer) registry.lookup("codex_naturalis_rmi_methods")).getMap();
@@ -26,10 +27,16 @@ public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
         }
     }
 
+    public RMIClientSkeleton getInstance(){ //TODO: sincronizzazione (serve?) ed eventualmente lazy
+        if(SINGLETON_RMI_CLIENT == null)
+            SINGLETON_RMI_CLIENT = new RMIClientSkeleton();
+        return SINGLETON_RMI_CLIENT;
+    }
+
     @Override
     public void createPlayer(String nickname) {
         try {
-            methods.get("createPlayer").invokeWithArguments(this, nickname);
+            methods.get("createPlayer").invokeWithArguments(this, this, nickname);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -82,7 +89,7 @@ public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
     }
 
     @Override
-    public void placeInitialCard(Side side) throws ForbiddenActionException {
+    public void placeInitialCard(Side side) throws ForbiddenActionException, InvalidCardTypeException {
         try {
             methods.get("placeInitialCard").invokeWithArguments(this, side);
         } catch (Throwable e) {
@@ -91,7 +98,7 @@ public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
     }
 
     @Override
-    public void pickObjective(ClientCard card) throws ForbiddenActionException,
+    public void pickObjective(ClientCard card) throws ForbiddenActionException, InvalidCardTypeException,
             AlreadySetCardException {
         try {
             methods.get("pickObjective").invokeWithArguments(this, card);
@@ -103,7 +110,7 @@ public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
 
     @Override
     public void placeCard(GenericPair<Integer, Integer> position, ClientCard card, Side side)
-            throws UnexpectedPlayerException, ForbiddenActionException {
+            throws UnexpectedPlayerException, ForbiddenActionException, InvalidCardTypeException {
         try {
             methods.get("placeCard").invokeWithArguments(this, position, card, side);
             ;
@@ -113,8 +120,7 @@ public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
     }
 
     @Override
-    public void drawFromDeck(String deck) throws UnexpectedPlayerException,
-            ForbiddenActionException {
+    public void drawFromDeck(String deck) throws UnexpectedPlayerException, ForbiddenActionException {
         try {
             methods.get("drawFromDeck").invokeWithArguments(this, deck);
         } catch (Throwable e) {
@@ -157,5 +163,13 @@ public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void getServerMessage(ArrayList<Object> objects){
+
+        /*The first parameter of the update message is interpreted, then the correct action will be applied on the corresponding class of the model
+          The View has an observer over the model, which notifies incoming updates and then the view pulls the new infos and reloads the view.
+        */
     }
 }

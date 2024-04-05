@@ -29,4 +29,5 @@ public class RMIServerStub implements RMIVirtualServer {
     public Map<String, RMIVirtualMethod> getMap() {
         return commandHandles;
     }
+
 }

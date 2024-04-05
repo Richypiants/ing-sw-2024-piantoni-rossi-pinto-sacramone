@@ -19,9 +19,18 @@ public class ClientCard {
     /**
      * The front image for this card
      */
-    public final Image FRONT_TUI_SPRITE;
+    public final Image FRONT_TUI_SPRITE; //TODO: Obviously not an Image
     /**
      * The back image for this card
      */
-    public final Image BACK_TUI_SPRITE;
+    public final Image BACK_TUI_SPRITE; //TODO: Obviously not an Image
+
+    public ClientCard(int id, Image front, Image back, Image tuiFront, Image tuiBack) {
+        this.ID = id;
+        this.FRONT_SPRITE = front;
+        this.BACK_SPRITE = back;
+        this.FRONT_TUI_SPRITE = tuiFront;
+        this.BACK_TUI_SPRITE = tuiBack;
+    }
+
 }

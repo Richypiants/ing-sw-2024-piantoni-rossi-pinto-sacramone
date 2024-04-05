@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 public class SocketServerHandler<V, A> implements CompletionHandler<V, A> {
 
-    //private final static Map<AsynchronousSocketChannel, Player> socketsToPlayers = new HashMap<>();
     private final ObjectInputStream objectInputStream;
     private final ObjectOutputStream objectOutputStream;
     private final ByteArrayOutputStream byteOutputStream;

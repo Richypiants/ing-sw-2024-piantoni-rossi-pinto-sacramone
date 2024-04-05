@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.Client.ClientController;
 
 import it.polimi.ingsw.gc12.Client.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Client.ClientModel.ClientPlayer;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
@@ -21,15 +22,15 @@ public interface ClientController {
 
     void leaveLobby();
 
-    void placeInitialCard(Side side);
+    void placeInitialCard(Side side) throws ForbiddenActionException, InvalidCardTypeException;
 
-    void pickObjective(ClientCard card);
+    void pickObjective(ClientCard card) throws ForbiddenActionException, InvalidCardTypeException, AlreadySetCardException;
 
-    void placeCard(GenericPair<Integer, Integer> position, ClientCard card, Side side);
+    void placeCard(GenericPair<Integer, Integer> position, ClientCard card, Side side) throws UnexpectedPlayerException, ForbiddenActionException, InvalidCardTypeException;
 
-    void drawFromDeck(String deck);
+    void drawFromDeck(String deck) throws UnexpectedPlayerException, ForbiddenActionException;
 
-    void drawFromVisibleCards(String deck, int position);
+    void drawFromVisibleCards(String deck, int position) throws UnexpectedPlayerException, ForbiddenActionException, InvalidPositionException, UnknownStringException;
 
     void leaveGame();
 
