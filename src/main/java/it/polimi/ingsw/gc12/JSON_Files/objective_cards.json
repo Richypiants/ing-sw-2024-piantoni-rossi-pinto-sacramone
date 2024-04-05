@@ -57,7 +57,7 @@
   {
     "ID": 98,
     "POINTS_GRANTED": 2,
-    "CONDITION": {
+    "POINTS_CONDITION": {
       "RESOURCE": [
         {
           "BUTTERFLY": 3

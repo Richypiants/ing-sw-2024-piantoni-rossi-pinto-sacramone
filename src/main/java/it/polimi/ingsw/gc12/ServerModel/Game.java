@@ -10,38 +10,38 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
-A structure for games after they have started
+ * A structure for games after they have started
  */
 //FIXME: should inherit from GameLobby to manage the start of games more easily in the Controller... fix UML
 public class Game extends GameLobby {
 
     /**
-    The deck of Resource cards of this game
+     * The deck of Resource cards of this game
      */
     private final CardDeck<ResourceCard> RESOURCE_CARDS_DECK;
     /**
-    The deck of Gold cards of this game
+     * The deck of Gold cards of this game
      */
     private final CardDeck<GoldCard> GOLD_CARDS_DECK;
     /**
-    The two Resource cards placed on the table
+     * The two Resource cards placed on the table
      */
     private final ResourceCard[] PLACED_RESOURCE_CARDS;
     /**
-    The two Gold cards placed on the table
+     * The two Gold cards placed on the table
      */
     private final GoldCard[] PLACED_GOLD_CARDS;
     /**
-    The two common Objective cards placed on the table
+     * The two common Objective cards placed on the table
      */
     private final ObjectiveCard[] COMMON_OBJECTIVES;
     /**
-    The current turn's number (starting from 1 in the first turn)
+     * The current turn's number (starting from 1 in the first turn)
      */
     private int currentRound;
 
     /**
-    Constructs a new game instance from the lobby passed as parameter
+     * Constructs a new game instance from the lobby passed as parameter
      */
     public Game(GameLobby lobby) {
         super(lobby.getMaxPlayers(), lobby.getListOfPlayers()
@@ -58,18 +58,18 @@ public class Game extends GameLobby {
         }));
 
         this.PLACED_RESOURCE_CARDS = new ResourceCard[2];
-        PLACED_RESOURCE_CARDS[0]= (ResourceCard) RESOURCE_CARDS_DECK.draw();
-        PLACED_RESOURCE_CARDS[1]= (ResourceCard) RESOURCE_CARDS_DECK.draw();
+        PLACED_RESOURCE_CARDS[0] = RESOURCE_CARDS_DECK.draw();
+        PLACED_RESOURCE_CARDS[1] = RESOURCE_CARDS_DECK.draw();
 
         this.PLACED_GOLD_CARDS = new GoldCard[2];
-        PLACED_GOLD_CARDS[0]= (GoldCard) GOLD_CARDS_DECK.draw();
-        PLACED_GOLD_CARDS[1]= (GoldCard) GOLD_CARDS_DECK.draw();
+        PLACED_GOLD_CARDS[0] = GOLD_CARDS_DECK.draw();
+        PLACED_GOLD_CARDS[1] = GOLD_CARDS_DECK.draw();
 
         this.COMMON_OBJECTIVES = new ObjectiveCard[2];
     }
 
     /**
-    Returns the player who is currently playing
+     * Returns the player who is currently playing
      */
     public ArrayList<InGamePlayer> getPlayers() {
         return super.getListOfPlayers()
@@ -79,21 +79,21 @@ public class Game extends GameLobby {
     }
 
     /**
-    Increases the turn number
+     * Increases the turn number
      */
     public void increaseTurn() {
         currentRound++;
     }
 
     /**
-    Returns the player that is currently playing
+     * Returns the player that is currently playing
      */
     public Player getCurrentPlayer() {
         return getCurrentState().getCurrentPlayer();
     }
 
     /**
-    Returns the turn number
+     * Returns the turn number
      */
     public int getTurnNumber() {
         return currentRound;
@@ -102,29 +102,35 @@ public class Game extends GameLobby {
     //FIXME: are these below unsafe returns? (Reference escaping?)
 
     /**
-    Returns the Resource cards placed on the table
+     * Returns the deck of ResourceCards placed on the table
      */
     public CardDeck<ResourceCard> getResourceCardsDeck() {
         return RESOURCE_CARDS_DECK;
     }
 
+    /**
+     * Returns the deck of GoldCards placed on the table
+     */
     public CardDeck<GoldCard> getGoldCardsDeck() {
         return GOLD_CARDS_DECK;
     }
 
+    /**
+     * Returns the ResourceCards placed on the table
+     */
     public ResourceCard[] getPlacedResources() {
         return PLACED_RESOURCE_CARDS;
     }
 
     /**
-    Returns the Gold cards placed on the table
+     * Returns the GoldCards placed on the table
      */
     public GoldCard[] getPlacedGold() {
         return PLACED_GOLD_CARDS;
     }
 
     /**
-    Returns the Objective cards placed on the table
+     * Returns the ObjectiveCards placed on the table
      */
     public ObjectiveCard[] getCommonObjectives() {
         return COMMON_OBJECTIVES;
@@ -138,17 +144,16 @@ public class Game extends GameLobby {
     }
 
     /**
-    Draws from the deck passed as parameter and returns the drawn card
+     * Draws from the deck passed as parameter and returns the drawn card
      */
     public PlayableCard drawFrom(CardDeck<?> deck) {
         return (PlayableCard) deck.draw();
     }
 
     /**
-    Given a pattern matching string {gold, resource} and a valid position {0, 1}, returns the selected card and
-    replaces it on the board
+     * Given a pattern matching string {gold, resource} and a valid position {0, 1}, returns the selected card and
+     * replaces it on the board
      */
-
     //FIXME: change in UML
     public PlayableCard drawFrom(Card[] deck, int position) {
         PlayableCard returnedCard = null;

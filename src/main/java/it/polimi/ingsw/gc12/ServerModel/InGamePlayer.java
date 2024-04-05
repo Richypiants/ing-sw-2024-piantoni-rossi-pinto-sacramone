@@ -12,41 +12,41 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
-A structure for a player which is currently playing a game
+ * A structure for a player which is currently playing a game
  */
 public class InGamePlayer extends Player {
 
     /**
-    This player's color
+     * This player's color
      */
     public final Color COLOR = null; //TODO: implement color selection logic
     /**
-    The cards in this player's hand
+     * The cards in this player's hand
      */
     private final ArrayList<PlayableCard> CARDS_IN_HAND;
     /**
-    The resources owned by this player currently
+     * The resources owned by this player currently
      */
     private final EnumMap<Resource, Integer> OWNED_RESOURCES;
     /**
-    The field of this player
+     * The field of this player
      */
     private final Field OWN_FIELD;
     /**
-
+     *
      */
     private boolean isActive = true; //TODO: implement activity management
     /**
-    The points currently gained by this player
+     * The points currently gained by this player
      */
     private int points;
     /**
-    The secret Objective Card chosen by this player
+     * The secret Objective Card chosen by this player
      */
     private ObjectiveCard secretObjective;
 
     /**
-    Constructs an InGamePlayer from the player passed as parameter
+     * Constructs an InGamePlayer from the player passed as parameter
      */
     protected InGamePlayer(Player player) {
         super(player);
@@ -65,28 +65,28 @@ public class InGamePlayer extends Player {
     }
 
     /**
-    Given the desired amount to be increased by, updates the player's points
+     * Given the desired amount to be increased by, updates the player's points
      */
     public void increasePoints(int pointsToAdd) {
         points += pointsToAdd;
     }
 
     /**
-    Returns this player's current points
+     * Returns this player's current points
      */
     public int getPoints() {
         return points;
     }
 
     /**
-    Returns this player's current points
+     * Returns this player's current points
      */
     public boolean isActive() {
         return isActive;
     }
 
     /**
-    Returns this player's current points
+     * Returns this player's current points
      */
     protected void toggleActive() {
         isActive = !isActive;
@@ -94,19 +94,21 @@ public class InGamePlayer extends Player {
     }
 
     /**
-    Returns a copy of the list of cards in this player's hand
+     * Returns a copy of the list of cards in this player's hand
      */
     public ArrayList<PlayableCard> getCardsInHand() {
         return new ArrayList<>(CARDS_IN_HAND);
     }
 
     /**
-     Given the card and the desired position, wrapped in a GenericPair structure meaning <x,y> coordinates on
-     the field, places the card into the ownField HashMap, also incrementing the ownedResources by the correct number
-     @requires card to place is in this player's hand (contained in CARDS_IN_HAND)
-     @requires if gold card: this player has the needed resources
-     @ensures for each resource on the played side, this player's resources are incremented
-     @ensures if this card covers corners in other cards, those resources are decremented
+     * Given the card and the desired position, wrapped in a GenericPair structure meaning <x,y> coordinates on
+     * the field, places the card into the ownField HashMap, also incrementing the ownedResources by the correct number
+     * @requires the given card to place must be in this player's hand (it is contained in CARDS_IN_HAND)
+     * @requires if the given card is a GoldCard: this player must have the needed resources to play it
+     * @ensures for each Resource contained in a corner or on the back of the given card's played side, this player's
+     * resources are incremented by 1
+     * @ensures if the given card (after being placed) covers corners of other cards, for each covered corner the
+     * amount is decremented by 1
      */
     public boolean placeCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide) {
         if (!getCardsInHand().contains(card))
@@ -116,6 +118,7 @@ public class InGamePlayer extends Player {
                 return false;
 
         if (OWN_FIELD.addCard(coordinates, card, playedSide)) {
+            //Foreach Corner of the given card that is valid and non-empty, increment the corresponding Resource by 1
             for (Resource res : card.getCorners(playedSide)
                     .values().stream()
                     .filter((resource) ->
@@ -126,13 +129,16 @@ public class InGamePlayer extends Player {
                 incrementOwnedResource(res, 1);
             }
 
+            //If card is played on the back, also increment the amount by 1 for the resources in the center
             if (playedSide.equals(Side.BACK)) {
                 card.getCenterBackResources()
                         .forEach(this::incrementOwnedResource);
             }
 
+            //For every corner on the played side of the given card:
             card.getCorners(playedSide).keySet().stream()
                     .map((offset) ->
+                            //optionally get a given card which gets covered
                             Optional.ofNullable(
                                     OWN_FIELD.getPlacedCards().get(
                                             new GenericPair<>(
@@ -140,14 +146,17 @@ public class InGamePlayer extends Player {
                                                     coordinates.getY() + offset.getY()
                                             )
                                     )
+                                    //and optionally get the corresponding reource covered
                             ).flatMap((coveredCorner) -> Optional.of(
                                             coveredCorner.getX()
                                                     .getCornerResource(coveredCorner.getY(), offset.getX(), offset.getY())
                                     )
                             )
                     )
+                    //keep only the non-empty optionals containing found resources
                     .filter(Optional::isPresent)
                     .map(Optional::get)
+                    //filter out eventual empties and not_a_corners (can't happen but still) covered and decrement
                     .filter((coveredResource) ->
                             !(coveredResource.equals(Resource.NOT_A_CORNER) || coveredResource.equals(Resource.EMPTY))
                     ).forEach((coveredResource) -> incrementOwnedResource(coveredResource, -1));
@@ -158,7 +167,7 @@ public class InGamePlayer extends Player {
     }
 
     /**
-    Adds the pickedCard to the current player's hand
+     * Adds the pickedCard to the current player's hand
      */
     public void addCardToHand(PlayableCard pickedCard) {
         //FIXME: check for exception!
@@ -166,42 +175,42 @@ public class InGamePlayer extends Player {
     }
 
     /**
-    Given a specific resource type and the quantity to be increased by, updates the HashMap
+     * Given a specific resource type and the quantity to be increased by, updates the HashMap
      */
     protected void incrementOwnedResource(Resource resource, int numberToBeIncreased){
         OWNED_RESOURCES.put(resource, OWNED_RESOURCES.get(resource) + numberToBeIncreased);
     }
 
     /**
-    Returns a copy of the map of resources owned by this player
+     * Returns a copy of the map of resources owned by this player
      */
     public EnumMap<Resource, Integer> getOwnedResources() {
         return new EnumMap<>(OWNED_RESOURCES);
     }
 
     /**
-    Returns the cards placed by this player
+     * Returns the cards placed by this player
      */
     public HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
         return OWN_FIELD.getPlacedCards();
     }
 
     /**
-    Returns the available positions where this player can place cards next
+     * Returns the available positions where this player can place cards next
      */
     protected ArrayList<GenericPair<Integer, Integer>> getOpenCorners() {
         return OWN_FIELD.getOpenCorners();
     }
 
     /**
-    Returns this player's secret Objective card
+     * Returns this player's secret Objective card
      */
     public ObjectiveCard getSecretObjective() {
         return secretObjective;
     }
 
     /**
-    Sets this player's secret Objective card
+     * Sets this player's secret Objective card
      */
     public void setSecretObjective(ObjectiveCard objectiveCard) {
         //FIXME: if Cards classes' attributes are final, this is fine.
