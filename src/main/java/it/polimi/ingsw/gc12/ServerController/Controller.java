@@ -8,8 +8,11 @@ import it.polimi.ingsw.gc12.ServerModel.Game;
 import it.polimi.ingsw.gc12.ServerModel.GameLobby;
 import it.polimi.ingsw.gc12.ServerModel.InGamePlayer;
 import it.polimi.ingsw.gc12.ServerModel.Player;
-import it.polimi.ingsw.gc12.Utilities.*;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.JSONParser;
+import it.polimi.ingsw.gc12.Utilities.Side;
+import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -66,24 +69,24 @@ public abstract class Controller {
         return Controller.players.get(client);
     }
 
-    private static void sendLobbies(Player target) {
-        players.entrySet().stream()
-                .filter((entry) -> entry.getValue().equals(target))
-                .findAny().orElseThrow(NotExistingPlayerException::new).getKey()
-                .getServerMessage(functionName, arraylistOfLobbies);
-    }
+    /*    private static void sendLobbies(Player target) {
+            players.entrySet().stream()
+                    .filter((entry) -> entry.getValue().equals(target))
+                    .findAny().orElseThrow(NotExistingPlayerException::new).getKey()
+                    .getServerMessage(functionName, arraylistOfLobbies);
+        }
 
-    public static void createPlayer(Player target, VirtualClient client, String nickname) {
-        if(target != null || players.values().stream().anyMatch((player) -> player.getNickname().equals(nickname)))
-            throw new AlreadyExistingPlayerException();
+        public static void createPlayer(Player target, VirtualClient client, String nickname) {
+            if(target != null || players.values().stream().anyMatch((player) -> player.getNickname().equals(nickname)))
+                throw new AlreadyExistingPlayerException();
 
-        target = new Player(nickname);
-        players.put(client, target);
+            target = new Player(nickname);
+            players.put(client, target);
 
-        sendLobbies(target);
+            sendLobbies(target);
 
-    }
-
+        }
+    */
     public static void setNickname(Player target, String nickname) {
         if (playersToLobbiesAndGames.containsValue(nickname))
             //throw new AlreadyExistingPlayerException();
