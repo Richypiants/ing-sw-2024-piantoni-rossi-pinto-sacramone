@@ -400,4 +400,118 @@ class PatternConditionTest {
 
 
     }
+
+    @Test
+    void multipattern() {
+        ArrayList<Card> array = new ArrayList<>(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
+        }));
+        ArrayList<Card> array1 = new ArrayList<>(JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<ArrayList<ObjectiveCard>>() {
+        }));
+        ArrayList<Card> array2 = new ArrayList<>(JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<ArrayList<InitialCard>>() {
+        }));
+
+        Triplet<Integer, Integer, Resource> T1 = new Triplet<>(0, 0, Resource.BUTTERFLY);
+        Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -2, Resource.BUTTERFLY);
+        Triplet<Integer, Integer, Resource> T3 = new Triplet<>(-1, 1, Resource.WOLF);
+        ArrayList<Triplet<Integer, Integer, Resource>> Array = new ArrayList<>();
+        Array.add(T1);
+        Array.add(T2);
+        Array.add(T3);
+        PatternCondition p = new PatternCondition(Array);
+
+        ObjectiveCard c_o = (ObjectiveCard) array1.get(6);
+        InitialCard c0 = (InitialCard) array2.get(0);
+        ResourceCard c1 = (ResourceCard) array.get(30);
+        ResourceCard c2 = (ResourceCard) array.get(32);
+        ResourceCard c3 = (ResourceCard) array.get(22);
+        ResourceCard c4 = (ResourceCard) array.get(30);
+        ResourceCard c5 = (ResourceCard) array.get(32);
+        ResourceCard c6 = (ResourceCard) array.get(22);
+
+        Player p1 = new Player("giovanni");
+        GameLobby lobby = new GameLobby(1, p1);
+        Game game = new Game(lobby);
+        game.getPlayers().get(0).addCardToHand(c0);
+        game.getPlayers().get(0).addCardToHand(c1);
+        game.getPlayers().get(0).addCardToHand(c2);
+        game.getPlayers().get(0).addCardToHand(c3);
+        game.getPlayers().get(0).addCardToHand(c4);
+        game.getPlayers().get(0).addCardToHand(c5);
+        game.getPlayers().get(0).addCardToHand(c6);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(1, 1), c1, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(1, -1), c2, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(0, 2), c3, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(-1, 1), c4, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(-1, -1), c5, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(-2, 2), c6, Side.FRONT);
+
+
+        assertEquals(2, p.numberOfTimesSatisfied(c_o, game.getPlayers().get(0)));
+
+
+    }
+
+    @Test
+    void patternmix() {
+        ArrayList<Card> array = new ArrayList<>(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
+        }));
+        ArrayList<Card> array1 = new ArrayList<>(JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<ArrayList<ObjectiveCard>>() {
+        }));
+        ArrayList<Card> array2 = new ArrayList<>(JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<ArrayList<InitialCard>>() {
+        }));
+
+        Triplet<Integer, Integer, Resource> T1 = new Triplet<>(0, 0, Resource.BUTTERFLY);
+        Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -2, Resource.BUTTERFLY);
+        Triplet<Integer, Integer, Resource> T3 = new Triplet<>(-1, 1, Resource.WOLF);
+        ArrayList<Triplet<Integer, Integer, Resource>> Array = new ArrayList<>();
+        Array.add(T1);
+        Array.add(T2);
+        Array.add(T3);
+        PatternCondition p = new PatternCondition(Array);
+
+        Triplet<Integer, Integer, Resource> T4 = new Triplet<>(0, 0, Resource.MUSHROOM);
+        Triplet<Integer, Integer, Resource> T5 = new Triplet<>(1, 1, Resource.MUSHROOM);
+        Triplet<Integer, Integer, Resource> T6 = new Triplet<>(2, 2, Resource.MUSHROOM);
+        ArrayList<Triplet<Integer, Integer, Resource>> Array1 = new ArrayList<>();
+        Array1.add(T4);
+        Array1.add(T5);
+        Array1.add(T6);
+        PatternCondition p_1 = new PatternCondition(Array1);
+
+        ObjectiveCard c_o = (ObjectiveCard) array1.get(6);
+        ObjectiveCard c_o1 = (ObjectiveCard) array1.get(0);
+        InitialCard c0 = (InitialCard) array2.get(0);
+        ResourceCard c1 = (ResourceCard) array.get(30);
+        ResourceCard c2 = (ResourceCard) array.get(32);
+        ResourceCard c3 = (ResourceCard) array.get(22);
+
+        ResourceCard c4 = (ResourceCard) array.get(0);
+        ResourceCard c5 = (ResourceCard) array.get(3);
+        ResourceCard c6 = (ResourceCard) array.get(5);
+
+        Player p1 = new Player("giovanni");
+        GameLobby lobby = new GameLobby(1, p1);
+        Game game = new Game(lobby);
+        game.getPlayers().get(0).addCardToHand(c0);
+        game.getPlayers().get(0).addCardToHand(c1);
+        game.getPlayers().get(0).addCardToHand(c2);
+        game.getPlayers().get(0).addCardToHand(c3);
+        game.getPlayers().get(0).addCardToHand(c4);
+        game.getPlayers().get(0).addCardToHand(c5);
+        game.getPlayers().get(0).addCardToHand(c6);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(-1, 1), c1, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(-1, -1), c2, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(-2, 2), c3, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(1, 1), c4, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(2, 2), c5, Side.FRONT);
+        game.getPlayers().get(0).placeCard(new GenericPair<>(3, 3), c6, Side.FRONT);
+
+
+        assertEquals(1, p.numberOfTimesSatisfied(c_o, game.getPlayers().get(0)));
+        assertEquals(1, p_1.numberOfTimesSatisfied(c_o1, game.getPlayers().get(0)));
+
+
+    }
 }
