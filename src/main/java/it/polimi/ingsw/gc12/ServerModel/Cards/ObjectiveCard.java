@@ -43,9 +43,10 @@ public final class ObjectiveCard extends Card {
 
     @Override
     public String toString() {
-        return "ObjectiveCard{" +
+        return "(ObjectiveCard) " + super.toString() +
+                " {" +
                 "POINTS_CONDITION=" + POINTS_CONDITION +
-                "} " + super.toString();
+                "} ";
     }
 }
 

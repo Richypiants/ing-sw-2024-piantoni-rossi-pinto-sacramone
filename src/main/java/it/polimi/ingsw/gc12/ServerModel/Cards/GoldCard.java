@@ -55,10 +55,11 @@ public class GoldCard extends PlayableCard {
 
     @Override
     public String toString() {
-        return "GoldCard{" +
+        return "(GoldCard) " + super.toString() +
+                " {" +
                 "POINTS_CONDITION=" + POINTS_CONDITION +
                 ", RESOURCES_NEEDED_TO_PLAY=" + RESOURCES_NEEDED_TO_PLAY +
-                "} " + super.toString();
+                "} ";
     }
 }
 

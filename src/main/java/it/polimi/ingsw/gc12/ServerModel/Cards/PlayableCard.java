@@ -95,10 +95,11 @@ public abstract class PlayableCard extends Card {
 
     @Override
     public String toString() {
-        return "PlayableCard{" +
+        return super.toString() +
+                " {" +
                 "CORNERS=" + CORNERS +
                 ", CENTER_BACK_RESOURCES=" + CENTER_BACK_RESOURCES +
-                "} " + super.toString();
+                "} ";
     }
 }
 

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
+import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.ServerModel.Cards.GoldCard;
 import it.polimi.ingsw.gc12.ServerModel.Cards.InitialCard;
 import it.polimi.ingsw.gc12.ServerModel.Cards.ObjectiveCard;
@@ -8,10 +9,7 @@ import it.polimi.ingsw.gc12.ServerModel.Conditions.CornersCondition;
 import it.polimi.ingsw.gc12.ServerModel.Conditions.PatternCondition;
 import it.polimi.ingsw.gc12.ServerModel.Conditions.PointsCondition;
 import it.polimi.ingsw.gc12.ServerModel.Conditions.ResourcesCondition;
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Resource;
-import it.polimi.ingsw.gc12.Utilities.Side;
-import it.polimi.ingsw.gc12.Utilities.Triplet;
+import it.polimi.ingsw.gc12.Utilities.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -24,29 +22,44 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class InGamePlayerTest {
 
+    ArrayList<ResourceCard> resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
+    });
+    ArrayList<GoldCard> goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
+    });
+    ArrayList<InitialCard> initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
+    });
+    ArrayList<ObjectiveCard> objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {
+    });
+
     @Test
     void placeCard() {
 
-        HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
-        resource.put(new GenericPair<>(0, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(0, 1), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 1), Resource.WOLF);
-        Map<Side, Map<GenericPair<Integer, Integer>, Resource>> corner = new HashMap<>();
-        corner.put(Side.FRONT, resource);
-        corner.put(Side.BACK, resource);
+        Player player = new Player("SACRI");
+        InGamePlayer playerGame = new InGamePlayer(player);
 
-        EnumMap<Resource, Integer> back = new EnumMap<>(Resource.class);
-        back.put(Resource.WOLF, 1);
+        playerGame.addCardToHand(initialCards.get(1));
 
-        ResourceCard c1 = new ResourceCard(1, 2, null, null, corner, back);
+        assertEquals(true, playerGame.placeCard(new GenericPair<>(0, 0), playerGame.getCardsInHand().getFirst(), Side.FRONT));
+    }
 
-        Player p1 = new Player("SACRI");
-        InGamePlayer p1_g = new InGamePlayer(p1);
+    @Test
+    void notACornerCheck() {
 
-        p1_g.addCardToHand(c1);
+        Player player = new Player("SACRI");
+        InGamePlayer playerGame = new InGamePlayer(player);
 
-        assertEquals(true, p1_g.placeCard(new GenericPair<>(0, 0), c1, Side.FRONT));
+        playerGame.addCardToHand(initialCards.get(1));
+
+        playerGame.placeCard(new GenericPair<>(0, 0), playerGame.getCardsInHand().getFirst(), Side.FRONT);
+
+        playerGame.addCardToHand(resourceCards.get(0));
+        playerGame.addCardToHand(resourceCards.get(1));
+        playerGame.addCardToHand(goldCards.get(0));
+
+        playerGame.placeCard(new GenericPair<>(1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
+        playerGame.placeCard(new GenericPair<>(0, 2), playerGame.getCardsInHand().getFirst(), Side.FRONT);
+
+        assertEquals(false, playerGame.placeCard(new GenericPair<>(-1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT));
     }
 
     @Test
@@ -64,12 +77,12 @@ class InGamePlayerTest {
         back.put(Resource.WOLF, 1);
 
         InitialCard c0 = new InitialCard(0, 2, null, null, corner, back);
-        Player p1 = new Player("SACRI");
-        InGamePlayer p1_g = new InGamePlayer(p1);
+        Player player = new Player("SACRI");
+        InGamePlayer playerGame = new InGamePlayer(player);
 
-        p1_g.addCardToHand(c0);
+        playerGame.addCardToHand(c0);
 
-        boolean result = p1_g.getCardsInHand().contains(c0);
+        boolean result = playerGame.getCardsInHand().contains(c0);
 
         assertEquals(true, result);
 
@@ -77,14 +90,64 @@ class InGamePlayerTest {
     }
 
     @Test
-    void incrementOwnedResource() {  // OK
+    void incrementOwnedResource_1() {
 
-        Player p1 = new Player("SACRI");
-        InGamePlayer p1_g = new InGamePlayer(p1);
+        Player player = new Player("SACRI");
+        InGamePlayer playerGame = new InGamePlayer(player);
 
-        p1_g.incrementOwnedResource(Resource.SCROLL, 2);
+        playerGame.addCardToHand(initialCards.get(1));
+        playerGame.placeCard(new GenericPair<>(0, 0), playerGame.getCardsInHand().getFirst(), Side.BACK);
 
-        assertEquals(2, p1_g.getOwnedResources().get(Resource.SCROLL));
+        assertEquals(2, playerGame.getOwnedResources().get(Resource.MUSHROOM));
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.WOLF));
+
+        playerGame.addCardToHand(resourceCards.get(0));
+        playerGame.addCardToHand(resourceCards.get(1));
+        playerGame.addCardToHand(goldCards.get(0));
+
+        playerGame.placeCard(new GenericPair<>(-1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
+
+        assertEquals(4, playerGame.getOwnedResources().get(Resource.MUSHROOM));
+        assertEquals(0, playerGame.getOwnedResources().get(Resource.WOLF));
+
+        playerGame.placeCard(new GenericPair<>(1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
+
+        assertEquals(6, playerGame.getOwnedResources().get(Resource.MUSHROOM));
+        assertEquals(0, playerGame.getOwnedResources().get(Resource.WOLF));
+    }
+
+    @Test
+    void incrementOwnedResource_2() {  // OK
+        Player player = new Player("SACRI");
+        InGamePlayer playerGame = new InGamePlayer(player);
+
+        playerGame.addCardToHand(initialCards.get(0));
+        playerGame.placeCard(new GenericPair<>(0, 0), playerGame.getCardsInHand().getFirst(), Side.FRONT);
+
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.MUSHROOM));
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.WOLF));
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.GRASS));
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.BUTTERFLY));
+
+        playerGame.addCardToHand(resourceCards.get(30));
+        playerGame.addCardToHand(goldCards.get(33));
+
+        playerGame.placeCard(new GenericPair<>(1, -1), playerGame.getCardsInHand().getFirst(), Side.BACK);
+
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.MUSHROOM));
+        assertEquals(0, playerGame.getOwnedResources().get(Resource.WOLF));
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.GRASS));
+        assertEquals(2, playerGame.getOwnedResources().get(Resource.BUTTERFLY));
+
+        assertEquals(false, playerGame.placeCard(new GenericPair<>(1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT));
+
+        /*
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.MUSHROOM));
+        assertEquals(0, playerGame.getOwnedResources().get(Resource.WOLF));
+        assertEquals(0, playerGame.getOwnedResources().get(Resource.GRASS));
+        assertEquals(2, playerGame.getOwnedResources().get(Resource.BUTTERFLY));
+        assertEquals(0, playerGame.getOwnedResources().get(Resource.FEATHER));
+         */
     }
 
     @Test
@@ -105,12 +168,12 @@ class InGamePlayerTest {
 
         ObjectiveCard c_o = new ObjectiveCard(3, 1, null, null, p);
 
-        Player p1 = new Player("SACRI");
-        InGamePlayer p1_g = new InGamePlayer(p1);
+        Player player = new Player("SACRI");
+        InGamePlayer playerGame = new InGamePlayer(player);
 
-        p1_g.setSecretObjective(c_o);
+        playerGame.setSecretObjective(c_o);
 
-        assertEquals(c_o, p1_g.getSecretObjective());
+        assertEquals(c_o, playerGame.getSecretObjective());
 
 
     }
@@ -130,17 +193,17 @@ class InGamePlayerTest {
         InitialCard c0 = new InitialCard(0, 2, null, null, corner, back);
         ResourceCard c1 = new ResourceCard(1, 2, null, null, corner, back);
         ResourceCard c2 = new ResourceCard(2, 1, null, null, corner, back);
-        Player p1 = new Player("giovanni");
-        InGamePlayer p1_g = new InGamePlayer(p1);
-        p1_g.addCardToHand(c0);
-        p1_g.addCardToHand(c1);
-        p1_g.addCardToHand(c2);
-        p1_g.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
-        p1_g.placeCard(new GenericPair<>(1, -1), c1, Side.FRONT);
-        p1_g.placeCard(new GenericPair<>(1, 1), c2, Side.FRONT);
+        Player player = new Player("giovanni");
+        InGamePlayer playerGame = new InGamePlayer(player);
+        playerGame.addCardToHand(c0);
+        playerGame.addCardToHand(c1);
+        playerGame.addCardToHand(c2);
+        playerGame.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
+        playerGame.placeCard(new GenericPair<>(1, -1), c1, Side.FRONT);
+        playerGame.placeCard(new GenericPair<>(1, 1), c2, Side.FRONT);
 
 
-        assertEquals(10, p1_g.getOwnedResources().get(Resource.WOLF));
+        assertEquals(10, playerGame.getOwnedResources().get(Resource.WOLF));
 
     }
 
@@ -159,12 +222,12 @@ class InGamePlayerTest {
         InitialCard c0 = new InitialCard(0, 2, null, null, corner, back);
         ResourceCard c1 = new ResourceCard(1, 2, null, null, corner, back);
 
-        Player p1 = new Player("giovanni");
-        InGamePlayer p1_g = new InGamePlayer(p1);
-        p1_g.addCardToHand(c0);
+        Player player = new Player("giovanni");
+        InGamePlayer playerGame = new InGamePlayer(player);
+        playerGame.addCardToHand(c0);
 
-        p1_g.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
-        assertFalse(p1_g.placeCard(new GenericPair<>(1, -1), c1, Side.FRONT));
+        playerGame.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
+        assertFalse(playerGame.placeCard(new GenericPair<>(1, -1), c1, Side.FRONT));
     }
 
     @Test
@@ -187,12 +250,12 @@ class InGamePlayerTest {
         InitialCard c0 = new InitialCard(0, 2, null, null, corner, back);
         GoldCard c1 = new GoldCard(1, 2, null, null, corner, back, p, RP);
 
-        Player p1 = new Player("giovanni");
-        InGamePlayer p1_g = new InGamePlayer(p1);
-        p1_g.addCardToHand(c0);
-        p1_g.addCardToHand(c1);
-        p1_g.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
-        assertFalse(p1_g.placeCard(new GenericPair<>(1, -1), c1, Side.FRONT));
+        Player player = new Player("giovanni");
+        InGamePlayer playerGame = new InGamePlayer(player);
+        playerGame.addCardToHand(c0);
+        playerGame.addCardToHand(c1);
+        playerGame.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
+        assertFalse(playerGame.placeCard(new GenericPair<>(1, -1), c1, Side.FRONT));
 
     }
 }

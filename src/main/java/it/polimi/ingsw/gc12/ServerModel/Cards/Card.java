@@ -47,6 +47,15 @@ public abstract class Card {
     without points conditions)
      */
     public abstract int awardPoints(InGamePlayer target);
+
+    public String toString() {
+        return "{" +
+                "ID=" + ID +
+                ", POINTS_GRANTED=" + POINTS_GRANTED +
+                ", FRONT_SPRITE=" + FRONT_SPRITE +
+                ", BACK_SPRITE=" + BACK_SPRITE +
+                '}';
+    }
 }
 
 // getShownSide() (Getter) -> No test

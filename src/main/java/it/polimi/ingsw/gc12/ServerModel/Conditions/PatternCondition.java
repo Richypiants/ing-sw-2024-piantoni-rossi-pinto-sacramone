@@ -180,6 +180,12 @@ public class PatternCondition implements PointsCondition {
                         }
                 ).toList();
     }
+
+    public String toString() {
+        return "(PatternCondition) {" +
+                "CONDITION=" + CONDITION +
+                "} ";
+    }
 }
 
 // Test

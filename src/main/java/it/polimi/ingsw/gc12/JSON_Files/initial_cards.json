@@ -2,7 +2,37 @@
   {
     "ID": "81",
     "CENTER_BACK_RESOURCES": {"BUTTERFLY": 1},
-    "CORNERS" : {"FRONT": [[{"X": -1, "Y": 1}, "MUSHROOM"],[{"X": 1, "Y": 1}, "GRASS"],[{"X": 1, "Y": -1}, "BUTTERFLY"],[{"X": -1, "Y": -1}, "BUTTERFLY"]],
+    "CORNERS": {
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "MUSHROOM"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "GRASS"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "WOLF"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "BUTTERFLY"
+        ]
+      ],
                  "BACK": [[{"X": -1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": 1}, "GRASS"],[{"X": 1, "Y": -1}, "EMPTY"],[{"X": -1, "Y": -1}, "BUTTERFLY"]]}
   },
   {

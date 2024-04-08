@@ -22,11 +22,6 @@ public final class InitialCard extends PlayableCard {
 
     @Override
     public String toString() {
-        return "InitialCard{" +
-                "ID=" + ID +
-                ", POINTS_GRANTED=" + POINTS_GRANTED +
-                ", FRONT_SPRITE=" + FRONT_SPRITE +
-                ", BACK_SPRITE=" + BACK_SPRITE +
-                '}';
+        return "(InitialCard) " + super.toString();
     }
 }

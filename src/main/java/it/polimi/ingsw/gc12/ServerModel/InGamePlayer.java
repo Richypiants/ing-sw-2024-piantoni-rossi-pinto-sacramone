@@ -149,7 +149,7 @@ public class InGamePlayer extends Player {
                                     //and optionally get the corresponding reource covered
                             ).flatMap((coveredCorner) -> Optional.of(
                                             coveredCorner.getX()
-                                                    .getCornerResource(coveredCorner.getY(), offset.getX(), offset.getY())
+                                                    .getCornerResource(coveredCorner.getY(), -offset.getX(), -offset.getY())
                                     )
                             )
                     )
@@ -160,6 +160,8 @@ public class InGamePlayer extends Player {
                     .filter((coveredResource) ->
                             !(coveredResource.equals(Resource.NOT_A_CORNER) || coveredResource.equals(Resource.EMPTY))
                     ).forEach((coveredResource) -> incrementOwnedResource(coveredResource, -1));
+
+            CARDS_IN_HAND.remove(card);
 
             return true;
         }

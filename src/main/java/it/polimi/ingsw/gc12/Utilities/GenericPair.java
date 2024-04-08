@@ -53,6 +53,10 @@ public class GenericPair<T1, T2> {
     public int hashCode() {
         return Objects.hash(this.getX(), this.getY());
     }
+
+    public String toString() {
+        return "{" + X + ", " + Y + "}";
+    }
 }
 
 // No test needed

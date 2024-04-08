@@ -30,6 +30,10 @@ public class CornersCondition implements PointsCondition {
                         )
                 ).count();
     }
+
+    public String toString() {
+        return "(CornersCondition) ";
+    }
 }
 
 // numberOfTimesSatisfied() -> Si test

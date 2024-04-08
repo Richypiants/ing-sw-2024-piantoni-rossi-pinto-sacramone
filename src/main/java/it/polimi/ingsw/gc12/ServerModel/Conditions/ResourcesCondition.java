@@ -42,6 +42,12 @@ public class ResourcesCondition implements PointsCondition {
                 ).min()
                 .getAsInt();
     }
+
+    public String toString() {
+        return "(ResourceCondition) {" +
+                "CONDITION=" + CONDITION +
+                "} ";
+    }
 }
 
 // numberOfTimesSatisfied() -> Si test
