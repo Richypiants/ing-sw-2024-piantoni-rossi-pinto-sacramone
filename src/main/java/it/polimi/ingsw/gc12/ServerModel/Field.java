@@ -123,6 +123,7 @@ public class Field {
      */
     public GenericPair<Integer, Integer> getCardCoordinates(PlayableCard placedCard) {
         //TODO: check for exceptions and Optional<> value when card hasn't been played!
+        // look in leaveLobbby() in Controller for a solution to a similar problem to this get()
         return PLACED_CARDS.entrySet().stream()
                 .filter((entry) -> entry.getValue().getX().equals(placedCard))
                 .findFirst().get().getKey();

@@ -21,11 +21,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 //FIXME: abstract with static methods or singleton? METTERE GLI OVERRIDE!
+//TODO:  In every custom exception write in the constructor call a string verbosely describing the event that caused it and why
+
+/*TODO: In case of high traffic volumes on network, we can reduce it by sending the updates to lobby states (creation, updates) only to clients
+        which aren't already in a lobby too. */
 public abstract class Controller {
 
     //TODO: caricare le carte
     public static final Map<Integer, Card> cardsList = loadCards();
-    public static final MethodHandles.Lookup lookup = MethodHandles.lookup(); //FIXME: why does publicLookup() not work?
+    private static final MethodHandles.Lookup lookup = MethodHandles.lookup(); //FIXME: why does publicLookup() not work?
     public static final Map<String, MethodHandle> commandHandles = createHandles();
     //FIXME: maybe create interface VirtualClient to uniform Sockets and RMI better and define Message methods
     public static final Map<VirtualClient, Player> players = new HashMap<>();
@@ -33,6 +37,7 @@ public abstract class Controller {
     public static final Map<Player, GameLobby> playersToLobbiesAndGames = new HashMap<>();
 
     private static Map<Integer, Card> loadCards() {
+        //TODO: map of maps?
         Map<Integer, Card> tmp = new HashMap<>();
         Objects.requireNonNull(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>(){}))
                 .forEach((card) -> tmp.put(card.ID, card));
@@ -65,77 +70,262 @@ public abstract class Controller {
                 );
     }
 
-    protected static Player getPlayerFromVirtualClient(VirtualClient client) {
-        return Controller.players.get(client);
+    private static ArrayList<Object> varargsToArrayList(Object... args){
+        return new ArrayList<>(Arrays.asList(args));
     }
 
-    /*    private static void sendLobbies(Player target) {
-            players.entrySet().stream()
-                    .filter((entry) -> entry.getValue().equals(target))
-                    .findAny().orElseThrow(NotExistingPlayerException::new).getKey()
-                    .getServerMessage(functionName, arraylistOfLobbies);
+    private static boolean hasPlayer(VirtualClient client) throws Throwable{
+        if(!players.containsKey(client)) {
+            client.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new NotExistingPlayerException("Unregistered client")
+                    )
+            ); //throw();
+            return false;
+        }
+        return true;
+    }
+
+    //FIXME: abbastanza orribile e duplicato... playerState?
+    private static boolean inGame(VirtualClient client) throws Throwable{
+        if(players.get(client) instanceof InGamePlayer) {
+            client.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new ForbiddenActionException("Cannot execute action while in a game")
+                    )
+            ); //throw();
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean inLobbyOrGame(VirtualClient client) throws Throwable{
+        if(playersToLobbiesAndGames.containsKey(players.get(client))) {
+            client.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new ForbiddenActionException("Cannot execute action while in a lobby or in a game")
+                    )
+            ); //throw();
+            return true;
+        }
+        return false;
+    }
+
+
+    private boolean inGame(Player target){
+        return playersToLobbiesAndGames.containsKey(target) && playersToLobbiesAndGames.get(target) instanceof Game;
+    }
+
+    public static void createPlayer(VirtualClient sender, String nickname) throws Throwable {
+        if(players.containsKey(sender)) {
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new ForbiddenActionException("Client already registered")
+                    )
+            ); //throw();
+            return;
         }
 
-        public static void createPlayer(Player target, VirtualClient client, String nickname) {
-            if(target != null || players.values().stream().anyMatch((player) -> player.getNickname().equals(nickname)))
-                throw new AlreadyExistingPlayerException();
+        Optional<Map.Entry<VirtualClient, Player>> selectedPlayer = players.entrySet().stream()
+                .filter((entry) -> entry.getValue().getNickname().equals(nickname))
+                .findAny();
 
-            target = new Player(nickname);
-            players.put(client, target);
-
-            sendLobbies(target);
-
+        if(selectedPlayer.isPresent()){
+            Player target = selectedPlayer.get().getValue();
+            if((target instanceof InGamePlayer) && !((InGamePlayer) target).isActive())
+                sender.serverMessage(functionName, gameInfos); //TODO: restoreGame();
+            else
+                sender.serverMessage(
+                        varargsToArrayList(
+                                "throwException",
+                                new IllegalArgumentException("Provided nickname is already taken")
+                        )
+                ); //throw();
+        } else {
+            Player target = new Player(nickname);
+            players.put(sender, target);
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "setLobbies",
+                            lobbiesAndGames.entrySet().stream()
+                                    .filter((entry) -> !(entry.getValue() instanceof Game))
+                                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                    )
+            ); //setLobbies();
         }
-    */
-    public static void setNickname(Player target, String nickname) {
-        if (playersToLobbiesAndGames.containsValue(nickname))
-            //throw new AlreadyExistingPlayerException();
-
-            target.setNickname(nickname);
     }
 
-    //Si può fare in ogni stato: gestire che non possa essere il primo messaggio
-    public void keepAlive(Player player) {
+    public static void setNickname(VirtualClient sender, String nickname) throws Throwable {
+        if(!hasPlayer(sender) || inGame(sender)) return;
+
+        Optional<Map.Entry<VirtualClient, Player>> selectedPlayer = players.entrySet().stream()
+                .filter((entry) -> entry.getValue().getNickname().equals(nickname))
+                .findAny();
+
+        if(selectedPlayer.isPresent()) {
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new IllegalArgumentException("Provided nickname is already taken")
+                    )
+            ); //throw();
+            return;
+        }
+
+        players.get(sender).setNickname(nickname);
+
+        //TODO: decide what to send back
+        sender.serverMessage(varargsToArrayList(...));
+    }
+
+    public void keepAlive(VirtualClient sender) throws Throwable{
+        if(!hasPlayer(sender)) return;
+
+        //TODO: keepAlive management...
 
     }
 
-    public static void createLobby(Player player, int maxPlayers) {
-        //TODO: exceptions? invalidMaxPlayers, ...
-        // e tutte le varie eccezioni se il player è in Game e non in lobby?
-        // si potrebbe risolvere mettendo un GameState "NotStartedState o IdleState"...
+    public static void createLobby(VirtualClient sender, int maxPlayers) throws Throwable {
+        if(!hasPlayer(sender) || inLobbyOrGame(sender)) return;
+        //TODO: si potrebbe risolvere mettendo un GameState "NotStartedState o IdleState"...
 
-        //FIXME: fixare anche il metodo del model nell'UML oltre a invertire ordine parametri in GameLobby
-        //GameLobby lobby = new GameLobby(player, maxPlayers);
+        if(maxPlayers < 2 || maxPlayers > 4){
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new IllegalArgumentException("Invalid number of max players (out of range: accepted [2-4])")
+                    )
+            );
+            return;
+        }
+
+        //FIXME: fixare ordine parametri GameLobby in UML
+        Player target = players.get(sender);
+        GameLobby lobby = new GameLobby(target, maxPlayers);
         UUID lobbyUUID;
 
         do {
             lobbyUUID = UUID.randomUUID();
         } while (!lobbiesAndGames.containsKey(lobbyUUID));
 
-        //lobbiesAndGames.put(lobby.UUID, lobby);
-        //playersToLobbiesAndGames.put(player, lobby);
+        lobbiesAndGames.put(lobbyUUID, lobby);
+        playersToLobbiesAndGames.put(target, lobby);
+
+        for(var client : players.keySet())
+            if(!inGame(client))
+                client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, lobby.generateDTO()));
     }
 
-    public static void joinLobby(Player player, UUID lobbyUUID) {
-        //TODO: exceptions? lobby non trovata, lobby piena, ...
+    public static void joinLobby(VirtualClient sender, UUID lobbyUUID) throws Throwable {
+        if(!hasPlayer(sender) || inLobbyOrGame(sender)) return;
 
-        GameLobby lobby = lobbiesAndGames.get(lobbyUUID);
-        lobby.addPlayer(player);
-        playersToLobbiesAndGames.put(player, lobby);
-    }
-
-    public static void leaveLobby(Player player) {
-        //TODO: exceptions? not in lobby, ...
-
-        GameLobby lobby = playersToLobbiesAndGames.get(player);
-
-        if (lobby.getListOfPlayers().size() == 1) {
-            //lobbiesAndGames.remove(lobbiesAndGames.entrySet().get(lobby));
+        if(lobbiesAndGames.containsKey(lobbyUUID)){
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new IllegalArgumentException("No lobby with provided UUID")
+                    )
+            );
             return;
         }
 
-        lobby.removePlayer(player);
-        playersToLobbiesAndGames.remove(player);
+        GameLobby lobby = lobbiesAndGames.get(lobbyUUID);
+
+        if(lobby instanceof Game){
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new IllegalArgumentException("Provided UUID refers to a game and not a lobby")
+                    )
+            );
+            return;
+        }
+
+        if(lobby.getPlayersNumber() >= lobby.getMaxPlayers()){
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new ForbiddenActionException("Cannot join a full lobby")
+                    )
+            );
+            return;
+        }
+
+        Player target = players.get(sender);
+
+        lobby.addPlayer(target);
+        playersToLobbiesAndGames.put(target, lobby);
+
+        //TODO: startGame()... && add synchronization
+        if(lobby.getPlayersNumber() >= lobby.getMaxPlayers()) {
+            Game newGame = new Game(lobby);
+
+            lobbiesAndGames.put(lobbyUUID, newGame);
+
+            //TODO: estrarre la logica di evoluzione dei player da Game (altrimenti, fixare i get) E SINCRONIZZAREEEE
+            for(var player : lobby.getPlayers()){
+                VirtualClient targetClient = players.entrySet().stream()
+                        .filter((entry) -> entry.getValue().equals(player))
+                        .findFirst()
+                        .get()
+                        .getKey();
+                InGamePlayer targetInGamePlayer = newGame.getPlayers().stream()
+                        .filter((inGamePlayer) -> inGamePlayer.getNickname().equals(player.getNickname()))
+                        .findFirst()
+                        .get();
+
+                players.put(
+                        targetClient,
+                        targetInGamePlayer
+                );
+
+                playersToLobbiesAndGames.remove(player);
+                playersToLobbiesAndGames.put(targetInGamePlayer, newGame);
+
+                targetClient.serverMessage(startGame, gameInfos);
+            }
+
+            //FIXME: a better solution? or does this get fixed by fixing constructors for Game & GameLobby?
+            while(lobby.getPlayersNumber() > 0) {
+                lobby.removePlayer(lobby.getPlayers().getFirst());
+            }
+        }
+
+        //FIXME: risolvere SINCRONIZZANDO su un gameCreationLock
+        for(var client : players.keySet())
+            if(!inGame(client))
+                client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, lobby.generateDTO()));
+    }
+
+    public static void leaveLobby(VirtualClient sender) throws Throwable {
+        if(!hasPlayer(sender) || inGame(sender) || !inLobbyOrGame(sender)) return;
+        //TODO: exceptions? not in lobby, ...
+
+        Player target = players.get(sender);
+
+        GameLobby lobby = playersToLobbiesAndGames.get(target);
+        UUID lobbyUUID = lobbiesAndGames.entrySet().stream()
+                .filter((entry) -> entry.getValue().equals(lobby))
+                .findFirst()
+                .flatMap(uuidGameLobbyEntry -> Optional.of(uuidGameLobbyEntry.getKey()))
+                .orElseThrow(IllegalStateException::new);
+        //Assuming that lobby is contained (thus maps are coherent): check with synchronization that this
+        // invariant holds
+
+        lobby.removePlayer(target);
+        playersToLobbiesAndGames.remove(target);
+
+        if (lobby.getPlayers().isEmpty()) {
+            lobbiesAndGames.remove(lobbyUUID);
+        }
+
+        for(var client : players.keySet())
+            if(!inGame(client))
+                client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, lobby.generateDTO()));
     }
 
     public static void placeInitialCard(VirtualClient sender, Side side) throws Throwable {
@@ -147,7 +337,8 @@ public abstract class Controller {
                 .placeInitialCard(player, side);
     }
 
-    public static void pickObjective(InGamePlayer player, int cardID) throws ForbiddenActionException, AlreadySetCardException, InvalidCardTypeException {
+    public static void pickObjective(VirtualClient sender, int cardID) throws Throwable {
+        if(!hasPlayer(client)) return;
         Card chosenCard = cardsList.get(cardID);
 
         if(chosenCard instanceof ObjectiveCard)
@@ -169,7 +360,8 @@ public abstract class Controller {
 
     }
 
-    public static void drawFromDeck(InGamePlayer player, String deck) throws UnexpectedPlayerException, ForbiddenActionException {
+    public static void drawFromDeck(VirtualClient sender, String deck) throws Throwable {
+        if(!hasPlayer(client)) return;
         playersToLobbiesAndGames.get(player).getCurrentState()
                 .drawFrom(player, deck);
     }
@@ -180,7 +372,8 @@ public abstract class Controller {
                 .drawFrom(player, deck, position);
     }
 
-    public static void leaveGame(InGamePlayer inGamePlayer) {
+    public static void leaveGame(VirtualClient sender) throws Throwable {
+        if(!hasPlayer(client)) return;
         //TODO: exceptions? not in game, ...
 
         Game game = (Game) playersToLobbiesAndGames.get(inGamePlayer);
@@ -195,11 +388,14 @@ public abstract class Controller {
         playersToLobbiesAndGames.remove(inGamePlayer);
     }
 
-    public static void directMessage(InGamePlayer sender, InGamePlayer receiver, String message) {
+    public static void directMessage(VirtualClient sender, String receiverNickname, String message) throws Throwable {
+        if(!hasPlayer(sender)) return;
 
     }
 
-    public static void broadcastMessage(InGamePlayer sender, String message) {
+    public static void broadcastMessage(VirtualClient sender, String message) throws Throwable {
+        if(!hasPlayer(sender)) return;
+
 
     }
 }

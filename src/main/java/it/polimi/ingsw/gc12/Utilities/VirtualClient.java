@@ -4,5 +4,5 @@ import java.util.ArrayList;
 
 public interface VirtualClient {
 
-    void getServerMessage(ArrayList<Object> objects);
+    void serverMessage(ArrayList<Object> objects) throws Throwable;
 }

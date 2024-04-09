@@ -85,7 +85,7 @@ public class SocketClientHandler<V, A> implements CompletionHandler<V, A>, Virtu
             throw new RuntimeException(e);
         }
 
-        receivedCommand.add(1, Controller.players.get(channel));
+        receivedCommand.add(1, this);
         //FIXME: e se non lo trova? exception... ma per createPlayer?
         // exceptions: noSuchMethod, InvalidParametersForMethod, NoPlayerFound(sendCreatePlayer),...
 

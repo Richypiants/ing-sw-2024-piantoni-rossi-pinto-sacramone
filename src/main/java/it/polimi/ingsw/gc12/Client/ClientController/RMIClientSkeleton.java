@@ -166,10 +166,10 @@ public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
     }
 
     @Override
-    public void getServerMessage(ArrayList<Object> objects){
+    public void serverMessage(ArrayList<Object> objects) throws Throwable{
+        Controller.commandHandles.get((String) objects.removeFirst()).invokeWithArguments(objects);
 
-        /*The first parameter of the update message is interpreted, then the correct action will be applied on the corresponding class of the model
-          The View has an observer over the model, which notifies incoming updates and then the view pulls the new infos and reloads the view.
-        */
+        //The first parameter of the update message is interpreted, then the correct action will be applied on the corresponding class of the model
+        //TODO: The View has an observer over the model, which notifies incoming updates and then the view pulls the new infos and reloads the view.
     }
 }

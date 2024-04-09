@@ -29,7 +29,7 @@ public class GameLobby {
     /**
      * Constructs a game lobby of at most maxPlayers players and which contains the player who has created it
      */
-    public GameLobby(int maxPlayers, Player creatorPlayer) {
+    public GameLobby(Player creatorPlayer, int maxPlayers) {
         this.maxPlayers = maxPlayers;
         this.LIST_OF_PLAYERS = new ArrayList<>();
         addPlayer(creatorPlayer);
@@ -64,7 +64,7 @@ public class GameLobby {
     /**
      * Returns a copy of the list of players in the lobby
      */
-    public ArrayList<Player> getListOfPlayers() {
+    public ArrayList<Player> getPlayers() {
         return new ArrayList<>(LIST_OF_PLAYERS);
     }
 

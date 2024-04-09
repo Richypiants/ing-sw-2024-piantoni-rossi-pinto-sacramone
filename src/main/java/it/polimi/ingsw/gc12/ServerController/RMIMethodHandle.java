@@ -16,21 +16,21 @@ public class RMIMethodHandle implements RMIVirtualMethod {
     //TODO: remove these that we never use?
     @Override
     public Object invoke(RMIVirtualClient client, Object... args) throws Throwable {
-        return method.invoke(Controller.getPlayerFromVirtualClient(client), args);
+        return method.invoke(client, args);
     }
 
     @Override
     public Object invokeExact(RMIVirtualClient client, Object... args) throws Throwable {
-        return method.invokeExact(Controller.getPlayerFromVirtualClient(client), args);
+        return method.invokeExact(client, args);
     }
 
     @Override
     public Object invokeWithArguments(RMIVirtualClient client, Object... arguments) throws Throwable {
-        return method.invokeWithArguments(Controller.getPlayerFromVirtualClient(client), arguments);
+        return method.invokeWithArguments(client, arguments);
     }
 
     @Override
     public Object invokeWithArguments(RMIVirtualClient client, List<?> arguments) throws Throwable {
-        return method.invokeWithArguments(Controller.getPlayerFromVirtualClient(client), arguments);
+        return method.invokeWithArguments(client, arguments);
     }
 }
