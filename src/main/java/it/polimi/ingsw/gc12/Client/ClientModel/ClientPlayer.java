@@ -16,7 +16,7 @@ public class ClientPlayer {
      */
     private final String OWN_NICKNAME;
     /**
-     * This player's color
+     * This player's color44
      */
     public final Color COLOR;
 

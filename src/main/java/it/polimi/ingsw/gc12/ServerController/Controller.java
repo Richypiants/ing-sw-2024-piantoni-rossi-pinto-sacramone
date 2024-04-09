@@ -138,6 +138,10 @@ public abstract class Controller {
         playersToLobbiesAndGames.remove(player);
     }
 
+    public static void placeInitialCard(VirtualClient sender, Side side) throws Throwable {
+        if(!hasPlayer(client)) return;
+    //TODO: Continue working from this point
+
     public static void placeInitialCard(InGamePlayer player, Side side) throws ForbiddenActionException {
         playersToLobbiesAndGames.get(player).getCurrentState()
                 .placeInitialCard(player, side);
@@ -153,8 +157,8 @@ public abstract class Controller {
             throw new InvalidCardTypeException();
     }
 
-    public static void placeCard(InGamePlayer player, GenericPair<Integer, Integer> pair, int cardID,
-                          Side side) throws UnexpectedPlayerException, ForbiddenActionException, InvalidCardTypeException {
+    public static void placeCard(VirtualClient sender, GenericPair<Integer, Integer> pair, int cardID, Side side) throws Throwable {
+        if(!hasPlayer(client)) return;
         Card chosenCard = cardsList.get(cardID);
 
         if(chosenCard instanceof PlayableCard)
@@ -170,7 +174,8 @@ public abstract class Controller {
                 .drawFrom(player, deck);
     }
 
-    public static void drawFromVisibleCards(InGamePlayer player, String deck, int position) throws UnexpectedPlayerException, ForbiddenActionException, InvalidPositionException, UnknownStringException {
+    public static void drawFromVisibleCards(VirtualClient sender, String deck, int position) throws Throwable {
+        if(!hasPlayer(client)) return;
         playersToLobbiesAndGames.get(player).getCurrentState()
                 .drawFrom(player, deck, position);
     }

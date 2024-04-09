@@ -64,7 +64,7 @@ public class SocketClientHandler<V, A> implements CompletionHandler<V, A>, Virtu
     }
 
     @Override
-    public void getServerMessage(ArrayList<Object> objects) {
+    public void serverMessage(ArrayList<Object> objects) {
         try {
             channel.write(writeObject(objects));
         } catch (IOException e) {
