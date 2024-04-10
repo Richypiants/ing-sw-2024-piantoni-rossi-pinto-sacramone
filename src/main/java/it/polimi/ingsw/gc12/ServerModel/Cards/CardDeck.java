@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.ServerModel.Cards;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -17,8 +18,8 @@ public class CardDeck<T extends Card>{
     /**
     Constructs a deck of cards by copying the passed cards, shuffling and then pushing them into the card stack
      */
-    public CardDeck(ArrayList<T> deck) {
-        ArrayList<T> copy = new ArrayList<>(deck);
+    public CardDeck(List<T> deck) {
+        List<T> copy = new ArrayList<>(deck);
 
         Collections.shuffle(copy);
         this.DECK = new Stack<>();

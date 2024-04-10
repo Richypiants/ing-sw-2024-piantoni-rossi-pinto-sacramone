@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc12.ServerModel.Conditions.PatternCondition;
 import it.polimi.ingsw.gc12.ServerModel.Conditions.PointsCondition;
 import it.polimi.ingsw.gc12.ServerModel.Conditions.ResourcesCondition;
 import it.polimi.ingsw.gc12.Utilities.*;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ class InGamePlayerTest {
     }
 
     @Test
-    void notACornerCheck() {
+    void notACornerCheck() throws Exception{
 
         Player player = new Player("SACRI");
         InGamePlayer playerGame = new InGamePlayer(player);
@@ -54,7 +55,7 @@ class InGamePlayerTest {
         playerGame.placeCard(new GenericPair<>(1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
         playerGame.placeCard(new GenericPair<>(0, 2), playerGame.getCardsInHand().getFirst(), Side.FRONT);
 
-        assertEquals(false, playerGame.placeCard(new GenericPair<>(-1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT));
+        assertThrows(InvalidCardPositionException.class, () -> playerGame.placeCard(new GenericPair<>(-1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT));
     }
 
     @Test

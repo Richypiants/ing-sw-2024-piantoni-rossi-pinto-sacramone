@@ -27,7 +27,6 @@ public class ClientLobby {
         this.OTHER_PLAYERS = new ArrayList<>(otherPlayers);
         this.maxPlayers = maxPlayers;
         this.currentPlayers = currentPlayers;
-        this.currentState = new NotStartedState();
     }
 
     public List<String> getPlayers() {

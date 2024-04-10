@@ -3,6 +3,9 @@ package it.polimi.ingsw.gc12.ServerModel.GameStates;
 import it.polimi.ingsw.gc12.ServerModel.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.ServerModel.Game;
 import it.polimi.ingsw.gc12.ServerModel.InGamePlayer;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -32,6 +35,7 @@ public class PlayerTurnPlayState extends GameState {
         if (counter == -1)
             if (GAME.getPlayers().get(currentPlayer).getPoints() >= 20)
                 counter = 2 * GAME.getPlayers().size() - currentPlayer;
+        //TODO: send alert a tutti i giocatori che si è entrati nella fase finale?
 
         GAME.setState(new PlayerTurnDrawState(GAME, currentPlayer, counter));
     }

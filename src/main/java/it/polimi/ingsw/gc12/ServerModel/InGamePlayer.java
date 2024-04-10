@@ -67,6 +67,10 @@ public class InGamePlayer extends Player {
         OWN_FIELD = new Field();
     }
 
+    public Player toPlayer(){
+        return new Player(getNickname());
+    }
+
     /**
      * Given the desired amount to be increased by, updates the player's points
      */
@@ -112,69 +116,66 @@ public class InGamePlayer extends Player {
      * @ensures if the given card (after being placed) covers corners of other cards, for each covered corner the
      * amount is decremented by 1
      */
-    public boolean placeCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide) {
+    public void placeCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
+            throws CardNotInHandException, NotEnoughResourcesException, InvalidCardPositionException {
         if (!getCardsInHand().contains(card))
-            return false;
+            throw new CardNotInHandException();
         if (card instanceof GoldCard)
             if (((GoldCard) card).getNeededResourcesToPlay().numberOfTimesSatisfied(card, this) <= 0)
-                return false;
+                throw new NotEnoughResourcesException();
 
-        if (OWN_FIELD.addCard(coordinates, card, playedSide)) {
-            //Foreach Corner of the given card that is valid and non-empty, increment the corresponding Resource by 1
-            for (Resource res : card.getCorners(playedSide)
-                    .values().stream()
-                    .filter((resource) ->
-                            !(resource.equals(Resource.EMPTY) || resource.equals(Resource.NOT_A_CORNER))
-                    )
-                    .collect(Collectors.toCollection(ArrayList::new))
-            ) {
-                incrementOwnedResource(res, 1);
-            }
+        OWN_FIELD.addCard(coordinates, card, playedSide);
 
-            //If card is played on the back, also increment the amount by 1 for the resources in the center
-            if (playedSide.equals(Side.BACK)) {
-                card.getCenterBackResources()
-                        .forEach(this::incrementOwnedResource);
-            }
-
-            //For every corner on the played side of the given card:
-            card.getCorners(playedSide).keySet().stream()
-                    .map((offset) ->
-                            //optionally get a given card which gets covered
-                            Optional.ofNullable(
-                                    OWN_FIELD.getPlacedCards().get(
-                                            new GenericPair<>(
-                                                    coordinates.getX() + offset.getX(),
-                                                    coordinates.getY() + offset.getY()
-                                            )
-                                    )
-                                    //and optionally get the corresponding reource covered
-                            ).flatMap((coveredCorner) -> Optional.of(
-                                            coveredCorner.getX()
-                                                    .getCornerResource(coveredCorner.getY(), -offset.getX(), -offset.getY())
-                                    )
-                            )
-                    )
-                    //keep only the non-empty optionals containing found resources
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    //filter out eventual empties and not_a_corners (can't happen but still) covered and decrement
-                    .filter((coveredResource) ->
-                            !(coveredResource.equals(Resource.NOT_A_CORNER) || coveredResource.equals(Resource.EMPTY))
-                    ).forEach((coveredResource) -> incrementOwnedResource(coveredResource, -1));
-
-            CARDS_IN_HAND.remove(card);
-
-            return true;
+        //Foreach Corner of the given card that is valid and non-empty, increment the corresponding Resource by 1
+        for (var res : card.getCorners(playedSide)
+                .values().stream()
+                .filter((resource) ->
+                        !(resource.equals(Resource.EMPTY) || resource.equals(Resource.NOT_A_CORNER))
+                )
+                .collect(Collectors.toCollection(ArrayList::new))
+        ) {
+            incrementOwnedResource(res, 1);
         }
-        return false;
+
+        //If card is played on the back, also increment the amount by 1 for the resources in the center
+        if (playedSide.equals(Side.BACK)) {
+            card.getCenterBackResources()
+                    .forEach(this::incrementOwnedResource);
+        }
+
+        //For every corner on the played side of the given card:
+        card.getCorners(playedSide).keySet().stream()
+                .map((offset) ->
+                        //optionally get a given card which gets covered
+                        Optional.ofNullable(
+                                OWN_FIELD.getPlacedCards().get(
+                                        new GenericPair<>(
+                                                coordinates.getX() + offset.getX(),
+                                                coordinates.getY() + offset.getY()
+                                        )
+                                )
+                                //and optionally get the corresponding resource covered
+                        ).flatMap((coveredCorner) -> Optional.of(
+                                        coveredCorner.getX()
+                                                .getCornerResource(coveredCorner.getY(), -offset.getX(), -offset.getY())
+                                )
+                        )
+                )
+                //keep only the non-empty optionals containing found resources
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                //filter out eventual empties and not_a_corners (can't happen but still) covered and decrement
+                .filter((coveredResource) ->
+                        !(coveredResource.equals(Resource.NOT_A_CORNER) || coveredResource.equals(Resource.EMPTY))
+                ).forEach((coveredResource) -> incrementOwnedResource(coveredResource, -1));
+
+        CARDS_IN_HAND.remove(card);
     }
 
     /**
      * Adds the pickedCard to the current player's hand
      */
     public void addCardToHand(PlayableCard pickedCard) {
-        //FIXME: check for exception!
         CARDS_IN_HAND.add(pickedCard);
     }
 

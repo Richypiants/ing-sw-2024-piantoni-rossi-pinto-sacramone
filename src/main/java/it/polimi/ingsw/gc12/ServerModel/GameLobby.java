@@ -17,10 +17,6 @@ public class GameLobby {
      * The maximum number of players which can join this lobby
      */
     private int maxPlayers;
-    /**
-     *
-     */
-    private GameState currentState;
 
     /**
      * Constructs a game lobby of at most maxPlayers players and which contains the player who has created it
@@ -29,7 +25,6 @@ public class GameLobby {
         this.maxPlayers = maxPlayers;
         this.LIST_OF_PLAYERS = new ArrayList<>();
         addPlayer(creatorPlayer);
-        this.currentState = new NotStartedState();
     }
 
     /**
@@ -60,7 +55,7 @@ public class GameLobby {
     /**
      * Returns a copy of the list of players in the lobby
      */
-    public ArrayList<Player> getPlayers() {
+    public ArrayList<? extends Player> getPlayers() {
         return new ArrayList<>(LIST_OF_PLAYERS);
     }
 
@@ -85,20 +80,6 @@ public class GameLobby {
         if (numOfMaxPlayers <= 4) {
             this.maxPlayers = numOfMaxPlayers;
         }
-    }
-
-    /**
-     * Changes the currentState of this game to newState
-     */
-    public void setState(GameState newState) {
-        currentState = newState;
-    }
-
-    /**
-     * Returns the current game state (of type GameState)
-     */
-    public GameState getCurrentState() {
-        return currentState;
     }
 }
 

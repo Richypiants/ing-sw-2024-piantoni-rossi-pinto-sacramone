@@ -42,61 +42,32 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
             currentPlayer = (currentPlayer + 1) % GAME.getPlayers().size();
     }
 
-    public static void createLobby(Player player, int maxPlayers) throws ForbiddenActionException {
-        throw new ForbiddenActionException("Cannot execute this action while...");
+    public void placeInitialCard(InGamePlayer target, Side playedSide) throws ForbiddenActionException,
+            CardNotInHandException, NotEnoughResourcesException, InvalidCardPositionException {
+        throw new ForbiddenActionException();
     }
 
-    public void setNickname(Player player, String nickname) throws ForbiddenActionException {
-        throw new ForbiddenActionException("Cannot execute this action while...");
-    }
-
-    public void joinLobby(Player player, UUID lobbyUUID) throws ForbiddenActionException {
-        throw new ForbiddenActionException("Cannot execute this action while...");
-    }
-
-    public void leaveLobby(Player player) throws ForbiddenActionException {
-        throw new ForbiddenActionException("Cannot execute this action while...");
-    }
-
-    public void placeCommonCards() throws ForbiddenActionException {
-        throw new ForbiddenActionException("Cannot execute this action while...");
-    }
-
-    public void generateInitialCard() throws ForbiddenActionException {
-        throw new ForbiddenActionException("Cannot execute this action while...");
-    }
-
-    public void placeInitialCard(InGamePlayer player, Side side) throws ForbiddenActionException {
-        throw new ForbiddenActionException("Cannot execute this action while...");
-    }
-
-    public void drawInitialHand() throws ForbiddenActionException {
-        throw new ForbiddenActionException("Cannot execute this action while...");
-    }
-
-    public Map<InGamePlayer, ArrayList<ObjectiveCard>> generateObjectiveChoice() throws ForbiddenActionException {
-        throw new ForbiddenActionException("Cannot execute this action while...");
-    }
-
-    public void pickObjective(InGamePlayer player, ObjectiveCard objective)
-            throws ForbiddenActionException, AlreadySetCardException {
-        throw new ForbiddenActionException("Cannot execute this action while...");
+    public void pickObjective(InGamePlayer target, ObjectiveCard objective)
+            throws ForbiddenActionException, AlreadySetCardException, CardNotInHandException {
+        throw new ForbiddenActionException();
     }
 
     public void placeCard(InGamePlayer target, GenericPair<Integer, Integer> position, PlayableCard card, Side side)
-            throws ForbiddenActionException, UnexpectedPlayerException {
-        throw new ForbiddenActionException("Cannot execute this action while...");
+            throws ForbiddenActionException, UnexpectedPlayerException, CardNotInHandException,
+            NotEnoughResourcesException, InvalidCardPositionException {
+        throw new ForbiddenActionException();
     }
 
-    public void drawFrom(InGamePlayer target, String deck) throws ForbiddenActionException, UnexpectedPlayerException {
-        throw new ForbiddenActionException("Cannot execute this action while...");
+    public void drawFrom(InGamePlayer target, String deck) throws ForbiddenActionException, UnexpectedPlayerException,
+            UnknownStringException {
+        throw new ForbiddenActionException();
     }
 
     //FIXME: change in UML
     public void drawFrom(InGamePlayer target, String whichType, int position)
             throws UnexpectedPlayerException, ForbiddenActionException, InvalidDeckPositionException,
             UnknownStringException{
-        throw new ForbiddenActionException("Cannot execute this action while...");
+        throw new ForbiddenActionException();
     }
 
     public void transition() {

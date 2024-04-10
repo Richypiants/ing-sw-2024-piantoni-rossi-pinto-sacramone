@@ -7,6 +7,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Controller { //TODO: make a generic Utility class "Controller" and make client/server extend it?
@@ -44,5 +45,26 @@ public class Controller { //TODO: make a generic Utility class "Controller" and 
 
     public void updateLobby(UUID lobbyUUID, LobbyDTO lobby){
         //se la lobby ricevuta ha 0 giocatori la rimuoviamo dalla mappa
+    }
+
+    public void placeCard(PlaceCardUpdateDTO update){
+        /*String nickname, int cardID, Side playedSide, List<GenericPair<Integer, Integer>> newOpenCorners,
+        ResourceUpdate update*/
+    }
+
+    public void receiveCard(CardDTO card){
+
+    }
+
+    public void replaceCard(CardDTO card, String deck, int position){
+
+    }
+
+    public void toggleActive(String playerNickname){
+
+    }
+
+    public void addChatMessage(String chatMessage){
+
     }
 }

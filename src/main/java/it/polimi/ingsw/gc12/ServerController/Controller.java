@@ -71,15 +71,15 @@ public abstract class Controller {
                 );
     }
 
-    private static boolean hasPlayer(VirtualClient client) throws Throwable{
-        if(!players.containsKey(client)) {
+    private static boolean hasNoPlayer(VirtualClient client) throws Throwable{
+        if(players.containsKey(client)) {
             client.serverMessage(
                     varargsToArrayList(
                             "throwException",
                             new NotExistingPlayerException("Unregistered client")
                     )
-            ); //throw();
-            return false;
+            ); //throwException();
+            return true;
         }
         return false;
     }
@@ -92,7 +92,7 @@ public abstract class Controller {
                             "throwException",
                             new ForbiddenActionException("Cannot execute action while in a game")
                     )
-            ); //throw();
+            ); //throwException();
             return true;
         }
         return false;
@@ -105,15 +105,10 @@ public abstract class Controller {
                             "throwException",
                             new ForbiddenActionException("Cannot execute action while in a lobby or in a game")
                     )
-            ); //throw();
+            ); //throwException();
             return true;
         }
         return false;
-    }
-
-
-    private boolean inGame(Player target){
-        return playersToLobbiesAndGames.containsKey(target) && playersToLobbiesAndGames.get(target) instanceof Game;
     }
 
     public static void createPlayer(VirtualClient sender, String nickname) throws Throwable {
@@ -123,25 +118,38 @@ public abstract class Controller {
                             "throwException",
                             new ForbiddenActionException("Client already registered")
                     )
-            ); //throw();
+            ); //throwException();
             return;
         }
 
-        Optional<Map.Entry<VirtualClient, Player>> selectedPlayer = players.entrySet().stream()
-                .filter((entry) -> entry.getValue().getNickname().equals(nickname))
+        Optional<Player> selectedPlayer = players.values().stream()
+                .filter((player) -> player.getNickname().equals(nickname))
                 .findAny();
 
         if(selectedPlayer.isPresent()){
-            Player target = selectedPlayer.get().getValue();
-            if((target instanceof InGamePlayer) && !((InGamePlayer) target).isActive())
+            Player target = selectedPlayer.get();
+            if((target instanceof InGamePlayer) && !((InGamePlayer) target).isActive()) {
+                Game targetGame = (Game) playersToLobbiesAndGames.get(target);
+
                 sender.serverMessage(functionName, gameInfos); //TODO: restoreGame();
-            else
+
+                for (var player : targetGame.getPlayers())
+                    if (player.isActive()) {
+                        VirtualClient targetClient = keyReverseLookup(players, player::equals);
+                        targetClient.serverMessage(varargsToArrayList("toggleActive", nickname)); //toggleActive()
+                    }
+
+                ((InGamePlayer) target).toggleActive();
+                //FIXME: restoreGame va chiamata anche quando non c'è il gioco ma il file salvato perchè il server
+                // era crashato
+                // inoltre serve uno stato awaitingReconnectionsState (potremmo usarlo come timeout?)
+            } else
                 sender.serverMessage(
                         varargsToArrayList(
                                 "throwException",
                                 new IllegalArgumentException("Provided nickname is already taken")
                         )
-                ); //throw();
+                ); //throwException();
         } else {
             Player target = new Player(nickname);
             players.put(sender, target);
@@ -157,10 +165,10 @@ public abstract class Controller {
     }
 
     public static void setNickname(VirtualClient sender, String nickname) throws Throwable {
-        if(!hasPlayer(sender) || inGame(sender)) return;
+        if(hasNoPlayer(sender) || inGame(sender)) return;
 
-        Optional<Map.Entry<VirtualClient, Player>> selectedPlayer = players.entrySet().stream()
-                .filter((entry) -> entry.getValue().getNickname().equals(nickname))
+        Optional<Player> selectedPlayer = players.values().stream()
+                .filter((player) -> player.getNickname().equals(nickname))
                 .findAny();
 
         if(selectedPlayer.isPresent()) {
@@ -169,14 +177,13 @@ public abstract class Controller {
                             "throwException",
                             new IllegalArgumentException("Provided nickname is already taken")
                     )
-            ); //throw();
-            return;
+            ); //throwException();
+        } else {
+            players.get(sender).setNickname(nickname);
+
+            //TODO: decide what to send back
+            sender.serverMessage(varargsToArrayList(...)); //...();
         }
-
-        players.get(sender).setNickname(nickname);
-
-        //TODO: decide what to send back
-        sender.serverMessage(varargsToArrayList(...));
     }
 
     public void keepAlive(VirtualClient sender) throws Throwable{
@@ -196,7 +203,7 @@ public abstract class Controller {
                             "throwException",
                             new IllegalArgumentException("Invalid number of max players (out of range: accepted [2-4])")
                     )
-            );
+            ); //throwException();
             return;
         }
 
@@ -213,7 +220,7 @@ public abstract class Controller {
 
         for(var client : players.keySet())
             if(!inGame(client))
-                client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, lobby.generateDTO()));
+                client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, lobby.generateDTO())); //updateLobby();
     }
 
     public static void joinLobby(VirtualClient sender, UUID lobbyUUID) throws Throwable {
@@ -225,7 +232,7 @@ public abstract class Controller {
                             "throwException",
                             new IllegalArgumentException("There's no lobby with the provided UUID")
                     )
-            );
+            ); //throwException();
             return;
         }
 
@@ -237,7 +244,7 @@ public abstract class Controller {
                             "throwException",
                             new IllegalArgumentException("The provided UUID refers to a game and not a lobby")
                     )
-            );
+            ); //throwException();
             return;
         }
 
@@ -247,7 +254,7 @@ public abstract class Controller {
                             "throwException",
                             new ForbiddenActionException("Cannot join a full lobby")
                     )
-            );
+            ); //throwException();
             return;
         }
 
@@ -264,25 +271,21 @@ public abstract class Controller {
 
             //TODO: estrarre la logica di evoluzione dei player da Game (altrimenti, fixare i get) E SINCRONIZZAREEEE
             for(var player : lobby.getPlayers()){
-                VirtualClient targetClient = players.entrySet().stream()
-                        .filter((entry) -> entry.getValue().equals(player))
-                        .findFirst()
-                        .get()
-                        .getKey();
+                VirtualClient targetClient = keyReverseLookup(players, player::equals);
                 InGamePlayer targetInGamePlayer = newGame.getPlayers().stream()
                         .filter((inGamePlayer) -> inGamePlayer.getNickname().equals(player.getNickname()))
                         .findFirst()
-                        .get();
+                        .orElseThrow(); //TODO: strano... gestire?
 
-                players.put(
-                        targetClient,
-                        targetInGamePlayer
-                );
-
+                players.put(targetClient, targetInGamePlayer);
                 playersToLobbiesAndGames.remove(player);
                 playersToLobbiesAndGames.put(targetInGamePlayer, newGame);
 
-                targetClient.serverMessage(startGame, gameInfos);
+                targetClient.serverMessage(startGame, gameInfos); //startGame();
+
+                //FIXME: should clients inform that they are ready before? (ready() method call?)
+                //Calls to game creation, generateInitialCards ...
+                newGame.getCurrentState().transition();
             }
 
             //FIXME: a better solution? or does this get fixed by fixing constructors for Game & GameLobby?
@@ -294,7 +297,7 @@ public abstract class Controller {
         //FIXME: risolvere SINCRONIZZANDO su un gameCreationLock
         for(var client : players.keySet())
             if(!inGame(client))
-                client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, lobby.generateDTO()));
+                client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, lobby.generateDTO())); //updateLobby();
     }
 
     public static void leaveLobby(VirtualClient sender) throws Throwable {
@@ -303,11 +306,7 @@ public abstract class Controller {
         Player target = players.get(sender);
 
         GameLobby lobby = playersToLobbiesAndGames.get(target);
-        UUID lobbyUUID = lobbiesAndGames.entrySet().stream()
-                .filter((entry) -> entry.getValue().equals(lobby))
-                .findFirst()
-                .flatMap(uuidGameLobbyEntry -> Optional.of(uuidGameLobbyEntry.getKey()))
-                .orElseThrow(IllegalStateException::new);
+        UUID lobbyUUID = keyReverseLookup(lobbiesAndGames, lobby::equals);
         //Assuming that lobby is contained (thus maps are coherent): check with synchronization that this
         // invariant holds
 
@@ -320,7 +319,7 @@ public abstract class Controller {
 
         for(var client : players.keySet())
             if(!inGame(client))
-                client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, lobby.generateDTO()));
+                client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, lobby.generateDTO())); //updateLobby();
     }
 
     //FIXME: can we merge this with placeCard below by defining placeCard and ignoring parameters in
@@ -369,14 +368,39 @@ public abstract class Controller {
     }
 
     public static void pickObjective(VirtualClient sender, int cardID) throws Throwable {
-        if(!hasPlayer(client)) return;
-        Card chosenCard = cardsList.get(cardID);
+        if(hasNoPlayer(sender) || !inGame(sender)) return;
 
-        if(chosenCard instanceof ObjectiveCard)
-            playersToLobbiesAndGames.get(player).getCurrentState()
-                    .pickObjective(player, (ObjectiveCard) chosenCard);
-        else
-            throw new InvalidCardTypeException();
+        InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
+        Game targetGame = (Game) playersToLobbiesAndGames.get(targetPlayer);
+        Card targetCard = cardsList.get(cardID);
+
+        if(targetCard instanceof ObjectiveCard)
+            try{
+                targetGame.getCurrentState().pickObjective(targetPlayer, (ObjectiveCard) targetCard);
+                //TODO: maybe send a response back to the player?
+            } catch (CardNotInHandException e){
+                sender.serverMessage(
+                        varargsToArrayList(
+                                "throwException",
+                                new CardNotInHandException("Card with provided cardID is not in player's hand")
+                        )
+                ); //throwException();
+            } catch (AlreadySetCardException e){
+                sender.serverMessage(
+                        varargsToArrayList(
+                                "throwException",
+                                new AlreadySetCardException("Secret objective already chosen")
+                        )
+                ); //throwException();
+            }
+        else {
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new InvalidCardTypeException("Card with provided cardID is not of type ObjectiveCard")
+                    )
+            ); //throwException();
+        }
     }
 
     public static void placeCard(VirtualClient sender, GenericPair<Integer, Integer> coordinates, int cardID,
@@ -387,29 +411,141 @@ public abstract class Controller {
         Game targetGame = (Game) playersToLobbiesAndGames.get(targetPlayer);
         Card targetCard = cardsList.get(cardID);
 
-        if(chosenCard instanceof PlayableCard)
-            playersToLobbiesAndGames.get(player).getCurrentState()
-                    .placeCard(player, pair, (PlayableCard) chosenCard, side);
-        else
-            throw new InvalidCardTypeException();
+        if(targetCard instanceof PlayableCard)
+            try{
+                targetGame.getCurrentState().placeCard(targetPlayer, coordinates, (PlayableCard) targetCard, playedSide);
+            } catch(UnexpectedPlayerException e){
+                sender.serverMessage(
+                        varargsToArrayList(
+                                "throwException",
+                                new UnexpectedPlayerException("Not this player's turn")
+                        )
+                ); //throwException();
+                return;
+            } catch (CardNotInHandException e){
+                sender.serverMessage(
+                        varargsToArrayList(
+                                "throwException",
+                                new CardNotInHandException("Card with provided cardID is not in player's hand")
+                        )
+                ); //throwException();
+            } catch (NotEnoughResourcesException e){
+                sender.serverMessage(
+                        varargsToArrayList(
+                                "throwException",
+                                new NotEnoughResourcesException(
+                                        "Player doesn't own the required resources to play the provided card"
+                                )
+                        )
+                ); //throwException();
+                return;
+            } catch (InvalidCardPositionException e){
+                sender.serverMessage(
+                        varargsToArrayList(
+                                "throwException",
+                                new InvalidCardPositionException("Provided coordinates are not valid for placing a card")
+                        )
+                ); //throwException();
+                return;
+            }
+        else {
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new InvalidCardTypeException("Provided card is not of a playable type")
+                    )
+            ); //throwException();
+            return;
+        }
 
+        for(var player : targetGame.getPlayers()) {
+            VirtualClient targetClient = keyReverseLookup(players, player::equals);
+            targetClient.serverMessage(varargsToArrayList("placeCard", PlaceCardUpdateDTO)); //placeCard();
+        }
     }
 
     public static void drawFromDeck(VirtualClient sender, String deck) throws Throwable {
-        if(!hasPlayer(client)) return;
-        playersToLobbiesAndGames.get(player).getCurrentState()
-                .drawFrom(player, deck);
+        if(hasNoPlayer(sender) || !inGame(sender)) return;
+
+        InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
+        Game targetGame = (Game) playersToLobbiesAndGames.get(targetPlayer);
+
+        try{
+            targetGame.getCurrentState().drawFrom(targetPlayer, deck);
+        } catch (UnexpectedPlayerException e){
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new UnexpectedPlayerException("Not this player's turn")
+                    )
+            ); //throwException();
+            return;
+        } catch (UnknownStringException e){
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new UnknownStringException("No such deck exists")
+                    )
+            ); //throwException();
+            return;
+        }
+
+        sender.serverMessage(varargsToArrayList("receiveCard", targetPlayer.getCardsInHand().getLast().generateDTO()));
+        //receiveCard();
     }
 
     public static void drawFromVisibleCards(VirtualClient sender, String deck, int position) throws Throwable {
-        if(!hasPlayer(client)) return;
-        playersToLobbiesAndGames.get(player).getCurrentState()
-                .drawFrom(player, deck, position);
+        if(hasNoPlayer(sender) || !inGame(sender)) return;
+
+        InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
+        Game targetGame = (Game) playersToLobbiesAndGames.get(targetPlayer);
+
+        try{
+            targetGame.getCurrentState().drawFrom(targetPlayer, deck, position);
+        } catch (UnexpectedPlayerException e){
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new UnexpectedPlayerException("Not this player's turn")
+                    )
+            ); //throwException();
+            return;
+        } catch (InvalidDeckPositionException e){
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new InvalidDeckPositionException("Cannot understand which card to draw")
+                    )
+            ); //throwException();
+            return;
+        } catch (UnknownStringException e){
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new UnknownStringException("No such placed cards exist")
+                    )
+            ); //throwException();
+            return;
+        }
+
+        sender.serverMessage(varargsToArrayList("receiveCard", targetPlayer.getCardsInHand().getLast().generateDTO()));
+        //receiveCard();
+
+        //FIXME: ... (a sto punto faccio direttamente la getArray qua e lo passo nella funzione draw nello stato)
+        Card newCard;
+        if (deck.trim().equalsIgnoreCase("RESOURCE"))
+            newCard = targetGame.getPlacedResources()[position];
+        else newCard = targetGame.getPlacedGold()[position];
+
+        for(var player : targetGame.getPlayers()) {
+            VirtualClient targetClient = keyReverseLookup(players, player::equals);
+            targetClient.serverMessage(varargsToArrayList("replaceCard", newCard.generateDTO(), deck, position));
+            //replaceCard();
+        }
     }
 
     public static void leaveGame(VirtualClient sender) throws Throwable {
-        if(!hasPlayer(client)) return;
-        //TODO: exceptions? not in game, ...
+        if(hasNoPlayer(sender) || !inGame(sender)) return;
 
         InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
         Game targetGame = (Game) playersToLobbiesAndGames.get(targetPlayer);

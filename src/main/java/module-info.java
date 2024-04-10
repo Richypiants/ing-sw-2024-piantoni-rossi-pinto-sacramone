@@ -22,4 +22,6 @@ module it.polimi.ingsw.gc12 {
     exports it.polimi.ingsw.gc12.Utilities to com.google.gson, java.rmi;
     exports it.polimi.ingsw.gc12.ServerController to com.google.gson, java.rmi;
     opens it.polimi.ingsw.gc12.ServerController to com.google.gson;
+
+    exports it.polimi.ingsw.gc12.Utilities.Exceptions;
 }

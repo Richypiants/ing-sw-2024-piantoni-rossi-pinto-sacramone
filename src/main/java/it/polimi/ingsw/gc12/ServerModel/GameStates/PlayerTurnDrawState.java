@@ -13,7 +13,8 @@ public class PlayerTurnDrawState extends GameState {
     }
 
     @Override
-    public void drawFrom(InGamePlayer target, String deck) throws UnexpectedPlayerException {
+    public synchronized void drawFrom(InGamePlayer target, String deck) throws UnexpectedPlayerException,
+            UnknownStringException {
         if (!target.equals(GAME.getPlayers().get(currentPlayer)))
             throw new UnexpectedPlayerException();
 
@@ -21,7 +22,13 @@ public class PlayerTurnDrawState extends GameState {
             target.addCardToHand(GAME.drawFrom(GAME.getResourceCardsDeck()));
         } else if (deck.trim().equalsIgnoreCase("GOLD")) {
             target.addCardToHand(GAME.drawFrom(GAME.getGoldCardsDeck()));
-        }
+        } else
+            throw new UnknownStringException();
+
+        transition();
+        //FIXME: controllare che non si possa pescare due carte nello stesso turno! in teoria rendendo atomica
+        // questa intera funzione dovrebbe garantirlo
+        // N.B: in teoria quindi questi due metodi sono esclusivi
     }
 
     //FIXME: change in UML
@@ -40,6 +47,11 @@ public class PlayerTurnDrawState extends GameState {
             target.addCardToHand(GAME.drawFrom(GAME.getPlacedGold(), position));
         } else
             throw new UnknownStringException();
+
+        transition();
+        //FIXME: controllare che non si possa giocare due carte nello stesso turno! in teoria rendendo atomica
+        // questa intera funzione dovrebbe garantirlo
+        // N.B: in teoria quindi questi due metodi sono esclusivi
     }
 
     @Override
@@ -50,13 +62,17 @@ public class PlayerTurnDrawState extends GameState {
             counter--;
         else if (GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty())
             counter = 2 * GAME.getPlayers().size() - currentPlayer - 1;
+        //RICORDA: se turno di un disconnesso skip turno MA comunque decrementato qui
+        //TODO: send alert a tutti i giocatori che si è entrati nella fase finale?
 
         if (counter == 0) {
+            //TODO: send alert a tutti i giocatori che la partita è finita e si contano i punti? (vediamo)
             GAME.setState(new VictoryCalculationState(GAME, currentPlayer, counter));
             return;
         }
 
         nextPlayer();
+        //TODO: send alert a tutti i giocatori tipo "è il turno di"?
         GAME.setState(new PlayerTurnPlayState(GAME, currentPlayer, counter));
     }
 }

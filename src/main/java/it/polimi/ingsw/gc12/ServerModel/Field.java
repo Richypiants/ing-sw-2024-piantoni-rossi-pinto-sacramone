@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
 import it.polimi.ingsw.gc12.ServerModel.Cards.PlayableCard;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -8,6 +9,8 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
+
+import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 /**
  * A field that stores the cards played by a player and the open corners where the next cards can be played
@@ -44,9 +47,10 @@ public class Field {
      * - 3) they are not already contained in OPEN_CORNERS
      * - 4) they do not overlap a NOT_A_CORNER of another card in PLACED_CARDS
      */
-    protected boolean addCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide) {
+    protected void addCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
+    throws InvalidCardPositionException {
         if (!OPEN_CORNERS.contains(coordinates)) {
-            return false;
+            throw new InvalidCardPositionException();
         }
 
         PLACED_CARDS.put(coordinates, new GenericPair<>(card, playedSide));
@@ -102,7 +106,7 @@ public class Field {
             }
         }
 
-        return true;
+
     }
 
     /**
@@ -125,9 +129,7 @@ public class Field {
     public GenericPair<Integer, Integer> getCardCoordinates(PlayableCard placedCard) {
         //TODO: check for exceptions and Optional<> value when card hasn't been played!
         // look in leaveLobbby() in Controller for a solution to a similar problem to this get()
-        return PLACED_CARDS.entrySet().stream()
-                .filter((entry) -> entry.getValue().getX().equals(placedCard))
-                .findFirst().get().getKey();
+        return keyReverseLookup(PLACED_CARDS, (value) -> value.getX().equals(placedCard));
     }
 
 }

@@ -1,12 +1,13 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
-import com.google.gson.reflect.TypeToken;
+import it.polimi.ingsw.gc12.ServerController.Controller;
 import it.polimi.ingsw.gc12.ServerModel.Cards.*;
+import it.polimi.ingsw.gc12.ServerModel.GameStates.GameState;
 import it.polimi.ingsw.gc12.ServerModel.GameStates.SetupState;
-import it.polimi.ingsw.gc12.Utilities.JSONParser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -39,12 +40,16 @@ public class Game extends GameLobby {
      * The current turn's number (starting from 1 in the first turn)
      */
     private int currentRound;
+    /**
+     *
+     */
+    private GameState currentState;
 
     /**
      * Constructs a new game instance from the lobby passed as parameter
      */
     public Game(GameLobby lobby) {
-        super(lobby.getMaxPlayers(), lobby.getListOfPlayers()
+        super(lobby.getMaxPlayers(), lobby.getPlayers()
                 .stream()
                 .map(InGamePlayer::new)
                 .toList());
@@ -52,10 +57,14 @@ public class Game extends GameLobby {
         this.currentRound = 0;
         setState(new SetupState(this));
 
-        this.RESOURCE_CARDS_DECK = new CardDeck<>(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
-        }));
-        this.GOLD_CARDS_DECK = new CardDeck<>(JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
-        }));
+        this.RESOURCE_CARDS_DECK = new CardDeck<>(Controller.cardsList.values().stream()
+                .filter((card -> card instanceof ResourceCard))
+                .map((card) -> (ResourceCard) card)
+                .toList());
+        this.GOLD_CARDS_DECK = new CardDeck<>(Controller.cardsList.values().stream()
+                .filter((card -> card instanceof GoldCard))
+                .map((card) -> (GoldCard) card)
+                .toList());
 
         this.PLACED_RESOURCE_CARDS = new ResourceCard[2];
         PLACED_RESOURCE_CARDS[0] = RESOURCE_CARDS_DECK.draw();
@@ -66,13 +75,32 @@ public class Game extends GameLobby {
         PLACED_GOLD_CARDS[1] = GOLD_CARDS_DECK.draw();
 
         this.COMMON_OBJECTIVES = new ObjectiveCard[2];
+
+        this.currentState = new SetupState(this);
+    }
+
+    public GameLobby toLobby(){
+        List<Player> playersList = new ArrayList<>();
+
+        for(var inGamePlayer : getPlayers()){
+            if(inGamePlayer.isActive()) {
+                Player targetPlayer = inGamePlayer.toPlayer();
+                playersList.add(targetPlayer);
+            }
+        }
+
+        GameLobby returnLobby = new GameLobby(playersList.removeFirst(), getMaxPlayers());
+        for(var player : playersList)
+            returnLobby.addPlayer(player);
+
+        return returnLobby;
     }
 
     /**
      * Returns the player who is currently playing
      */
     public ArrayList<InGamePlayer> getPlayers() {
-        return super.getListOfPlayers()
+        return super.getPlayers()
                 .stream()
                 .map((player) -> (InGamePlayer) player)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -137,10 +165,8 @@ public class Game extends GameLobby {
     }
 
     public void setCommonObjectives(ObjectiveCard[] objectives) {
-        if (objectives.length == 2) {
-            COMMON_OBJECTIVES[0] = objectives[0];
-            COMMON_OBJECTIVES[1] = objectives[1];
-        }
+        COMMON_OBJECTIVES[0] = objectives[0];
+        COMMON_OBJECTIVES[1] = objectives[1];
     }
 
     /**
@@ -169,6 +195,20 @@ public class Game extends GameLobby {
         }
         //TODO: DrawnCardIsNullException
         return returnedCard;
+    }
+
+    /**
+     * Changes the currentState of this game to newState
+     */
+    public void setState(GameState newState) {
+        currentState = newState;
+    }
+
+    /**
+     * Returns the current game state (of type GameState)
+     */
+    public GameState getCurrentState() {
+        return currentState;
     }
 }
 

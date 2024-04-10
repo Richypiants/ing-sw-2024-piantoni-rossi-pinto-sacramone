@@ -1,8 +1,10 @@
 package it.polimi.ingsw.gc12.ServerModel.GameStates;
 
+import it.polimi.ingsw.gc12.ServerController.Controller;
 import it.polimi.ingsw.gc12.ServerModel.Game;
 import it.polimi.ingsw.gc12.ServerModel.GameLobby;
 import it.polimi.ingsw.gc12.ServerModel.InGamePlayer;
+import static it.polimi.ingsw.gc12.Utilities.Commons.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,6 +64,39 @@ public class VictoryCalculationState extends GameState {
 
         //TODO: here we should destroy the file with the saved serialized data
 
-        //FIXME: Che fare qui con transition? crash? chiamare fine gioco?
+        for(var player : GAME.getPlayers())
+            if(!player.isActive())
+                Controller.playersToLobbiesAndGames.remove(player);
+
+        UUID lobbyUUID = keyReverseLookup(Controller.lobbiesAndGames, GAME::equals);
+        GameLobby returnLobby = GAME.toLobby();
+
+        Controller.lobbiesAndGames.put(lobbyUUID, returnLobby);
+
+        for(var player : returnLobby.getPlayers()) {
+            Controller.players.put(
+                    keyReverseLookup(Controller.players, player::equals),
+                    player
+            );
+            Controller.playersToLobbiesAndGames.put(player, returnLobby);
+        }
+
+        // Sending lobbies list to players who were in this game (because they didn't have it updated)
+        for(var target : returnLobby.getPlayers()){
+            keyReverseLookup(Controller.players, target::equals)
+                    .serverMessage(
+                            varargsToArrayList(
+                                    "setLobbies",
+                                    Controller.lobbiesAndGames.entrySet().stream()
+                                            .filter((entry) -> !(entry.getValue() instanceof Game))
+                                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                            )
+                    );
+        }
+
+        // Update lobbies' lists of all other active players
+        for(var client : Controller.players.keySet())
+            if(!(Controller.players.get(client) instanceof InGamePlayer))
+                client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, returnLobby.generateDTO())); //updateLobby();
     }
 }

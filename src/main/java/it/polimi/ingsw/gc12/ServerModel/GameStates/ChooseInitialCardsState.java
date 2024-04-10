@@ -22,23 +22,46 @@ public class ChooseInitialCardsState extends GameState {
     }
 
     @Override
-    public void generateInitialCard() {
-        CardDeck<InitialCard> initialCardsDeck = new CardDeck(JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<ArrayList<ObjectiveCard>>() {
-        }));
-        for (InGamePlayer target : super.GAME.getPlayers())
-            target.addCardToHand((PlayableCard) initialCardsDeck.draw());
-    }
+    public void placeInitialCard(InGamePlayer target, Side playedSide)
+            throws CardNotInHandException, NotEnoughResourcesException, InvalidCardPositionException {
+        target.placeCard(new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), playedSide);
 
-    @Override
-    public void placeInitialCard(InGamePlayer player, Side side) {
-        //TODO: check che non l'abbia già giocata
-        player.placeCard(new GenericPair<>(0, 0), player.getCardsInHand().getFirst(), side);
+        //FIXME: dopo timeout e disconnessione: eseguo un'azione random per i player disconnessi
+        if(GAME.getPlayers().stream()
+                .map((player) -> player.getPlacedCards().containsKey(new GenericPair<>(0, 0)))
+                .reduce(true, (a, b) -> a && b))
+            transition();
     }
 
     @Override
     public void transition() {
         super.transition();
 
-        GAME.setState(new DrawStartingHandsState(GAME));
+        for (InGamePlayer target : super.GAME.getPlayers()) {
+            target.addCardToHand(GAME.getResourceCardsDeck().draw());
+            target.addCardToHand(GAME.getResourceCardsDeck().draw());
+            target.addCardToHand(GAME.getGoldCardsDeck().draw());
+            //TODO: send all cards
+        }
+
+        CardDeck<ObjectiveCard> objectivesDeck = new CardDeck<>(Controller.cardsList.values().stream()
+                .filter((card -> card instanceof ObjectiveCard))
+                .map((card) -> (ObjectiveCard) card)
+                .toList());
+
+        ObjectiveCard[] objectiveCardToGame = new ObjectiveCard[2];
+        objectiveCardToGame[0] = objectivesDeck.draw();
+        objectiveCardToGame[1] = objectivesDeck.draw();
+        GAME.setCommonObjectives(objectiveCardToGame);
+        Map<InGamePlayer, ArrayList<ObjectiveCard>> objectivesSelection = new HashMap<>();
+
+        for (InGamePlayer target : super.GAME.getPlayers()) {
+            ArrayList<ObjectiveCard> objCards = new ArrayList<>();
+            objCards.add(objectivesDeck.draw());
+            objCards.add(objectivesDeck.draw());
+            objectivesSelection.put(target, objCards);
+        }
+
+        GAME.setState(new ChooseObjectiveCardsState(GAME, objectivesSelection));
     }
 }
