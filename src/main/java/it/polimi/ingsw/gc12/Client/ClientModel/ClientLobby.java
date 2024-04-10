@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc12.Client.ClientModel;
 
 import it.polimi.ingsw.gc12.ServerModel.GameStates.GameState;
-import it.polimi.ingsw.gc12.ServerModel.GameStates.NotStartedState;
 
 import java.util.ArrayList;
 import java.util.List;

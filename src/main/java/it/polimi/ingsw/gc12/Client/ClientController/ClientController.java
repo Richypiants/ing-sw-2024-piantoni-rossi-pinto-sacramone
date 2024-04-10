@@ -30,7 +30,7 @@ public interface ClientController {
 
     void drawFromDeck(String deck) throws UnexpectedPlayerException, ForbiddenActionException;
 
-    void drawFromVisibleCards(String deck, int position) throws UnexpectedPlayerException, ForbiddenActionException, InvalidPositionException, UnknownStringException;
+    void drawFromVisibleCards(String deck, int position) throws UnexpectedPlayerException, ForbiddenActionException, InvalidDeckPositionException, UnknownStringException;
 
     void leaveGame();
 

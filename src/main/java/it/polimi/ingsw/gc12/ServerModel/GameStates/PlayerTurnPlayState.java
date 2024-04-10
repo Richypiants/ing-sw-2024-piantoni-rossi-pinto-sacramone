@@ -14,14 +14,15 @@ public class PlayerTurnPlayState extends GameState {
     }
 
     @Override
-    public void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card,
-                          Side side) throws UnexpectedPlayerException {
+    public synchronized void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card, Side side)
+            throws UnexpectedPlayerException, CardNotInHandException, NotEnoughResourcesException, InvalidCardPositionException {
         if (!target.equals(GAME.getPlayers().get(currentPlayer)))
             throw new UnexpectedPlayerException();
 
         target.placeCard(coordinates, card, side);
-        //TODO: gestire quando fallisce l'aggiunta?
-        //FIXME: controllare che non si possa giocare due carte nello stesso turno!
+        transition();
+        //FIXME: controllare che non si possa giocare due carte nello stesso turno! in teoria rendendo atomica
+        // questa intera funzione dovrebbe garantirlo
     }
 
     @Override

@@ -130,7 +130,7 @@ public class RMIClientSkeleton implements ClientController, RMIVirtualClient {
 
     @Override
     public void drawFromVisibleCards(String deck, int position) throws UnexpectedPlayerException,
-            ForbiddenActionException, InvalidPositionException, UnknownStringException {
+            ForbiddenActionException, InvalidDeckPositionException, UnknownStringException {
         try {
             methods.get("drawFromVisibleCards").invokeWithArguments(this, deck, position);
         } catch (Throwable e) {

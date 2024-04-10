@@ -20,6 +20,9 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
+import static it.polimi.ingsw.gc12.Utilities.Commons.varargsToArrayList;
+
 //FIXME: abstract with static methods or singleton? METTERE GLI OVERRIDE!
 //TODO:  In every custom exception write in the constructor call a string verbosely describing the event that caused it and why
 
@@ -27,11 +30,9 @@ import java.util.stream.Collectors;
         which aren't already in a lobby too. */
 public abstract class Controller {
 
-    //TODO: caricare le carte
     public static final Map<Integer, Card> cardsList = loadCards();
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup(); //FIXME: why does publicLookup() not work?
     public static final Map<String, MethodHandle> commandHandles = createHandles();
-    //FIXME: maybe create interface VirtualClient to uniform Sockets and RMI better and define Message methods
     public static final Map<VirtualClient, Player> players = new HashMap<>();
     public static final Map<UUID, GameLobby> lobbiesAndGames = new HashMap<>();
     public static final Map<Player, GameLobby> playersToLobbiesAndGames = new HashMap<>();
@@ -70,10 +71,6 @@ public abstract class Controller {
                 );
     }
 
-    private static ArrayList<Object> varargsToArrayList(Object... args){
-        return new ArrayList<>(Arrays.asList(args));
-    }
-
     private static boolean hasPlayer(VirtualClient client) throws Throwable{
         if(!players.containsKey(client)) {
             client.serverMessage(
@@ -84,7 +81,7 @@ public abstract class Controller {
             ); //throw();
             return false;
         }
-        return true;
+        return false;
     }
 
     //FIXME: abbastanza orribile e duplicato... playerState?
@@ -183,14 +180,14 @@ public abstract class Controller {
     }
 
     public void keepAlive(VirtualClient sender) throws Throwable{
-        if(!hasPlayer(sender)) return;
+        if(hasNoPlayer(sender)) return;
 
         //TODO: keepAlive management...
 
     }
 
     public static void createLobby(VirtualClient sender, int maxPlayers) throws Throwable {
-        if(!hasPlayer(sender) || inLobbyOrGame(sender)) return;
+        if(hasNoPlayer(sender) || inLobbyOrGame(sender)) return;
         //TODO: si potrebbe risolvere mettendo un GameState "NotStartedState o IdleState"...
 
         if(maxPlayers < 2 || maxPlayers > 4){
@@ -203,7 +200,6 @@ public abstract class Controller {
             return;
         }
 
-        //FIXME: fixare ordine parametri GameLobby in UML
         Player target = players.get(sender);
         GameLobby lobby = new GameLobby(target, maxPlayers);
         UUID lobbyUUID;
@@ -221,13 +217,13 @@ public abstract class Controller {
     }
 
     public static void joinLobby(VirtualClient sender, UUID lobbyUUID) throws Throwable {
-        if(!hasPlayer(sender) || inLobbyOrGame(sender)) return;
+        if(hasNoPlayer(sender) || inLobbyOrGame(sender)) return;
 
         if(lobbiesAndGames.containsKey(lobbyUUID)){
             sender.serverMessage(
                     varargsToArrayList(
                             "throwException",
-                            new IllegalArgumentException("No lobby with provided UUID")
+                            new IllegalArgumentException("There's no lobby with the provided UUID")
                     )
             );
             return;
@@ -239,7 +235,7 @@ public abstract class Controller {
             sender.serverMessage(
                     varargsToArrayList(
                             "throwException",
-                            new IllegalArgumentException("Provided UUID refers to a game and not a lobby")
+                            new IllegalArgumentException("The provided UUID refers to a game and not a lobby")
                     )
             );
             return;
@@ -302,8 +298,7 @@ public abstract class Controller {
     }
 
     public static void leaveLobby(VirtualClient sender) throws Throwable {
-        if(!hasPlayer(sender) || inGame(sender) || !inLobbyOrGame(sender)) return;
-        //TODO: exceptions? not in lobby, ...
+        if(hasNoPlayer(sender) || inGame(sender) || !inLobbyOrGame(sender)) return;
 
         Player target = players.get(sender);
 
@@ -328,13 +323,49 @@ public abstract class Controller {
                 client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, lobby.generateDTO()));
     }
 
-    public static void placeInitialCard(VirtualClient sender, Side side) throws Throwable {
-        if(!hasPlayer(client)) return;
-    //TODO: Continue working from this point
+    //FIXME: can we merge this with placeCard below by defining placeCard and ignoring parameters in
+    // placeInitialCardsState?
+    public static void placeInitialCard(VirtualClient sender, Side playedSide) throws Throwable {
+        if(hasNoPlayer(sender) || !inGame(sender)) return;
 
-    public static void placeInitialCard(InGamePlayer player, Side side) throws ForbiddenActionException {
-        playersToLobbiesAndGames.get(player).getCurrentState()
-                .placeInitialCard(player, side);
+        if(Arrays.stream(Side.values()).noneMatch((side) -> side.equals(playedSide))){
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new IllegalArgumentException("Invalid card side")
+                    )
+            ); //throwException();
+            return;
+        }
+
+        InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
+        Game targetGame = (Game) playersToLobbiesAndGames.get(targetPlayer);
+
+        try{
+            targetGame.getCurrentState().placeInitialCard(targetPlayer, playedSide);
+        } catch(ForbiddenActionException e) {
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new ForbiddenActionException("Cannot place an initial card in this state")
+                    )
+            ); //throwException();
+            return;
+        } catch(NoSuchElementException e) {
+            sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new NoSuchElementException("No initial cards in hand")
+                    )
+            ); //throwException();
+            return;
+        }
+
+        for(var player : targetGame.getPlayers()) {
+            VirtualClient targetClient = keyReverseLookup(players, player::equals);
+
+            targetClient.serverMessage(varargsToArrayList("placeCard", PlaceCardUpdateDTO)); //placeCard();
+        }
     }
 
     public static void pickObjective(VirtualClient sender, int cardID) throws Throwable {
@@ -348,9 +379,13 @@ public abstract class Controller {
             throw new InvalidCardTypeException();
     }
 
-    public static void placeCard(VirtualClient sender, GenericPair<Integer, Integer> pair, int cardID, Side side) throws Throwable {
-        if(!hasPlayer(client)) return;
-        Card chosenCard = cardsList.get(cardID);
+    public static void placeCard(VirtualClient sender, GenericPair<Integer, Integer> coordinates, int cardID,
+                                 Side playedSide) throws Throwable {
+        if(hasNoPlayer(sender) || !inGame(sender)) return;
+
+        InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
+        Game targetGame = (Game) playersToLobbiesAndGames.get(targetPlayer);
+        Card targetCard = cardsList.get(cardID);
 
         if(chosenCard instanceof PlayableCard)
             playersToLobbiesAndGames.get(player).getCurrentState()
@@ -376,26 +411,83 @@ public abstract class Controller {
         if(!hasPlayer(client)) return;
         //TODO: exceptions? not in game, ...
 
-        Game game = (Game) playersToLobbiesAndGames.get(inGamePlayer);
+        InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
+        Game targetGame = (Game) playersToLobbiesAndGames.get(targetPlayer);
 
-        //TODO: gestire se rimangono 1 o meno giocatori
-        /*if(lobby.getListOfPlayers().size() == 1){
-            lobbyAndGameMap.remove(lobbyAndGameMap.entrySet().get(game));
-            return;
-        }*/
+        targetPlayer.toggleActive();
+        players.remove(sender);
 
-        //game.removePlayer(inGamePlayer); TODO: implementare per disconnessione utenti
-        playersToLobbiesAndGames.remove(inGamePlayer);
+        long activePlayers = targetGame.getPlayers().stream()
+                .filter(InGamePlayer::isActive)
+                .count();
+
+        for(var player : targetGame.getPlayers())
+            if(player.isActive()) {
+                VirtualClient targetClient = keyReverseLookup(players, player::equals);
+                targetClient.serverMessage(varargsToArrayList("toggleActive", player.getNickname()));
+                //toggleActive();
+            }
+
+        // TODO/FIXME: potremmo usare uno stato awaitingReconnectionsState (come timeout?) come per createPlayer()?
+        if(activePlayers == 1){
+            //TODO: sospensione gioco (+ notificare)
+            //TODO: timeout per aspettare altre riconnessioni, se scade vince l'unico rimasto
+            // if timeout scaduto:
+
+        } else if(activePlayers == 0){
+            for(var player: targetGame.getPlayers())
+                playersToLobbiesAndGames.remove(player);
+            lobbiesAndGames.remove(targetGame);
+        }
     }
 
     public static void directMessage(VirtualClient sender, String receiverNickname, String message) throws Throwable {
-        if(!hasPlayer(sender)) return;
+        if(hasNoPlayer(sender) || !inGame(sender)) return;
 
+        Optional<Player> selectedPlayer = players.values().stream()
+                .filter((player) -> player.getNickname().equals(receiverNickname))
+                .findAny();
+
+        if(selectedPlayer.isPresent()) {
+            Player receiverPlayer = selectedPlayer.get();
+            if(playersToLobbiesAndGames.get(players.get(sender)).equals(playersToLobbiesAndGames.get(receiverPlayer))) {
+                if(((InGamePlayer) receiverPlayer).isActive())
+                    keyReverseLookup(players, receiverPlayer::equals).serverMessage(
+                            varargsToArrayList(
+                                    "addChatMessage",
+                                    message
+                            )
+                    );
+                else sender.serverMessage(
+                        varargsToArrayList(
+                                "throwException",
+                                new UnexpectedPlayerException("Nickname provided has no active player associated in this game")
+                        )
+                );
+            } else sender.serverMessage(
+                    varargsToArrayList(
+                            "throwException",
+                            new NotExistingPlayerException("Nickname provided has no associated player in this game")
+                    )
+            );
+        } else sender.serverMessage(
+                varargsToArrayList(
+                        "throwException",
+                        new NotExistingPlayerException("Nickname provided has no associated player registered")
+                )
+        );
     }
 
     public static void broadcastMessage(VirtualClient sender, String message) throws Throwable {
-        if(!hasPlayer(sender)) return;
+        if(hasNoPlayer(sender) || !inGame(sender)) return;
 
-
+        for(var inGamePlayer : ((Game) playersToLobbiesAndGames.get(players.get(sender))).getPlayers())
+            if(inGamePlayer.isActive())
+                keyReverseLookup(players, inGamePlayer::equals).serverMessage(
+                        varargsToArrayList(
+                                "addChatMessage",
+                                message
+                        )
+                );
     }
 }

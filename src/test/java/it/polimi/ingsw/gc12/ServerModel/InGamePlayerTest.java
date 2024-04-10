@@ -17,8 +17,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 class InGamePlayerTest {
 
@@ -28,7 +27,7 @@ class InGamePlayerTest {
     ArrayList<ObjectiveCard> objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>(){});
 
     @Test
-    void placeCard() {
+    void placeCard() throws Exception{
 
         Player player = new Player("SACRI");
         InGamePlayer playerGame = new InGamePlayer(player);

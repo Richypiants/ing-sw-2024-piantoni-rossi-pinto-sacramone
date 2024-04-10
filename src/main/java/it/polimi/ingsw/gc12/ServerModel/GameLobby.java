@@ -1,13 +1,9 @@
 package it.polimi.ingsw.gc12.ServerModel;
 
-import it.polimi.ingsw.gc12.ServerModel.GameStates.GameState;
-import it.polimi.ingsw.gc12.ServerModel.GameStates.NotStartedState;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-//FIXME: fix UML
 /**
  * A template for a game lobby where players wait for new games to start
  */

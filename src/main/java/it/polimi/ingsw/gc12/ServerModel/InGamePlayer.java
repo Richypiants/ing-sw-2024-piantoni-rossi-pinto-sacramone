@@ -4,6 +4,9 @@ import it.polimi.ingsw.gc12.ServerModel.Cards.GoldCard;
 import it.polimi.ingsw.gc12.ServerModel.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.ServerModel.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Utilities.Color;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -88,9 +91,8 @@ public class InGamePlayer extends Player {
     /**
      * Returns this player's current points
      */
-    protected void toggleActive() {
+    public void toggleActive() {
         isActive = !isActive;
-        //TODO: controllare, se tutti sono inattivi tranne uno sospendere il gioco!
     }
 
     /**

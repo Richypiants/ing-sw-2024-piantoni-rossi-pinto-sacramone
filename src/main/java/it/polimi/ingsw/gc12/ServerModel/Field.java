@@ -93,6 +93,7 @@ public class Field {
                         .reduce(true, (a, b) -> a && b)
                 ).forEach(OPEN_CORNERS::add);
 
+        //Remove the OPEN_CORNERS made inconsistent by the placed card
         for (GenericPair<Integer, Integer> corner : card.getCorners(playedSide).keySet()) {
             if (card.getCorners(playedSide).get(corner).equals(Resource.NOT_A_CORNER)) {
                 OPEN_CORNERS.remove(

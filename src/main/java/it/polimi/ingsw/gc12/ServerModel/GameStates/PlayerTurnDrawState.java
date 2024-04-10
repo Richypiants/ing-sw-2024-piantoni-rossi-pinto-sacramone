@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc12.ServerModel.GameStates;
 
 import it.polimi.ingsw.gc12.ServerModel.Game;
 import it.polimi.ingsw.gc12.ServerModel.InGamePlayer;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidPositionException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidDeckPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnknownStringException;
 
@@ -26,13 +26,13 @@ public class PlayerTurnDrawState extends GameState {
 
     //FIXME: change in UML
     @Override
-    public void drawFrom(InGamePlayer target, String whichType, int position)
-            throws UnexpectedPlayerException, InvalidPositionException, UnknownStringException {
+    public synchronized void drawFrom(InGamePlayer target, String whichType, int position)
+            throws UnexpectedPlayerException, InvalidDeckPositionException, UnknownStringException {
         if (!target.equals(GAME.getPlayers().get(currentPlayer)))
             throw new UnexpectedPlayerException();
 
         if (position != 0 && position != 1) {
-            throw new InvalidPositionException();
+            throw new InvalidDeckPositionException();
         }
         if (whichType.trim().equalsIgnoreCase("RESOURCE")) {
             target.addCardToHand(GAME.drawFrom(GAME.getPlacedResources(), position));

@@ -9,10 +9,6 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.UUID;
-
 public abstract class GameState { //TODO: make all exceptions extends RuntimeException so that you can cancel them from here
     protected final Game GAME;
     /**
@@ -98,7 +94,7 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
 
     //FIXME: change in UML
     public void drawFrom(InGamePlayer target, String whichType, int position)
-            throws ForbiddenActionException, InvalidPositionException,
+            throws UnexpectedPlayerException, ForbiddenActionException, InvalidDeckPositionException,
             UnknownStringException{
         throw new ForbiddenActionException("Cannot execute this action while...");
     }
