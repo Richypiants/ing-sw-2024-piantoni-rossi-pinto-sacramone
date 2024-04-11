@@ -1,56 +1,46 @@
 package it.polimi.ingsw.gc12.Model.Cards;
 
-import it.polimi.ingsw.gc12.Model.Conditions.PatternCondition;
-import it.polimi.ingsw.gc12.Model.Conditions.PointsCondition;
+import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Resource;
+import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Side;
-import it.polimi.ingsw.gc12.Utilities.Triplet;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GoldCardTest {
 
+    ArrayList<ResourceCard> resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
+    });
+    ArrayList<GoldCard> goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
+    });
+    ArrayList<InitialCard> initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
+    });
+
     @Test
-    void awardPoints() {
-        //TODO: da rifare!
+    void awardPoints() throws Throwable {  // OK
+        Player player = new Player("SACRI");
 
-        HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
-        resource.put(new GenericPair<>(0, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(0, 1), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 1), Resource.WOLF);
-        Map<Side, Map<GenericPair<Integer, Integer>, Resource>> corner = new HashMap<>();
-        corner.put(Side.FRONT, resource);
-        corner.put(Side.BACK, resource);
-
-        Triplet<Integer, Integer, Resource> T1 = new Triplet<>(0, 0, Resource.WOLF);
-        Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -2, Resource.WOLF);
-        Triplet<Integer, Integer, Resource> T3 = new Triplet<>(1, 1, Resource.WOLF);
-        ArrayList<Triplet<Integer, Integer, Resource>> condition = new ArrayList<>();
-        condition.add(T1);
-        condition.add(T2);
-        condition.add(T3);
-        PointsCondition p = new PatternCondition(condition);
-
-        GoldCard gold = new GoldCard(3, 1, corner, new EnumMap<>(Resource.class), p, null);
-
-        Player p1 = new Player("SACRI");
-        GameLobby lobby = new GameLobby(p1, 1);
+        GameLobby lobby = new GameLobby(player, 1);
         Game game = new Game(lobby);
 
-        assertEquals(1, gold.awardPoints(game.getPlayers().getFirst()));
+        InGamePlayer playerGame = game.getPlayers().getFirst();
 
+        playerGame.addCardToHand(initialCards.getFirst());
+        playerGame.placeCard(new GenericPair<>(0, 0), playerGame.getCardsInHand().getFirst(), Side.BACK);
+
+        playerGame.addCardToHand(resourceCards.get(4));
+        playerGame.placeCard(new GenericPair<>(1, -1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
+
+        playerGame.addCardToHand(goldCards.get(30));
+        playerGame.placeCard(new GenericPair<>(-1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
+
+        assertEquals(2, playerGame.getPlacedCards().get(new GenericPair<>(-1, 1)).getX().awardPoints(playerGame));
     }
-
-
 }

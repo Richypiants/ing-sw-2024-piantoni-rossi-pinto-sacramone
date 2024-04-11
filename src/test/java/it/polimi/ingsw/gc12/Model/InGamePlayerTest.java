@@ -6,10 +6,10 @@ import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Model.Conditions.PatternCondition;
-import it.polimi.ingsw.gc12.Utilities.*;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
+import it.polimi.ingsw.gc12.Utilities.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -43,7 +43,6 @@ class InGamePlayerTest {
         InGamePlayer playerGame = new InGamePlayer(player);
 
         playerGame.addCardToHand(initialCards.get(1));
-
         playerGame.placeCard(new GenericPair<>(0, 0), playerGame.getCardsInHand().getFirst(), Side.FRONT);
 
         playerGame.addCardToHand(resourceCards.get(0));
