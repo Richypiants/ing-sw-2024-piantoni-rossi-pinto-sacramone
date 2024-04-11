@@ -94,7 +94,6 @@ class InGamePlayerTest {
 
         playerGame.addCardToHand(resourceCards.get(0));
         playerGame.addCardToHand(resourceCards.get(1));
-        playerGame.addCardToHand(goldCards.getFirst());
 
         playerGame.placeCard(new GenericPair<>(-1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
 

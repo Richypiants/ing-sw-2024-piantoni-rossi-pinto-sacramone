@@ -10,7 +10,8 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FieldTest {
     @Test
@@ -88,8 +89,5 @@ class FieldTest {
         p1_g.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
         GenericPair<Integer, Integer> coordinate_res = new GenericPair<>(p1_g.getCardCoordinates(c0).getX(), p1_g.getCardCoordinates(c0).getX());
         assertEquals(new GenericPair<>(0, 0), coordinate_res);
-
-
-
     }
 }

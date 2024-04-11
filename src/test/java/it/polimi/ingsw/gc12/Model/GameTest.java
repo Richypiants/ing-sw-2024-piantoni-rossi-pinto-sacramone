@@ -18,9 +18,9 @@ class GameTest {
 
     @Test
     void nextPlayer() {
-        Player p1 = new Player("P1");
+        Player player = new Player("player");
         Player p2 = new Player("P2");
-        GameLobby lobby = new GameLobby(p1, 2);
+        GameLobby lobby = new GameLobby(player, 2);
         lobby.addPlayer(p2);
         Game game = new Game(lobby);
         game.getCurrentState().nextPlayer();
@@ -29,32 +29,32 @@ class GameTest {
 
     @Test
     void getCurrentPlayer() {
-        Player p1 = new Player("P1");
-        GameLobby lobby = new GameLobby(p1, 1);
+        Player player = new Player("player");
+        GameLobby lobby = new GameLobby(player, 1);
         Game game = new Game(lobby);
         assertInstanceOf(InGamePlayer.class, game.getCurrentPlayer());
     }
 
     @Test
     void drawFromCorrect() {
-        Player p1 = new Player("P1");
-        GameLobby lobby = new GameLobby(p1, 1);
+        Player player = new Player("player");
+        GameLobby lobby = new GameLobby(player, 1);
         Game game = new Game(lobby);
         assertInstanceOf(ResourceCard.class, game.drawFrom(game.getResourceCardsDeck()));
     }
 
     @Test
     void drawFromVisibleCardsResource() {
-        Player p1 = new Player("P1");
-        GameLobby lobby = new GameLobby(p1, 1);
+        Player player = new Player("player");
+        GameLobby lobby = new GameLobby(player, 1);
         Game game = new Game(lobby);
         assertInstanceOf(ResourceCard.class, game.drawFrom(game.getPlacedResources(), 0));
     }
 
     @Test
     void drawFromVisibleCardsGold() {
-        Player p1 = new Player("P1");
-        GameLobby lobby = new GameLobby(p1, 1);
+        Player player = new Player("player");
+        GameLobby lobby = new GameLobby(player, 1);
         Game game = new Game(lobby);
         assertInstanceOf(GoldCard.class, game.drawFrom(game.getPlacedGolds(), 0));
     }

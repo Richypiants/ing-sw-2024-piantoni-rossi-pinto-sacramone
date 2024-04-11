@@ -31,7 +31,5 @@ class GameLobbyTest {
         assert (lobby.getPlayers().contains(player1));
         lobby.removePlayer(player1);
         assert (!lobby.getPlayers().contains(player1));
-
-
     }
 }
