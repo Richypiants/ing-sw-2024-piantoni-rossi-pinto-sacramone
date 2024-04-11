@@ -2,18 +2,13 @@ package it.polimi.ingsw.gc12.Controller.ServerController;
 
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.Controller;
-import it.polimi.ingsw.gc12.Model.Cards.Card;
-import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
-import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
+import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
+import it.polimi.ingsw.gc12.Utilities.*;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.JSONParser;
-import it.polimi.ingsw.gc12.Utilities.Side;
-import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,13 +31,17 @@ public abstract class ServerController extends Controller {
     private static Map<Integer, Card> loadCards() {
         //TODO: map of maps?
         Map<Integer, Card> tmp = new HashMap<>();
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>(){}))
+        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("resource_cards.json",
+                        new TypeToken<ArrayList<ResourceCard>>(){}))
                 .forEach((card) -> tmp.put(card.ID, card));
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>(){}))
+        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("gold_cards.json",
+                        new TypeToken<ArrayList<GoldCard>>(){}))
                 .forEach((card) -> tmp.put(card.ID, card));
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>(){}))
+        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("initial_cards.json",
+                        new TypeToken<ArrayList<InitialCard>>(){}))
                 .forEach((card) -> tmp.put(card.ID, card));
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>(){}))
+        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("objective_cards.json",
+                        new TypeToken<ArrayList<ObjectiveCard>>(){}))
                 .forEach((card) -> tmp.put(card.ID, card));
 
         return Collections.unmodifiableMap(tmp);
@@ -534,15 +533,15 @@ public abstract class ServerController extends Controller {
         //receiveCard();
 
         //FIXME: ... (a sto punto faccio direttamente la getArray qua e lo passo nella funzione draw nello stato)
-        Card newCard;
+        ArrayList<Triplet<Integer, String, Integer>> newCard = new ArrayList<>();
         if (deck.trim().equalsIgnoreCase("RESOURCE"))
-            newCard = targetGame.getPlacedResources()[position];
-        else newCard = targetGame.getPlacedGold()[position];
+            newCard.add(new Triplet<>(targetGame.getPlacedResources()[position].ID, deck, position));
+        else newCard.add(new Triplet<>(targetGame.getPlacedGolds()[position].ID, deck, position));
+
 
         for(var player : targetGame.getPlayers()) {
             VirtualClient targetClient = keyReverseLookup(players, player::equals);
-            targetClient.serverMessage(varargsToArrayList("replaceCard", newCard.ID, deck, position));
-            //replaceCard();
+            targetClient.serverMessage(varargsToArrayList("replaceCard", newCard)); //replaceCard();
         }
     }
 

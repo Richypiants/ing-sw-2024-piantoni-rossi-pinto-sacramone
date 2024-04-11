@@ -202,7 +202,7 @@ class InGamePlayerTest {
         playerGame.addCardToHand(c0);
         playerGame.addCardToHand(c1);
         playerGame.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
-        //fallirà perchè le carte erano non esistenti e ne abbiamo messe di esistenti a caso
+        //fallirà perché le carte erano non esistenti e ne abbiamo messe di esistenti a caso
         assertThrows(NotEnoughResourcesException.class, () -> playerGame.placeCard(new GenericPair<>(1, -1), c1, Side.FRONT));
     }
 }

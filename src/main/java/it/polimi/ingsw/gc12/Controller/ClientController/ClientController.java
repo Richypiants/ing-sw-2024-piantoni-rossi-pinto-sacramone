@@ -8,6 +8,7 @@ import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
+import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.util.*;
 
@@ -73,10 +74,11 @@ public class ClientController extends Controller {
         ((ClientGame) currentLobbyOrGame).addCardToHand(cardsList.get(cardID));
     }
 
-    public void replaceCard(int cardID, String deck, int position){
-        if (deck.trim().equalsIgnoreCase("RESOURCE"))
-            ((ClientGame) currentLobbyOrGame).setPlacedResources(cardsList.get(cardID), position);
-        else ((ClientGame) currentLobbyOrGame).setPlacedGold(cardsList.get(cardID), position);
+    public void replaceCard(ArrayList<Triplet<Integer, String, Integer>> cardPlacements){
+        for(var cardPlacement : cardPlacements)
+            if (cardPlacement.getY().trim().equalsIgnoreCase("RESOURCE"))
+                ((ClientGame) currentLobbyOrGame).setPlacedResources(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
+            else ((ClientGame) currentLobbyOrGame).setPlacedGold(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
     }
 
     public void toggleActive(String nickname){

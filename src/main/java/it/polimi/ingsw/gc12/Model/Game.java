@@ -156,7 +156,7 @@ public class Game extends GameLobby {
     /**
      * Returns the GoldCards placed on the table
      */
-    public GoldCard[] getPlacedGold() {
+    public GoldCard[] getPlacedGolds() {
         return PLACED_GOLD_CARDS;
     }
 
@@ -238,7 +238,7 @@ public class Game extends GameLobby {
 // increaseTurn() -> No test
 // getTurnNumber() (Getter) -> No test
 // getPlacedResources() (Getter) -> No test
-// getPlacedGold()  (Getter) -> No test
+// getPlacedGolds()  (Getter) -> No test
 // getCommonObjectives() (Getter) -> No test
 // drawFrom() -> Si test
 //               - Casi limite
