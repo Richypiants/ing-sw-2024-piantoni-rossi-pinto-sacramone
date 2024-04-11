@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc12.Client.ClientModel;
+package it.polimi.ingsw.gc12.Model.ClientModel;
 
 import it.polimi.ingsw.gc12.Utilities.Image;
 

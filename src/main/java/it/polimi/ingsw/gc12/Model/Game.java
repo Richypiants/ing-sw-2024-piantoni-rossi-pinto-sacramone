@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.Model;
 
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.*;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.GameStates.GameState;
 import it.polimi.ingsw.gc12.Model.GameStates.SetupState;
 
@@ -96,9 +97,11 @@ public class Game extends GameLobby {
         return returnLobby;
     }
 
+
     /**
      * Returns the player who is currently playing
      */
+    @Override
     public ArrayList<InGamePlayer> getPlayers() {
         return super.getPlayers()
                 .stream()
@@ -209,6 +212,14 @@ public class Game extends GameLobby {
      */
     public GameState getCurrentState() {
         return currentState;
+    }
+
+    public ClientGame generateDTO(){
+        return new ClientGame(this);
+        //TODO: create the DTO from the current class, we also need DTOs for creating ClientPlayer and ClientCard.
+        /*    public ClientGame(int maxPlayers, List<ClientPlayer > players, ArrayList< ClientCard > ownHand,
+                ClientCard[] placedResourceCards, ClientCard[] placedGoldCards,
+                ClientCard[] commonObjectives, ClientCard ownObjective, int currentRound){*/
     }
 }
 

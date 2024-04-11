@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
-import it.polimi.ingsw.gc12.Client.ClientModel.ClientCard;
-import it.polimi.ingsw.gc12.Client.ClientModel.ClientPlayer;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.*;
 

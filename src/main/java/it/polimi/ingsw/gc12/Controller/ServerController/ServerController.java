@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
+import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.Controller;
 import it.polimi.ingsw.gc12.Model.Cards.Card;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
@@ -10,6 +11,7 @@ import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
@@ -26,9 +28,25 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.varargsToArrayList;
         which aren't already in a lobby. */
 public abstract class ServerController extends Controller {
 
+    public static final Map<Integer, Card> cardsList = loadCards();
     public static final Map<VirtualClient, Player> players = new HashMap<>();
     public static final Map<UUID, GameLobby> lobbiesAndGames = new HashMap<>();
     public static final Map<Player, GameLobby> playersToLobbiesAndGames = new HashMap<>();
+
+    private static Map<Integer, Card> loadCards() {
+        //TODO: map of maps?
+        Map<Integer, Card> tmp = new HashMap<>();
+        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>(){}))
+                .forEach((card) -> tmp.put(card.ID, card));
+        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>(){}))
+                .forEach((card) -> tmp.put(card.ID, card));
+        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>(){}))
+                .forEach((card) -> tmp.put(card.ID, card));
+        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>(){}))
+                .forEach((card) -> tmp.put(card.ID, card));
+
+        return Collections.unmodifiableMap(tmp);
+    }
 
     private static boolean hasNoPlayer(VirtualClient client) throws Throwable{
         if(players.containsKey(client)) {
@@ -103,7 +121,7 @@ public abstract class ServerController extends Controller {
             if((target instanceof InGamePlayer) && !((InGamePlayer) target).isActive()) {
                 Game targetGame = (Game) playersToLobbiesAndGames.get(target);
 
-                sender.serverMessage(functionName, gameInfos); //TODO: restoreGame();
+                sender.serverMessage(varargsToArrayList("restoreGame", targetGame.generateDTO())); //restoreGame();
 
                 for (var player : targetGame.getPlayers())
                     if (player.isActive()) {
@@ -137,7 +155,7 @@ public abstract class ServerController extends Controller {
     }
 
     public static void setNickname(VirtualClient sender, String nickname) throws Throwable {
-        if(hasNoPlayer(sender) || inGame(sender)) return;
+        if(hasNoPlayer(sender) || inLobbyOrGame(sender)) return;
 
         Optional<Player> selectedPlayer = players.values().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
@@ -154,7 +172,7 @@ public abstract class ServerController extends Controller {
             players.get(sender).setNickname(nickname);
 
             //TODO: decide what to send back
-            sender.serverMessage(varargsToArrayList(...)); //...();
+            //sender.serverMessage(varargsToArrayList(...)); //...();
         }
     }
 
@@ -253,7 +271,7 @@ public abstract class ServerController extends Controller {
                 playersToLobbiesAndGames.remove(player);
                 playersToLobbiesAndGames.put(targetInGamePlayer, newGame);
 
-                targetClient.serverMessage(startGame, gameInfos); //startGame();
+                targetClient.serverMessage(varargsToArrayList("startGame", lobbyUUID, lobby)); //startGame();
 
                 //FIXME: should clients inform that they are ready before? (ready() method call?)
                 //Calls to game creation, generateInitialCards ...
@@ -426,7 +444,7 @@ public abstract class ServerController extends Controller {
             targetClient.serverMessage(
                     varargsToArrayList(
                             "placeCard", targetPlayer.getNickname(), coordinates, targetCard.ID, playedSide,
-                            targetPlayer.getOpenCorners(), targetPlayer.getOwnedResources()
+                            targetPlayer.getOwnedResources(), targetPlayer.getOpenCorners(), targetPlayer.getPoints()
                     )
             ); //placeCard();
         }

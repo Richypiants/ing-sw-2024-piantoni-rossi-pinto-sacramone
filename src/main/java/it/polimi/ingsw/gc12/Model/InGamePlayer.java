@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc12.Model;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
-import it.polimi.ingsw.gc12.Utilities.Color;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
@@ -19,10 +18,6 @@ import java.util.stream.Collectors;
  */
 public class InGamePlayer extends Player {
 
-    /**
-     * This player's color
-     */
-    public final Color COLOR = null; //TODO: implement color selection logic
     /**
      * The cards in this player's hand
      */

@@ -1,14 +1,22 @@
 package it.polimi.ingsw.gc12.Model;
 
+import it.polimi.ingsw.gc12.Utilities.Color;
+
+import java.io.Serializable;
+
 /**
  * A model for a player outside of games (that is, in the lobby)
  */
-public class Player {
+public class Player implements Serializable {
 
     /**
      * This player's nickname
      */
     private String nickname;
+    /**
+     * This player's color
+     */
+    private Color color = Color.NO_COLOR; //TODO: implement color selection logic
 
     /**
      * Constructs a standard player
@@ -22,6 +30,7 @@ public class Player {
      */
     public Player(Player copyFrom){
         this.nickname = copyFrom.getNickname();
+        this.color = copyFrom.getColor();
     }
 
     /**
@@ -36,6 +45,20 @@ public class Player {
      */
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    /**
+     * Returns this player's color
+     */
+    public Color getColor() {
+        return this.color;
+    }
+
+    /**
+     * Sets this player's nickname
+     */
+    public void setColor(Color color) {
+        this.color = color;
     }
 }
 

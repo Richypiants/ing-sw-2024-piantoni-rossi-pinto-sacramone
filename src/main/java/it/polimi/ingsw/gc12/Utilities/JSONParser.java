@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
 
+//TODO: parse ClientCard correctly (add custom parser)
 public class JSONParser {
     /**
      * Creates an instance of a GsonBuilder with custom directives related to how to parse our PointsCondition

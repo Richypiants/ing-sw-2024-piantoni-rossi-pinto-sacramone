@@ -40,6 +40,7 @@ public class Field {
      * Adds a card to the played cards on the field
      * @requires the given coordinates' pair is valid (contained in OPEN_CORNERS)
      * @ensures the given card is now contained in PLAYED_CARDS
+     * @ensures OPEN_CORNERS invalidated by the played card are removed
      * @ensures the given coordinates are no longer in OPEN_CORNERS
      * @ensures the coordinates' pairs corresponding to the given card's corners are added to OPEN_CORNERS, but only if:
      * - 1) they really are corners (they do not contain NOT_A_CORNER);

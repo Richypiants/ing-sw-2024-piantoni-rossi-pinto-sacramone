@@ -13,7 +13,7 @@ public class GameLobby implements Serializable {
     /**
      * The list of players who have already joined this lobby
      */
-    protected final List<Player> LIST_OF_PLAYERS;
+    private final List<Player> LIST_OF_PLAYERS;
     /**
      * The maximum number of players which can join this lobby
      */
