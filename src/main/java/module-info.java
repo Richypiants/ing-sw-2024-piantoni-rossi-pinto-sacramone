@@ -7,21 +7,21 @@ module it.polimi.ingsw.gc12 {
     requires com.google.gson;
     requires java.rmi;
 
-    opens it.polimi.ingsw.gc12.ServerModel to com.google.gson;
+    opens it.polimi.ingsw.gc12.Model to com.google.gson;
     opens it.polimi.ingsw.gc12.Utilities to com.google.gson;
-    exports it.polimi.ingsw.gc12.ServerModel to com.google.gson;
+    exports it.polimi.ingsw.gc12.Model to com.google.gson;
     opens it.polimi.ingsw.gc12 to javafx.fxml;
     exports it.polimi.ingsw.gc12;
-    exports it.polimi.ingsw.gc12.ServerModel.GameStates to com.google.gson;
-    opens it.polimi.ingsw.gc12.ServerModel.GameStates to com.google.gson;
-    exports it.polimi.ingsw.gc12.ServerModel.Cards to com.google.gson;
-    opens it.polimi.ingsw.gc12.ServerModel.Cards to com.google.gson;
-    exports it.polimi.ingsw.gc12.ServerModel.Conditions to com.google.gson;
-    opens it.polimi.ingsw.gc12.ServerModel.Conditions to com.google.gson;
+    exports it.polimi.ingsw.gc12.Model.GameStates to com.google.gson;
+    opens it.polimi.ingsw.gc12.Model.GameStates to com.google.gson;
+    exports it.polimi.ingsw.gc12.Model.Cards to com.google.gson;
+    opens it.polimi.ingsw.gc12.Model.Cards to com.google.gson;
+    exports it.polimi.ingsw.gc12.Model.Conditions to com.google.gson;
+    opens it.polimi.ingsw.gc12.Model.Conditions to com.google.gson;
 
     exports it.polimi.ingsw.gc12.Utilities to com.google.gson, java.rmi;
-    exports it.polimi.ingsw.gc12.ServerController to com.google.gson, java.rmi;
-    opens it.polimi.ingsw.gc12.ServerController to com.google.gson;
+    exports it.polimi.ingsw.gc12.Controller.ServerController to com.google.gson, java.rmi;
+    opens it.polimi.ingsw.gc12.Controller.ServerController to com.google.gson;
 
     exports it.polimi.ingsw.gc12.Utilities.Exceptions;
 }

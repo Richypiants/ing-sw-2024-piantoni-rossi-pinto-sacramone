@@ -6,11 +6,11 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import it.polimi.ingsw.gc12.ServerModel.Cards.Card;
-import it.polimi.ingsw.gc12.ServerModel.Conditions.CornersCondition;
-import it.polimi.ingsw.gc12.ServerModel.Conditions.PatternCondition;
-import it.polimi.ingsw.gc12.ServerModel.Conditions.PointsCondition;
-import it.polimi.ingsw.gc12.ServerModel.Conditions.ResourcesCondition;
+import it.polimi.ingsw.gc12.Model.Cards.Card;
+import it.polimi.ingsw.gc12.Model.Conditions.CornersCondition;
+import it.polimi.ingsw.gc12.Model.Conditions.PatternCondition;
+import it.polimi.ingsw.gc12.Model.Conditions.PointsCondition;
+import it.polimi.ingsw.gc12.Model.Conditions.ResourcesCondition;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,7 +34,7 @@ public class JSONParser {
      */
     public static <E extends Card> ArrayList<E> deckFromJSONConstructor(String filename, TypeToken<ArrayList<E>> type) {
         try{
-            return new ArrayList<>(GSON_CARD_BUILDER.fromJson(Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/JSON_Files/" + filename)), type));
+            return new ArrayList<>(GSON_CARD_BUILDER.fromJson(Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/Utilities/JSON_Files/" + filename)), type));
         }catch(Exception e){
             e.printStackTrace();
             return null;

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Client.ClientModel;
 
-import it.polimi.ingsw.gc12.ServerModel.Cards.PlayableCard;
+import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Utilities.Color;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
