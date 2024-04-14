@@ -7,14 +7,19 @@ import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
+import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
+import static it.polimi.ingsw.gc12.Utilities.Commons.varargsToArrayList;
 
 public class ChooseInitialCardsState extends GameState {
 
@@ -39,10 +44,28 @@ public class ChooseInitialCardsState extends GameState {
         super.transition();
 
         for (InGamePlayer target : super.GAME.getPlayers()) {
-            target.addCardToHand(GAME.getResourceCardsDeck().draw());
-            target.addCardToHand(GAME.getResourceCardsDeck().draw());
-            target.addCardToHand(GAME.getGoldCardsDeck().draw());
-            //TODO: send all cards
+            try {
+                target.addCardToHand(GAME.drawFrom(GAME.getResourceCardsDeck()));
+                target.addCardToHand(GAME.drawFrom(GAME.getResourceCardsDeck()));
+                target.addCardToHand(GAME.drawFrom(GAME.getGoldCardsDeck()));
+            } catch (EmptyDeckException e) {
+                e.printStackTrace();
+                //This cannot happen as the deck is always full at the start of the game
+            }
+
+            //TODO: manage exceptions
+            try {
+                keyReverseLookup(ServerController.players, target::equals)
+                        .requestToServer(
+                                varargsToArrayList(
+                                        "receiveCard", target.getCardsInHand().stream()
+                                                .map((card) -> card.ID)
+                                                .toList()
+                                )
+                        );
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         }
 
         CardDeck<ObjectiveCard> objectivesDeck = new CardDeck<>(ServerController.cardsList.values().stream()
@@ -50,17 +73,35 @@ public class ChooseInitialCardsState extends GameState {
                 .map((card) -> (ObjectiveCard) card)
                 .toList());
 
-        ObjectiveCard[] objectiveCardToGame = new ObjectiveCard[2];
-        objectiveCardToGame[0] = objectivesDeck.draw();
-        objectiveCardToGame[1] = objectivesDeck.draw();
-        GAME.setCommonObjectives(objectiveCardToGame);
+        ObjectiveCard[] objectiveCardsToGame = new ObjectiveCard[2];
+        objectiveCardsToGame[0] = objectivesDeck.draw();
+        objectiveCardsToGame[1] = objectivesDeck.draw();
+        GAME.setCommonObjectives(objectiveCardsToGame);
         Map<InGamePlayer, ArrayList<ObjectiveCard>> objectivesSelection = new HashMap<>();
 
         for (InGamePlayer target : super.GAME.getPlayers()) {
-            ArrayList<ObjectiveCard> objCards = new ArrayList<>();
-            objCards.add(objectivesDeck.draw());
-            objCards.add(objectivesDeck.draw());
-            objectivesSelection.put(target, objCards);
+            ArrayList<ObjectiveCard> personalObjectiveCards = new ArrayList<>();
+            personalObjectiveCards.add(objectivesDeck.draw());
+            personalObjectiveCards.add(objectivesDeck.draw());
+            objectivesSelection.put(target, personalObjectiveCards);
+        }
+
+        ArrayList<Triplet<Integer, String, Integer>> objectiveCardPlacements = new ArrayList<>();
+        for (int i = 0; i < GAME.getCommonObjectives().length; i++)
+            objectiveCardPlacements.add(new Triplet<>(GAME.getCommonObjectives()[i].ID, "Objective", i));
+
+        for (var target : GAME.getPlayers()) {
+            //TODO: manage exceptions
+            try {
+                //Sending the common objective cards
+                keyReverseLookup(ServerController.players, target::equals)
+                        .requestToServer(varargsToArrayList("replaceCard", objectiveCardPlacements));
+                //Sending the personal objective selection
+                keyReverseLookup(ServerController.players, target::equals)
+                        .requestToServer(varargsToArrayList("receiveCard", objectivesSelection.get(target)));
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         }
 
         GAME.setState(new ChooseObjectiveCardsState(GAME, objectivesSelection));

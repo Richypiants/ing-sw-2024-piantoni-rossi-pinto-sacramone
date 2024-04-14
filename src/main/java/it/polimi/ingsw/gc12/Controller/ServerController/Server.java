@@ -10,8 +10,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 
 public class Server {
@@ -19,14 +17,6 @@ public class Server {
     private final static Server SINGLETON_SERVER = new Server();
 
     private Server() {
-        //TODO
-    }
-
-    public static Server getInstance() {
-        return SINGLETON_SERVER;
-    }
-
-    public void run() {
         //RMI server setup
         Registry registry = null;
         try {
@@ -41,8 +31,8 @@ public class Server {
         try (
                 AsynchronousServerSocketChannel serverSocket = AsynchronousServerSocketChannel.open()
                         .bind(new InetSocketAddress("codexnaturalis.polimi.it", 5000));
-                ExecutorService executorsPool = Executors.newCachedThreadPool(/*thread factory here to change default
-                keepAlive timeout and set maximum number of Threads*/)
+                //ExecutorService executorsPool = Executors.newCachedThreadPool(/*thread factory here to change default
+                //keepAlive timeout and set maximum number of Threads*/)
         ) {
             //FIXME: how about the ip?
 
@@ -57,19 +47,19 @@ public class Server {
 
                 try {
                     //add connection to queue
-                    executorsPool.submit(
-                            () -> {
-                                //TODO: change size of array
-                                ByteBuffer byteBufferIn = ByteBuffer.wrap(new byte[0]);
-                                try { //FIXME: remove try/catch construct
-                                    channel.read(byteBufferIn, channel,
-                                            new SocketClientHandler<>(channel, byteBufferIn)
-                                    );
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                    );
+                    //executorsPool.submit(
+                    //        () -> {
+                    //TODO: change size of array
+                    ByteBuffer byteBufferIn = ByteBuffer.wrap(new byte[0]);
+                    try { //FIXME: remove try/catch construct
+                        channel.read(byteBufferIn, null,
+                                new SocketClientReadHandler<>(channel, byteBufferIn)
+                        );
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    //        }
+                    //);
                 } catch (RejectedExecutionException e) {
                     //dire al client che il server è sovraccarico
                 }
@@ -83,5 +73,9 @@ public class Server {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Server getInstance() {
+        return SINGLETON_SERVER;
     }
 }

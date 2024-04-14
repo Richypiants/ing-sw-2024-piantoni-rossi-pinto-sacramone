@@ -5,7 +5,6 @@ public class CardNotInHandException extends Exception{
         super(message);
     }
 
-    public CardNotInHandException(){
+    public CardNotInHandException() {
     }
-
 }

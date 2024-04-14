@@ -106,6 +106,7 @@ public class InGamePlayer extends Player {
      * the field, places the card into the ownField HashMap, also incrementing the ownedResources by the correct number
      * @requires the given card to place must be in this player's hand (it is contained in CARDS_IN_HAND)
      * @requires if the given card is a GoldCard: this player must have the needed resources to play it
+     * @ensures this player's points are increased by the amount awarded by the played card
      * @ensures for each Resource contained in a corner or on the back of the given card's played side, this player's
      * resources are incremented by 1
      * @ensures if the given card (after being placed) covers corners of other cards, for each covered corner the
@@ -120,6 +121,7 @@ public class InGamePlayer extends Player {
                 throw new NotEnoughResourcesException();
 
         OWN_FIELD.addCard(coordinates, card, playedSide);
+        increasePoints(card.awardPoints(this));
 
         //Foreach Corner of the given card that is valid and non-empty, increment the corresponding Resource by 1
         for (var res : card.getCorners(playedSide)
@@ -191,7 +193,7 @@ public class InGamePlayer extends Player {
     /**
      * Returns the cards placed by this player
      */
-    public HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
+    public LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
         return OWN_FIELD.getPlacedCards();
     }
 

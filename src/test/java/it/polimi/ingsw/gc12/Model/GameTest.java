@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.Model;
 
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -36,7 +37,7 @@ class GameTest {
     }
 
     @Test
-    void drawFromCorrect() {
+    void drawFromCorrect() throws EmptyDeckException {
         Player player = new Player("player");
         GameLobby lobby = new GameLobby(player, 1);
         Game game = new Game(lobby);
@@ -44,7 +45,7 @@ class GameTest {
     }
 
     @Test
-    void drawFromVisibleCardsResource() {
+    void drawFromVisibleCardsResource() throws EmptyDeckException {
         Player player = new Player("player");
         GameLobby lobby = new GameLobby(player, 1);
         Game game = new Game(lobby);
@@ -52,10 +53,20 @@ class GameTest {
     }
 
     @Test
-    void drawFromVisibleCardsGold() {
+    void drawFromVisibleCardsGold() throws EmptyDeckException {
         Player player = new Player("player");
         GameLobby lobby = new GameLobby(player, 1);
         Game game = new Game(lobby);
         assertInstanceOf(GoldCard.class, game.drawFrom(game.getPlacedGolds(), 0));
+    }
+
+    @Test
+    void emptyDeck() {
+        assertThrows;
+    }
+
+    @Test
+    void emptyVisibleCardArrays() {
+        assertThrows;
     }
 }

@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.GameStates.GameState;
 import it.polimi.ingsw.gc12.Model.GameStates.SetupState;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -175,8 +176,10 @@ public class Game extends GameLobby {
     /**
      * Draws from the deck passed as parameter and returns the drawn card
      */
-    public PlayableCard drawFrom(CardDeck<?> deck) {
-        return (PlayableCard) deck.draw();
+    public <T extends Card> T drawFrom(CardDeck<T> deck) throws EmptyDeckException {
+        if (deck.isEmpty())
+            throw new EmptyDeckException();
+        return deck.draw();
     }
 
     /**
@@ -184,19 +187,30 @@ public class Game extends GameLobby {
      * replaces it on the board
      */
     //FIXME: change in UML
-    public PlayableCard drawFrom(Card[] deck, int position) {
+    public PlayableCard drawFrom(Card[] deck, int position) throws EmptyDeckException {
         PlayableCard returnedCard = null;
 
         if (Arrays.equals(deck, PLACED_GOLD_CARDS)) {
             returnedCard = PLACED_GOLD_CARDS[position];
-            PLACED_GOLD_CARDS[position] = GOLD_CARDS_DECK.draw();
+            try {
+                PLACED_GOLD_CARDS[position] = drawFrom(getGoldCardsDeck());
+            } catch (EmptyDeckException e) {
+                PLACED_GOLD_CARDS[position] = null;
+            }
         } else if (Arrays.equals(deck, PLACED_RESOURCE_CARDS)) {
             returnedCard = PLACED_RESOURCE_CARDS[position];
-            PLACED_RESOURCE_CARDS[position] = RESOURCE_CARDS_DECK.draw();
+            try {
+                PLACED_RESOURCE_CARDS[position] = drawFrom(getResourceCardsDeck());
+            } catch (EmptyDeckException e) {
+                PLACED_RESOURCE_CARDS[position] = null;
+            }
         } else {
             //TODO: UnmatchedStringException
         }
-        //TODO: DrawnCardIsNullException
+
+        if (returnedCard == null)
+            throw new EmptyDeckException();
+
         return returnedCard;
     }
 

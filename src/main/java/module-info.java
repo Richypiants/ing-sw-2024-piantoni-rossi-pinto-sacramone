@@ -24,4 +24,5 @@ module it.polimi.ingsw.gc12 {
     opens it.polimi.ingsw.gc12.Controller.ServerController to com.google.gson;
 
     exports it.polimi.ingsw.gc12.Utilities.Exceptions;
+    opens it.polimi.ingsw.gc12.Utilities.Exceptions to com.google.gson;
 }

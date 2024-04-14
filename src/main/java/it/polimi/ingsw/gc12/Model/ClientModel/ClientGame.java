@@ -115,9 +115,8 @@ public class ClientGame extends GameLobby{
         return COMMON_OBJECTIVES;
     }
 
-    public void setCommonObjectives(ClientCard[] objectives) {
-        COMMON_OBJECTIVES[0] = objectives[0];
-        COMMON_OBJECTIVES[1] = objectives[1];
+    public void setCommonObjectives(ClientCard objective, int position) {
+        COMMON_OBJECTIVES[position] = objective;
     }
 
     public ClientCard getOwnObjective(){

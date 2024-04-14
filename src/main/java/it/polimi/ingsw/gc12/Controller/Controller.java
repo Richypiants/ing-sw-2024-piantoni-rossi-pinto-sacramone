@@ -11,11 +11,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class Controller {
+
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup(); //FIXME: why does publicLookup() not work?
     public static final Map<String, MethodHandle> commandHandles = createHandles();
 
     //TODO: keep lambda or not?
-    private static Map<String, MethodHandle> createHandles() {
+    protected static Map<String, MethodHandle> createHandles() {
         return Arrays.stream(ClientController.class.getDeclaredMethods())
                 .filter((method) -> Modifier.isPublic(method.getModifiers()))
                 .map((method) -> {

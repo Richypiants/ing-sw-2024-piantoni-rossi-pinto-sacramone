@@ -8,16 +8,17 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.ArrayList;
 
-public class SocketClientHandler<V, A> implements CompletionHandler<V, A>, VirtualClient {
+public class SocketClientReadHandler<A> implements CompletionHandler<Integer, A>, VirtualClient {
 
+    private final ByteBuffer inputBuffer;
+    AsynchronousSocketChannel channel;
     private final ObjectInputStream objectInputStream;
     private final ObjectOutputStream objectOutputStream;
     private final ByteArrayOutputStream byteOutputStream;
-    AsynchronousSocketChannel channel;
 
-    public SocketClientHandler(AsynchronousSocketChannel channel, ByteBuffer buffer) throws IOException {
-        //si scrive così?
+    public SocketClientReadHandler(AsynchronousSocketChannel channel, ByteBuffer buffer) throws IOException {
         this.channel = channel;
+        this.inputBuffer = buffer;
         //TODO: handle exceptions (in methods below too)
         this.objectInputStream = new ObjectInputStream(new ByteArrayInputStream(buffer.array()));
 
@@ -26,31 +27,6 @@ public class SocketClientHandler<V, A> implements CompletionHandler<V, A>, Virtu
         //quando voglio scrivere:
 
     }
-
-    public static void main(String[] args) throws Throwable {
-        //TODO: trasformare in test che stampa tutti i nomi dei metodi nella mappa per verificare che si possano
-        // chiamare tutti e soli i metodi validi
-
-        System.out.println(ServerController.commandHandles.keySet());
-        //Controller.commandHandles.get("createHandles").invoke();
-
-
-    }  /*final int[] pos = {0};
-
-        System.out.println(currentState.getClass().getMethod(
-                                "placeInitialCard",
-                                parameters.stream()
-                                        .map(Object::getClass)
-                                        .collect(() -> new Class<?>[parameters.size()],
-                                                (c1, c2) -> {
-                                                    c1[pos[0]] = c2;
-                                                    pos[0]++;
-                                                },
-                                                (c1, c2) -> System.out.println()
-                                        )
-                        )
-                        .invoke(currentState, parameters.toArray())
-        );*/
 
     //TODO: Handle Exceptions
     public Object readObject() throws IOException, ClassNotFoundException {
@@ -64,7 +40,7 @@ public class SocketClientHandler<V, A> implements CompletionHandler<V, A>, Virtu
     }
 
     @Override
-    public void serverMessage(ArrayList<Object> objects) {
+    public void requestToServer(ArrayList<Object> objects) {
         try {
             channel.write(writeObject(objects));
         } catch (IOException e) {
@@ -72,9 +48,8 @@ public class SocketClientHandler<V, A> implements CompletionHandler<V, A>, Virtu
         }
     }
 
-    //TODO: questo è solo per leggere client e rispondere... manca l'handler per update! (se ci sarà...)
     @Override
-    public void completed(V result, A attachment) {
+    public void completed(Integer result, A attachment) {
         //TODO: clean input (or nickname only)???
         ArrayList<Object> receivedCommand = null;
         try {
@@ -89,15 +64,14 @@ public class SocketClientHandler<V, A> implements CompletionHandler<V, A>, Virtu
         //FIXME: e se non lo trova? exception... ma per createPlayer?
         // exceptions: noSuchMethod, InvalidParametersForMethod, NoPlayerFound(sendCreatePlayer),...
 
-        //TODO: riferimento al Game?
+        channel.read(inputBuffer, attachment, this);
         try {
+            //TODO: make executors do this?
             ServerController.commandHandles.get((String) receivedCommand.removeFirst())
                     .invokeWithArguments(receivedCommand);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-
-        //nel command se nickname ricevuto valido: put(this) in Map
     }
 
     @Override

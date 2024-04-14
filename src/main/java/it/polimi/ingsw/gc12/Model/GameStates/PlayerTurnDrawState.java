@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.Model.GameStates;
 
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidDeckPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnknownStringException;
@@ -14,7 +15,7 @@ public class PlayerTurnDrawState extends GameState {
 
     @Override
     public synchronized void drawFrom(InGamePlayer target, String deck) throws UnexpectedPlayerException,
-            UnknownStringException {
+            UnknownStringException, EmptyDeckException {
         if (!target.equals(GAME.getPlayers().get(currentPlayer)))
             throw new UnexpectedPlayerException();
 
@@ -34,7 +35,7 @@ public class PlayerTurnDrawState extends GameState {
     //FIXME: change in UML
     @Override
     public synchronized void drawFrom(InGamePlayer target, String whichType, int position)
-            throws UnexpectedPlayerException, InvalidDeckPositionException, UnknownStringException {
+            throws UnexpectedPlayerException, InvalidDeckPositionException, UnknownStringException, EmptyDeckException {
         if (!target.equals(GAME.getPlayers().get(currentPlayer)))
             throw new UnexpectedPlayerException();
 

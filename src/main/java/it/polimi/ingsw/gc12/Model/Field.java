@@ -7,7 +7,7 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
@@ -20,7 +20,7 @@ public class Field {
     /**
      * The map from coordinates to the card played in that position
      */
-    private final HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> PLACED_CARDS;
+    private final LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> PLACED_CARDS;
 
     /**
      * Available position where the next cards can be played
@@ -31,7 +31,7 @@ public class Field {
      * Constructs an empty Field
      */
     protected Field() {
-        this.PLACED_CARDS = new HashMap<>();
+        this.PLACED_CARDS = new LinkedHashMap<>();
         this.OPEN_CORNERS = new ArrayList<>();
         OPEN_CORNERS.add(new GenericPair<>(0, 0));
     }
@@ -113,8 +113,8 @@ public class Field {
     /**
      * Returns a copy of the map of placed cards, addressed by their position as key
      */
-    public HashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
-        return new HashMap<>(PLACED_CARDS);
+    public LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
+        return new LinkedHashMap<>(PLACED_CARDS);
     }
 
     /**

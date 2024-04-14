@@ -203,4 +203,9 @@ class InGamePlayerTest {
         //fallirà perché le carte erano non esistenti e ne abbiamo messe di esistenti a caso
         assertThrows(NotEnoughResourcesException.class, () -> playerGame.placeCard(new GenericPair<>(1, -1), c1, Side.FRONT));
     }
+
+    @Test
+    void PointsAwarded() {
+        checkCorrectPointsAddedTo "Player.getPoints";
+    }
 }

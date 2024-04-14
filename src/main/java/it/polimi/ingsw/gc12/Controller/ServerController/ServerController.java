@@ -7,8 +7,8 @@ import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
-import it.polimi.ingsw.gc12.Utilities.*;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
+import it.polimi.ingsw.gc12.Utilities.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,7 +49,7 @@ public abstract class ServerController extends Controller {
 
     private static boolean hasNoPlayer(VirtualClient client) throws Throwable{
         if(players.containsKey(client)) {
-            client.serverMessage(
+            client.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new NotExistingPlayerException("Unregistered client")
@@ -63,7 +63,7 @@ public abstract class ServerController extends Controller {
     //FIXME: abbastanza orribile e duplicato... playerState?
     private static boolean inGame(VirtualClient client) throws Throwable{
         if(players.get(client) instanceof InGamePlayer) {
-            client.serverMessage(
+            client.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new ForbiddenActionException("Cannot execute action while in a game")
@@ -76,7 +76,7 @@ public abstract class ServerController extends Controller {
 
     private static boolean inLobbyOrGame(VirtualClient client) throws Throwable{
         if(playersToLobbiesAndGames.containsKey(players.get(client))) {
-            client.serverMessage(
+            client.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new ForbiddenActionException("Cannot execute action while in a lobby or in a game")
@@ -89,7 +89,7 @@ public abstract class ServerController extends Controller {
 
     public static boolean validCard(VirtualClient sender, int cardID) throws Throwable {
         if(!cardsList.containsKey(cardID)){
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new IllegalArgumentException("Provided cardID is not associated to an existing card")
@@ -102,7 +102,7 @@ public abstract class ServerController extends Controller {
 
     public static void createPlayer(VirtualClient sender, String nickname) throws Throwable {
         if(players.containsKey(sender)) {
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new ForbiddenActionException("Client already registered")
@@ -120,12 +120,12 @@ public abstract class ServerController extends Controller {
             if((target instanceof InGamePlayer) && !((InGamePlayer) target).isActive()) {
                 Game targetGame = (Game) playersToLobbiesAndGames.get(target);
 
-                sender.serverMessage(varargsToArrayList("restoreGame", targetGame.generateDTO())); //restoreGame();
+                sender.requestToServer(varargsToArrayList("restoreGame", targetGame.generateDTO())); //restoreGame();
 
                 for (var player : targetGame.getPlayers())
                     if (player.isActive()) {
                         VirtualClient targetClient = keyReverseLookup(players, player::equals);
-                        targetClient.serverMessage(varargsToArrayList("toggleActive", nickname)); //toggleActive()
+                        targetClient.requestToServer(varargsToArrayList("toggleActive", nickname)); //toggleActive()
                     }
 
                 ((InGamePlayer) target).toggleActive();
@@ -133,7 +133,7 @@ public abstract class ServerController extends Controller {
                 // era crashato
                 // inoltre serve uno stato awaitingReconnectionsState (potremmo usarlo come timeout?)
             } else
-                sender.serverMessage(
+                sender.requestToServer(
                         varargsToArrayList(
                                 "throwException",
                                 new IllegalArgumentException("Provided nickname is already taken")
@@ -142,7 +142,7 @@ public abstract class ServerController extends Controller {
         } else {
             Player target = new Player(nickname);
             players.put(sender, target);
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "setLobbies",
                             lobbiesAndGames.entrySet().stream()
@@ -161,7 +161,7 @@ public abstract class ServerController extends Controller {
                 .findAny();
 
         if(selectedPlayer.isPresent()) {
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new IllegalArgumentException("Provided nickname is already taken")
@@ -187,7 +187,7 @@ public abstract class ServerController extends Controller {
         //TODO: si potrebbe risolvere mettendo un GameState "NotStartedState o IdleState"...
 
         if(maxPlayers < 2 || maxPlayers > 4){
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new IllegalArgumentException("Invalid number of max players (out of range: accepted [2-4])")
@@ -209,14 +209,14 @@ public abstract class ServerController extends Controller {
 
         for(var client : players.keySet())
             if(!inGame(client))
-                client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, lobby)); //updateLobby();
+                client.requestToServer(varargsToArrayList("updateLobby", lobbyUUID, lobby)); //updateLobby();
     }
 
     public static void joinLobby(VirtualClient sender, UUID lobbyUUID) throws Throwable {
         if(hasNoPlayer(sender) || inLobbyOrGame(sender)) return;
 
         if(lobbiesAndGames.containsKey(lobbyUUID)){
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new IllegalArgumentException("There's no lobby with the provided UUID")
@@ -228,7 +228,7 @@ public abstract class ServerController extends Controller {
         GameLobby lobby = lobbiesAndGames.get(lobbyUUID);
 
         if(lobby instanceof Game){
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new IllegalArgumentException("The provided UUID refers to a game and not a lobby")
@@ -238,7 +238,7 @@ public abstract class ServerController extends Controller {
         }
 
         if(lobby.getPlayersNumber() >= lobby.getMaxPlayers()){
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new ForbiddenActionException("Cannot join a full lobby")
@@ -270,7 +270,7 @@ public abstract class ServerController extends Controller {
                 playersToLobbiesAndGames.remove(player);
                 playersToLobbiesAndGames.put(targetInGamePlayer, newGame);
 
-                targetClient.serverMessage(varargsToArrayList("startGame", lobbyUUID, lobby)); //startGame();
+                targetClient.requestToServer(varargsToArrayList("startGame", lobbyUUID, lobby)); //startGame();
 
                 //FIXME: should clients inform that they are ready before? (ready() method call?)
                 //Calls to game creation, generateInitialCards ...
@@ -286,7 +286,7 @@ public abstract class ServerController extends Controller {
         //FIXME: risolvere SINCRONIZZANDO su un gameCreationLock
         for(var client : players.keySet())
             if(!inGame(client))
-                client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, lobby)); //updateLobby();
+                client.requestToServer(varargsToArrayList("updateLobby", lobbyUUID, lobby)); //updateLobby();
     }
 
     public static void leaveLobby(VirtualClient sender) throws Throwable {
@@ -308,14 +308,14 @@ public abstract class ServerController extends Controller {
 
         for(var client : players.keySet())
             if(!inGame(client))
-                client.serverMessage(varargsToArrayList("updateLobby", lobbyUUID, lobby)); //updateLobby();
+                client.requestToServer(varargsToArrayList("updateLobby", lobbyUUID, lobby)); //updateLobby();
     }
 
     public static void pickObjective(VirtualClient sender, int cardID) throws Throwable {
         if(hasNoPlayer(sender) || !inGame(sender)) return;
 
         if(!cardsList.containsKey(cardID)){
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new IllegalArgumentException("Provided cardID is not associated to an existing card")
@@ -333,7 +333,7 @@ public abstract class ServerController extends Controller {
                 targetGame.getCurrentState().pickObjective(targetPlayer, (ObjectiveCard) targetCard);
                 //TODO: maybe send a response back to the player?
             } catch(ForbiddenActionException e) {
-                sender.serverMessage(
+                sender.requestToServer(
                         varargsToArrayList(
                                 "throwException",
                                 new ForbiddenActionException("Cannot pick an objective card in this state")
@@ -341,14 +341,14 @@ public abstract class ServerController extends Controller {
                 ); //throwException();
                 return;
             } catch (CardNotInHandException e){
-                sender.serverMessage(
+                sender.requestToServer(
                         varargsToArrayList(
                                 "throwException",
                                 new CardNotInHandException("Card with provided cardID is not in player's hand")
                         )
                 ); //throwException();
             } catch (AlreadySetCardException e){
-                sender.serverMessage(
+                sender.requestToServer(
                         varargsToArrayList(
                                 "throwException",
                                 new AlreadySetCardException("Secret objective already chosen")
@@ -356,7 +356,7 @@ public abstract class ServerController extends Controller {
                 ); //throwException();
             }
         else {
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new InvalidCardTypeException("Card with provided cardID is not of type ObjectiveCard")
@@ -370,7 +370,7 @@ public abstract class ServerController extends Controller {
         if(hasNoPlayer(sender) || !inGame(sender) || !validCard(sender, cardID)) return;
 
         if(Arrays.stream(Side.values()).noneMatch((side) -> side.equals(playedSide))){
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new IllegalArgumentException("Invalid card side")
@@ -387,7 +387,7 @@ public abstract class ServerController extends Controller {
             try{
                 targetGame.getCurrentState().placeCard(targetPlayer, coordinates, (PlayableCard) targetCard, playedSide);
             } catch(ForbiddenActionException e) {
-                sender.serverMessage(
+                sender.requestToServer(
                         varargsToArrayList(
                                 "throwException",
                                 new ForbiddenActionException("Cannot place a card in this state")
@@ -395,7 +395,7 @@ public abstract class ServerController extends Controller {
                 ); //throwException();
                 return;
             } catch(UnexpectedPlayerException e){
-                sender.serverMessage(
+                sender.requestToServer(
                         varargsToArrayList(
                                 "throwException",
                                 new UnexpectedPlayerException("Not this player's turn")
@@ -403,14 +403,14 @@ public abstract class ServerController extends Controller {
                 ); //throwException();
                 return;
             } catch (CardNotInHandException e){
-                sender.serverMessage(
+                sender.requestToServer(
                         varargsToArrayList(
                                 "throwException",
                                 new CardNotInHandException("Card with provided cardID is not in player's hand")
                         )
                 ); //throwException();
             } catch (NotEnoughResourcesException e){
-                sender.serverMessage(
+                sender.requestToServer(
                         varargsToArrayList(
                                 "throwException",
                                 new NotEnoughResourcesException(
@@ -420,7 +420,7 @@ public abstract class ServerController extends Controller {
                 ); //throwException();
                 return;
             } catch (InvalidCardPositionException e){
-                sender.serverMessage(
+                sender.requestToServer(
                         varargsToArrayList(
                                 "throwException",
                                 new InvalidCardPositionException("Provided coordinates are not valid for placing a card")
@@ -429,7 +429,7 @@ public abstract class ServerController extends Controller {
                 return;
             }
         else {
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new InvalidCardTypeException("Provided card is not of a playable type")
@@ -440,7 +440,7 @@ public abstract class ServerController extends Controller {
 
         for(var player : targetGame.getPlayers()) {
             VirtualClient targetClient = keyReverseLookup(players, player::equals);
-            targetClient.serverMessage(
+            targetClient.requestToServer(
                     varargsToArrayList(
                             "placeCard", targetPlayer.getNickname(), coordinates, targetCard.ID, playedSide,
                             targetPlayer.getOwnedResources(), targetPlayer.getOpenCorners(), targetPlayer.getPoints()
@@ -458,7 +458,7 @@ public abstract class ServerController extends Controller {
         try{
             targetGame.getCurrentState().drawFrom(targetPlayer, deck);
         } catch(ForbiddenActionException e) {
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new ForbiddenActionException("Cannot draw a card from a deck in this state")
@@ -466,7 +466,7 @@ public abstract class ServerController extends Controller {
             ); //throwException();
             return;
         } catch (UnexpectedPlayerException e){
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new UnexpectedPlayerException("Not this player's turn")
@@ -474,16 +474,24 @@ public abstract class ServerController extends Controller {
             ); //throwException();
             return;
         } catch (UnknownStringException e){
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new UnknownStringException("No such deck exists")
                     )
             ); //throwException();
             return;
+        } catch (EmptyDeckException e) {
+            sender.requestToServer(
+                    varargsToArrayList(
+                            "throwException",
+                            new EmptyDeckException("Selected deck is empty")
+                    )
+            ); //throwException();
+            return;
         }
 
-        sender.serverMessage(varargsToArrayList("receiveCard", targetPlayer.getCardsInHand().getLast().ID));
+        sender.requestToServer(varargsToArrayList("receiveCard", targetPlayer.getCardsInHand().getLast().ID));
         //receiveCard();
     }
 
@@ -496,7 +504,7 @@ public abstract class ServerController extends Controller {
         try{
             targetGame.getCurrentState().drawFrom(targetPlayer, deck, position);
         } catch(ForbiddenActionException e) {
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new ForbiddenActionException("Cannot draw a visible card in this state")
@@ -504,7 +512,7 @@ public abstract class ServerController extends Controller {
             ); //throwException();
             return;
         } catch (UnexpectedPlayerException e){
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new UnexpectedPlayerException("Not this player's turn")
@@ -512,7 +520,7 @@ public abstract class ServerController extends Controller {
             ); //throwException();
             return;
         } catch (InvalidDeckPositionException e){
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new InvalidDeckPositionException("Cannot understand which card to draw")
@@ -520,16 +528,24 @@ public abstract class ServerController extends Controller {
             ); //throwException();
             return;
         } catch (UnknownStringException e){
-            sender.serverMessage(
+            sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new UnknownStringException("No such placed cards exist")
                     )
             ); //throwException();
             return;
+        } catch (EmptyDeckException e) {
+            sender.requestToServer(
+                    varargsToArrayList(
+                            "throwException",
+                            new EmptyDeckException("No card in selected slot")
+                    )
+            ); //throwException();
+            return;
         }
 
-        sender.serverMessage(varargsToArrayList("receiveCard", targetPlayer.getCardsInHand().getLast().ID));
+        sender.requestToServer(varargsToArrayList("receiveCard", targetPlayer.getCardsInHand().getLast().ID));
         //receiveCard();
 
         //FIXME: ... (a sto punto faccio direttamente la getArray qua e lo passo nella funzione draw nello stato)
@@ -541,7 +557,7 @@ public abstract class ServerController extends Controller {
 
         for(var player : targetGame.getPlayers()) {
             VirtualClient targetClient = keyReverseLookup(players, player::equals);
-            targetClient.serverMessage(varargsToArrayList("replaceCard", newCard)); //replaceCard();
+            targetClient.requestToServer(varargsToArrayList("replaceCard", newCard)); //replaceCard();
         }
     }
 
@@ -561,7 +577,7 @@ public abstract class ServerController extends Controller {
         for(var player : targetGame.getPlayers())
             if(player.isActive()) {
                 VirtualClient targetClient = keyReverseLookup(players, player::equals);
-                targetClient.serverMessage(varargsToArrayList("toggleActive", player.getNickname()));
+                targetClient.requestToServer(varargsToArrayList("toggleActive", player.getNickname()));
                 //toggleActive();
             }
 
@@ -589,25 +605,25 @@ public abstract class ServerController extends Controller {
             Player receiverPlayer = selectedPlayer.get();
             if(playersToLobbiesAndGames.get(players.get(sender)).equals(playersToLobbiesAndGames.get(receiverPlayer))) {
                 if(((InGamePlayer) receiverPlayer).isActive())
-                    keyReverseLookup(players, receiverPlayer::equals).serverMessage(
+                    keyReverseLookup(players, receiverPlayer::equals).requestToServer(
                             varargsToArrayList(
                                     "addChatMessage",
                                     message
                             )
                     );
-                else sender.serverMessage(
+                else sender.requestToServer(
                         varargsToArrayList(
                                 "throwException",
                                 new UnexpectedPlayerException("Nickname provided has no active player associated in this game")
                         )
                 );
-            } else sender.serverMessage(
+            } else sender.requestToServer(
                     varargsToArrayList(
                             "throwException",
                             new NotExistingPlayerException("Nickname provided has no associated player in this game")
                     )
             );
-        } else sender.serverMessage(
+        } else sender.requestToServer(
                 varargsToArrayList(
                         "throwException",
                         new NotExistingPlayerException("Nickname provided has no associated player registered")
@@ -620,7 +636,7 @@ public abstract class ServerController extends Controller {
 
         for(var inGamePlayer : ((Game) playersToLobbiesAndGames.get(players.get(sender))).getPlayers())
             if(inGamePlayer.isActive())
-                keyReverseLookup(players, inGamePlayer::equals).serverMessage(
+                keyReverseLookup(players, inGamePlayer::equals).requestToServer(
                         varargsToArrayList(
                                 "addChatMessage",
                                 message

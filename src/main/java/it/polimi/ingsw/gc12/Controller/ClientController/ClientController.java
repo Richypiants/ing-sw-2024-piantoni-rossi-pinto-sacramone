@@ -5,22 +5,20 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.GameLobby;
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Resource;
-import it.polimi.ingsw.gc12.Utilities.Side;
-import it.polimi.ingsw.gc12.Utilities.Triplet;
+import it.polimi.ingsw.gc12.Utilities.*;
 
 import java.util.*;
 
-public class ClientController extends Controller {
+public abstract class ClientController extends Controller {
 
+    private static final Map<Integer, ClientCard> cardsList = loadCards();
     /**
      * This player's nickname
      */
-    private String ownNickname;
-    private final Map<Integer, ClientCard> cardsList = loadCards();
-    private Map<UUID, GameLobby> lobbies = new HashMap<>();
-    private GameLobby currentLobbyOrGame = null;
+    public static VirtualServer serverConnection;
+    private static String ownNickname;
+    private static Map<UUID, GameLobby> lobbies = new HashMap<>();
+    private static GameLobby currentLobbyOrGame = null;
 
     private static Map<Integer, ClientCard> loadCards() {
         //TODO: map of maps?
@@ -70,15 +68,19 @@ public class ClientController extends Controller {
         thisPlayer.setPoints(points);
     }
 
-    public void receiveCard(int cardID){
-        ((ClientGame) currentLobbyOrGame).addCardToHand(cardsList.get(cardID));
+    public void receiveCard(List<Integer> cardIDs) {
+        for (var cards : cardIDs)
+            ((ClientGame) currentLobbyOrGame).addCardToHand(cardsList.get(cards));
     }
 
-    public void replaceCard(ArrayList<Triplet<Integer, String, Integer>> cardPlacements){
+    public void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {
         for(var cardPlacement : cardPlacements)
             if (cardPlacement.getY().trim().equalsIgnoreCase("RESOURCE"))
                 ((ClientGame) currentLobbyOrGame).setPlacedResources(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
-            else ((ClientGame) currentLobbyOrGame).setPlacedGold(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
+            else if (cardPlacement.getY().trim().equalsIgnoreCase("GOLD"))
+                ((ClientGame) currentLobbyOrGame).setPlacedGold(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
+            else if (cardPlacement.getY().trim().equalsIgnoreCase("OBJECTIVE"))
+                ((ClientGame) currentLobbyOrGame).setCommonObjectives(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
     }
 
     public void toggleActive(String nickname){
@@ -87,6 +89,10 @@ public class ClientController extends Controller {
                 .findAny()
                 .orElseThrow()
                 .toggleActive();
+    }
+
+    public void endGame(ArrayList<Triplet<String, Integer, Integer>> pointsStats) {
+        //TODO: stampare
     }
 
     public void addChatMessage(String chatMessage){
