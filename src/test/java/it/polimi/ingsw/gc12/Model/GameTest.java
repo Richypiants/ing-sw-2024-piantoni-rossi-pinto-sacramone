@@ -62,11 +62,11 @@ class GameTest {
 
     @Test
     void emptyDeck() {
-        assertThrows;
+        // assertThrows;
     }
 
     @Test
     void emptyVisibleCardArrays() {
-        assertThrows;
+        // assertThrows;
     }
 }

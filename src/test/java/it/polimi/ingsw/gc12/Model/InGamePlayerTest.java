@@ -47,7 +47,7 @@ class InGamePlayerTest {
 
         playerGame.addCardToHand(resourceCards.get(0));
         playerGame.addCardToHand(resourceCards.get(1));
-        playerGame.addCardToHand(goldCards.getFirst());
+        playerGame.addCardToHand(resourceCards.get(2));
 
         playerGame.placeCard(new GenericPair<>(1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
         playerGame.placeCard(new GenericPair<>(0, 2), playerGame.getCardsInHand().getFirst(), Side.FRONT);
@@ -159,20 +159,28 @@ class InGamePlayerTest {
 
     @Test
     void ResourceRecalcTest() throws Throwable{
+
         InitialCard c0 = initialCards.getFirst();
         ResourceCard c1 = resourceCards.get(20);
         ResourceCard c2 = resourceCards.get(21);
+        ResourceCard c3 = resourceCards.get(22);
+
         Player player = new Player("giovanni");
         InGamePlayer playerGame = new InGamePlayer(player);
+
         playerGame.addCardToHand(c0);
+        playerGame.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
+
         playerGame.addCardToHand(c1);
         playerGame.addCardToHand(c2);
-        playerGame.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
+        playerGame.addCardToHand(c3);
+
         playerGame.placeCard(new GenericPair<>(1, -1), c1, Side.FRONT);
         playerGame.placeCard(new GenericPair<>(1, 1), c2, Side.FRONT);
+        playerGame.placeCard(new GenericPair<>(2, 2), c3, Side.FRONT);
 
         //fallirà perché era fatto su carte inesistenti ma ora abbiamo prese le carte dal deck
-        assertEquals(10, playerGame.getOwnedResources().get(Resource.WOLF));
+        assertEquals(6, playerGame.getOwnedResources().get(Resource.WOLF));
     }
 
     @Test
@@ -206,6 +214,6 @@ class InGamePlayerTest {
 
     @Test
     void PointsAwarded() {
-        checkCorrectPointsAddedTo "Player.getPoints";
+        // checkCorrectPointsAddedTo "Player.getPoints";
     }
 }
