@@ -95,7 +95,7 @@ public class PatternCondition implements PointsCondition {
 
         if (patternStartingCards.isEmpty()) return 0;
 
-        frontier.add(patternStartingCards);
+        frontier.add(new ArrayList<>(patternStartingCards));
 
         while (!frontier.isEmpty()) {
             PlayableCard currentPattern = patternStartingCards.get(depth);

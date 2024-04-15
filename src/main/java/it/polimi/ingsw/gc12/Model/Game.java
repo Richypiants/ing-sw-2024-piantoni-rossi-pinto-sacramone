@@ -98,7 +98,6 @@ public class Game extends GameLobby {
         return returnLobby;
     }
 
-
     /**
      * Returns the player who is currently playing
      */

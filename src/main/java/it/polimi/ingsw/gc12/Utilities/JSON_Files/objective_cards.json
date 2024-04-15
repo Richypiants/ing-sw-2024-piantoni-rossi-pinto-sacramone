@@ -17,12 +17,12 @@
 {
 "ID": 90,
 "POINTS_GRANTED": 2,
-"POINTS_CONDITION": {"PATTERN": [{"BUTTERFLY": [0 , 0]}, {"BUTTERFLY": [1 , -1]}, {"BUTTERFLY": [2 , 2]}]}
+"POINTS_CONDITION": {"PATTERN": [{"BUTTERFLY": [0 , 0]}, {"BUTTERFLY": [1 , -1]}, {"BUTTERFLY": [2 , -2]}]}
 },
 {
 "ID": 91,
 "POINTS_GRANTED": 3,
-"POINTS_CONDITION": {"PATTERN": [{"MUSHROOM": [0 , 0]}, {"MUSHROOM": [0 , -2]}, {"MUSHROOM": [1 , -3]}]}
+"POINTS_CONDITION": {"PATTERN": [{"MUSHROOM": [0 , 0]}, {"MUSHROOM": [0 , -2]}, {"GRASS": [1 , -3]}]}
 },
 {
 "ID": 92,
@@ -37,7 +37,7 @@
 {
 "ID": 94,
 "POINTS_GRANTED": 3,
-"POINTS_CONDITION": {"PATTERN": [{"BUTTERFLY": [0 , 0]}, {"BUTTERFLY": [0 , 2]}, {"MUSHROOM": [-1 , 3]}]}
+"POINTS_CONDITION": {"PATTERN": [{"BUTTERFLY": [0 , 0]}, {"BUTTERFLY": [0 , 2]}, {"WOLF": [-1 , 3]}]}
 },
 {
 "ID": 95,
@@ -54,17 +54,11 @@
 "POINTS_GRANTED": 2,
 "POINTS_CONDITION": {"RESOURCE": [{"WOLF": 3}]}
 },
-  {
-    "ID": 98,
-    "POINTS_GRANTED": 2,
-    "POINTS_CONDITION": {
-      "RESOURCE": [
-        {
-          "BUTTERFLY": 3
-        }
-      ]
-    }
-  },
+{
+"ID": 98,
+"POINTS_GRANTED": 2,
+"POINTS_CONDITION": {"RESOURCE": [{"BUTTERFLY": 3}]}
+},
 {
 "ID": 99,
 "POINTS_GRANTED": 3,

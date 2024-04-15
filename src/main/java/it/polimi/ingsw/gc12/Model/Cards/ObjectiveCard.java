@@ -31,6 +31,11 @@ public final class ObjectiveCard extends Card {
         return (this.POINTS_GRANTED * POINTS_CONDITION.numberOfTimesSatisfied(this, target));
     }
 
+    //FIXME: unsafe return
+    public PointsCondition getPointsCondition(){
+        return this.POINTS_CONDITION;
+    }
+
     @Override
     public String toString() {
         return "(ObjectiveCard) " + super.toString() +

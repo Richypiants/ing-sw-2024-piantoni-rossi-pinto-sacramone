@@ -2,2408 +2,341 @@
   {
     "ID": "41",
     "POINTS_GRANTED": "1",
-    "CENTER_BACK_RESOURCES":
-      {
-        "MUSHROOM": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "MUSHROOM": 2,
-        "WOLF": 1
-      },
+    "CENTER_BACK_RESOURCES": {"MUSHROOM": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"MUSHROOM": 2, "WOLF": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "FEATHER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "FEATHER"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{"FEATHER": 1}]}
   },
   {
     "ID": "42",
     "POINTS_GRANTED": "1",
-    "CENTER_BACK_RESOURCES":
-      {
-        "MUSHROOM": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "MUSHROOM": 2,
-        "GRASS": 1
-      },
+    "CENTER_BACK_RESOURCES": {"MUSHROOM": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"MUSHROOM": 2, "GRASS": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "INK"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "INK"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{"INK": 1}]}
   },
   {
     "ID": "43",
     "POINTS_GRANTED": "1",
-    "CENTER_BACK_RESOURCES":
-      {
-        "MUSHROOM": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "MUSHROOM": 2,
-        "BUTTERFLY": 1
-      },
+    "CENTER_BACK_RESOURCES": {"MUSHROOM": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"MUSHROOM": 2, "BUTTERFLY": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "SCROLL"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "SCROLL"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{"SCROLL": 1}]}
   },
   {
     "ID": "44",
     "POINTS_GRANTED": "2",
-    "CENTER_BACK_RESOURCES":
-      {
-        "MUSHROOM": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "MUSHROOM": 3,
-        "WOLF": 1
-      },
+    "CENTER_BACK_RESOURCES": {"MUSHROOM": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"MUSHROOM": 3, "WOLF": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": {"CORNER":  null}
   },
   {
     "ID": "45",
     "POINTS_GRANTED": "2",
-    "CENTER_BACK_RESOURCES":
-      {
-        "MUSHROOM": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "MUSHROOM": 3,
-        "GRASS": 1
-      },
+    "CENTER_BACK_RESOURCES": {"MUSHROOM": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"MUSHROOM": 3, "GRASS": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": {"CORNER":  null}
   },
   {
     "ID": "46",
     "POINTS_GRANTED": "2",
-    "CENTER_BACK_RESOURCES":
-      {
-        "MUSHROOM": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "MUSHROOM": 3,
-        "BUTTERFLY": 1
-      },
+    "CENTER_BACK_RESOURCES": {"MUSHROOM": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"MUSHROOM": 3, "BUTTERFLY": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": {"CORNER":  null}
   },
   {
     "ID": "47",
     "POINTS_GRANTED": "3",
-    "CENTER_BACK_RESOURCES":
-      {
-        "MUSHROOM": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "MUSHROOM": 3
-      },
+    "CENTER_BACK_RESOURCES": {"MUSHROOM": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"MUSHROOM": 3},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "INK"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "INK"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "48",
     "POINTS_GRANTED": "3",
-    "CENTER_BACK_RESOURCES":
-      {
-        "MUSHROOM": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "MUSHROOM": 3
-      },
+    "CENTER_BACK_RESOURCES": {"MUSHROOM": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"MUSHROOM": 3},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "FEATHER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "FEATHER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "49",
     "POINTS_GRANTED": "3",
-    "CENTER_BACK_RESOURCES":
-      {
-        "MUSHROOM": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "MUSHROOM": 3
-      },
+    "CENTER_BACK_RESOURCES": {"MUSHROOM": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"MUSHROOM": 3},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "SCROLL"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "SCROLL"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "50",
     "POINTS_GRANTED": "5",
-    "CENTER_BACK_RESOURCES":
-      {
-        "MUSHROOM": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "MUSHROOM": 5
-      },
+    "CENTER_BACK_RESOURCES": {"MUSHROOM": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"MUSHROOM": 5},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "51",
     "POINTS_GRANTED": "1",
-    "CENTER_BACK_RESOURCES":
-      {
-        "GRASS": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "GRASS": 2,
-        "BUTTERFLY": 1
-      },
+    "CENTER_BACK_RESOURCES": {"GRASS": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"GRASS": 2, "BUTTERFLY": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "FEATHER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "FEATHER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{"FEATHER": 1}]}
   },
   {
     "ID": "52",
     "POINTS_GRANTED": "1",
-    "CENTER_BACK_RESOURCES":
-      {
-        "GRASS": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "GRASS": 2,
-        "MUSHROOM": 1
-      },
+    "CENTER_BACK_RESOURCES": {"GRASS": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"GRASS": 2, "MUSHROOM": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "SCROLL"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "SCROLL"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{"SCROLL": 1}]}
   },
   {
     "ID": "53",
     "POINTS_GRANTED": "1",
-    "CENTER_BACK_RESOURCES":
-      {
-        "GRASS": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "GRASS": 2,
-        "WOLF": 1
-      },
+    "CENTER_BACK_RESOURCES": {"GRASS": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"GRASS": 2, "WOLF": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "INK"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "INK"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{"INK": 1}]}
   },
   {
     "ID": "54",
     "POINTS_GRANTED": "2",
-    "CENTER_BACK_RESOURCES":
-      {
-        "GRASS": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "GRASS": 3,
-        "BUTTERFLY": 1
-      },
+    "CENTER_BACK_RESOURCES": {"GRASS": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"GRASS": 3, "BUTTERFLY": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": {"CORNER":  null}
   },
   {
     "ID": "55",
     "POINTS_GRANTED": "2",
-    "CENTER_BACK_RESOURCES":
-      {
-        "GRASS": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "GRASS": 3,
-        "WOLF": 1
-      },
+    "CENTER_BACK_RESOURCES": {"GRASS": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"GRASS": 3, "WOLF": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": {"CORNER":  null}
   },
   {
     "ID": "56",
     "POINTS_GRANTED": "2",
-    "CENTER_BACK_RESOURCES":
-      {
-        "GRASS": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "GRASS": 3,
-        "MUSHROOM": 1
-      },
+    "CENTER_BACK_RESOURCES": {"GRASS": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"GRASS": 3, "MUSHROOM": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": {"CORNER":  null}
   },
   {
     "ID": "57",
     "POINTS_GRANTED": "3",
-    "CENTER_BACK_RESOURCES":
-      {
-        "GRASS": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "GRASS": 3
-      },
+    "CENTER_BACK_RESOURCES": {"GRASS": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"GRASS": 3},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "FEATHER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "FEATHER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "58",
     "POINTS_GRANTED": "3",
-    "CENTER_BACK_RESOURCES":
-      {
-        "GRASS": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "GRASS": 3
-      },
+    "CENTER_BACK_RESOURCES": {"GRASS": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"GRASS": 3},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "SCROLL"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "SCROLL"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "59",
     "POINTS_GRANTED": "3",
-    "CENTER_BACK_RESOURCES":
-      {
-        "GRASS": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "GRASS": 3
-      },
+    "CENTER_BACK_RESOURCES": {"GRASS": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"GRASS": 3},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "INK"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "INK"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "60",
     "POINTS_GRANTED": "5",
-    "CENTER_BACK_RESOURCES":
-      {
-        "GRASS": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "GRASS": 5
-      },
+    "CENTER_BACK_RESOURCES": {"GRASS": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"GRASS": 5},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "61",
     "POINTS_GRANTED": "1",
-    "CENTER_BACK_RESOURCES":
-      {
-        "WOLF": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "WOLF": 2,
-        "BUTTERFLY": 1
-      },
+    "CENTER_BACK_RESOURCES": {"WOLF": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"WOLF": 2, "BUTTERFLY": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "INK"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "INK"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{"INK": 1}]}
   },
   {
     "ID": "62",
     "POINTS_GRANTED": "1",
-    "CENTER_BACK_RESOURCES":
-      {
-        "WOLF": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "WOLF": 2,
-        "GRASS": 1
-      },
+    "CENTER_BACK_RESOURCES": {"WOLF": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"WOLF": 2, "GRASS": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "SCROLL"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "SCROLL"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{"SCROLL": 1}]}
   },
   {
     "ID": "63",
     "POINTS_GRANTED": "1",
-    "CENTER_BACK_RESOURCES":
-      {
-        "WOLF": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "WOLF": 2,
-        "MUSHROOM": 1
-      },
+    "CENTER_BACK_RESOURCES": {"WOLF": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"WOLF": 2, "MUSHROOM": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "FEATHER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "FEATHER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{"FEATHER": 1}]}
   },
   {
     "ID": "64",
     "POINTS_GRANTED": "2",
-    "CENTER_BACK_RESOURCES":
-      {
-        "WOLF": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "WOLF": 3,
-        "BUTTERFLY": 1
-      },
+    "CENTER_BACK_RESOURCES": {"WOLF": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"WOLF": 3, "BUTTERFLY": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": {"CORNER":  null}
   },
   {
     "ID": "65",
     "POINTS_GRANTED": "2",
-    "CENTER_BACK_RESOURCES":
-      {
-        "WOLF": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "WOLF": 3,
-        "MUSHROOM": 1
-      },
+    "CENTER_BACK_RESOURCES": {"WOLF": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"WOLF": 3, "MUSHROOM": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": {"CORNER":  null}
   },
   {
     "ID": "66",
     "POINTS_GRANTED": "2",
-    "CENTER_BACK_RESOURCES":
-      {
-        "WOLF": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "WOLF": 3,
-        "GRASS": 1
-      },
+    "CENTER_BACK_RESOURCES": {"WOLF": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"WOLF": 3, "GRASS": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": {"CORNER":  null}
   },
   {
     "ID": "67",
     "POINTS_GRANTED": "3",
-    "CENTER_BACK_RESOURCES":
-      {
-        "WOLF": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "WOLF": 3
-      },
+    "CENTER_BACK_RESOURCES": {"WOLF": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"WOLF": 3},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "SCROLL"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "SCROLL"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": {"CORNER":  null}
   },
   {
     "ID": "68",
     "POINTS_GRANTED": "3",
-    "CENTER_BACK_RESOURCES":
-      {
-        "WOLF": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "WOLF": 3
-      },
+    "CENTER_BACK_RESOURCES": {"WOLF": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"WOLF": 3},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "INK"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "INK"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "69",
     "POINTS_GRANTED": "3",
-    "CENTER_BACK_RESOURCES":
-      {
-        "WOLF": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "WOLF": 3
-      },
+    "CENTER_BACK_RESOURCES": {"WOLF": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"WOLF": 3},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "FEATHER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "FEATHER"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "70",
     "POINTS_GRANTED": "5",
-    "CENTER_BACK_RESOURCES":
-      {
-        "WOLF": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "WOLF": 5
-      },
+    "CENTER_BACK_RESOURCES": {"WOLF": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"WOLF": 5},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "71",
     "POINTS_GRANTED": "1",
-    "CENTER_BACK_RESOURCES":
-      {
-        "BUTTERFLY": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "BUTTERFLY": 2,
-        "GRASS": 1
-      },
+    "CENTER_BACK_RESOURCES": {"BUTTERFLY": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"BUTTERFLY": 2, "GRASS": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "FEATHER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "FEATHER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{"FEATHER": 1}]}
   },
   {
     "ID": "72",
     "POINTS_GRANTED": "1",
-    "CENTER_BACK_RESOURCES":
-      {
-        "BUTTERFLY": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "BUTTERFLY": 2,
-        "WOLF": 1
-      },
+    "CENTER_BACK_RESOURCES": {"BUTTERFLY": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"BUTTERFLY": 2, "WOLF": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "SCROLL"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "SCROLL"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]
       ]
     },
     "POINTS_CONDITION": { "RESOURCE": [{"SCROLL": 1}]}
@@ -2411,601 +344,85 @@
   {
     "ID": "73",
     "POINTS_GRANTED": "1",
-    "CENTER_BACK_RESOURCES":
-      {
-        "BUTTERFLY": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "BUTTERFLY": 2,
-        "MUSHROOM": 1
-      },
+    "CENTER_BACK_RESOURCES": {"BUTTERFLY": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"BUTTERFLY": 2, "MUSHROOM": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "INK"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "INK"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{"INK": 1}]}
   },
   {
     "ID": "74",
     "POINTS_GRANTED": "2",
-    "CENTER_BACK_RESOURCES":
-      {
-        "BUTTERFLY": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "BUTTERFLY": 3,
-        "WOLF": 1
-      },
+    "CENTER_BACK_RESOURCES": {"BUTTERFLY": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"BUTTERFLY": 3, "WOLF": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": {"CORNER":  null}
   },
   {
     "ID": "75",
     "POINTS_GRANTED": "2",
-    "CENTER_BACK_RESOURCES":
-      {
-        "BUTTERFLY": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "BUTTERFLY": 3,
-        "GRASS": 1
-      },
+    "CENTER_BACK_RESOURCES": {"BUTTERFLY": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"BUTTERFLY": 3, "GRASS": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": {"CORNER":  null}
   },
   {
     "ID": "76",
     "POINTS_GRANTED": "2",
-    "CENTER_BACK_RESOURCES":
-      {
-        "BUTTERFLY": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "BUTTERFLY": 3,
-        "MUSHROOM": 1
-      },
+    "CENTER_BACK_RESOURCES": {"BUTTERFLY": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"BUTTERFLY": 3, "MUSHROOM": 1},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": {"CORNER":  null}
   },
   {
     "ID": "77",
     "POINTS_GRANTED": "3",
-    "CENTER_BACK_RESOURCES":
-      {
-        "BUTTERFLY": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "BUTTERFLY": 3
-      },
+    "CENTER_BACK_RESOURCES": {"BUTTERFLY": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"BUTTERFLY": 3},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "INK"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "INK"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "78",
     "POINTS_GRANTED": "3",
-    "CENTER_BACK_RESOURCES":
-      {
-        "BUTTERFLY": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "BUTTERFLY": 3
-      },
+    "CENTER_BACK_RESOURCES": {"BUTTERFLY": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"BUTTERFLY": 3},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "SCROLL"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "SCROLL"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "79",
     "POINTS_GRANTED": "3",
-    "CENTER_BACK_RESOURCES":
-      {
-        "BUTTERFLY": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "BUTTERFLY": 3
-      },
+    "CENTER_BACK_RESOURCES": {"BUTTERFLY": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"BUTTERFLY": 3},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "FEATHER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "FEATHER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
   {
     "ID": "80",
     "POINTS_GRANTED": "5",
-    "CENTER_BACK_RESOURCES":
-      {
-        "BUTTERFLY": 1
-      },
-    "RESOURCES_NEEDED_TO_PLAY":
-      {
-        "BUTTERFLY": 5
-      },
+    "CENTER_BACK_RESOURCES": {"BUTTERFLY": 1},
+    "RESOURCES_NEEDED_TO_PLAY": {"BUTTERFLY": 5},
     "CORNERS": {
-      "FRONT": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "NOT_A_CORNER"
-        ]
-      ],
-      "BACK": [
-        [
-          {
-            "X": -1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": 1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": 1,
-            "Y": -1
-          },
-          "EMPTY"
-        ],
-        [
-          {
-            "X": -1,
-            "Y": -1
-          },
-          "EMPTY"
-        ]
-      ]
+      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   }
 ]
