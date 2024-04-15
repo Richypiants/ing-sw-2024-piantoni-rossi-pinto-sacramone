@@ -1,6 +1,4 @@
-package it.polimi.ingsw.gc12.Controller.ServerController;
-
-import it.polimi.ingsw.gc12.Utilities.VirtualClient;
+package it.polimi.ingsw.gc12.Controller;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -8,15 +6,15 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.ArrayList;
 
-public class SocketClientReadHandler<A> implements CompletionHandler<Integer, A>, VirtualClient {
+public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> {
 
+    private final AsynchronousSocketChannel channel;
     private final ByteBuffer inputBuffer;
-    AsynchronousSocketChannel channel;
     private final ObjectInputStream objectInputStream;
     private final ObjectOutputStream objectOutputStream;
     private final ByteArrayOutputStream byteOutputStream;
 
-    public SocketClientReadHandler(AsynchronousSocketChannel channel, ByteBuffer buffer) throws IOException {
+    public SocketHandler(AsynchronousSocketChannel channel, ByteBuffer buffer) throws IOException {
         this.channel = channel;
         this.inputBuffer = buffer;
         //TODO: handle exceptions (in methods below too)
@@ -39,20 +37,14 @@ public class SocketClientReadHandler<A> implements CompletionHandler<Integer, A>
         return ByteBuffer.wrap(byteOutputStream.toByteArray());
     }
 
-    @Override
-    public void requestToServer(ArrayList<Object> objects) {
-        try {
-            channel.write(writeObject(objects));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    protected abstract void invokeFromController(ArrayList<Object> receivedCommand);
 
     @Override
     public void completed(Integer result, A attachment) {
         //TODO: clean input (or nickname only)???
         ArrayList<Object> receivedCommand = null;
         try {
+            //FIXME: add instanceof casting
             receivedCommand = (ArrayList<Object>) readObject();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -65,17 +57,19 @@ public class SocketClientReadHandler<A> implements CompletionHandler<Integer, A>
         // exceptions: noSuchMethod, InvalidParametersForMethod, NoPlayerFound(sendCreatePlayer),...
 
         channel.read(inputBuffer, attachment, this);
-        try {
-            //TODO: make executors do this?
-            ServerController.commandHandles.get((String) receivedCommand.removeFirst())
-                    .invokeWithArguments(receivedCommand);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        invokeFromController(receivedCommand);
     }
 
     @Override
     public void failed(Throwable exc, A attachment) {
 
+    }
+
+    protected void sendRequest(ArrayList<Object> objects) {
+        try {
+            channel.write(writeObject(objects));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

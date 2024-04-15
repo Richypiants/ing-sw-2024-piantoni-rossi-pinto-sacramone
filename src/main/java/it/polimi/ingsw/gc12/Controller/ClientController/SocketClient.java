@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 public class SocketClient implements VirtualServer {
 
     private static SocketClient SINGLETON_SOCKET_CLIENT = null;
-    private static SocketServerReadHandler<?> serverHandler = null;
+    private static SocketServerHandler<?> serverHandler = null;
 
     private SocketClient() {
         //FIXME: how about the ip?
@@ -21,7 +21,7 @@ public class SocketClient implements VirtualServer {
 
             //TODO: change size of array and write first message
             ByteBuffer byteBufferIn = ByteBuffer.wrap(new byte[0]);
-            serverHandler = new SocketServerReadHandler<>(channel, byteBufferIn);
+            serverHandler = new SocketServerHandler<>(channel, byteBufferIn);
             ArrayList<Object> parameters = new ArrayList<>();
             parameters.add("createPlayer");
 

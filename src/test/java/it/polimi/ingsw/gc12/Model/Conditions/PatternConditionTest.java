@@ -1,17 +1,22 @@
 package it.polimi.ingsw.gc12.Model.Conditions;
 
 import com.google.gson.reflect.TypeToken;
-import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
-import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
-import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
-import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
+import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -19,40 +24,69 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatternConditionTest {
 
-    ArrayList<ResourceCard> resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>(){});
-    ArrayList<GoldCard> goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>(){});
-    ArrayList<InitialCard> initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>(){});
-    ArrayList<ObjectiveCard> objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>(){});
+    private static ArrayList<ResourceCard> resourceCards;
+    private static ArrayList<GoldCard> goldCards;
+    private static ArrayList<InitialCard> initialCards;
+    private static ArrayList<ObjectiveCard> objectiveCards;
 
-    @Test
-    void genericPatternTest() throws Exception{
-        Triplet<Integer, Integer, Resource> T1 = new Triplet<>(0, 0, Resource.WOLF);
-        Triplet<Integer, Integer, Resource> T2 = new Triplet<>(0, -2, Resource.WOLF);
-        Triplet<Integer, Integer, Resource> T3 = new Triplet<>(1, 1, Resource.WOLF);
-        ArrayList<Triplet<Integer, Integer, Resource>> condition = new ArrayList<>();
-        condition.add(T1);
-        condition.add(T2);
-        condition.add(T3);
-        PatternCondition p = new PatternCondition(condition);
-        
+    Player player1;
+    GameLobby lobby;
+    Game game;
+
+    @BeforeAll
+    static void setCardsLists() {
+        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
+        });
+        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
+        });
+        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
+        });
+        objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {
+        });
+    }
+
+    static Stream<Arguments> provideConditionParameters() {
+        return Stream.of(
+                Arguments.of(
+                        new PatternCondition(
+                                List.of(
+                                        new Triplet<>(0, 0, Resource.WOLF),
+                                        new Triplet<>(0, -2, Resource.WOLF),
+                                        new Triplet<>(1, 1, Resource.WOLF)
+                                )
+                        ),
+                        (Object) new Triplet[]{
+                                new Triplet<>(new GenericPair<>(0, 0), initialCards.getFirst(), Side.BACK),
+                                new Triplet<>(new GenericPair<>(1, -1), resourceCards.get(20), Side.BACK),
+                                new Triplet<>(new GenericPair<>(1, 1), resourceCards.get(21), Side.BACK),
+                                new Triplet<>(new GenericPair<>(2, 2), resourceCards.get(22), Side.BACK)
+                        }
+                )
+        );
+    }
+
+    @BeforeEach
+    void setGameParameters() {
+        player1 = new Player("giovanni");
+        lobby = new GameLobby(player1, 1);
+        game = new Game(lobby);
+    }
+
+    @SafeVarargs
+    @ParameterizedTest
+    @MethodSource("provideConditionParameters")
+    final void genericPatternTest(PatternCondition condition,
+                                  Triplet<GenericPair<Integer, Integer>, PlayableCard, Side>... cardsToPlay)
+            throws Exception {
         ObjectiveCard c_o = objectiveCards.getFirst();
-        InitialCard c0 = initialCards.getFirst();
-        ResourceCard c1 = resourceCards.get(20);
-        ResourceCard c2 = resourceCards.get(21);
-        ResourceCard c3 = resourceCards.get(22);
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
-        game.getPlayers().getFirst().addCardToHand(c0);
-        game.getPlayers().getFirst().addCardToHand(c1);
-        game.getPlayers().getFirst().addCardToHand(c2);
-        game.getPlayers().getFirst().addCardToHand(c3);
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(0, 0), c0, Side.BACK);
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(1, -1), c1, Side.BACK);
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(1, 1), c2, Side.BACK);
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(2, 2), c3, Side.BACK);
 
-        assertEquals(1, p.numberOfTimesSatisfied(c_o, game.getPlayers().getFirst()));
+        InGamePlayer player1InGame = game.getPlayers().getFirst();
+        for (var card : cardsToPlay) {
+            player1InGame.addCardToHand(card.getY());
+            player1InGame.placeCard(card.getX(), card.getY(), card.getZ());
+        }
+
+        assertEquals(1, condition.numberOfTimesSatisfied(c_o, game.getPlayers().getFirst()));
     }
 
 
@@ -73,9 +107,6 @@ class PatternConditionTest {
         ResourceCard c2 = resourceCards.get(3);
         ResourceCard c3 = resourceCards.get(5);
 
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
         game.getPlayers().getFirst().addCardToHand(c0);
         game.getPlayers().getFirst().addCardToHand(c1);
         game.getPlayers().getFirst().addCardToHand(c2);
@@ -105,9 +136,6 @@ class PatternConditionTest {
         ResourceCard c2 = resourceCards.get(11);
         ResourceCard c3 = resourceCards.get(12);
 
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
         game.getPlayers().getFirst().addCardToHand(c0);
         game.getPlayers().getFirst().addCardToHand(c1);
         game.getPlayers().getFirst().addCardToHand(c2);
@@ -137,9 +165,6 @@ class PatternConditionTest {
         ResourceCard c2 = resourceCards.get(21);
         ResourceCard c3 = resourceCards.get(24);
 
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
         game.getPlayers().getFirst().addCardToHand(c0);
         game.getPlayers().getFirst().addCardToHand(c1);
         game.getPlayers().getFirst().addCardToHand(c2);
@@ -169,9 +194,6 @@ class PatternConditionTest {
         ResourceCard c2 = resourceCards.get(32);
         ResourceCard c3 = resourceCards.get(33);
 
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
         game.getPlayers().getFirst().addCardToHand(c0);
         game.getPlayers().getFirst().addCardToHand(c1);
         game.getPlayers().getFirst().addCardToHand(c2);
@@ -201,9 +223,6 @@ class PatternConditionTest {
         ResourceCard c2 = resourceCards.get(2);
         ResourceCard c3 = resourceCards.get(12);
 
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
         game.getPlayers().getFirst().addCardToHand(c0);
         game.getPlayers().getFirst().addCardToHand(c1);
         game.getPlayers().getFirst().addCardToHand(c2);
@@ -233,9 +252,6 @@ class PatternConditionTest {
         ResourceCard c2 = resourceCards.get(12);
         ResourceCard c3 = resourceCards.get(30);
 
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
         game.getPlayers().getFirst().addCardToHand(c0);
         game.getPlayers().getFirst().addCardToHand(c1);
         game.getPlayers().getFirst().addCardToHand(c2);
@@ -265,9 +281,6 @@ class PatternConditionTest {
         ResourceCard c2 = resourceCards.get(22);
         ResourceCard c3 = resourceCards.get(3);
 
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
         game.getPlayers().getFirst().addCardToHand(c0);
         game.getPlayers().getFirst().addCardToHand(c1);
         game.getPlayers().getFirst().addCardToHand(c2);
@@ -297,9 +310,6 @@ class PatternConditionTest {
         ResourceCard c2 = resourceCards.get(32);
         ResourceCard c3 = resourceCards.get(22);
 
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
         game.getPlayers().getFirst().addCardToHand(c0);
         game.getPlayers().getFirst().addCardToHand(c1);
         game.getPlayers().getFirst().addCardToHand(c2);
@@ -332,9 +342,6 @@ class PatternConditionTest {
         ResourceCard c5 = resourceCards.get(32);
         ResourceCard c6 = resourceCards.get(22);
 
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
         game.getPlayers().getFirst().addCardToHand(c0);
         game.getPlayers().getFirst().addCardToHand(c1);
         game.getPlayers().getFirst().addCardToHand(c2);
@@ -384,9 +391,6 @@ class PatternConditionTest {
         ResourceCard c5 = resourceCards.get(3);
         ResourceCard c6 = resourceCards.get(5);
 
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
         game.getPlayers().getFirst().addCardToHand(c0);
         game.getPlayers().getFirst().addCardToHand(c1);
         game.getPlayers().getFirst().addCardToHand(c2);
@@ -435,9 +439,6 @@ class PatternConditionTest {
         ResourceCard c5 = resourceCards.get(6);
         ResourceCard c6 = resourceCards.get(5);
 
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
         game.getPlayers().getFirst().addCardToHand(c0);
         game.getPlayers().getFirst().addCardToHand(c1);
         game.getPlayers().getFirst().addCardToHand(c2);
@@ -478,9 +479,6 @@ class PatternConditionTest {
         ResourceCard c5 = resourceCards.get(3);
         ResourceCard c6 = resourceCards.get(6);
 
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
         game.getPlayers().getFirst().addCardToHand(c0);
         game.getPlayers().getFirst().addCardToHand(c1);
         game.getPlayers().getFirst().addCardToHand(c2);

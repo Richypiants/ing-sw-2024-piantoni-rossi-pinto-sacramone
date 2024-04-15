@@ -53,7 +53,7 @@ public class Server {
                     ByteBuffer byteBufferIn = ByteBuffer.wrap(new byte[0]);
                     try { //FIXME: remove try/catch construct
                         channel.read(byteBufferIn, null,
-                                new SocketClientReadHandler<>(channel, byteBufferIn)
+                                new SocketClientHandler<>(channel, byteBufferIn)
                         );
                     } catch (IOException e) {
                         throw new RuntimeException(e);
