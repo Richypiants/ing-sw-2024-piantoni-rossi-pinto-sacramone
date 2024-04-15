@@ -54,7 +54,7 @@ public class Game extends GameLobby {
         super(lobby.getMaxPlayers(), lobby.getPlayers()
                 .stream()
                 .map(InGamePlayer::new)
-                .toList());
+                .collect(Collectors.toList()));
 
         this.currentRound = 0;
         setState(new SetupState(this));

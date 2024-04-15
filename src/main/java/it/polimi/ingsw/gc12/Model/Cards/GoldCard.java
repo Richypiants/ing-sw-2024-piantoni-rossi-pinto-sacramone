@@ -4,7 +4,6 @@ import it.polimi.ingsw.gc12.Model.Conditions.PointsCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.ResourcesCondition;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Image;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
@@ -50,7 +49,11 @@ public class GoldCard extends PlayableCard {
      */
     @Override
     public int awardPoints(InGamePlayer target){
-        return POINTS_GRANTED * POINTS_CONDITION.numberOfTimesSatisfied(this, target);
+        if (POINTS_CONDITION == null) {
+            return POINTS_GRANTED;
+        } else {
+            return POINTS_GRANTED * POINTS_CONDITION.numberOfTimesSatisfied(this, target);
+        }
     }
 
     @Override

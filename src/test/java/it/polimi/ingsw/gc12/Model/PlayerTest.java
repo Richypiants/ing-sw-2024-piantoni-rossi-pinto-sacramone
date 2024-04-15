@@ -8,8 +8,8 @@ class PlayerTest {
 
     @Test
     void setNickname() {
-        Player p1 = new Player("Giovanni");
-        p1.setNickname("Giuan'");
-        assertEquals("Giuan'", p1.getNickname());
+        Player p1 = new Player("Sacri");
+        p1.setNickname("Piants");
+        assertEquals("Piants", p1.getNickname());
     }
 }

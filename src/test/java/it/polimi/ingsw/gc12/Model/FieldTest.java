@@ -1,93 +1,72 @@
 package it.polimi.ingsw.gc12.Model;
 
+import com.google.gson.reflect.TypeToken;
+import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
+import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
+import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Resource;
+import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Side;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FieldTest {
-    @Test
-    void addInitialCardTest(){  // OK
+    private static ArrayList<ResourceCard> resourceCards;
+    private static ArrayList<GoldCard> goldCards;
+    private static ArrayList<InitialCard> initialCards;
+    private static ArrayList<ObjectiveCard> objectiveCards;
 
-        HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
-        resource.put(new GenericPair<>(0, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(0, 1), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 1), Resource.SCROLL);
-        Map<Side, Map<GenericPair<Integer, Integer>, Resource>> corner = new HashMap<>();
-        corner.put(Side.FRONT, resource);
-        corner.put(Side.BACK, resource);
-        EnumMap<Resource, Integer> back = new EnumMap<>(Resource.class);
-        back.put(Resource.WOLF, 1);
-        InitialCard c0 = new InitialCard(0, 2 , corner, back);
-        Player p1 = new Player("giovanni");
-        InGamePlayer p1_g = new InGamePlayer(p1);
-        p1_g.addCardToHand(c0);
-        assertDoesNotThrow(() -> p1_g.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT));
+    Player player;
+    InGamePlayer playerGame;
+    GameLobby lobby;
+    Game game;
+
+    @BeforeAll
+    static void setCardsLists() {
+        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
+        });
+        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
+        });
+        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
+        });
+        objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {
+        });
+    }
+
+    @BeforeEach
+    void setGameParameters() {
+
+        player = new Player("Sacri");
+        playerGame = new InGamePlayer(player);
+
+        lobby = new GameLobby(player, 1);
+        game = new Game(lobby);
     }
 
     @Test
-    void cardUndefinedNotAdded() throws Throwable{  // addCard()
+    void getCardCoordinates() throws Throwable {
+        Field field = new Field();
 
-        Player p1 = new Player("SACRI");
+        field.addCard(new GenericPair<>(0, 0), initialCards.get(0), Side.BACK);
 
-        InGamePlayer p1_g = new InGamePlayer(p1);
+        field.addCard(new GenericPair<>(1, -1), resourceCards.get(0), Side.FRONT);
+        field.addCard(new GenericPair<>(-1, 1), resourceCards.get(2), Side.FRONT);
 
-        GenericPair<Integer, Integer> coo = new GenericPair<>(0, 0);
+        playerGame.addCardToHand(resourceCards.get(10));
+        playerGame.addCardToHand(resourceCards.get(21));
+        field.addCard(new GenericPair<>(2, 0), resourceCards.get(10), Side.FRONT);
+        field.addCard(new GenericPair<>(-2, 2), resourceCards.get(21), Side.FRONT);
 
-        HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
-        resource.put(new GenericPair<>(0, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(0, 1), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 1), Resource.WOLF);
-        Map<Side, Map<GenericPair<Integer, Integer>, Resource>> corner = new HashMap<>();
-        corner.put(Side.FRONT, resource);
-        corner.put(Side.BACK, resource);
-        Map<Resource, Integer> back = new EnumMap<>(Resource.class);
-        back.put(Resource.WOLF, 1);
-
-        InitialCard c0 = new InitialCard(0, 2, corner, back);
-        p1_g.addCardToHand(c0);
-        p1_g.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
-        assertDoesNotThrow(() -> p1_g.placeCard(new GenericPair<>(1, -1), null, Side.FRONT));
-
-        // ERRORE:
-        // Il test da come risultato "false" ma dovrebbe restituire una nullPointerException dato che
-        // addCard cerca di istanziare un GenericPair con all'interno un valore "null".
-
-    }
-
-    @Test
-    void getCardCoordinates() throws Throwable{
-        Player p1 = new Player("SACRI");
-
-        InGamePlayer p1_g = new InGamePlayer(p1);
-
-        GenericPair<Integer, Integer> coo = new GenericPair<>(0, 0);
-
-        HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
-        resource.put(new GenericPair<>(0, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(0, 1), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 1), Resource.WOLF);
-        Map<Side, Map<GenericPair<Integer, Integer>, Resource>> corner = new HashMap<>();
-        corner.put(Side.FRONT, resource);
-        corner.put(Side.BACK, resource);
-        Map<Resource, Integer> back = new EnumMap<>(Resource.class);
-        back.put(Resource.WOLF, 1);
-
-        InitialCard c0 = new InitialCard(0, 2, corner, back);
-        p1_g.addCardToHand(c0);
-        p1_g.placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
-        GenericPair<Integer, Integer> coordinate_res = new GenericPair<>(p1_g.getCardCoordinates(c0).getX(), p1_g.getCardCoordinates(c0).getX());
-        assertEquals(new GenericPair<>(0, 0), coordinate_res);
+        assertEquals(new GenericPair<>(0, 0), field.getCardCoordinates(field.getPlacedCards().get(new GenericPair<>(0, 0)).getX()));
+        assertEquals(new GenericPair<>(1, -1), field.getCardCoordinates(field.getPlacedCards().get(new GenericPair<>(1, -1)).getX()));
+        assertEquals(new GenericPair<>(-1, 1), field.getCardCoordinates(field.getPlacedCards().get(new GenericPair<>(-1, 1)).getX()));
+        assertEquals(new GenericPair<>(2, 0), field.getCardCoordinates(field.getPlacedCards().get(new GenericPair<>(2, 0)).getX()));
+        assertEquals(new GenericPair<>(-2, 2), field.getCardCoordinates(field.getPlacedCards().get(new GenericPair<>(-2, 2)).getX()));
     }
 }

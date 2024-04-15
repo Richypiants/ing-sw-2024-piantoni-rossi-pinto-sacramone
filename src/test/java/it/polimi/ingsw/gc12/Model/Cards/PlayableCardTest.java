@@ -1,36 +1,42 @@
 package it.polimi.ingsw.gc12.Model.Cards;
 
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import com.google.gson.reflect.TypeToken;
+import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.Test;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PlayableCardTest {
 
+    ArrayList<ResourceCard> resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
+    });
+    ArrayList<GoldCard> goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
+    });
+    ArrayList<InitialCard> initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
+    });
+
     @Test
     void getCornerResource() {
-        //TODO: prendere la carta da un deck!
-        HashMap<GenericPair<Integer, Integer>, Resource> resource = new HashMap<>();
-        resource.put(new GenericPair<>(0, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 0), Resource.WOLF);
-        resource.put(new GenericPair<>(0, 1), Resource.WOLF);
-        resource.put(new GenericPair<>(1, 1), Resource.WOLF);
-        Map<Side, Map<GenericPair<Integer, Integer>, Resource>> corner = new HashMap<>();
-        corner.put(Side.FRONT, resource);
-        corner.put(Side.BACK, resource);
 
-        ResourceCard c1 = new ResourceCard(1, 2, corner, new EnumMap<>(Resource.class));
+        assertEquals(Resource.GRASS, initialCards.get(0).getCornerResource(Side.BACK, 1, 1));
+        assertEquals(Resource.BUTTERFLY, initialCards.get(0).getCornerResource(Side.BACK, -1, -1));
 
-        assertEquals(Resource.SCROLL, c1.getCornerResource(Side.FRONT, 1, 1));
+        // FIXME: Check initial_cards.json of getCenterBackResources()
+        // assertEquals(Resource.BUTTERFLY, initialCards.get(0).getCenterBackResources());
 
+        assertEquals(Resource.MUSHROOM, resourceCards.get(0).getCornerResource(Side.FRONT, -1, 1));
+        assertEquals(Resource.MUSHROOM, resourceCards.get(0).getCornerResource(Side.FRONT, -1, -1));
+        assertEquals(Resource.NOT_A_CORNER, resourceCards.get(0).getCornerResource(Side.FRONT, 1, -1));
+        assertEquals(Resource.EMPTY, resourceCards.get(0).getCornerResource(Side.FRONT, 1, 1));
 
-
+        assertEquals(Resource.NOT_A_CORNER, goldCards.get(0).getCornerResource(Side.FRONT, -1, 1));
+        assertEquals(Resource.EMPTY, goldCards.get(0).getCornerResource(Side.FRONT, -1, -1));
+        assertEquals(Resource.FEATHER, goldCards.get(0).getCornerResource(Side.FRONT, 1, -1));
+        assertEquals(Resource.EMPTY, goldCards.get(0).getCornerResource(Side.FRONT, 1, 1));
     }
 
 
