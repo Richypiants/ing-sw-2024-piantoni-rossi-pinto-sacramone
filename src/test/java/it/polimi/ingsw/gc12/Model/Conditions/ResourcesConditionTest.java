@@ -4,137 +4,113 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
-import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
-import org.junit.jupiter.api.Test;
+import it.polimi.ingsw.gc12.Utilities.Triplet;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ResourcesConditionTest {
 
-    ArrayList<ResourceCard> resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>(){});
-    ArrayList<GoldCard> goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>(){});
-    ArrayList<InitialCard> initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>(){});
-    ArrayList<ObjectiveCard> objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>(){});
+    private static ArrayList<ResourceCard> resourceCards;
+    private static ArrayList<GoldCard> goldCards;
+    private static ArrayList<InitialCard> initialCards;
+    private static ArrayList<ObjectiveCard> objectiveCards;
 
-    @Test
-    void numberOfTimesSatisfiedRed() throws Exception {
-        HashMap<Resource, Integer> cond = new HashMap<>();
-        cond.put(Resource.MUSHROOM, 3);
-        ResourcesCondition c = new ResourcesCondition(cond);
+    Player player1;
+    GameLobby lobby;
+    Game game;
 
-        ObjectiveCard c_o = objectiveCards.get(8);
-        InitialCard c0 = initialCards.getFirst();
-        ResourceCard c1 = resourceCards.get(0);
-        ResourceCard c2 = resourceCards.get(3);
-        ResourceCard c3 = resourceCards.get(5);
-
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
-        game.getPlayers().getFirst().addCardToHand(c0);
-        game.getPlayers().getFirst().addCardToHand(c1);
-        game.getPlayers().getFirst().addCardToHand(c2);
-        game.getPlayers().getFirst().addCardToHand(c3);
-
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(0, 0), c0, Side.FRONT);
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(1, 1), c1, Side.FRONT);
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(2, 2), c2, Side.FRONT);
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(3, 3), c3, Side.FRONT);
-
-        assertEquals(1, c.numberOfTimesSatisfied(c_o, game.getPlayers().getFirst()));
+    @BeforeAll
+    static void setCardsLists() {
+        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
+        });
+        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
+        });
+        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
+        });
+        objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {
+        });
     }
 
-    @Test
-    void numberOfTimesSatisfiedGreen(){
-        HashMap<Resource, Integer> cond = new HashMap<>();
-        cond.put(Resource.GRASS, 3);
-        ResourcesCondition c = new ResourcesCondition(cond);
-
-        ObjectiveCard c_o = objectiveCards.get(9);
-        InitialCard c0 = initialCards.getFirst();
-        ResourceCard c1 = resourceCards.get(10);
-        ResourceCard c2 = resourceCards.get(12);
-        ResourceCard c3 = resourceCards.get(11);
-
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
-        game.getPlayers().getFirst().addCardToHand(c0);
-        game.getPlayers().getFirst().addCardToHand(c1);
-        game.getPlayers().getFirst().addCardToHand(c2);
-        game.getPlayers().getFirst().addCardToHand(c3);
-
-        assertDoesNotThrow(() -> game.getPlayers().getFirst().placeCard(new GenericPair<>(0, 0), c0, Side.BACK));
-        assertDoesNotThrow(() -> game.getPlayers().getFirst().placeCard(new GenericPair<>(-1, 1), c1, Side.FRONT));
-        assertDoesNotThrow(() -> game.getPlayers().getFirst().placeCard(new GenericPair<>(-2, 2), c2, Side.FRONT));
-        assertDoesNotThrow(() -> game.getPlayers().getFirst().placeCard(new GenericPair<>(-3, 3), c3, Side.FRONT));
-
-        assertEquals(2, c.numberOfTimesSatisfied(c_o, game.getPlayers().getFirst()));
+    static Stream<Arguments> provideMultiConditionParameters() {
+        return Stream.of(
+                Arguments.of(
+                        objectiveCards.get(8).getPointsCondition(),
+                        1,
+                        new Triplet[]{
+                                new Triplet<>(new GenericPair<>(0, 0), initialCards.getFirst(), Side.FRONT),
+                                new Triplet<>(new GenericPair<>(1, 1), resourceCards.getFirst(), Side.FRONT),
+                                new Triplet<>(new GenericPair<>(2, 2), resourceCards.get(3), Side.FRONT),
+                                new Triplet<>(new GenericPair<>(3, 3), resourceCards.get(5), Side.FRONT)
+                        }
+                ), Arguments.of(
+                        objectiveCards.get(9).getPointsCondition(),
+                        2,
+                        new Triplet[]{
+                                new Triplet<>(new GenericPair<>(0, 0), initialCards.getFirst(), Side.FRONT),
+                                new Triplet<>(new GenericPair<>(-1, 1), resourceCards.get(10), Side.FRONT),
+                                new Triplet<>(new GenericPair<>(-2, 2), resourceCards.get(12), Side.FRONT),
+                                new Triplet<>(new GenericPair<>(-3, 3), resourceCards.get(11), Side.FRONT)
+                        }
+                ), Arguments.of(
+                        objectiveCards.get(10).getPointsCondition(),
+                        1,
+                        new Triplet[]{
+                                new Triplet<>(new GenericPair<>(0, 0), initialCards.getFirst(), Side.FRONT),
+                                new Triplet<>(new GenericPair<>(1, 1), resourceCards.get(20), Side.FRONT),
+                                new Triplet<>(new GenericPair<>(2, 2), resourceCards.get(21), Side.FRONT),
+                                new Triplet<>(new GenericPair<>(3, 3), resourceCards.get(24), Side.FRONT)
+                        }
+                ), Arguments.of(
+                        objectiveCards.get(11).getPointsCondition(),
+                        1,
+                        new Triplet[]{
+                                new Triplet<>(new GenericPair<>(0, 0), initialCards.getFirst(), Side.FRONT),
+                                new Triplet<>(new GenericPair<>(-1, 1), resourceCards.get(30), Side.FRONT),
+                                new Triplet<>(new GenericPair<>(-2, 2), resourceCards.get(32), Side.FRONT),
+                                new Triplet<>(new GenericPair<>(-3, 3), resourceCards.get(33), Side.FRONT)
+                        }
+                )
+        );
     }
 
-    @Test
-    void numberOfTimesSatisfiedBlue() {
-        HashMap<Resource, Integer> cond = new HashMap<>();
-        cond.put(Resource.WOLF, 3);
-        ResourcesCondition c = new ResourcesCondition(cond);
-
-        ObjectiveCard c_o = objectiveCards.get(10);
-        InitialCard c0 = initialCards.getFirst();
-        ResourceCard c1 = resourceCards.get(20);
-        ResourceCard c2 = resourceCards.get(21);
-        ResourceCard c3 = resourceCards.get(24);
-
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
-        game.getPlayers().getFirst().addCardToHand(c0);
-        game.getPlayers().getFirst().addCardToHand(c1);
-        game.getPlayers().getFirst().addCardToHand(c2);
-        game.getPlayers().getFirst().addCardToHand(c3);
-
-        assertDoesNotThrow(() -> game.getPlayers().getFirst().placeCard(new GenericPair<>(0, 0), c0, Side.FRONT));
-        assertDoesNotThrow(() -> game.getPlayers().getFirst().placeCard(new GenericPair<>(1, 1), c1, Side.FRONT));
-        assertDoesNotThrow(() -> game.getPlayers().getFirst().placeCard(new GenericPair<>(2, 2), c2, Side.FRONT));
-        assertDoesNotThrow(() -> game.getPlayers().getFirst().placeCard(new GenericPair<>(3, 3), c3, Side.FRONT));
-
-        assertEquals(1, c.numberOfTimesSatisfied(c_o, game.getPlayers().getFirst()));
+    @BeforeEach
+    void setGameParameters() {
+        player1 = new Player("giovanni");
+        lobby = new GameLobby(player1, 1);
+        game = new Game(lobby);
     }
 
-    @Test
-    void numberOfTimesSatisfiedPurple() {
-        HashMap<Resource, Integer> cond = new HashMap<>();
-        cond.put(Resource.BUTTERFLY, 3);
-        ResourcesCondition c = new ResourcesCondition(cond);
+    @SafeVarargs
+    @ParameterizedTest
+    @MethodSource("provideMultiConditionParameters")
+    final void genericResourcesCheckTest(ResourcesCondition condition, int numberOfTimesSatisfied,
+                                         Triplet<GenericPair<Integer, Integer>, PlayableCard, Side>... cardsToPlay)
+            throws Exception {
 
-        ObjectiveCard c_o = objectiveCards.get(11);
-        InitialCard c0 = initialCards.getFirst();
-        ResourceCard c1 = resourceCards.get(30);
-        ResourceCard c2 = resourceCards.get(32);
-        ResourceCard c3 = resourceCards.get(33);
+        ObjectiveCard c_o = objectiveCards.getFirst();
+        InGamePlayer player1InGame = game.getPlayers().getFirst();
+        for (var card : cardsToPlay) {
+            player1InGame.addCardToHand(card.getY());
+            player1InGame.placeCard(card.getX(), card.getY(), card.getZ());
+        }
 
-        Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
-        Game game = new Game(lobby);
-        game.getPlayers().getFirst().addCardToHand(c0);
-        game.getPlayers().getFirst().addCardToHand(c1);
-        game.getPlayers().getFirst().addCardToHand(c2);
-        game.getPlayers().getFirst().addCardToHand(c3);
-
-        assertDoesNotThrow(() -> game.getPlayers().getFirst().placeCard(new GenericPair<>(0, 0), c0, Side.BACK));
-        assertDoesNotThrow(() -> game.getPlayers().getFirst().placeCard(new GenericPair<>(-1, 1), c1, Side.FRONT));
-        assertDoesNotThrow(() -> game.getPlayers().getFirst().placeCard(new GenericPair<>(-2, 2), c2, Side.FRONT));
-        assertDoesNotThrow(() -> game.getPlayers().getFirst().placeCard(new GenericPair<>(-3, 3), c3, Side.FRONT));
-
-        assertEquals(2, c.numberOfTimesSatisfied(c_o, game.getPlayers().getFirst()));
+        assertEquals(numberOfTimesSatisfied, condition.numberOfTimesSatisfied(c_o, game.getPlayers().getFirst()));
     }
+
+
 
 
 }
