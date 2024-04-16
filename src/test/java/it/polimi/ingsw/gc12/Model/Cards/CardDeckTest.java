@@ -16,16 +16,40 @@ class CardDeckTest {
 
     @Test
     void deckCorrectSize() {
-        ArrayList<Card> array = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
+        ArrayList<Card> resource = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
         })));
-        assertEquals(40, array.size());
+        assertEquals(40, resource.size());
+
+        ArrayList<Card> gold = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
+        })));
+        assertEquals(40, gold.size());
+
+        ArrayList<Card> initial = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
+        })));
+        assertEquals(6, initial.size());
+
+        ArrayList<Card> objective = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
+        })));
+        assertEquals(16, objective.size());
     }
 
     @Test
     void deckIsNotEmpty() {
-        CardDeck<ResourceCard> deck = new CardDeck<>(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
+        CardDeck<ResourceCard> resource = new CardDeck<>(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
         }));
-        assert (!deck.isEmpty());
+        assertEquals(false, resource.isEmpty());
+
+        ArrayList<Card> gold = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
+        })));
+        assertEquals(false, gold.isEmpty());
+
+        ArrayList<Card> initial = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
+        })));
+        assertEquals(false, initial.isEmpty());
+
+        ArrayList<Card> objective = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
+        })));
+        assertEquals(false, objective.isEmpty());
 
     }
 

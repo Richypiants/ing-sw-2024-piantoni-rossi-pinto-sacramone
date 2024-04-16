@@ -7,6 +7,8 @@ import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Side;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -15,22 +17,35 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CardTest {
 
-    ArrayList<ResourceCard> resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
-    });
-    ArrayList<GoldCard> goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
-    });
-    ArrayList<InitialCard> initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
-    });
+    private static ArrayList<ResourceCard> resourceCards;
+    private static ArrayList<GoldCard> goldCards;
+    private static ArrayList<InitialCard> initialCards;
+    Player player1;
+    Player player2;
+    GameLobby lobby;
+    Game game;
+
+    @BeforeAll
+    static void setCardsLists() {
+        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
+        });
+        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
+        });
+        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
+        });
+    }
+
+    @BeforeEach
+    void setGameParameters() {
+
+        player1 = new Player("Sacri");
+        player2 = new Player("Piants");
+        lobby = new GameLobby(player1, 2);
+        game = new Game(lobby);
+    }
 
     @Test
     void awardPoints() throws Throwable {
-
-        Player player1 = new Player("Sacri");
-        Player player2 = new Player("Piants");
-
-        GameLobby lobby = new GameLobby(player1, 2);
-        Game game = new Game(lobby);
-
         game.getPlayers().get(0).addCardToHand(initialCards.get(0));
         game.getPlayers().get(0).placeCard(new GenericPair<>(0, 0), initialCards.get(0), Side.BACK);
 

@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -11,13 +12,19 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PlayableCardTest {
+    private static ArrayList<ResourceCard> resourceCards;
+    private static ArrayList<GoldCard> goldCards;
+    private static ArrayList<InitialCard> initialCards;
 
-    ArrayList<ResourceCard> resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
-    });
-    ArrayList<GoldCard> goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
-    });
-    ArrayList<InitialCard> initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
-    });
+    @BeforeAll
+    static void setCardsLists() {
+        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
+        });
+        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
+        });
+        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
+        });
+    }
 
     @Test
     void getCornerResource() {

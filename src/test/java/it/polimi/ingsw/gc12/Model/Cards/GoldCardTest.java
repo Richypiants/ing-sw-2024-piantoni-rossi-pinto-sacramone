@@ -8,6 +8,8 @@ import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Side;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -16,20 +18,33 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GoldCardTest {
 
-    ArrayList<ResourceCard> resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
-    });
-    ArrayList<GoldCard> goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
-    });
-    ArrayList<InitialCard> initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
-    });
+    private static ArrayList<ResourceCard> resourceCards;
+    private static ArrayList<GoldCard> goldCards;
+    private static ArrayList<InitialCard> initialCards;
+    Player player;
+    GameLobby lobby;
+    Game game;
+
+    @BeforeAll
+    static void setCardsLists() {
+        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
+        });
+        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
+        });
+        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
+        });
+    }
+
+    @BeforeEach
+    void setGameParameters() {
+
+        player = new Player("Sacri");
+        lobby = new GameLobby(player, 1);
+        game = new Game(lobby);
+    }
 
     @Test
     void awardPoints() throws Throwable {  // OK
-        Player player = new Player("SACRI");
-
-        GameLobby lobby = new GameLobby(player, 1);
-        Game game = new Game(lobby);
-
         InGamePlayer playerGame = game.getPlayers().getFirst();
 
         playerGame.addCardToHand(initialCards.getFirst());
