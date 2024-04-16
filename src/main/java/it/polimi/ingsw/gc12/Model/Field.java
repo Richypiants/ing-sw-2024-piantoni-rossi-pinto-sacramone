@@ -106,8 +106,6 @@ public class Field {
                 );
             }
         }
-
-
     }
 
     /**
