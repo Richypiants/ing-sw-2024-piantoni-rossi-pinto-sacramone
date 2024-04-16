@@ -32,8 +32,10 @@ class PlayableCardTest {
         assertEquals(Resource.GRASS, initialCards.get(0).getCornerResource(Side.BACK, 1, 1));
         assertEquals(Resource.BUTTERFLY, initialCards.get(0).getCornerResource(Side.BACK, -1, -1));
 
-        // FIXME: Check initial_cards.json of getCenterBackResources()
-        // assertEquals(Resource.BUTTERFLY, initialCards.get(0).getCenterBackResources());
+        assertEquals(1, initialCards.get(0).getCenterBackResources().get(Resource.BUTTERFLY));
+        assertEquals(null, initialCards.get(0).getCenterBackResources().get(Resource.GRASS));
+        assertEquals(null, initialCards.get(0).getCenterBackResources().get(Resource.MUSHROOM));
+        assertEquals(null, initialCards.get(0).getCenterBackResources().get(Resource.WOLF));
 
         assertEquals(Resource.MUSHROOM, resourceCards.get(0).getCornerResource(Side.FRONT, -1, 1));
         assertEquals(Resource.MUSHROOM, resourceCards.get(0).getCornerResource(Side.FRONT, -1, -1));
@@ -45,6 +47,4 @@ class PlayableCardTest {
         assertEquals(Resource.FEATHER, goldCards.get(0).getCornerResource(Side.FRONT, 1, -1));
         assertEquals(Resource.EMPTY, goldCards.get(0).getCornerResource(Side.FRONT, 1, 1));
     }
-
-
 }

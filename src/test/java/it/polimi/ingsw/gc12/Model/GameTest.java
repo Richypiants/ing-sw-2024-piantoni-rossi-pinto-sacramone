@@ -23,12 +23,6 @@ class GameTest {
         game = new Game(lobby);
     }
 
-    //I only need this for a moment, we will probably delete this (maybe not...)
-    @Test
-    void newGameCreation() {
-        System.out.println(game.getGoldCardsDeck().draw().getCenterBackResources());
-    }
-
     @Test
     void nextPlayer() {
         lobby.addPlayer(player2);
