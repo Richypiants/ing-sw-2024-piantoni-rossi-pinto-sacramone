@@ -8,6 +8,7 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 
 public class ClientPlayer extends Player{
 
@@ -22,7 +23,7 @@ public class ClientPlayer extends Player{
     /**
      * The positions where this player can currently place new cards
      */
-    private ArrayList<GenericPair<Integer, Integer>> openCorners;
+    private List<GenericPair<Integer, Integer>> openCorners;
     /**
      * The points currently gained by this player
      */
@@ -56,11 +57,11 @@ public class ClientPlayer extends Player{
         PLACED_CARDS.put(coordinates, new GenericPair<>(card, playedSide));
     }
 
-    public ArrayList<GenericPair<Integer, Integer>> getOpenCorners(){
+    public List<GenericPair<Integer, Integer>> getOpenCorners() {
         return openCorners; //TODO: copia?
     }
 
-    public void setOpenCorners(ArrayList<GenericPair<Integer, Integer>> openCorners){
+    public void setOpenCorners(List<GenericPair<Integer, Integer>> openCorners) {
         this.openCorners = openCorners;
     }
 

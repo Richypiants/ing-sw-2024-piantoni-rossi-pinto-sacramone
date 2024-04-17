@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc12.Utilities;
 
-import java.util.ArrayList;
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ClientCommand;
 
 public interface VirtualClient {
 
-    void requestToServer(ArrayList<Object> objects) throws Throwable;
+    void requestToClient(ClientCommand command) throws Exception;
 }

@@ -4,7 +4,6 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.util.ArrayList;
 
 public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> {
 
@@ -37,27 +36,26 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
         return ByteBuffer.wrap(byteOutputStream.toByteArray());
     }
 
-    protected abstract void invokeFromController(ArrayList<Object> receivedCommand);
+    protected abstract void executeReceivedCommand(Command receivedCommand);
 
     @Override
     public void completed(Integer result, A attachment) {
         //TODO: clean input (or nickname only)???
-        ArrayList<Object> receivedCommand = null;
+        Command receivedCommand = null;
         try {
             //FIXME: add instanceof casting
-            receivedCommand = (ArrayList<Object>) readObject();
+            receivedCommand = (Command) readObject();
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
-        receivedCommand.add(1, this);
         //FIXME: e se non lo trova? exception... ma per createPlayer?
         // exceptions: noSuchMethod, InvalidParametersForMethod, NoPlayerFound(sendCreatePlayer),...
 
         channel.read(inputBuffer, attachment, this);
-        invokeFromController(receivedCommand);
+        executeReceivedCommand(receivedCommand);
     }
 
     @Override
@@ -65,9 +63,9 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
 
     }
 
-    protected void sendRequest(ArrayList<Object> objects) {
+    protected void sendRequest(Command command) {
         try {
-            channel.write(writeObject(objects));
+            channel.write(writeObject(command));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

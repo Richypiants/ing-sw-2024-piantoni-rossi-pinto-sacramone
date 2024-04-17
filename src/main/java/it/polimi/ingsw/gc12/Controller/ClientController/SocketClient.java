@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.ServerCommand;
+import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.VirtualServer;
 
 import java.io.IOException;
@@ -35,6 +37,9 @@ public class SocketClient implements VirtualServer {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        //FIXME: ...reference escaping?
+        ClientController.getInstance().serverConnection = this;
     }
 
     public static SocketClient getInstance() { //TODO: sincronizzazione (serve?) ed eventualmente lazy
@@ -44,7 +49,7 @@ public class SocketClient implements VirtualServer {
     }
 
     @Override
-    public void requestToClient(ArrayList<Object> arguments) {
-        serverHandler.requestToClient(arguments);
+    public void requestToServer(VirtualClient caller, ServerCommand command) {
+        serverHandler.requestToServer(caller, command);
     }
 }

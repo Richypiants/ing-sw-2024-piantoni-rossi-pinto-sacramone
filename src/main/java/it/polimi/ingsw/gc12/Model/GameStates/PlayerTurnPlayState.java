@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.PlaceCardCommand;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
@@ -10,6 +12,8 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
+import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
+
 public class PlayerTurnPlayState extends GameState {
 
     public PlayerTurnPlayState(Game thisGame, int currentPlayer, int counter) {
@@ -17,12 +21,23 @@ public class PlayerTurnPlayState extends GameState {
     }
 
     @Override
-    public synchronized void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card, Side side)
-            throws UnexpectedPlayerException, CardNotInHandException, NotEnoughResourcesException, InvalidCardPositionException {
+    public synchronized void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card,
+                                       Side playedSide)
+            throws UnexpectedPlayerException, CardNotInHandException, NotEnoughResourcesException,
+            InvalidCardPositionException {
         if (!target.equals(GAME.getPlayers().get(currentPlayer)))
             throw new UnexpectedPlayerException();
 
-        target.placeCard(coordinates, card, side);
+        for (var player : GAME.getPlayers())
+            try {
+                keyReverseLookup(ServerController.getInstance().players, player::equals)
+                        .requestToClient(new PlaceCardCommand(target.getNickname(), coordinates, card.ID, playedSide,
+                                target.getOwnedResources(), target.getOpenCorners(), target.getPoints()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        target.placeCard(coordinates, card, playedSide);
         transition();
         //FIXME: controllare che non si possa giocare due carte nello stesso turno! in teoria rendendo atomica
         // questa intera funzione dovrebbe garantirlo

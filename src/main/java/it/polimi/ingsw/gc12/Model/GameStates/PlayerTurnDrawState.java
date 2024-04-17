@@ -1,11 +1,20 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ReceiveCardCommand;
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ReplaceCardCommand;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
+import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidDeckPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnknownStringException;
+import it.polimi.ingsw.gc12.Utilities.Triplet;
+
+import java.util.List;
+
+import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class PlayerTurnDrawState extends GameState {
 
@@ -19,12 +28,23 @@ public class PlayerTurnDrawState extends GameState {
         if (!target.equals(GAME.getPlayers().get(currentPlayer)))
             throw new UnexpectedPlayerException();
 
+        PlayableCard drawnCard = null;
+
         if (deck.trim().equalsIgnoreCase("RESOURCE")) {
-            target.addCardToHand(GAME.drawFrom(GAME.getResourceCardsDeck()));
+            drawnCard = GAME.drawFrom(GAME.getResourceCardsDeck());
         } else if (deck.trim().equalsIgnoreCase("GOLD")) {
-            target.addCardToHand(GAME.drawFrom(GAME.getGoldCardsDeck()));
+            drawnCard = GAME.drawFrom(GAME.getGoldCardsDeck());
         } else
             throw new UnknownStringException();
+
+        target.addCardToHand(drawnCard);
+
+        try {
+            keyReverseLookup(ServerController.getInstance().players, target::equals)
+                    .requestToClient(new ReceiveCardCommand(List.of(drawnCard.ID)));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         transition();
         //FIXME: controllare che non si possa pescare due carte nello stesso turno! in teoria rendendo atomica
@@ -42,12 +62,43 @@ public class PlayerTurnDrawState extends GameState {
         if (position != 0 && position != 1) {
             throw new InvalidDeckPositionException();
         }
+
+        PlayableCard drawnCard = null;
+        PlayableCard replacingCard = null;
+
         if (whichType.trim().equalsIgnoreCase("RESOURCE")) {
-            target.addCardToHand(GAME.drawFrom(GAME.getPlacedResources(), position));
+            drawnCard = GAME.drawFrom(GAME.getPlacedResources(), position);
+            replacingCard = GAME.getPlacedResources()[position];
         } else if (whichType.trim().equalsIgnoreCase("GOLD")) {
-            target.addCardToHand(GAME.drawFrom(GAME.getPlacedGolds(), position));
+            drawnCard = GAME.drawFrom(GAME.getPlacedGolds(), position);
+            replacingCard = GAME.getPlacedGolds()[position];
         } else
             throw new UnknownStringException();
+
+        target.addCardToHand(drawnCard);
+
+        for (var player : GAME.getPlayers())
+            if (player.equals(target))
+                try {
+                    keyReverseLookup(ServerController.getInstance().players, target::equals)
+                            .requestToClient(new ReceiveCardCommand(List.of(drawnCard.ID)));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            else
+                try {
+                    keyReverseLookup(ServerController.getInstance().players, target::equals)
+                            .requestToClient(
+                                    new ReplaceCardCommand(
+                                            List.of(
+                                                    new Triplet<>(replacingCard.ID, whichType, position)
+                                            )
+                                    )
+                            );
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
 
         transition();
         //FIXME: controllare che non si possa giocare due carte nello stesso turno! in teoria rendendo atomica

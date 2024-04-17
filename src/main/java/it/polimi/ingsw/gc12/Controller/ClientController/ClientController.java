@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
-import it.polimi.ingsw.gc12.Controller.Controller;
+import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
@@ -9,18 +9,32 @@ import it.polimi.ingsw.gc12.Utilities.*;
 
 import java.util.*;
 
-public abstract class ClientController extends Controller {
+public class ClientController implements ClientControllerInterface {
 
-    private static final Map<Integer, ClientCard> cardsList = loadCards();
+    private static final ClientController SINGLETON_INSTANCE = new ClientController();
+
+    private final Map<Integer, ClientCard> cardsList;
     /**
      * This player's nickname
      */
-    public static VirtualServer serverConnection;
-    private static String ownNickname;
-    private static Map<UUID, GameLobby> lobbies = new HashMap<>();
-    private static GameLobby currentLobbyOrGame = null;
+    public VirtualServer serverConnection;
+    private String ownNickname;
+    private Map<UUID, GameLobby> lobbies;
+    private GameLobby currentLobbyOrGame;
 
-    private static Map<Integer, ClientCard> loadCards() {
+    private ClientController() {
+        serverConnection = null;
+        ownNickname = "";
+        cardsList = loadCards();
+        lobbies = new HashMap<>();
+        currentLobbyOrGame = null;
+    }
+
+    public static ClientController getInstance() {
+        return SINGLETON_INSTANCE;
+    }
+
+    private Map<Integer, ClientCard> loadCards() {
         //TODO: map of maps?
         Map<Integer, ClientCard> tmp = new HashMap<>();
         /*Objects.requireNonNull(JSONParser.deckFromJSONConstructor("client_cards.json", new TypeToken<>(){}))
@@ -56,7 +70,7 @@ public abstract class ClientController extends Controller {
 
     public void placeCard(String nickname, GenericPair<Integer, Integer> coordinates, int cardID,
                           Side playedSide, EnumMap<Resource, Integer> ownedResources,
-                          ArrayList<GenericPair<Integer, Integer>> openCorners, int points){
+                          List<GenericPair<Integer, Integer>> openCorners, int points) {
         ClientPlayer thisPlayer = ((ClientGame) currentLobbyOrGame).getPlayers().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
                 .findAny()
@@ -91,11 +105,11 @@ public abstract class ClientController extends Controller {
                 .toggleActive();
     }
 
-    public void endGame(ArrayList<Triplet<String, Integer, Integer>> pointsStats) {
+    public void endGame(List<Triplet<String, Integer, Integer>> pointsStats) {
         //TODO: stampare
     }
 
-    public void addChatMessage(String chatMessage){
+    public void addChatMessage(String senderNickname, String chatMessage, boolean isPrivate) {
 
     }
 }

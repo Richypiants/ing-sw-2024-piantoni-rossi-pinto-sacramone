@@ -21,9 +21,9 @@ public class Main {
             language = "EN";
 
         if (args[2].equalsIgnoreCase("RMI"))
-            ClientController.serverConnection = RMIClientSkeleton.getInstance();
+            RMIClientSkeleton.getInstance();
         else if (args[2].equalsIgnoreCase("Socket"))
-            ClientController.serverConnection = SocketClient.getInstance();
+            SocketClient.getInstance();
         else
             throw new UnknownStringException("Provided technology not recognized");
 

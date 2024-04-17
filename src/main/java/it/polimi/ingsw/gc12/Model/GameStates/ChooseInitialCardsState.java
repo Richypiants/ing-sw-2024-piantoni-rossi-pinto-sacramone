@@ -1,5 +1,8 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.PlaceCardCommand;
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ReceiveCardCommand;
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ReplaceCardCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.CardDeck;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
@@ -19,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
-import static it.polimi.ingsw.gc12.Utilities.Commons.varargsToArrayList;
 
 public class ChooseInitialCardsState extends GameState {
 
@@ -28,9 +30,18 @@ public class ChooseInitialCardsState extends GameState {
     }
 
     @Override
-    public void placeCard(InGamePlayer target, GenericPair<Integer, Integer> position, PlayableCard card, Side playedSide)
+    public void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
             throws CardNotInHandException, NotEnoughResourcesException, InvalidCardPositionException {
         target.placeCard(new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), playedSide);
+
+        for (var player : GAME.getPlayers())
+            try {
+                keyReverseLookup(ServerController.getInstance().players, player::equals)
+                        .requestToClient(new PlaceCardCommand(target.getNickname(), coordinates, card.ID, playedSide,
+                                target.getOwnedResources(), target.getOpenCorners(), target.getPoints()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         //FIXME: dopo timeout e disconnessione: eseguo un'azione random per i player disconnessi
         if(GAME.getPlayers().stream()
@@ -55,20 +66,20 @@ public class ChooseInitialCardsState extends GameState {
 
             //TODO: manage exceptions
             try {
-                keyReverseLookup(ServerController.players, target::equals)
-                        .requestToServer(
-                                varargsToArrayList(
-                                        "receiveCard", target.getCardsInHand().stream()
+                keyReverseLookup(ServerController.getInstance().players, target::equals)
+                        .requestToClient(
+                                new ReceiveCardCommand(
+                                        target.getCardsInHand().stream()
                                                 .map((card) -> card.ID)
                                                 .toList()
                                 )
                         );
-            } catch (Throwable t) {
-                t.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
-        CardDeck<ObjectiveCard> objectivesDeck = new CardDeck<>(ServerController.cardsList.values().stream()
+        CardDeck<ObjectiveCard> objectivesDeck = new CardDeck<>(ServerController.getInstance().cardsList.values().stream()
                 .filter((card -> card instanceof ObjectiveCard))
                 .map((card) -> (ObjectiveCard) card)
                 .toList());
@@ -94,13 +105,19 @@ public class ChooseInitialCardsState extends GameState {
             //TODO: manage exceptions
             try {
                 //Sending the common objective cards
-                keyReverseLookup(ServerController.players, target::equals)
-                        .requestToServer(varargsToArrayList("replaceCard", objectiveCardPlacements));
+                keyReverseLookup(ServerController.getInstance().players, target::equals)
+                        .requestToClient(new ReplaceCardCommand(objectiveCardPlacements));
                 //Sending the personal objective selection
-                keyReverseLookup(ServerController.players, target::equals)
-                        .requestToServer(varargsToArrayList("receiveCard", objectivesSelection.get(target)));
-            } catch (Throwable t) {
-                t.printStackTrace();
+                keyReverseLookup(ServerController.getInstance().players, target::equals)
+                        .requestToClient(
+                                new ReceiveCardCommand(
+                                        objectivesSelection.get(target).stream()
+                                                .map((card) -> card.ID)
+                                                .toList()
+                                )
+                        );
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 

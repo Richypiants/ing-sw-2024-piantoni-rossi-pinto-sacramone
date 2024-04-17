@@ -1,12 +1,14 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Controller.Command;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Controller.SocketHandler;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.ArrayList;
 
 public class SocketClientHandler<A> extends SocketHandler<A> implements VirtualClient {
 
@@ -15,16 +17,15 @@ public class SocketClientHandler<A> extends SocketHandler<A> implements VirtualC
     }
 
     @Override
-    public void requestToServer(ArrayList<Object> objects) {
-        sendRequest(objects);
+    public void requestToClient(ClientCommand command) {
+        sendRequest(command);
     }
 
     @Override
-    protected void invokeFromController(ArrayList<Object> receivedCommand) {
+    protected void executeReceivedCommand(Command receivedCommand) {
         try {
             //TODO: make executors do this?
-            ServerController.commandHandles.get((String) receivedCommand.removeFirst())
-                    .invokeWithArguments(receivedCommand);
+            ((ServerCommand) receivedCommand).execute(this, ServerController.getInstance());
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

@@ -1,5 +1,8 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.EndGameCommand;
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.SetLobbiesCommand;
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.UpdateLobbyCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
@@ -10,7 +13,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
-import static it.polimi.ingsw.gc12.Utilities.Commons.varargsToArrayList;
 
 public class VictoryCalculationState extends GameState {
 
@@ -41,8 +43,8 @@ public class VictoryCalculationState extends GameState {
         try {
             // Sending leaderboard stats
             for (var target : players) {
-                keyReverseLookup(ServerController.players, target::equals)
-                        .requestToServer(varargsToArrayList("endGame", pointsStats));
+                keyReverseLookup(ServerController.getInstance().players, target::equals)
+                        .requestToClient(new EndGameCommand(pointsStats));
             }
         } catch (Throwable t) {
             t.printStackTrace();
@@ -53,30 +55,29 @@ public class VictoryCalculationState extends GameState {
         //Removing disconnected players (we were keeping them until end of game hoping they would reconnect)
         for (var player : players)
             if(!player.isActive())
-                ServerController.playersToLobbiesAndGames.remove(player);
+                ServerController.getInstance().playersToLobbiesAndGames.remove(player);
 
-        UUID lobbyUUID = keyReverseLookup(ServerController.lobbiesAndGames, GAME::equals);
+        UUID lobbyUUID = keyReverseLookup(ServerController.getInstance().lobbiesAndGames, GAME::equals);
         GameLobby returnLobby = GAME.toLobby();
 
-        ServerController.lobbiesAndGames.put(lobbyUUID, returnLobby);
+        ServerController.getInstance().lobbiesAndGames.put(lobbyUUID, returnLobby);
 
         for(var player : returnLobby.getPlayers()) {
-            ServerController.players.put(
-                    keyReverseLookup(ServerController.players, player::equals),
+            ServerController.getInstance().players.put(
+                    keyReverseLookup(ServerController.getInstance().players, player::equals),
                     player
             );
-            ServerController.playersToLobbiesAndGames.put(player, returnLobby);
+            ServerController.getInstance().playersToLobbiesAndGames.put(player, returnLobby);
         }
 
         try {
             // Sending lobbies list to players who were in this game (because they didn't have it updated)
             for (var target : returnLobby.getPlayers()) {
-                keyReverseLookup(ServerController.players, target::equals)
+                keyReverseLookup(ServerController.getInstance().players, target::equals)
                         //TODO : Handle exceptions in the correct way and not like this
-                        .requestToServer(
-                                varargsToArrayList(
-                                        "setLobbies",
-                                        ServerController.lobbiesAndGames.entrySet().stream()
+                        .requestToClient(
+                                new SetLobbiesCommand(
+                                        ServerController.getInstance().lobbiesAndGames.entrySet().stream()
                                                 .filter((entry) -> !(entry.getValue() instanceof Game))
                                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
                                 )
@@ -84,10 +85,10 @@ public class VictoryCalculationState extends GameState {
             }
 
             // Update lobbies' lists of all other active players
-            for (var client : ServerController.players.keySet())
-                if (!(ServerController.players.get(client) instanceof InGamePlayer))
+            for (var client : ServerController.getInstance().players.keySet())
+                if (!(ServerController.getInstance().players.get(client) instanceof InGamePlayer))
                     //TODO : Handle exceptions in the correct way and not like this
-                    client.requestToServer(varargsToArrayList("updateLobby", lobbyUUID, returnLobby)); //updateLobby();
+                    client.requestToClient(new UpdateLobbyCommand(lobbyUUID, returnLobby)); //updateLobby();
 
         } //TODO: This will be deleted or well-handled.
         catch (Throwable e) {

@@ -6,6 +6,7 @@ module it.polimi.ingsw.gc12 {
     requires org.kordamp.bootstrapfx.core;
     requires com.google.gson;
     requires java.rmi;
+    requires jdk.javadoc;
 
     opens it.polimi.ingsw.gc12.Model to com.google.gson;
     opens it.polimi.ingsw.gc12.Utilities to com.google.gson;
@@ -25,5 +26,8 @@ module it.polimi.ingsw.gc12 {
 
     exports it.polimi.ingsw.gc12.Utilities.Exceptions;
     opens it.polimi.ingsw.gc12.Utilities.Exceptions to com.google.gson;
+    exports it.polimi.ingsw.gc12.Controller;
+    exports it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands;
+    exports it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands;
     // exports it.polimi.ingsw.gc12.Client.ClientView.GUI;
 }

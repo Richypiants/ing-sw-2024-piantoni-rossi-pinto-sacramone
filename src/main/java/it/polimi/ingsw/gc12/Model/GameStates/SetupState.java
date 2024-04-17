@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ReceiveCardCommand;
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ReplaceCardCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.CardDeck;
 import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
@@ -10,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
-import static it.polimi.ingsw.gc12.Utilities.Commons.varargsToArrayList;
 
 public class SetupState extends GameState {
 
@@ -32,15 +33,15 @@ public class SetupState extends GameState {
         //TODO: manage exception
         for (var target : GAME.getPlayers()) {
             try {
-                keyReverseLookup(ServerController.players, target::equals)
-                        .requestToServer(varargsToArrayList("replaceCard", cardPlacements));
-            } catch (Throwable t) {
-                t.printStackTrace();
+                keyReverseLookup(ServerController.getInstance().players, target::equals)
+                        .requestToClient(new ReplaceCardCommand(cardPlacements));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
         CardDeck<InitialCard> initialCardsDeck = new CardDeck<>(
-                ServerController.cardsList.values().stream()
+                ServerController.getInstance().cardsList.values().stream()
                         .filter((card -> card instanceof InitialCard))
                         .map((card) -> (InitialCard) card)
                         .toList()
@@ -51,8 +52,8 @@ public class SetupState extends GameState {
 
             //TODO: manage exceptions
             try {
-                keyReverseLookup(ServerController.players, target::equals)
-                        .requestToServer(varargsToArrayList("receiveCard", List.of(tmp.ID)));
+                keyReverseLookup(ServerController.getInstance().players, target::equals)
+                        .requestToClient(new ReceiveCardCommand(List.of(tmp.ID)));
             } catch (Throwable t) {
                 t.printStackTrace();
             }
