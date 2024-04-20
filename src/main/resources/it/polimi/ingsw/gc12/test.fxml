@@ -4,23 +4,22 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
-<Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="564.0"
-      prefWidth="712.0"
-      style="-fx-background-image: url(file:///C:/Users/jacop/Desktop/Stage.png);" xmlns="http://javafx.com/javafx/21"
-      fx:controller="it.polimi.ingsw.gc12.HelloController">
+<Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="750" maxWidth="1000" minHeight="500" minWidth="750"
+      prefHeight="600.0" prefWidth="800.0"
+      style="-fx-background-image: url(file:///C:/Users/jacop/Desktop/imagecodex3.jpg); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-size: stretch;"
+      xmlns="http://javafx.com/javafx/21" fx:controller="it.polimi.ingsw.gc12.HelloController">
     <children>
-        <Button fx:id="startbutton" layoutX="195.0" layoutY="470.0" mnemonicParsing="false" onAction="#newPane"
-                prefHeight="38.0" prefWidth="323.0" text="Premi Invio per iniziare" textAlignment="JUSTIFY"
-                wrapText="true">
+        <Button fx:id="startbutton" alignment="CENTER" layoutY="600" layoutX="607" mnemonicParsing="false"
+                onAction="#newPane" prefHeight="38.0" prefWidth="323.0" text="Premi Invio per iniziare"
+                textAlignment="JUSTIFY" wrapText="true">
             <font>
                 <Font name="Castellar" size="16.0"/>
             </font>
         </Button>
-        <Label fx:id="welcomeText" layoutX="223.0" layoutY="207.0" prefHeight="151.0" prefWidth="288.0" text="PIANTONI"
-               textAlignment="CENTER" textFill="RED">
+        <Label layoutY="300" layoutX="370" prefWidth="800.0" style="-fx-alignment: Center"
+               text="Benvenuto in Codex Naturalis" textAlignment="CENTER" textFill="#ff00c7">
             <font>
-                <Font size="56.0"/>
+                <Font name="ARIAL" size="40.0"/>
             </font>
         </Label>
     </children>
