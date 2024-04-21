@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="688.0"
+      prefWidth="921.0"
+      fx:controller="it.polimi.ingsw.gc12.HelloController" xmlns="http://javafx.com/javafx/21">
+    <children>
+        <Button fx:id="LeaveButton" layoutX="816.0" layoutY="647.0" mnemonicParsing="false" onAction="#LeaveGame"
+                text="Leave Game">
+            <font>
+                <Font name="Bell MT" size="14.0"/>
+            </font>
+        </Button>
+        <TreeView layoutX="258.0" layoutY="246.0" prefHeight="359.0" prefWidth="603.0"/>
+        <ImageView fitHeight="413.0" fitWidth="202.0" layoutX="35.0" layoutY="14.0" pickOnBounds="true"
+                   preserveRatio="true" style="-fx-image:url(file:///C:/Users/jacop/Desktop/Score.png);"/>
+        <ImageView fitHeight="49.0" fitWidth="78.0" layoutX="27.0" layoutY="450.0" pickOnBounds="true"
+                   preserveRatio="true" style="-fx-image:url(file:///C:/Users/jacop/Desktop/Objective.jpg);"/>
+        <ImageView fitHeight="49.0" fitWidth="78.0" layoutX="27.0" layoutY="528.0" pickOnBounds="true"
+                   preserveRatio="true" style="-fx-image:url(file:///C:/Users/jacop/Desktop/Resource.jpg);"/>
+        <ImageView fitHeight="49.0" fitWidth="78.0" layoutX="27.0" layoutY="605.0" pickOnBounds="true"
+                   preserveRatio="true" style="-fx-image:url(file:///C:/Users/jacop/Desktop/Gold.jpg);"/>
+        <TreeView layoutX="258.0" layoutY="40.0" prefHeight="135.0" prefWidth="172.0"/>
+        <TreeView layoutX="473.0" layoutY="40.0" prefHeight="135.0" prefWidth="172.0"/>
+        <TreeView layoutX="689.0" layoutY="40.0" prefHeight="135.0" prefWidth="172.0"/>
+        <Button fx:id="ChatButton" layoutX="880.0" layoutY="332.0" mnemonicParsing="false" rotate="-90.0" text="Chat">
+            <font>
+                <Font name="Bell MT" size="14.0"/>
+            </font>
+        </Button>
+    </children>
+</Pane>

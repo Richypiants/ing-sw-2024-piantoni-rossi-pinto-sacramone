@@ -27,15 +27,15 @@
                 <Font name="Bell MT" size="14.0"/>
             </font>
         </Button>
-        <TreeView layoutX="233.0" layoutY="114.0" prefHeight="200.0" prefWidth="290.0"/>
-        <TreeView layoutX="245.0" layoutY="123.0" prefHeight="53.0" prefWidth="272.0"/>
-        <TreeView layoutX="245.0" layoutY="188.0" prefHeight="53.0" prefWidth="272.0"/>
-        <Button layoutX="453.0" layoutY="137.0" mnemonicParsing="false" text="JOIN"/>
-        <Button layoutX="453.0" layoutY="202.0" mnemonicParsing="false" text="JOIN"/>
+        <TreeView layoutX="233.0" layoutY="114.0" prefHeight="200.0" prefWidth="405.0"/>
+        <TreeView layoutX="245.0" layoutY="123.0" prefHeight="53.0" prefWidth="382.0"/>
+        <TreeView layoutX="245.0" layoutY="188.0" prefHeight="53.0" prefWidth="382.0"/>
+        <Button layoutX="571.0" layoutY="137.0" mnemonicParsing="false" text="JOIN"/>
+        <Button layoutX="571.0" layoutY="202.0" mnemonicParsing="false" text="JOIN"/>
         <Label layoutX="256.0" layoutY="141.0" text="Player 1 Player 2 Player 3" textAlignment="JUSTIFY"
                wrapText="true"/>
         <Label layoutX="256.0" layoutY="206.0" text="Player 1"/>
-        <Label layoutX="374.0" layoutY="206.0" text="1/2"/>
-        <Label layoutX="379.0" layoutY="141.0" text="3/4"/>
+        <Label layoutX="510.0" layoutY="206.0" text="1/2"/>
+        <Label layoutX="510.0" layoutY="141.0" text="3/4"/>
     </children>
 </Pane>

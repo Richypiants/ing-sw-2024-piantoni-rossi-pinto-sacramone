@@ -9,7 +9,7 @@
       fx:controller="it.polimi.ingsw.gc12.HelloController">
     <!-- style="-fx-background-image: url(file:///C:/Users/jacop/Desktop/Stage.png);" -->
     <children>
-        <Label alignment="CENTER" layoutX="198.0" layoutY="115.0" text="Enter Nickname">
+        <Label alignment="CENTER" layoutX="198.0" layoutY="115.0" text="Nickname">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>

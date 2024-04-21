@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Model.ClientModel;
 
-import it.polimi.ingsw.gc12.Utilities.Image;
+import it.polimi.ingsw.gc12.Utilities.Picture;
 
 public class ClientCard {
 
@@ -11,21 +11,21 @@ public class ClientCard {
     /**
      * The front image for this card
      */
-    public final Image FRONT_SPRITE;
+    public final Picture FRONT_SPRITE;
     /**
      * The back image for this card
      */
-    public final Image BACK_SPRITE;
+    public final Picture BACK_SPRITE;
     /**
      * The front image for this card
      */
-    public final Image FRONT_TUI_SPRITE; //TODO: Obviously not an Image
+    public final Picture FRONT_TUI_SPRITE; //TODO: Obviously not an Image
     /**
      * The back image for this card
      */
-    public final Image BACK_TUI_SPRITE; //TODO: Obviously not an Image
+    public final Picture BACK_TUI_SPRITE; //TODO: Obviously not an Image
 
-    public ClientCard(int id, Image front, Image back, Image tuiFront, Image tuiBack) {
+    public ClientCard(int id, Picture front, Picture back, Picture tuiFront, Picture tuiBack) {
         this.ID = id;
         this.FRONT_SPRITE = front;
         this.BACK_SPRITE = back;
