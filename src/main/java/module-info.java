@@ -7,6 +7,7 @@ module it.polimi.ingsw.gc12 {
     requires com.google.gson;
     requires java.rmi;
     requires jdk.javadoc;
+    requires org.fusesource.jansi;
 
     opens it.polimi.ingsw.gc12.Model to com.google.gson;
     opens it.polimi.ingsw.gc12.Utilities to com.google.gson;

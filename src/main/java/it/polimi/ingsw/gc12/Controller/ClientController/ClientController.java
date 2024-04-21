@@ -18,9 +18,9 @@ public class ClientController implements ClientControllerInterface {
      * This player's nickname
      */
     public VirtualServer serverConnection;
-    private String ownNickname;
-    private Map<UUID, GameLobby> lobbies;
-    private GameLobby currentLobbyOrGame;
+    public String ownNickname;
+    public Map<UUID, GameLobby> lobbies;
+    public GameLobby currentLobbyOrGame;
 
     private ClientController() {
         serverConnection = null;

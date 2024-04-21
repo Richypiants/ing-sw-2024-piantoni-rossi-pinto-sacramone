@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandle;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -21,8 +20,7 @@ public class Server {
         Registry registry = null;
         try {
             registry = LocateRegistry.createRegistry(5001);
-            for (MethodHandle method : ServerController.commandHandles.values())
-                registry.rebind("codex_naturalis_rmi_methods", RMIServerStub.getInstance());
+            registry.rebind("codex_naturalis_rmi_methods", RMIServerStub.getInstance());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
