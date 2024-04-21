@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc12.Model.Cards;
 
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Image;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 

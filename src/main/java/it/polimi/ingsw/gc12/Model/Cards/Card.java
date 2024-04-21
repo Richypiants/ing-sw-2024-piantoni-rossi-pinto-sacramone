@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc12.Model.Cards;
 
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Utilities.Image;
 
 /**
  A template representing a standard card object

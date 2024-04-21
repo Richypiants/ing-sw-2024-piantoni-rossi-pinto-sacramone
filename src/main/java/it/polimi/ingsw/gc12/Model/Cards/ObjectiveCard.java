@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc12.Model.Cards;
 
 import it.polimi.ingsw.gc12.Model.Conditions.PointsCondition;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Utilities.Image;
 
 /**
 A template for a generic Objective Card in this game's cards set
