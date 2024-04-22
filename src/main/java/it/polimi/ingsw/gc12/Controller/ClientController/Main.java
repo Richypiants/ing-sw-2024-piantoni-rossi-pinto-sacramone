@@ -45,6 +45,6 @@ public class Main {
         //TODO: caricare le carte e la loro grafica?
         // serve altro da caricare?
 
-        view.initializeApp();
+        //view.initializeApp();
     }
 }

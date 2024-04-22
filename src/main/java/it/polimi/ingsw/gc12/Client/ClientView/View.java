@@ -1,12 +1,14 @@
 package it.polimi.ingsw.gc12.Client.ClientView;
 
-public abstract class View {
+public abstract class View { //FIXME: turn into interface maybe?
 
-    public abstract void addListener();
+    public abstract void titleScreen();
 
-    public abstract void initializeApp();
+    public abstract void chooseNicknameScreen();
 
-    public abstract void show();
+    public abstract void connectToServerScreen();
 
-    public abstract void input();
+    public abstract void lobbyScreen();
+
+    public abstract void gameScreen();
 }

@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc12.Client.ClientView.TUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Controller.ClientController.TUIListener;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -15,27 +14,19 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 public class TUIView extends View {
 
-    //private static Scanner scanner;
-    private static ExecutorService singleThreadExecutor;
+    private static TUIView SINGLETON_TUI_INSTANCE = null;
+    private final ExecutorService singleThreadExecutor;
+    private final TUIListener listener;
 
-    @Override
-    public void addListener() {
-
+    private TUIView() {
+        singleThreadExecutor = Executors.newSingleThreadExecutor();
+        listener = TUIListener.getInstance();
     }
 
-    @Override
-    public void initializeApp() {
-        System.out.println("Game initialization...");
-    }
-
-    @Override
-    public void show() {
-
-    }
-
-    @Override
-    public void input() {
-
+    public static TUIView getInstance() {
+        if (SINGLETON_TUI_INSTANCE == null)
+            SINGLETON_TUI_INSTANCE = new TUIView();
+        return SINGLETON_TUI_INSTANCE;
     }
 
     public static void clearTerminal() {
@@ -50,17 +41,16 @@ public class TUIView extends View {
 
     //TODO: handle exception
     public static void main(String[] args) {
-        TUIListener listener = TUIListener.getInstance();
-        listener.startReading();
+        TUIView tui = TUIView.getInstance();
+        tui.listener.startReading();
         AnsiConsole.systemInstall();
         //System.out.println(ansi().fg(Ansi.Color.GREEN).a("Hello").reset());
         //System.out.println(ansi().cursorUpLine().cursorUpLine().bg(Color.RED).a("World!").reset());
 
-        singleThreadExecutor = Executors.newSingleThreadExecutor();
-        singleThreadExecutor.submit(TUIView::printTitleScreen);
+        tui.singleThreadExecutor.submit(SINGLETON_TUI_INSTANCE::titleScreen);
     }
 
-    public static void printTitleScreen() {
+    public void titleScreen() {
         printToPosition(ansi().cursor(1, 1).a("Starting Codex Naturalis..."));
         try {
             sleep(3000);
@@ -79,22 +69,24 @@ public class TUIView extends View {
         //waitforinput();
 
         clearTerminal();
-        singleThreadExecutor.submit(TUIView::connectToServerScreen);
+        singleThreadExecutor.submit(SINGLETON_TUI_INSTANCE::connectToServerScreen);
     }
 
-    public static void connectToServerScreen() {
+    public void chooseNicknameScreen() {
         printToPosition(ansi().cursor(1, 1).a("Scegli il tuo nickname: "));
-        //waitforinput();
+    }
+
+    public void connectToServerScreen() {
         printToPosition(ansi().cursor(2, 1).a("Connettendosi al server..."));
         printToPosition(ansi().cursor(3, 1).a("Connessione al server riuscita: nickname confermato!"));
         //sleep(1000);
 
         clearTerminal();
-        singleThreadExecutor.submit(TUIView::lobbiesScreen);
+        singleThreadExecutor.submit(SINGLETON_TUI_INSTANCE::lobbyScreen);
     }
 
-    public static void lobbiesScreen() {
-        printToPosition(ansi().cursor(1, 1).a("Here's the list of currently open lobbies:"));
+    public void lobbyScreen() {
+        printToPosition(ansi().cursor(1, 1).a("Ecco la lista delle lobby aperte al momento: "));
         int i = 2;
         for (var entry : ClientController.getInstance().lobbies.entrySet()) {
             printToPosition(ansi().cursor(i++, 1).a(entry.getKey() + ": " + entry.getValue()));
@@ -109,7 +101,7 @@ public class TUIView extends View {
         ));
     }
 
-    public static void gameScreen() {
+    public void gameScreen() {
 
     }
 
