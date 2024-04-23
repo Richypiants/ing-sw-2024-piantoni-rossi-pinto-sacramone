@@ -40,8 +40,6 @@ public class TUIListener {
 
         //TODO: Every case has to check type parameters before calling the State method or eventually die
         switch (tokens.removeFirst().trim()) {
-            case "keyPressed" -> currentState.keyPressed();
-            case "setNickname" -> currentState.setNickname(tokens.getFirst());
             /*case "broadcastMessage" -> currentState.;
             case "createLobby" -> currentState.;
             case "createPlayer" -> currentState.;

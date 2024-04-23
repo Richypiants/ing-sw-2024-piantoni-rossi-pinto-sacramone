@@ -4,8 +4,6 @@ public abstract class View { //FIXME: turn into interface maybe?
 
     public abstract void titleScreen();
 
-    public abstract void chooseNicknameScreen();
-
     public abstract void connectToServerScreen();
 
     public abstract void lobbyScreen();

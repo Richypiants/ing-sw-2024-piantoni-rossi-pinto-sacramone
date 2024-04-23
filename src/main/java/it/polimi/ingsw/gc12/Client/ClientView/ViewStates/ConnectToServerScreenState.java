@@ -1,15 +1,11 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.CreatePlayerCommand;
+
 public class ConnectToServerScreenState extends ViewState {
 
     public ConnectToServerScreenState() {
-        selectedView.chooseNicknameScreen();
-    }
-
-    @Override
-    public void setNickname(String nickname) {
-        //ClientController.getInstance().serverConnection
-        //        .requestToServer(ClientController.getInstance().thisClient, new CreatePlayerCommand(nickname));
         selectedView.connectToServerScreen();
         transition();
     }

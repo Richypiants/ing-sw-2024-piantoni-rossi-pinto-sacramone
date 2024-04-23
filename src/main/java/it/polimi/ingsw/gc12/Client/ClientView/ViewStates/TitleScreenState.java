@@ -4,10 +4,6 @@ public class TitleScreenState extends ViewState {
 
     public TitleScreenState() {
         selectedView.titleScreen();
-    }
-
-    @Override
-    public void keyPressed(/*KeyEvent e*/) {
         transition();
     }
 

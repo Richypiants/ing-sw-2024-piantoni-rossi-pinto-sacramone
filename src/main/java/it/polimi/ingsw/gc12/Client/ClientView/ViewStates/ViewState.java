@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 
+import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 
 public abstract class ViewState {
@@ -11,12 +12,16 @@ public abstract class ViewState {
         return currentState;
     }
 
-    public void keyPressed() {
-        //throw new ForbiddenActionException();
+    public static void setCurrentState(ViewState currentState) {
+        ViewState.currentState = currentState;
     }
 
-    public void setNickname(String nickname) {
-        //throw new ForbiddenActionException();
+    public static View getView() {
+        return selectedView;
+    }
+
+    public static void setView(View view){
+        selectedView = view;
     }
 
     public abstract void transition();
