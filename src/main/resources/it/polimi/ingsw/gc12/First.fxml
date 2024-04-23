@@ -2,26 +2,31 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
-<Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="750" maxWidth="1000" minHeight="500" minWidth="750"
-      prefHeight="600.0" prefWidth="800.0"
-      style="-fx-background-image: url(file:///C:/Users/jacop/Desktop/imagecodex3.jpg); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-size: stretch;"
-      xmlns="http://javafx.com/javafx/21" fx:controller="it.polimi.ingsw.gc12.HelloController">
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           fx:id="First" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+           minWidth="-Infinity"
+           style="-fx-background-image: url(file:///C:/Users/jacop/Desktop/imagecodex3.jpg); -fx-background-repeat: no-repeat; -fx-background-size: stretch;"
+           xmlns="http://javafx.com/javafx/21" fx:controller="it.polimi.ingsw.gc12.HelloController">
     <children>
-        <Button fx:id="startbutton" alignment="CENTER" layoutY="600" layoutX="607" mnemonicParsing="false"
+        <Button fx:id="startButton" alignment="CENTER" layoutY="600" layoutX="607" mnemonicParsing="false"
                 onAction="#newPane" prefHeight="38.0" prefWidth="323.0" text="Premi Invio per iniziare"
                 textAlignment="JUSTIFY" wrapText="true">
             <font>
                 <Font name="Castellar" size="16.0"/>
             </font>
         </Button>
-        <Label layoutY="300" layoutX="370" prefWidth="800.0" style="-fx-alignment: Center"
-               text="Benvenuto in Codex Naturalis" textAlignment="CENTER" textFill="#ff00c7">
+        <Rectangle fx:id="backgroundLabel" width="600" height="80" fill="black" opacity="0.8" arcWidth="20"
+                   arcHeight="20"/>
+        <Label fx:id="Codex" prefWidth="800.0" style="-fx-alignment: Center"
+               text="Benvenuto in Codex Naturalis" textAlignment="CENTER" textFill="#fafafa"
+        >
             <font>
                 <Font name="ARIAL" size="40.0"/>
             </font>
         </Label>
     </children>
-</Pane>
+</StackPane>
 
