@@ -1,10 +1,12 @@
 package it.polimi.ingsw.gc12.Client.ClientView.TUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+import java.util.UUID;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -36,23 +38,22 @@ public class TUIListener {
     private void runCommand(ArrayList<String> tokens) {
         //TODO: Search if a more clean strategy exists
 
-        ViewState currentState = ViewState.getCurrentState();
+        ViewState currentState = ClientController.getInstance().viewState;
 
         //TODO: Every case has to check type parameters before calling the State method or eventually die
         switch (tokens.removeFirst().trim()) {
+            case "createLobby" -> currentState.createLobby(Integer.parseInt(tokens.getFirst()));
+            case "joinLobby" -> currentState.joinLobby((UUID.fromString(tokens.getFirst())));
+            case "setNickname" -> currentState.setNickname(tokens.getFirst());
             /*case "broadcastMessage" -> currentState.;
-            case "createLobby" -> currentState.;
-            case "createPlayer" -> currentState.;
             case "directMessage" -> currentState.;
             case "drawFromDeck" -> currentState;
             case "drawFromVisibleCards" -> currentState.;
-            case "joinLobby" -> currentState.;
             case "keepAlive" -> currentState.;
             case "leaveGame" -> currentState.;
             case "leaveLobby" -> currentState.;
             case "pickObjective" -> currentState.;
-            case "placeCard" -> currentState.;
-            case "setNicknameCommand" -> currentState.;*/
+            case "placeCard" -> currentState.;*/
             default -> System.err.println("Unknown command");
         }
         ;

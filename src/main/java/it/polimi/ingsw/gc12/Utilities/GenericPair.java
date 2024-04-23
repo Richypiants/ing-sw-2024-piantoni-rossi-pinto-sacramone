@@ -1,11 +1,12 @@
 package it.polimi.ingsw.gc12.Utilities;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
 A pair of generic elements
  */
-public class GenericPair<T1, T2> {
+public class GenericPair<T1, T2> implements Serializable {
     //TODO: make everything private final again once JSONParser is fixed
 
     /**

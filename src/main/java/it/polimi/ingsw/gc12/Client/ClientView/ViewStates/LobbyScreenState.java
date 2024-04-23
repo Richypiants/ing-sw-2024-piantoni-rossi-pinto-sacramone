@@ -8,7 +8,7 @@ import java.util.UUID;
 public class LobbyScreenState extends ViewState {
 
     public LobbyScreenState() {
-        selectedView.lobbyScreen();
+        ClientController.getInstance().view.lobbyScreen();
     }
 
     @Override
@@ -60,6 +60,6 @@ public class LobbyScreenState extends ViewState {
 
     @Override
     public void transition() {
-        currentState = new GameScreenState();
+        ClientController.getInstance().viewState = new GameScreenState();
     }
 }

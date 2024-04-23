@@ -11,4 +11,8 @@ public abstract class View { //FIXME: turn into interface maybe?
     public abstract void lobbyScreen();
 
     public abstract void gameScreen();
+
+    public abstract void connectedConfirmation();
+
+    public abstract void updateNickname();
 }

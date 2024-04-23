@@ -1,13 +1,11 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.CreatePlayerCommand;
 
 public class ConnectToServerScreenState extends ViewState {
 
     public ConnectToServerScreenState() {
-        selectedView.connectToServerScreen();
-        transition();
+        ClientController.getInstance().view.connectToServerScreen();
     }
 
     @Override
@@ -18,6 +16,6 @@ public class ConnectToServerScreenState extends ViewState {
 
     @Override
     public void transition() {
-        currentState = new LobbyScreenState();
+        ClientController.getInstance().viewState = new LobbyScreenState();
     }
 }

@@ -28,7 +28,7 @@ public class Server {
         //Socket server setup
         try (
                 AsynchronousServerSocketChannel serverSocket = AsynchronousServerSocketChannel.open()
-                        .bind(new InetSocketAddress("codexnaturalis.polimi.it", 5000));
+                        .bind(new InetSocketAddress("localhost"/*"codexnaturalis.polimi.it"*/, 5000));
                 //ExecutorService executorsPool = Executors.newCachedThreadPool(/*thread factory here to change default
                 //keepAlive timeout and set maximum number of Threads*/)
         ) {
@@ -48,7 +48,7 @@ public class Server {
                     //executorsPool.submit(
                     //        () -> {
                     //TODO: change size of array
-                    ByteBuffer byteBufferIn = ByteBuffer.wrap(new byte[0]);
+                    ByteBuffer byteBufferIn = ByteBuffer.wrap(new byte[1024]);
                     try { //FIXME: remove try/catch construct
                         channel.read(byteBufferIn, null,
                                 new SocketClientHandler<>(channel, byteBufferIn)

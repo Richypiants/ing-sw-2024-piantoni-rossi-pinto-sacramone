@@ -1,4 +1,6 @@
 package it.polimi.ingsw.gc12.Controller;
 
-public interface Command {
+import java.io.Serializable;
+
+public interface Command extends Serializable {
 }

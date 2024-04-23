@@ -18,11 +18,14 @@ public class ClientController implements ClientControllerInterface {
     private static final ClientController SINGLETON_INSTANCE = new ClientController();
 
     private final Map<Integer, ClientCard> cardsList;
+    //FIXME: forse era meglio che rimanessero di competenza della View stessa nel ViewState...
+    public View view;
+    public ViewState viewState;
+    public VirtualServer serverConnection;
+    public VirtualClient thisClient;
     /**
      * This player's nickname
      */
-    public VirtualServer serverConnection;
-    public VirtualClient thisClient;
     public String ownNickname;
     public Map<UUID, GameLobby> lobbies;
     public GameLobby currentLobbyOrGame;
@@ -37,6 +40,30 @@ public class ClientController implements ClientControllerInterface {
 
     public static ClientController getInstance() {
         return SINGLETON_INSTANCE;
+    }
+
+    public ViewState getCurrentState() {
+        return viewState;
+    }
+
+    public void setCurrentState(ViewState currentState) {
+        viewState = currentState;
+    }
+
+    public View getView() {
+        return view;
+    }
+
+    public void setView(View view){
+        this.view = view;
+    }
+
+    public void setCommunicationTechnology(String communicationTechnology) {
+        switch (communicationTechnology) {
+            case "Socket" -> SocketClient.getInstance();
+            case "RMI" -> RMIClientSkeleton.getInstance();
+            default -> System.err.println("Unknown communication technology");
+        }
     }
 
     private Map<Integer, ClientCard> loadCards() {

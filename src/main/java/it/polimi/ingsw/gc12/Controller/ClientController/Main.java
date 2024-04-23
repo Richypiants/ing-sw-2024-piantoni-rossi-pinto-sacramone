@@ -1,50 +1,28 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
+import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.View;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.TitleScreenState;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnknownStringException;
+import org.fusesource.jansi.AnsiConsole;
 
 public class Main {
 
-    public static String language;
-    public static View view;
-
-    public static void main(String[] args) throws UnknownStringException {
-        if (args[1].equalsIgnoreCase("TUI"))
+    public static void main(String[] args) {
+        ClientController.getInstance().view = TUIView.getInstance();
+        ClientController.getInstance().viewState = new TitleScreenState();
+        ClientController.getInstance().serverConnection = SocketClient.getInstance();
+        //TODO: add TUI to args
+        //if (args[1].equalsIgnoreCase("TUI"))
             //view = new TUIView().run();
         /*else
             view = new GUIView().run();
          */
 
-        if (args[0].equalsIgnoreCase("it"))
-            language = "IT";
-        else
-            language = "EN";
+        AnsiConsole.systemInstall();
+        //System.out.println(ansi().fg(Ansi.Color.GREEN).a("Hello").reset());
+        //System.out.println(ansi().cursorUpLine().cursorUpLine().bg(Color.RED).a("World!").reset());
 
-        if (args[2].equalsIgnoreCase("RMI"))
-            RMIClientSkeleton.getInstance();
-        else if (args[2].equalsIgnoreCase("Socket"))
-            SocketClient.getInstance();
-        else
-            throw new UnknownStringException("Provided technology not recognized");
-
-        initializeApp();
-        //view.addListener(this);
-
-        System.out.println("Inserisci il tuo nickname (tutti potranno vederlo):");
-        //TODO: Scanner
-
-        //view.setNickname();
-
-        //primitivaDiConnessione();
-
-        System.out.println();
-
-    }
-
-    public static void initializeApp() {
-        //TODO: caricare le carte e la loro grafica?
-        // serve altro da caricare?
-
-        //view.initializeApp();
+        //tui.singleThreadExecutor.submit(SINGLETON_TUI_INSTANCE::titleScreen);
     }
 }

@@ -175,9 +175,9 @@ public class ServerController implements ServerControllerInterface {
             ); //throwException();
         } else {
             players.get(sender).setNickname(nickname);
+            sender.requestToClient(new SetNicknameCommand(nickname)); //setNickname();
 
-            //TODO: decide what to send back
-            //sender.serverMessage(varargsToArrayList(...)); //...();
+            //TODO: update to other players too!
         }
     }
 
