@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12;
 
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,10 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
@@ -50,22 +48,60 @@ public class HelloController {
     }
 
     @FXML
-    protected void Yes(ActionEvent event) throws IOException, InterruptedException {
+    protected void Yes(ActionEvent event) throws IOException {
         if (NicknameField.getCharacters().length() >= 5) {
-            StatusLabel.setText("Status: Nickname Ok - Logged in");
-            // wait(2500);
-            Parent root = FXMLLoader.load(getClass().getResource("Third.fxml"));
-            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Download.fxml"));
+            Parent root = loader.load(); // Carica il file FXML e ottiene il root
+
+            // Ottieni lo stage corrente e imposta la nuova scena
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root, 1800, 850);
             stage.setScene(scene);
             stage.setMaximized(true);
             stage.show();
+
+            Label downloadLabel = (Label) loader.getNamespace().get("download");
+            ProgressBar progressBar = (ProgressBar) loader.getNamespace().get("progressBar");
+
+            if (downloadLabel != null) {
+                downloadLabel.setText("Nickname OK - Caricamento");
+            } else {
+                System.out.println("Label non trovata nel FXML.");
+            }
+
+            if (progressBar != null) {
+                Task<Void> task = new Task<Void>() {
+                    @Override
+                    protected Void call() {
+                        for (int i = 0; i <= 100; i++) {
+                            updateProgress(i, 100);
+                            try {
+                                Thread.sleep(25); // Regola questa durata per gestire la velocità del caricamento
+                            } catch (InterruptedException e) {
+                                if (isCancelled()) {
+                                    break;
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                };
+
+                progressBar.progressProperty().bind(task.progressProperty());
+                Thread thread = new Thread(task);
+                thread.setDaemon(true); // Imposta il thread come daemon per non impedire la chiusura dell'applicazione
+                thread.start();
+            } else {
+                System.out.println("ProgressBar non trovata nel FXML.");
+            }
+
         } else if (NicknameField.getCharacters().length() < 5 && NicknameField.getCharacters().length() > 0) {
             StatusLabel.setText("Nickname troppo corto, almeno 5 caratteri");
         } else {
             StatusLabel.setText("Inserire prima un nickname");
         }
     }
+
 
     @FXML
     protected void No() throws IOException {
