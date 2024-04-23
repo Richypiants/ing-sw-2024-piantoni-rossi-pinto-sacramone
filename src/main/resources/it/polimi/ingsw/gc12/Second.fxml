@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-<Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="400.0" prefWidth="600.0"
-      xmlns="http://javafx.com/javafx/21"
-      fx:controller="it.polimi.ingsw.gc12.HelloController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity"
+            prefHeight="720.0" prefWidth="1280.0"
+            xmlns="http://javafx.com/javafx/21"
+            fx:controller="it.polimi.ingsw.gc12.HelloController">
     <!-- style="-fx-background-image: url(file:///C:/Users/jacop/Desktop/Stage.png);" -->
     <children>
         <Label alignment="CENTER" layoutX="198.0" layoutY="115.0" text="Nickname">
@@ -30,4 +31,4 @@
             </font>
         </Label>
     </children>
-</Pane>
+</AnchorPane>
