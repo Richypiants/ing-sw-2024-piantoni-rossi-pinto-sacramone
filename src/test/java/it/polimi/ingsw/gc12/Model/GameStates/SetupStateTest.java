@@ -2,11 +2,10 @@ package it.polimi.ingsw.gc12.Model.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
+import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.Player;
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-class ChooseInitialCardsStateTest {
+class SetupStateTest {
 
     Player player1;
     Player player2;
@@ -58,25 +57,22 @@ class ChooseInitialCardsStateTest {
         server.playersToLobbiesAndGames.put(game.getPlayers().get(1), game);
 
         state = new SetupState(game);
-        state.transition();
     }
 
     @Test
     void correctTransitionTest() {
-        game.getCurrentState().transition();
-        assertInstanceOf(ChooseObjectiveCardsState.class, game.getCurrentState());
+        state.transition();
+        assertInstanceOf(ChooseInitialCardsState.class, game.getCurrentState());
     }
 
     @Test
-    void transitionStartAfterAllcheck() throws Exception {
+    void correctSetupAfterTransitionTest() {
+        state.transition();
         for (var target : game.getPlayers()) {
-            game.getCurrentState().placeCard(target, new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
-            if (target != game.getPlayers().getLast()) {
-                assertInstanceOf(ChooseInitialCardsState.class, game.getCurrentState());
-            } else {
-                assertInstanceOf(ChooseObjectiveCardsState.class, game.getCurrentState());
-            }
-        }
+            assert (!target.getCardsInHand().isEmpty());
+            assertInstanceOf(InitialCard.class, target.getCardsInHand().getFirst());
 
+        }
     }
+
 }
