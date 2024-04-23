@@ -1,5 +1,9 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
+import it.polimi.ingsw.gc12.Client.ClientView.View;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameScreenState;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LobbyScreenState;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
@@ -47,6 +51,12 @@ public class ClientController implements ClientControllerInterface {
         throw e;
     }
 
+    public void setNickname(String nickname){
+        ownNickname = nickname;
+        //FIXME: are we sure it goes here? (View and Controller not separated...?)
+        viewState.connectedConfirmation();
+    }
+
     public void restoreGame(ClientGame gameDTO){
         currentLobbyOrGame = gameDTO;
     }
@@ -56,17 +66,24 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public void updateLobby(UUID lobbyUUID, GameLobby lobby){
-        //se la lobby ricevuta ha 0 giocatori la rimuoviamo dalla mappa
+        //The re
         if(lobby.getPlayersNumber() <= 0)
             lobbies.remove(lobbyUUID);
+
         lobbies.put(lobbyUUID, lobby);
-        if(lobby.getPlayers().stream().anyMatch((player) -> player.getNickname().equals(ownNickname)))
+        if(lobby.getPlayers().stream().anyMatch((player) -> player.getNickname().equals(ownNickname))) {
             currentLobbyOrGame = lobby;
+        }
+
+        //Ristampare tutte le lobby nella schermata in qualsiasi caso
+        viewState = new LobbyScreenState();
     }
 
     public void startGame(UUID lobbyUUID, GameLobby lobby){
         updateLobby(lobbyUUID, lobby);
         currentLobbyOrGame = new ClientGame(currentLobbyOrGame);
+
+        viewState = new GameScreenState();
     }
 
     public void placeCard(String nickname, GenericPair<Integer, Integer> coordinates, int cardID,

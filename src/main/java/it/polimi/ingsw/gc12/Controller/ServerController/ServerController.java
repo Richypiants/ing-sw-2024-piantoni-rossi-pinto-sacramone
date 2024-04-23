@@ -149,6 +149,7 @@ public class ServerController implements ServerControllerInterface {
         } else {
             Player target = new Player(nickname);
             players.put(sender, target);
+            sender.requestToClient(new SetNicknameCommand(nickname)); //setNickname();
             sender.requestToClient(
                     new SetLobbiesCommand(
                             lobbiesAndGames.entrySet().stream()

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Client.ClientView.TUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ConnectToServerScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.TitleScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
@@ -43,33 +44,21 @@ public class TUIView extends View {
     //TODO: currently erasing already written input chars
     public static void printToPosition(Ansi toPrint) {
         System.out.print(toPrint);
-        System.out.println(ansi().reset().cursor(20, 1).eraseScreen(Erase.FORWARD)); //FIXME: autoResetting... should keep it?
-    }
-
-    //TODO: handle exception
-    public static void main(String[] args) {
-        TUIView tui = TUIView.getInstance();
-        AnsiConsole.systemInstall();
-        //System.out.println(ansi().fg(Ansi.Color.GREEN).a("Hello").reset());
-        //System.out.println(ansi().cursorUpLine().cursorUpLine().bg(Color.RED).a("World!").reset());
-
-        //tui.singleThreadExecutor.submit(SINGLETON_TUI_INSTANCE::titleScreen);
-
-        ViewState.setView(tui);
-        ViewState.setCurrentState(new TitleScreenState());
+        System.out.println(ansi().reset().cursor(20, 1).eraseScreen(Erase.FORWARD));
+        //FIXME: autoResetting... should keep it?
     }
 
     public void titleScreen() {
         clearTerminal();
         printToPosition(ansi().cursor(1, 1).a("Starting Codex Naturalis..."));
         try {
-            sleep(3000);
+            sleep(500);
         } catch (Exception e) {
             e.printStackTrace();
         }
         printToPosition(ansi().cursor(2, 1).a("Cranio Creations Logo"));
         try {
-            sleep(3000);
+            sleep(500);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -101,28 +90,38 @@ public class TUIView extends View {
                 ansi().cursor(1, 1).a("Scegli la tecnologia di comunicazione (RMI-Socket): "),
                 List.of("RMI", "Socket")
         );
+        ClientController.getInstance().setCommunicationTechnology(communicationTechnology);
         clearTerminal();
         printToPosition(ansi().cursor(1,1).a("Scegli il tuo nickname: "));
-        String nickname  = scanner.nextLine();
+        String nickname = scanner.nextLine();
+        printToPosition(ansi().cursor(2,1).a("Connessione al server in corso..."));
         try {
             ClientController.getInstance().serverConnection
                     .requestToServer(ClientController.getInstance().thisClient, new CreatePlayerCommand(nickname));
         } catch (Exception e) {
             //TODO: Logging to terminal in another position
-            System.err.println("xxx Exception");
-        }
-        printToPosition(ansi().a("Connettendosi al server..."));
-        //waitforconnection();
-        printToPosition(ansi().a("Connessione al server riuscita: nickname confermato!"));
-        //sleep(1000);
+            e.printStackTrace();
+            //System.err.println("xxx Exception");
+            //printError();
 
-        clearTerminal();
+            //TODO: What to do if connection failed? Automatically retry connection, go into another state,
+            // redo the initial config(unlikely option)
+        }
     }
 
     public void lobbyScreen() {
-        ((TUIView) ViewState.getView()).listener.startReading();
-        printToPosition(ansi().cursor(1, 1).a("Ecco la lista delle lobby aperte al momento: "));
-        int i = 2;
+        int i = 1;
+        printToPosition(ansi().cursor(i++,1)
+                .fg(Ansi.Color.RED).bold()
+                .a("[PLAYER]: ").a(ClientController.getInstance().ownNickname));
+        printToPosition(ansi().cursor(i++, 1).a("[CURRENT LOBBY]: " + (
+                ClientController.getInstance().currentLobbyOrGame == null ?
+                        "none" :
+                        ClientController.getInstance().currentLobbyOrGame) //TODO: stampare UUID?
+                )
+        );
+        ((TUIView) ClientController.getInstance().view).listener.startReading();
+        printToPosition(ansi().cursor(i++, 1).a("Ecco la lista delle lobby aperte al momento: "));
         for (var entry : ClientController.getInstance().lobbies.entrySet()) {
             printToPosition(ansi().cursor(i++, 1).a(entry.getKey() + ": " + entry.getValue()));
         }
@@ -132,12 +131,27 @@ public class TUIView extends View {
                         'createLobby' per creare una lobby,
                         'joinLobby <lobbyUUID>' per joinare una lobby esistente,
                         'setNickname <nickname>' per cambiare il proprio nickname:
-                        """
+                      """
         ));
     }
 
     public void gameScreen() {
 
+    }
+
+    public void connectedConfirmation(){
+        printToPosition(ansi().cursor(3,1).a("Connessione al server riuscita: nickname confermato!"));
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            //Shouldn't happen
+        }
+
+        clearTerminal();
+    }
+
+    public void updateNickname(){
+        //TODO: dopo aver deciso dov'è stampato a video il nickname, updatarlo
     }
 
     /*

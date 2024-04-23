@@ -19,16 +19,11 @@ public class SocketClient implements VirtualServer {
     private SocketClient() {
         //FIXME: how about the ip?
         try (AsynchronousSocketChannel channel = AsynchronousSocketChannel.open().bind(null)) {
-            channel.connect(new InetSocketAddress("codexnaturalis.polimi.it", 5000)).get();
+            channel.connect(new InetSocketAddress("localhost", 5000)).get();
 
             //TODO: change size of array and write first message
-            ByteBuffer byteBufferIn = ByteBuffer.wrap(new byte[0]);
+            ByteBuffer byteBufferIn = ByteBuffer.wrap(new byte[1024]);
             serverHandler = new SocketServerHandler<>(channel, byteBufferIn);
-            ArrayList<Object> parameters = new ArrayList<>();
-            parameters.add("createPlayer");
-
-            //TODO: formattare il messaggio
-            channel.write(serverHandler.writeObject(parameters));
             channel.read(byteBufferIn, null, serverHandler);
         } catch (IOException e) {
             throw new RuntimeException(e);

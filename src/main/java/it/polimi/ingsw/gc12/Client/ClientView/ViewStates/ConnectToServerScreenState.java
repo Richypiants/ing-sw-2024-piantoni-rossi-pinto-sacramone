@@ -11,6 +11,12 @@ public class ConnectToServerScreenState extends ViewState {
     }
 
     @Override
+    public void connectedConfirmation(){
+        ClientController.getInstance().view.connectedConfirmation();
+        transition();
+    }
+
+    @Override
     public void transition() {
         currentState = new LobbyScreenState();
     }

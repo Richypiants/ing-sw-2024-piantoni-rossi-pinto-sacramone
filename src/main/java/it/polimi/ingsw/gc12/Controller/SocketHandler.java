@@ -9,7 +9,7 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
 
     private final AsynchronousSocketChannel channel;
     private final ByteBuffer inputBuffer;
-    private final ObjectInputStream objectInputStream;
+    private ObjectInputStream objectInputStream = null;
     private final ObjectOutputStream objectOutputStream;
     private final ByteArrayOutputStream byteOutputStream;
 
@@ -17,8 +17,6 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
         this.channel = channel;
         this.inputBuffer = buffer;
         //TODO: handle exceptions (in methods below too)
-        this.objectInputStream = new ObjectInputStream(new ByteArrayInputStream(buffer.array()));
-
         this.byteOutputStream = new ByteArrayOutputStream();
         objectOutputStream = new ObjectOutputStream(byteOutputStream);
         //quando voglio scrivere:
@@ -27,6 +25,9 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
 
     //TODO: Handle Exceptions
     public Object readObject() throws IOException, ClassNotFoundException {
+        if(objectInputStream == null){
+            this.objectInputStream = new ObjectInputStream(new ByteArrayInputStream(inputBuffer.array()));
+        }
         return objectInputStream.readObject();
     }
 
@@ -40,7 +41,6 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
 
     @Override
     public void completed(Integer result, A attachment) {
-        //TODO: clean input (or nickname only)???
         Command receivedCommand = null;
         try {
             //FIXME: add instanceof casting

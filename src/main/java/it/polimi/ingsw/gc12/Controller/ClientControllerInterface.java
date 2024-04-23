@@ -16,6 +16,8 @@ public interface ClientControllerInterface extends ControllerInterface {
 
     void throwException(Exception e) throws Exception;
 
+    void setNickname(String nickname);
+
     void restoreGame(ClientGame gameDTO);
 
     void setLobbies(Map<UUID, GameLobby> lobbies);
