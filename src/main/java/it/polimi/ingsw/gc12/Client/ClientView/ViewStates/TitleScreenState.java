@@ -6,7 +6,6 @@ public class TitleScreenState extends ViewState {
 
     public TitleScreenState() {
         ClientController.getInstance().view.titleScreen();
-        transition();
     }
 
     @Override

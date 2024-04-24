@@ -78,10 +78,14 @@ public class ClientController implements ClientControllerInterface {
         throw e;
     }
 
+    public void keepAlive() {
+        //TODO: update Timer on VirtualClient Timer Map (add attributes or methods for management)
+    }
+
     public void setNickname(String nickname){
         ownNickname = nickname;
         //FIXME: are we sure it goes here? (View and Controller not separated...?)
-        viewState.connectedConfirmation();
+        viewState.updateNickname();
     }
 
     public void restoreGame(ClientGame gameDTO){
@@ -90,17 +94,23 @@ public class ClientController implements ClientControllerInterface {
 
     public void setLobbies(Map<UUID, GameLobby> lobbies){
         this.lobbies = lobbies;
+        viewState = new LobbyScreenState();
     }
 
     public void updateLobby(UUID lobbyUUID, GameLobby lobby){
-        //The re
-        if(lobby.getPlayersNumber() <= 0)
-            lobbies.remove(lobbyUUID);
-
-        lobbies.put(lobbyUUID, lobby);
-        if(lobby.getPlayers().stream().anyMatch((player) -> player.getNickname().equals(ownNickname))) {
+        if (lobby.getPlayers().stream().anyMatch((player) -> player.getNickname().equals(ownNickname))) {
             currentLobbyOrGame = lobby;
         }
+        //Se leaveLobby, cioè se noneMatch e c'ero dentro
+        else if (lobby.equals(currentLobbyOrGame)) {
+            currentLobbyOrGame = null;
+        }
+
+        //The received lobbies with a playersNumber equal to zero or below are removed from the ClientModel
+        if(lobby.getPlayersNumber() <= 0)
+            lobbies.remove(lobbyUUID);
+        else
+            lobbies.put(lobbyUUID, lobby);
 
         //Ristampare tutte le lobby nella schermata in qualsiasi caso
         viewState = new LobbyScreenState();
@@ -109,6 +119,7 @@ public class ClientController implements ClientControllerInterface {
     public void startGame(UUID lobbyUUID, GameLobby lobby){
         updateLobby(lobbyUUID, lobby);
         currentLobbyOrGame = new ClientGame(currentLobbyOrGame);
+        //FIXME: send clientGame directly?
 
         viewState = new GameScreenState();
     }

@@ -2,11 +2,9 @@ package it.polimi.ingsw.gc12.Client.ClientView.TUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import org.fusesource.jansi.Ansi;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.StringTokenizer;
-import java.util.UUID;
+import java.util.*;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -28,7 +26,7 @@ public class TUIListener {
         new Thread(() -> {
             while (true) {
                 //FIXME: devo salvare la precedente posizione del cursore?
-                System.out.println(ansi().cursor(20, 1));
+                System.out.println(ansi().cursor(20, 1).eraseScreen(Ansi.Erase.FORWARD));
                 parseCommand(scanner.nextLine());
             }
         }
@@ -41,22 +39,29 @@ public class TUIListener {
         ViewState currentState = ClientController.getInstance().viewState;
 
         //TODO: Every case has to check type parameters before calling the State method or eventually die
-        switch (tokens.removeFirst().trim()) {
-            case "createLobby" -> currentState.createLobby(Integer.parseInt(tokens.getFirst()));
-            case "joinLobby" -> currentState.joinLobby((UUID.fromString(tokens.getFirst())));
-            case "setNickname" -> currentState.setNickname(tokens.getFirst());
+
+        try {
+            switch (tokens.removeFirst().trim()) {
+                case "setNickname" -> currentState.setNickname(tokens.getFirst());
+                case "createLobby" -> currentState.createLobby(Integer.parseInt(tokens.getFirst()));
+                case "joinLobby" -> currentState.joinLobby((UUID.fromString(tokens.getFirst())));
+                case "leaveLobby" -> currentState.leaveLobby();
             /*case "broadcastMessage" -> currentState.;
             case "directMessage" -> currentState.;
             case "drawFromDeck" -> currentState;
             case "drawFromVisibleCards" -> currentState.;
             case "keepAlive" -> currentState.;
             case "leaveGame" -> currentState.;
-            case "leaveLobby" -> currentState.;
             case "pickObjective" -> currentState.;
             case "placeCard" -> currentState.;*/
-            default -> System.err.println("Unknown command");
+                default -> System.err.println("Unknown command");
+            }
+        } catch (NoSuchElementException e) {
+            //TODO: stampare "Formato del comando fornito non valido"
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            //TODO: stampare "Parametri forniti invalidi"
         }
-        ;
     }
 
     public void parseCommand(String input) {

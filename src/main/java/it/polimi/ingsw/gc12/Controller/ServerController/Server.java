@@ -25,13 +25,15 @@ public class Server {
             throw new RuntimeException(e);
         }
 
+        System.out.println("[RMI]: Server listening on {" + registry + "}");
+
         //Socket server setup
-        try (
-                AsynchronousServerSocketChannel serverSocket = AsynchronousServerSocketChannel.open()
-                        .bind(new InetSocketAddress("localhost"/*"codexnaturalis.polimi.it"*/, 5000));
-                //ExecutorService executorsPool = Executors.newCachedThreadPool(/*thread factory here to change default
-                //keepAlive timeout and set maximum number of Threads*/)
-        ) {
+        try {
+            AsynchronousServerSocketChannel serverSocket = AsynchronousServerSocketChannel.open()
+                    .bind(new InetSocketAddress("localhost"/*"codexnaturalis.polimi.it"*/, 5000));
+            //ExecutorService executorsPool = Executors.newCachedThreadPool(/*thread factory here to change default
+            //keepAlive timeout and set maximum number of Threads*/)
+            System.out.println("[SOCKET]: Server listening on {" + serverSocket.getLocalAddress() + "}");
             //FIXME: how about the ip?
 
             //TODO: choose behaviour (direct handoff vs unbounded vs bounded): currently chosen bounded
@@ -43,12 +45,14 @@ public class Server {
             while (true) {
                 AsynchronousSocketChannel channel = serverSocket.accept().get();
 
+                System.out.println("[SOCKET]: New connection accepted from {" + channel.getRemoteAddress() + "}");
+
                 try {
                     //add connection to queue
                     //executorsPool.submit(
                     //        () -> {
                     //TODO: change size of array
-                    ByteBuffer byteBufferIn = ByteBuffer.wrap(new byte[1024]);
+                    ByteBuffer byteBufferIn = ByteBuffer.wrap(new byte[65536]);
                     try { //FIXME: remove try/catch construct
                         channel.read(byteBufferIn, null,
                                 new SocketClientHandler<>(channel, byteBufferIn)

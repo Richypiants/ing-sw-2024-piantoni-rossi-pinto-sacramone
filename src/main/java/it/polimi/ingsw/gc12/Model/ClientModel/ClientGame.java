@@ -30,6 +30,7 @@ public class ClientGame extends GameLobby{
 
     //TODO: costruire scoreboard
 
+    //FIXME: non si può perchè così farebbe shuffle, deve ricevere un GameDTO o simile!
     public ClientGame(GameLobby lobby/*, Player myself*/) {
         super(lobby.getMaxPlayers(), lobby.getPlayers().stream()
                 //.filter(Predicate.not(myself::equals))

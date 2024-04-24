@@ -20,7 +20,6 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
         this.byteOutputStream = new ByteArrayOutputStream();
         objectOutputStream = new ObjectOutputStream(byteOutputStream);
         //quando voglio scrivere:
-
     }
 
     //TODO: Handle Exceptions
@@ -33,7 +32,9 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
 
     //TODO: Handle Exceptions
     public ByteBuffer writeObject(Object obj) throws IOException {
+        objectOutputStream.reset();
         objectOutputStream.writeObject(obj);
+        objectOutputStream.flush();
         return ByteBuffer.wrap(byteOutputStream.toByteArray());
     }
 
@@ -45,6 +46,7 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
         try {
             //FIXME: add instanceof casting
             receivedCommand = (Command) readObject();
+            //System.out.println("[SOCKET-HANDLER]: Received command " + receivedCommand.getClass() + " from {" + channel.getRemoteAddress() + "}");
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
@@ -54,6 +56,7 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
         //FIXME: e se non lo trova? exception... ma per createPlayer?
         // exceptions: noSuchMethod, InvalidParametersForMethod, NoPlayerFound(sendCreatePlayer),...
 
+        inputBuffer.clear();
         channel.read(inputBuffer, attachment, this);
         executeReceivedCommand(receivedCommand);
     }
@@ -63,9 +66,19 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
 
     }
 
-    protected void sendRequest(Command command) {
+    protected synchronized void sendRequest(Command command) {
         try {
-            channel.write(writeObject(command));
+            channel.write(writeObject(command), null, new CompletionHandler<>() {
+                //TODO: non serve... cancellare?
+                @Override
+                public void completed(Integer result, Object attachment) {
+                }
+
+                @Override
+                public void failed(Throwable exc, Object attachment) {
+                    exc.printStackTrace();
+                }
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

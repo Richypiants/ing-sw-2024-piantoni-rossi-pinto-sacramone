@@ -1,11 +1,12 @@
 package it.polimi.ingsw.gc12.Utilities;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
 A triplet of generic elements
  */
-public class Triplet<T1, T2, T3> {
+public class Triplet<T1, T2, T3> implements Serializable {
 
     /**
     The first attribute of this triplet

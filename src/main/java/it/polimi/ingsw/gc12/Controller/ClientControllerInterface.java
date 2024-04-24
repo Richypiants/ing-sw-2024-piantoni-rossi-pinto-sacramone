@@ -16,6 +16,8 @@ public interface ClientControllerInterface extends ControllerInterface {
 
     void throwException(Exception e) throws Exception;
 
+    void keepAlive();
+
     void setNickname(String nickname);
 
     void restoreGame(ClientGame gameDTO);

@@ -1,9 +1,7 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
 import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
-import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.TitleScreenState;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.UnknownStringException;
 import org.fusesource.jansi.AnsiConsole;
 
 public class Main {
@@ -11,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
         ClientController.getInstance().view = TUIView.getInstance();
         ClientController.getInstance().viewState = new TitleScreenState();
-        ClientController.getInstance().serverConnection = SocketClient.getInstance();
+        ClientController.getInstance().viewState.transition();
         //TODO: add TUI to args
         //if (args[1].equalsIgnoreCase("TUI"))
             //view = new TUIView().run();

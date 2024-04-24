@@ -82,6 +82,11 @@ public class GameLobby implements Serializable {
             this.maxPlayers = numOfMaxPlayers;
         }
     }
+
+    @Override
+    public String toString() {
+        return "GameLobby{" + "maxPlayers=" + maxPlayers + " [" + LIST_OF_PLAYERS + "]}";
+    }
 }
 
 // addPlayer() -> Si test

@@ -1,7 +1,10 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.*;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.CreateLobbyCommand;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.JoinLobbyCommand;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.LeaveLobbyCommand;
+import it.polimi.ingsw.gc12.Controller.SetNicknameCommand;
 
 import java.util.UUID;
 
@@ -16,11 +19,14 @@ public class LobbyScreenState extends ViewState {
         try {
             ClientController.getInstance().serverConnection
                     .requestToServer(ClientController.getInstance().thisClient, new SetNicknameCommand(nickname));
-            ClientController.getInstance().ownNickname = nickname;
-            ClientController.getInstance().view.updateNickname();
         } catch (Exception e) {
             //printError();
         }
+    }
+
+    @Override
+    public void updateNickname() {
+        ClientController.getInstance().view.updateNickname();
     }
 
     @Override

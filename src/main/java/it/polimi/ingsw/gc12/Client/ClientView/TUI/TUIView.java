@@ -1,15 +1,10 @@
 package it.polimi.ingsw.gc12.Client.ClientView.TUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ConnectToServerScreenState;
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.TitleScreenState;
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.CreatePlayerCommand;
 import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.AnsiConsole;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -42,7 +37,15 @@ public class TUIView extends View {
     }
 
     //TODO: currently erasing already written input chars
-    public static void printToPosition(Ansi toPrint) {
+    public static void printDebug(Ansi toPrint) {
+        System.out.print(ansi().cursor(17, 1));
+        System.out.print(toPrint);
+        System.out.println(ansi().reset().cursor(20, 1).eraseLine(Erase.FORWARD));
+        //FIXME: autoResetting... should keep it?
+    }
+
+    //TODO: currently erasing already written input chars
+    public void printToPosition(Ansi toPrint) {
         System.out.print(toPrint);
         System.out.println(ansi().reset().cursor(20, 1).eraseScreen(Erase.FORWARD));
         //FIXME: autoResetting... should keep it?
@@ -67,7 +70,6 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(5, 1).a("Premi Invio per iniziare..."));
         scanner.nextLine();
 
-        clearTerminal();
     }
 
     private String readUntilRoutine(Ansi prompt, List<String> validInput){
@@ -110,6 +112,8 @@ public class TUIView extends View {
     }
 
     public void lobbyScreen() {
+        clearTerminal();
+
         int i = 1;
         printToPosition(ansi().cursor(i++,1)
                 .fg(Ansi.Color.RED).bold()
@@ -120,18 +124,18 @@ public class TUIView extends View {
                         ClientController.getInstance().currentLobbyOrGame) //TODO: stampare UUID?
                 )
         );
-        ((TUIView) ClientController.getInstance().view).listener.startReading();
-        printToPosition(ansi().cursor(i++, 1).a("Ecco la lista delle lobby aperte al momento: "));
+        listener.startReading();
+        printToPosition(ansi().cursor(i++, 1).a("[ACTIVE LOBBIES] "));
         for (var entry : ClientController.getInstance().lobbies.entrySet()) {
             printToPosition(ansi().cursor(i++, 1).a(entry.getKey() + ": " + entry.getValue()));
         }
         printToPosition(ansi().cursor(i++, 1));
         printToPosition(ansi().cursor(i, 1).a(
                 """
-                        'createLobby' per creare una lobby,
+                           'createLobby <maxPlayers>' per creare una lobby,
                         'joinLobby <lobbyUUID>' per joinare una lobby esistente,
-                        'setNickname <nickname>' per cambiare il proprio nickname:
-                      """
+                           'setNickname <newNickname>' per cambiare il proprio nickname:
+                        """
         ));
     }
 
@@ -146,12 +150,13 @@ public class TUIView extends View {
         } catch (InterruptedException e) {
             //Shouldn't happen
         }
-
-        clearTerminal();
     }
 
     public void updateNickname(){
-        //TODO: dopo aver deciso dov'è stampato a video il nickname, updatarlo
+        //TODO: eraseForward potrebbe funzionare? Se sì, scrivere due print
+        System.out.println(ansi()
+                .fg(Ansi.Color.RED).bold()
+                .cursor(1, 11).a(ClientController.getInstance().ownNickname).eraseLine().reset());
     }
 
     /*

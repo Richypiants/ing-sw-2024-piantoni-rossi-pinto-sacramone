@@ -2,7 +2,9 @@ package it.polimi.ingsw.gc12.Controller.ServerController;
 
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.*;
+import it.polimi.ingsw.gc12.Controller.KeepAliveCommand;
 import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
+import it.polimi.ingsw.gc12.Controller.SetNicknameCommand;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
@@ -60,8 +62,8 @@ public class ServerController implements ServerControllerInterface {
         return Collections.unmodifiableMap(tmp);
     }
 
-    public boolean hasNoPlayer(VirtualClient client) throws Exception {
-        if(players.containsKey(client)) {
+    private boolean hasNoPlayer(VirtualClient client) throws Exception {
+        if (!players.containsKey(client)) {
             client.requestToClient(
                     new ThrowExceptionCommand(
                             new NotExistingPlayerException("Unregistered client")
@@ -73,11 +75,12 @@ public class ServerController implements ServerControllerInterface {
     }
 
     //FIXME: abbastanza orribile e duplicato... playerState?
-    public boolean inGame(VirtualClient client) throws Exception {
-        if(players.get(client) instanceof InGamePlayer) {
+    private boolean inGame(VirtualClient client, boolean throwIf) throws Exception {
+        if (players.get(client) instanceof InGamePlayer == throwIf) {
             client.requestToClient(
                     new ThrowExceptionCommand(
-                            new ForbiddenActionException("Cannot execute action while in a game")
+                            new ForbiddenActionException("Cannot execute action while " +
+                                    (throwIf ? "" : "not ") + "in a game")
                     )
             ); //throwException();
             return true;
@@ -85,11 +88,12 @@ public class ServerController implements ServerControllerInterface {
         return false;
     }
 
-    public boolean inLobbyOrGame(VirtualClient client) throws Exception {
-        if(playersToLobbiesAndGames.containsKey(players.get(client))) {
+    private boolean inLobbyOrGame(VirtualClient client, boolean throwIf) throws Exception {
+        if (playersToLobbiesAndGames.containsKey(players.get(client)) == throwIf) {
             client.requestToClient(
                     new ThrowExceptionCommand(
-                            new ForbiddenActionException("Cannot execute action while in a lobby or in a game")
+                            new ForbiddenActionException("Cannot execute action while " +
+                                    (throwIf ? "" : "not ") + "in a lobby or in a game")
                     )
             ); //throwException();
             return true;
@@ -97,7 +101,7 @@ public class ServerController implements ServerControllerInterface {
         return false;
     }
 
-    public boolean validCard(VirtualClient sender, int cardID) throws Exception {
+    private boolean validCard(VirtualClient sender, int cardID) throws Exception {
         if(!cardsList.containsKey(cardID)){
             sender.requestToClient(
                     new ThrowExceptionCommand(
@@ -110,6 +114,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void createPlayer(VirtualClient sender, String nickname) throws Exception {
+        System.out.println("[SERVER]: CreatePlayerCommand received and being executed");
         if(players.containsKey(sender)) {
             sender.requestToClient(
                     new ThrowExceptionCommand(
@@ -149,6 +154,7 @@ public class ServerController implements ServerControllerInterface {
         } else {
             Player target = new Player(nickname);
             players.put(sender, target);
+            System.out.println("[SERVER]: sending SetNicknameCommand and SetLobbiesCommand to client " + sender);
             sender.requestToClient(new SetNicknameCommand(nickname)); //setNickname();
             sender.requestToClient(
                     new SetLobbiesCommand(
@@ -161,7 +167,8 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void setNickname(VirtualClient sender, String nickname) throws Exception {
-        if(hasNoPlayer(sender) || inLobbyOrGame(sender)) return;
+        System.out.println("[SERVER]: SetNicknameCommand received and being executed");
+        if (hasNoPlayer(sender) || inLobbyOrGame(sender, true)) return;
 
         Optional<Player> selectedPlayer = players.values().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
@@ -175,6 +182,7 @@ public class ServerController implements ServerControllerInterface {
             ); //throwException();
         } else {
             players.get(sender).setNickname(nickname);
+            System.out.println("[SERVER]: sending SetNicknameCommand to client " + sender);
             sender.requestToClient(new SetNicknameCommand(nickname)); //setNickname();
 
             //TODO: update to other players too!
@@ -184,12 +192,13 @@ public class ServerController implements ServerControllerInterface {
     public void keepAlive(VirtualClient sender) throws Exception {
         if(hasNoPlayer(sender)) return;
 
-        //TODO: keepAlive management...
-
+        //TODO: update Timer on VirtualClient Timr (add attributes or methods for management)
+        sender.requestToClient(new KeepAliveCommand());
     }
 
     public void createLobby(VirtualClient sender, int maxPlayers) throws Exception {
-        if(hasNoPlayer(sender) || inLobbyOrGame(sender)) return;
+        System.out.println("[SERVER]: CreateLobbyCommand received and being executed");
+        if (hasNoPlayer(sender) || inLobbyOrGame(sender, true)) return;
         //TODO: si potrebbe risolvere mettendo un GameState "NotStartedState o IdleState"...
 
         if(maxPlayers < 2 || maxPlayers > 4){
@@ -207,20 +216,22 @@ public class ServerController implements ServerControllerInterface {
 
         do {
             lobbyUUID = UUID.randomUUID();
-        } while (!lobbiesAndGames.containsKey(lobbyUUID));
+        } while (lobbiesAndGames.containsKey(lobbyUUID));
 
         lobbiesAndGames.put(lobbyUUID, lobby);
         playersToLobbiesAndGames.put(target, lobby);
 
+        System.out.println("[SERVER]: sending UpdateLobbyCommand to clients");
         for(var client : players.keySet())
-            if(!inGame(client))
+            if (!(players.get(client) instanceof InGamePlayer))
                 client.requestToClient(new UpdateLobbyCommand(lobbyUUID, lobby)); //updateLobby();
     }
 
     public void joinLobby(VirtualClient sender, UUID lobbyUUID) throws Exception {
-        if(hasNoPlayer(sender) || inLobbyOrGame(sender)) return;
+        System.out.println("[SERVER]: JoinLobbyCommand received and being executed");
+        if (hasNoPlayer(sender) || inLobbyOrGame(sender, true)) return;
 
-        if(lobbiesAndGames.containsKey(lobbyUUID)){
+        if (!lobbiesAndGames.containsKey(lobbyUUID)) {
             sender.requestToClient(
                     new ThrowExceptionCommand(
                             new IllegalArgumentException("There's no lobby with the provided UUID")
@@ -234,7 +245,7 @@ public class ServerController implements ServerControllerInterface {
         if(lobby instanceof Game){
             sender.requestToClient(
                     new ThrowExceptionCommand(
-                            new IllegalArgumentException("The provided UUID refers to a game and not a lobby")
+                            new IllegalArgumentException("The provided UUID refers to a game and not to a lobby")
                     )
             ); //throwException();
             return;
@@ -285,14 +296,16 @@ public class ServerController implements ServerControllerInterface {
             }
         }
 
+        System.out.println("[SERVER]: sending UpdateLobbyCommand to clients");
         //FIXME: risolvere SINCRONIZZANDO su un gameCreationLock
         for(var client : players.keySet())
-            if(!inGame(client))
+            if (!(players.get(client) instanceof InGamePlayer))
                 client.requestToClient(new UpdateLobbyCommand(lobbyUUID, lobby)); //updateLobby();
     }
 
     public void leaveLobby(VirtualClient sender) throws Exception {
-        if(hasNoPlayer(sender) || inGame(sender) || !inLobbyOrGame(sender)) return;
+        System.out.println("[SERVER]: LeaveLobbyCommand received and being executed");
+        if (hasNoPlayer(sender) || inGame(sender, true) || inLobbyOrGame(sender, false)) return;
 
         Player target = players.get(sender);
 
@@ -308,13 +321,14 @@ public class ServerController implements ServerControllerInterface {
             lobbiesAndGames.remove(lobbyUUID);
         }
 
+        System.out.println("[SERVER]: sending UpdateLobbiesCommand to clients");
         for(var client : players.keySet())
-            if(!inGame(client))
+            if (!(players.get(client) instanceof InGamePlayer))
                 client.requestToClient(new UpdateLobbyCommand(lobbyUUID, lobby)); //updateLobby();
     }
 
     public void pickObjective(VirtualClient sender, int cardID) throws Exception {
-        if(hasNoPlayer(sender) || !inGame(sender)) return;
+        if (hasNoPlayer(sender) || inGame(sender, false)) return;
 
         if(!cardsList.containsKey(cardID)){
             sender.requestToClient(
@@ -364,7 +378,7 @@ public class ServerController implements ServerControllerInterface {
 
     public void placeCard(VirtualClient sender, GenericPair<Integer, Integer> coordinates, int cardID,
                           Side playedSide) throws Exception {
-        if(hasNoPlayer(sender) || !inGame(sender) || !validCard(sender, cardID)) return;
+        if (hasNoPlayer(sender) || inGame(sender, false) || !validCard(sender, cardID)) return;
 
         if(Arrays.stream(Side.values()).noneMatch((side) -> side.equals(playedSide))){
             sender.requestToClient(
@@ -439,7 +453,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void drawFromDeck(VirtualClient sender, String deck) throws Exception {
-        if(hasNoPlayer(sender) || !inGame(sender)) return;
+        if (hasNoPlayer(sender) || inGame(sender, false)) return;
 
         InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
         Game targetGame = (Game) playersToLobbiesAndGames.get(targetPlayer);
@@ -481,7 +495,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void drawFromVisibleCards(VirtualClient sender, String deck, int position) throws Exception {
-        if(hasNoPlayer(sender) || !inGame(sender)) return;
+        if (hasNoPlayer(sender) || inGame(sender, false)) return;
 
         InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
         Game targetGame = (Game) playersToLobbiesAndGames.get(targetPlayer);
@@ -542,7 +556,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void leaveGame(VirtualClient sender) throws Exception {
-        if(hasNoPlayer(sender) || !inGame(sender)) return;
+        if (hasNoPlayer(sender) || inGame(sender, false)) return;
 
         InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
         Game targetGame = (Game) playersToLobbiesAndGames.get(targetPlayer);
@@ -575,7 +589,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void directMessage(VirtualClient sender, String receiverNickname, String message) throws Exception {
-        if(hasNoPlayer(sender) || !inGame(sender)) return;
+        if (hasNoPlayer(sender) || inGame(sender, false)) return;
 
         InGamePlayer senderPlayer = (InGamePlayer) players.get(sender);
 
@@ -608,7 +622,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void broadcastMessage(VirtualClient sender, String message) throws Exception {
-        if(hasNoPlayer(sender) || !inGame(sender)) return;
+        if (hasNoPlayer(sender) || inGame(sender, false)) return;
 
         InGamePlayer senderPlayer = (InGamePlayer) players.get(sender);
 

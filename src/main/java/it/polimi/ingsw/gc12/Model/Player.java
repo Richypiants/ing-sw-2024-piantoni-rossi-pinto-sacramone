@@ -60,6 +60,11 @@ public class Player implements Serializable {
     public void setColor(Color color) {
         this.color = color;
     }
+
+    @Override
+    public String toString() {
+        return this.nickname;
+    }
 }
 
 // getNickname() (Getter) -> No test

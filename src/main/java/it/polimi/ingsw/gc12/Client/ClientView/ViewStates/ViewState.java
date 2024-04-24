@@ -1,7 +1,8 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 
-import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.View;
+
+import java.util.UUID;
 
 public abstract class ViewState {
 
@@ -44,8 +45,8 @@ public abstract class ViewState {
 
     }
 
-    public void connectedConfirmation(){
-        //FIXME: ??? why is it here?
+    public void updateNickname() {
+
     }
 
     public abstract void transition();
