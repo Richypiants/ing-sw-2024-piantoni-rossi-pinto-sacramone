@@ -61,6 +61,14 @@ public class Player implements Serializable {
         this.color = color;
     }
 
+    /*@Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof Player otherPlayer)) return false;
+        return this.getNickname().equals(otherPlayer.getNickname());
+    }*/
+
     @Override
     public String toString() {
         return this.nickname;

@@ -26,7 +26,7 @@ public class TUIListener {
         new Thread(() -> {
             while (true) {
                 //FIXME: devo salvare la precedente posizione del cursore?
-                System.out.println(ansi().cursor(20, 1).eraseScreen(Ansi.Erase.FORWARD));
+                System.out.println(ansi().cursor(37, 2).eraseScreen(Ansi.Erase.FORWARD));
                 parseCommand(scanner.nextLine());
             }
         }

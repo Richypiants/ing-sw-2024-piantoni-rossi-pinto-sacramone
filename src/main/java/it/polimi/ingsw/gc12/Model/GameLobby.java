@@ -33,8 +33,7 @@ public class GameLobby implements Serializable {
      */
     protected GameLobby(int maxPlayers, List<? extends Player> players) {
         this.maxPlayers = maxPlayers;
-        Collections.shuffle(players);
-        this.LIST_OF_PLAYERS = Collections.unmodifiableList(players);
+        this.LIST_OF_PLAYERS = new ArrayList<>(players);
     }
 
     /**
@@ -81,6 +80,10 @@ public class GameLobby implements Serializable {
         if (numOfMaxPlayers <= 4) {
             this.maxPlayers = numOfMaxPlayers;
         }
+    }
+
+    public void shufflePlayers() {
+        Collections.shuffle(LIST_OF_PLAYERS);
     }
 
     @Override

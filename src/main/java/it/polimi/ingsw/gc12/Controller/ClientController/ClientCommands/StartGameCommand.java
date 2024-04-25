@@ -1,22 +1,22 @@
 package it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands;
 
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
-import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 
 import java.util.UUID;
 
 public class StartGameCommand implements ClientCommand {
 
     private final UUID LOBBY_UUID;
-    private final GameLobby lobby;
+    private final ClientGame gameDTO;
 
-    public StartGameCommand(UUID lobbyUUID, GameLobby lobby) {
+    public StartGameCommand(UUID lobbyUUID, ClientGame gameDTO) {
         this.LOBBY_UUID = lobbyUUID;
-        this.lobby = lobby;
+        this.gameDTO = gameDTO;
     }
 
     @Override
     public void execute(ClientControllerInterface clientController) {
-        clientController.startGame(LOBBY_UUID, lobby);
+        clientController.startGame(LOBBY_UUID, gameDTO);
     }
 }

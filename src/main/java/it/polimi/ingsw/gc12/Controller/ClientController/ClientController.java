@@ -28,13 +28,16 @@ public class ClientController implements ClientControllerInterface {
      */
     public String ownNickname;
     public Map<UUID, GameLobby> lobbies;
+    public UUID currentUUID;
     public GameLobby currentLobbyOrGame;
 
     private ClientController() {
         serverConnection = null;
+        thisClient = null;
         ownNickname = "";
         cardsList = loadCards();
         lobbies = new HashMap<>();
+        currentUUID = null;
         currentLobbyOrGame = null;
     }
 
@@ -99,10 +102,12 @@ public class ClientController implements ClientControllerInterface {
 
     public void updateLobby(UUID lobbyUUID, GameLobby lobby){
         if (lobby.getPlayers().stream().anyMatch((player) -> player.getNickname().equals(ownNickname))) {
+            currentUUID = lobbyUUID;
             currentLobbyOrGame = lobby;
         }
         //Se leaveLobby, cioè se noneMatch e c'ero dentro
-        else if (lobby.equals(currentLobbyOrGame)) {
+        else if (lobbyUUID.equals(currentUUID)) {
+            currentUUID = null;
             currentLobbyOrGame = null;
         }
 
@@ -116,9 +121,9 @@ public class ClientController implements ClientControllerInterface {
         viewState = new LobbyScreenState();
     }
 
-    public void startGame(UUID lobbyUUID, GameLobby lobby){
-        updateLobby(lobbyUUID, lobby);
-        currentLobbyOrGame = new ClientGame(currentLobbyOrGame);
+    public void startGame(UUID lobbyUUID, ClientGame gameDTO) {
+        updateLobby(lobbyUUID, gameDTO);
+        currentLobbyOrGame = gameDTO;
         //FIXME: send clientGame directly?
 
         viewState = new GameScreenState();

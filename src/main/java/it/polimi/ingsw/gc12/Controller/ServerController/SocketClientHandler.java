@@ -24,6 +24,7 @@ public class SocketClientHandler<A> extends SocketHandler<A> implements VirtualC
     @Override
     protected void executeReceivedCommand(Command receivedCommand) {
         try {
+            System.out.println("[SOCKET][CLIENT]: Request from " + this);
             //TODO: make executors do this?
             ((ServerCommand) receivedCommand).execute(this, ServerController.getInstance());
         } catch (Throwable e) {

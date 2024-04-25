@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Model.ClientModel;
 
+import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 
 import java.util.ArrayList;
@@ -29,10 +30,8 @@ public class ClientGame extends GameLobby{
     // private GameState currentState;
 
     //TODO: costruire scoreboard
-
-    //FIXME: non si può perchè così farebbe shuffle, deve ricevere un GameDTO o simile!
-    public ClientGame(GameLobby lobby/*, Player myself*/) {
-        super(lobby.getMaxPlayers(), lobby.getPlayers().stream()
+    public ClientGame(Game game/*, Player myself*/) {
+        super(game.getMaxPlayers(), game.getPlayers().stream()
                 //.filter(Predicate.not(myself::equals))
                 .map(ClientPlayer::new)
                 .toList());

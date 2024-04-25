@@ -114,7 +114,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void createPlayer(VirtualClient sender, String nickname) throws Exception {
-        System.out.println("[SERVER]: CreatePlayerCommand received and being executed");
+        System.out.println("[CLIENT]: CreatePlayerCommand received and being executed");
         if(players.containsKey(sender)) {
             sender.requestToClient(
                     new ThrowExceptionCommand(
@@ -167,7 +167,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void setNickname(VirtualClient sender, String nickname) throws Exception {
-        System.out.println("[SERVER]: SetNicknameCommand received and being executed");
+        System.out.println("[CLIENT]: SetNicknameCommand received and being executed");
         if (hasNoPlayer(sender) || inLobbyOrGame(sender, true)) return;
 
         Optional<Player> selectedPlayer = players.values().stream()
@@ -197,7 +197,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void createLobby(VirtualClient sender, int maxPlayers) throws Exception {
-        System.out.println("[SERVER]: CreateLobbyCommand received and being executed");
+        System.out.println("[CLIENT]: CreateLobbyCommand received and being executed");
         if (hasNoPlayer(sender) || inLobbyOrGame(sender, true)) return;
         //TODO: si potrebbe risolvere mettendo un GameState "NotStartedState o IdleState"...
 
@@ -228,7 +228,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void joinLobby(VirtualClient sender, UUID lobbyUUID) throws Exception {
-        System.out.println("[SERVER]: JoinLobbyCommand received and being executed");
+        System.out.println("[CLIENT]: JoinLobbyCommand received and being executed");
         if (hasNoPlayer(sender) || inLobbyOrGame(sender, true)) return;
 
         if (!lobbiesAndGames.containsKey(lobbyUUID)) {
@@ -283,12 +283,12 @@ public class ServerController implements ServerControllerInterface {
                 playersToLobbiesAndGames.remove(player);
                 playersToLobbiesAndGames.put(targetInGamePlayer, newGame);
 
-                targetClient.requestToClient(new StartGameCommand(lobbyUUID, lobby)); //startGame();
+                targetClient.requestToClient(new StartGameCommand(lobbyUUID, newGame.generateDTO())); //startGame();
 
                 //FIXME: should clients inform that they are ready before? (ready() method call?)
                 //Calls to game creation, generateInitialCards ...
-                newGame.getCurrentState().transition();
             }
+            newGame.getCurrentState().transition();
 
             //FIXME: a better solution? or does this get fixed by fixing constructors for Game & GameLobby?
             while(lobby.getPlayersNumber() > 0) {
@@ -304,7 +304,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void leaveLobby(VirtualClient sender) throws Exception {
-        System.out.println("[SERVER]: LeaveLobbyCommand received and being executed");
+        System.out.println("[CLIENT]: LeaveLobbyCommand received and being executed");
         if (hasNoPlayer(sender) || inGame(sender, true) || inLobbyOrGame(sender, false)) return;
 
         Player target = players.get(sender);

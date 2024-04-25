@@ -20,7 +20,7 @@ public class Server {
         Registry registry = null;
         try {
             registry = LocateRegistry.createRegistry(5001);
-            registry.rebind("codex_naturalis_rmi_methods", RMIServerStub.getInstance());
+            registry.rebind("codex_naturalis_rmi", RMIServerStub.getInstance());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

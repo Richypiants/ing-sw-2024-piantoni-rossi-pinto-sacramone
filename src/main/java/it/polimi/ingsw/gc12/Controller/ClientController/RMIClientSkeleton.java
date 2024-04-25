@@ -8,6 +8,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 
 public class RMIClientSkeleton implements RMIVirtualClient {
 
@@ -15,12 +16,14 @@ public class RMIClientSkeleton implements RMIVirtualClient {
 
     private RMIClientSkeleton() {
         try {
-            Registry registry = LocateRegistry.getRegistry("???", 5001);
+            Registry registry = LocateRegistry.getRegistry("localhost", 5001);
             ClientController.getInstance().serverConnection =
-                    ((RMIVirtualServer) registry.lookup("codex_naturalis_rmi_methods"));
+                    ((RMIVirtualServer) registry.lookup("codex_naturalis_rmi"));
+            UnicastRemoteObject.exportObject(this, 5002);
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
         }
+        ClientController.getInstance().thisClient = this;
     }
 
     public static RMIClientSkeleton getInstance() { //TODO: sincronizzazione (serve?) ed eventualmente lazy

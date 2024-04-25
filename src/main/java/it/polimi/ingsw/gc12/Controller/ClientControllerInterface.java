@@ -26,7 +26,7 @@ public interface ClientControllerInterface extends ControllerInterface {
 
     void updateLobby(UUID lobbyUUID, GameLobby lobby);
 
-    void startGame(UUID lobbyUUID, GameLobby lobby);
+    void startGame(UUID lobbyUUID, ClientGame gameDTO);
 
     void placeCard(String nickname, GenericPair<Integer, Integer> coordinates, int cardID, Side playedSide,
                    EnumMap<Resource, Integer> ownedResources, List<GenericPair<Integer, Integer>> openCorners,

@@ -56,6 +56,8 @@ public class Game extends GameLobby {
                 .map(InGamePlayer::new)
                 .collect(Collectors.toList()));
 
+        shufflePlayers();
+
         this.currentRound = 0;
         setState(new SetupState(this));
 
