@@ -18,7 +18,7 @@ public class PlaceCardCommand implements ServerCommand {
     }
 
     @Override
-    public void execute(VirtualClient caller, ServerControllerInterface serverController) throws Exception {
+    public void execute(VirtualClient caller, ServerControllerInterface serverController) {
         serverController.placeCard(caller, COORDINATES, CARD_ID, PLAYED_SIDE);
     }
 }

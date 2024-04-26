@@ -197,13 +197,17 @@ public class TUIView extends View {
     public void printCommonPlacedCards() {
         //FIXME: erase or overwrite old placed cards?
         printToPosition(ansi().cursor(8, 2).bold().a("Common placed cards: ").reset());
-        printRedCard(ansi().cursor(10, 2));
-        printGreenCard(ansi().cursor(16, 2));
-        printGreenCard(ansi().cursor(10, 22));
-        printBlueCard(ansi().cursor(16, 22));
-        printRedCard(ansi().cursor(10, 42));
-        printBlueCard(ansi().cursor(16, 42));
-        printBlueCard(ansi().cursor(22, 42));
+        printToPosition(ansi().cursor(12, 3).a("Resource cards:"));
+        printToPosition(ansi().cursor(18, 3).a("Gold cards:"));
+        printToPosition(ansi().cursor(24, 3).a("Objective cards:"));
+        printRedCard(ansi().cursor(10, 20));
+        printGreenCard(ansi().cursor(16, 20));
+        printGreenCard(ansi().cursor(10, 40));
+        printBlueCard(ansi().cursor(16, 40));
+        printRedCard(ansi().cursor(22, 20));
+        printBlueCard(ansi().cursor(22, 40));
+        printToPosition(ansi().cursor(20, 64).a("Secret objective:"));
+        printBlueCard(ansi().cursor(22, 64));
     }
 
     public void printPlayerHand() {
@@ -230,9 +234,9 @@ public class TUIView extends View {
 
     public void updateChat() {
         List<String> chatLog = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getChatLog();
-        printToPosition(ansi().cursor(42, 1).bold().a("Last chat messages: ").reset());
+        printToPosition(ansi().cursor(42, 2).bold().a("Last chat messages: ").reset());
         for (int i = 0; i < 3; i++)
-            printToPosition(ansi().cursor(43 + i, 3).eraseLine()
+            printToPosition(ansi().cursor(43 + i, 4).eraseLine()
                     .a((chatLog.size() >= 3 - i) ? chatLog.get(chatLog.size() - 3 + i) : "")
             );
     }
