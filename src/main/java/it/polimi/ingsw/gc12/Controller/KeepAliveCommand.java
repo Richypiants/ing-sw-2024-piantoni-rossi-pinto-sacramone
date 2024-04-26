@@ -10,12 +10,12 @@ public class KeepAliveCommand implements ServerCommand, ClientCommand {
     }
 
     @Override
-    public void execute(VirtualClient caller, ServerControllerInterface serverController) throws Exception {
+    public void execute(VirtualClient caller, ServerControllerInterface serverController) {
         serverController.keepAlive(caller);
     }
 
     @Override
-    public void execute(ClientControllerInterface clientController) throws Exception {
+    public void execute(ClientControllerInterface clientController) {
         clientController.keepAlive();
     }
 }

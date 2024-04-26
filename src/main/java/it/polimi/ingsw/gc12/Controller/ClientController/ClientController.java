@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LobbyScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
@@ -61,6 +62,15 @@ public class ClientController implements ClientControllerInterface {
         this.view = view;
     }
 
+    //Helper method to catch RemoteException (and eventually other ones) only one time
+    public void requestToServer(ServerCommand command) {
+        try {
+            serverConnection.requestToServer(thisClient, command);
+        } catch (Exception e) {
+            view.printException(e);
+        }
+    }
+
     public void setCommunicationTechnology(String communicationTechnology) {
         switch (communicationTechnology) {
             case "Socket" -> SocketClient.getInstance();
@@ -77,8 +87,8 @@ public class ClientController implements ClientControllerInterface {
         return Collections.unmodifiableMap(tmp);
     }
 
-    public void throwException(Exception e) throws Exception{
-        throw e;
+    public void throwException(Exception e) {
+        view.printException(e);
     }
 
     public void keepAlive() {
@@ -98,6 +108,7 @@ public class ClientController implements ClientControllerInterface {
     public void setLobbies(Map<UUID, GameLobby> lobbies){
         this.lobbies = lobbies;
         viewState = new LobbyScreenState();
+        viewState.executeState();
     }
 
     public void updateLobby(UUID lobbyUUID, GameLobby lobby){
@@ -119,6 +130,7 @@ public class ClientController implements ClientControllerInterface {
 
         //Ristampare tutte le lobby nella schermata in qualsiasi caso
         viewState = new LobbyScreenState();
+        viewState.executeState();
     }
 
     public void startGame(UUID lobbyUUID, ClientGame gameDTO) {
@@ -127,6 +139,7 @@ public class ClientController implements ClientControllerInterface {
         //FIXME: send clientGame directly?
 
         viewState = new GameScreenState();
+        viewState.executeState();
     }
 
     public void placeCard(String nickname, GenericPair<Integer, Integer> coordinates, int cardID,
@@ -171,6 +184,6 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public void addChatMessage(String senderNickname, String chatMessage, boolean isPrivate) {
-
+        viewState.addChatMessage(((isPrivate) ? "<Private> " : "") + "[" + senderNickname + "] " + chatMessage);
     }
 }

@@ -13,12 +13,12 @@ public class SetNicknameCommand implements ServerCommand, ClientCommand {
     }
 
     @Override
-    public void execute(VirtualClient caller, ServerControllerInterface serverController) throws Exception {
+    public void execute(VirtualClient caller, ServerControllerInterface serverController) {
         serverController.setNickname(caller, NICKNAME);
     }
 
     @Override
-    public void execute(ClientControllerInterface controller) throws Exception {
+    public void execute(ClientControllerInterface controller) {
         controller.setNickname(NICKNAME);
     }
 }

@@ -11,17 +11,16 @@ import java.util.UUID;
 public class LobbyScreenState extends ViewState {
 
     public LobbyScreenState() {
+    }
+
+    @Override
+    public void executeState() {
         ClientController.getInstance().view.lobbyScreen();
     }
 
     @Override
     public void setNickname(String nickname){
-        try {
-            ClientController.getInstance().serverConnection
-                    .requestToServer(ClientController.getInstance().thisClient, new SetNicknameCommand(nickname));
-        } catch (Exception e) {
-            //printError();
-        }
+        ClientController.getInstance().requestToServer(new SetNicknameCommand(nickname));
     }
 
     @Override
@@ -31,41 +30,28 @@ public class LobbyScreenState extends ViewState {
 
     @Override
     public void createLobby(int maxPlayers){
-        try {
-            ClientController.getInstance().serverConnection
-                    .requestToServer(ClientController.getInstance().thisClient, new CreateLobbyCommand(maxPlayers));
-        } catch (Exception e) {
-            //printError();
-        }
+        ClientController.getInstance().requestToServer(new CreateLobbyCommand(maxPlayers));
     }
 
     @Override
     public void joinLobby(UUID lobbyUUID){
-        try {
-            ClientController.getInstance().serverConnection
-                    .requestToServer(ClientController.getInstance().thisClient, new JoinLobbyCommand(lobbyUUID));
-        } catch (Exception e) {
-            //printError();
-        }
+        ClientController.getInstance().requestToServer(new JoinLobbyCommand(lobbyUUID));
     }
 
     @Override
     public void leaveLobby(){
-        try {
-            ClientController.getInstance().serverConnection
-                    .requestToServer(ClientController.getInstance().thisClient, new LeaveLobbyCommand());
-        } catch (Exception e) {
-            //printError();
-        }
+        ClientController.getInstance().requestToServer(new LeaveLobbyCommand());
     }
 
     @Override
     public void returnToTitleScreen(){
         ClientController.getInstance().viewState = new TitleScreenState();
+        ClientController.getInstance().viewState.executeState();
     }
 
     @Override
-    public void transition() {
+    public void startGame() {
         ClientController.getInstance().viewState = new GameScreenState();
+        ClientController.getInstance().viewState.executeState();
     }
 }

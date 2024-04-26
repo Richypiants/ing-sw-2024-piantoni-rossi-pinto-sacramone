@@ -8,14 +8,21 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.*;
 
 public class Server {
 
     private final static Server SINGLETON_SERVER = new Server();
+    public final ExecutorService commandExecutorsPool;
 
     private Server() {
+        commandExecutorsPool = new ThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.MINUTES,
+                //TODO: check that it's the correct type of queue
+                new SynchronousQueue<>()
+        );
+    }
+
+    public void start() {
         //RMI server setup
         Registry registry = null;
         try {

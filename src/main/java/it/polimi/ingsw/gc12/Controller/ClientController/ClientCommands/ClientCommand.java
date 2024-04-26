@@ -5,5 +5,5 @@ import it.polimi.ingsw.gc12.Controller.Command;
 
 public interface ClientCommand extends Command {
 
-    void execute(ClientControllerInterface controller) throws Exception;
+    void execute(ClientControllerInterface controller);
 }

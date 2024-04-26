@@ -12,7 +12,7 @@ public class CreatePlayerCommand implements ServerCommand {
     }
 
     @Override
-    public void execute(VirtualClient caller, ServerControllerInterface serverController) throws Exception {
+    public void execute(VirtualClient caller, ServerControllerInterface serverController) {
         serverController.createPlayer(caller, NICKNAME);
     }
 }

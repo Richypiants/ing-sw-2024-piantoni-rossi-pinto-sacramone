@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.RejectedExecutionException;
 
 public class RMIServerStub implements RMIVirtualServer {
 
@@ -24,9 +25,13 @@ public class RMIServerStub implements RMIVirtualServer {
     }
 
     @Override
-    public void requestToServer(VirtualClient caller, ServerCommand command) throws Exception {
+    public void requestToServer(VirtualClient caller, ServerCommand command) throws RemoteException {
         System.out.println("[RMI][CLIENT]: Request from " + caller);
-        command.execute(caller, ServerController.getInstance());
+        try {
+            Server.getInstance().commandExecutorsPool.submit(() -> command.execute(caller, ServerController.getInstance()));
+        } catch (RejectedExecutionException e) {
+            //TODO: implement answer
+        }
     }
 
 }

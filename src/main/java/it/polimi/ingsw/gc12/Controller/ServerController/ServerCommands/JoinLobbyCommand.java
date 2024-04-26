@@ -14,7 +14,7 @@ public class JoinLobbyCommand implements ServerCommand {
     }
 
     @Override
-    public void execute(VirtualClient caller, ServerControllerInterface serverController) throws Exception {
+    public void execute(VirtualClient caller, ServerControllerInterface serverController) {
         serverController.joinLobby(caller, lobbyUUID);
     }
 }

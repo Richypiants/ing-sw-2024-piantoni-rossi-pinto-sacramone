@@ -9,7 +9,7 @@ public class LeaveLobbyCommand implements ServerCommand {
     }
 
     @Override
-    public void execute(VirtualClient caller, ServerControllerInterface serverController) throws Exception {
+    public void execute(VirtualClient caller, ServerControllerInterface serverController) {
         serverController.leaveLobby(caller);
     }
 }

@@ -11,6 +11,8 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class TUIListener {
 
     private static TUIListener SINGLETON_TUI_LISTENER;
+    public static int COMMAND_INPUT_ROW = 48;
+    public static int EXCEPTIONS_ROW = 50;
 
     private TUIListener() {
     }
@@ -26,7 +28,7 @@ public class TUIListener {
         new Thread(() -> {
             while (true) {
                 //FIXME: devo salvare la precedente posizione del cursore?
-                System.out.println(ansi().cursor(37, 2).eraseScreen(Ansi.Erase.FORWARD));
+                System.out.print(ansi().cursor(COMMAND_INPUT_ROW, 3).eraseScreen(Ansi.Erase.FORWARD));
                 parseCommand(scanner.nextLine());
             }
         }
@@ -46,15 +48,21 @@ public class TUIListener {
                 case "createLobby" -> currentState.createLobby(Integer.parseInt(tokens.getFirst()));
                 case "joinLobby" -> currentState.joinLobby((UUID.fromString(tokens.getFirst())));
                 case "leaveLobby" -> currentState.leaveLobby();
-            /*case "broadcastMessage" -> currentState.;
-            case "directMessage" -> currentState.;
+                case "broadcastMessage" -> currentState.broadcastMessage(
+                        tokens.stream().reduce("", (a, b) -> a + " " + b)
+                );
+                case "directMessage" -> currentState.directMessage(
+                        tokens.removeFirst(), tokens.stream().reduce("", (a, b) -> a + " " + b)
+                );
+            /*
             case "drawFromDeck" -> currentState;
             case "drawFromVisibleCards" -> currentState.;
             case "keepAlive" -> currentState.;
             case "leaveGame" -> currentState.;
             case "pickObjective" -> currentState.;
-            case "placeCard" -> currentState.;*/
-                default -> System.err.println("Unknown command");
+            case "placeCard" -> currentState.;
+            */
+                default -> System.out.println("Unknown command");
             }
         } catch (NoSuchElementException e) {
             //TODO: stampare "Formato del comando fornito non valido"

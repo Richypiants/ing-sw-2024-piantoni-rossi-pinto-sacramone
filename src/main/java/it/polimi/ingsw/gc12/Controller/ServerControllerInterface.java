@@ -8,29 +8,29 @@ import java.util.UUID;
 
 public interface ServerControllerInterface extends ControllerInterface {
 
-    void createPlayer(VirtualClient sender, String nickname) throws Exception;
+    void createPlayer(VirtualClient sender, String nickname);
 
-    void setNickname(VirtualClient sender, String nickname) throws Exception;
+    void setNickname(VirtualClient sender, String nickname);
 
-    void keepAlive(VirtualClient sender) throws Exception;
+    void keepAlive(VirtualClient sender);
 
-    void createLobby(VirtualClient sender, int maxPlayers) throws Exception;
+    void createLobby(VirtualClient sender, int maxPlayers);
 
-    void joinLobby(VirtualClient sender, UUID lobbyUUID) throws Exception;
+    void joinLobby(VirtualClient sender, UUID lobbyUUID);
 
-    void leaveLobby(VirtualClient sender) throws Exception;
+    void leaveLobby(VirtualClient sender);
 
-    void pickObjective(VirtualClient sender, int cardID) throws Exception;
+    void pickObjective(VirtualClient sender, int cardID);
 
-    void placeCard(VirtualClient sender, GenericPair<Integer, Integer> coordinates, int cardID, Side playedSide) throws Exception;
+    void placeCard(VirtualClient sender, GenericPair<Integer, Integer> coordinates, int cardID, Side playedSide);
 
-    void drawFromDeck(VirtualClient sender, String deck) throws Exception;
+    void drawFromDeck(VirtualClient sender, String deck);
 
-    void drawFromVisibleCards(VirtualClient sender, String deck, int position) throws Exception;
+    void drawFromVisibleCards(VirtualClient sender, String deck, int position);
 
-    void leaveGame(VirtualClient sender) throws Exception;
+    void leaveGame(VirtualClient sender);
 
-    void directMessage(VirtualClient sender, String receiverNickname, String message) throws Exception;
+    void directMessage(VirtualClient sender, String receiverNickname, String message);
 
-    void broadcastMessage(VirtualClient sender, String message) throws Exception;
+    void broadcastMessage(VirtualClient sender, String message);
 }

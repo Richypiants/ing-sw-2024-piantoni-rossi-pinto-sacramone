@@ -6,5 +6,5 @@ import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 public interface ServerCommand extends Command {
 
-    void execute(VirtualClient caller, ServerControllerInterface controller) throws Exception;
+    void execute(VirtualClient caller, ServerControllerInterface controller);
 }

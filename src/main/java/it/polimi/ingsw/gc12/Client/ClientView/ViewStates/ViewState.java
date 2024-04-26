@@ -45,9 +45,25 @@ public abstract class ViewState {
 
     }
 
+    public void startGame() {
+
+    }
+
     public void updateNickname() {
 
     }
 
-    public abstract void transition();
+    public void broadcastMessage(String message) {
+
+    }
+
+    public void directMessage(String receiverNickname, String message) {
+
+    }
+
+    public void addChatMessage(String message) {
+
+    }
+
+    public abstract void executeState();
 }

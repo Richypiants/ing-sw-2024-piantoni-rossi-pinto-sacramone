@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc12.Client.ClientView.TUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.CreatePlayerCommand;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import org.fusesource.jansi.Ansi;
 
 import java.util.List;
@@ -33,19 +33,19 @@ public class TUIView extends View {
     }
 
     public static void clearTerminal() {
-        System.out.println(ansi().cursor(1, 1)
+        System.out.print(ansi().cursor(1, 1)
                 .eraseScreen(Erase.FORWARD).eraseScreen(Erase.BACKWARD)
-                .cursor(36, 1).a("------------------------------------------------------------------")
-                .cursor(37, 1).a(">")
-                .cursor(1, 1)
+                .cursor(TUIListener.COMMAND_INPUT_ROW - 1, 1).a("------------------------------------------------------------------")
+                .cursor(TUIListener.COMMAND_INPUT_ROW, 1).a(">")
+                .cursorMove(1, 0)
         );
     }
 
     //TODO: currently erasing already written input chars
-    public static void printDebug(Ansi toPrint) {
-        System.out.print(ansi().cursor(17, 1));
-        System.out.print(toPrint);
-        System.out.println(ansi().reset().cursor(20, 1).eraseLine(Erase.FORWARD));
+    public void printException(Exception e) {
+        System.out.print(ansi().cursor(TUIListener.EXCEPTIONS_ROW, 1));
+        e.printStackTrace();
+        System.out.print(ansi().reset().cursor(TUIListener.COMMAND_INPUT_ROW, 3).eraseLine(Erase.FORWARD));
         //FIXME: autoResetting... should keep it?
     }
 
@@ -54,7 +54,7 @@ public class TUIView extends View {
         //FIXME: save and restoreCursorPosition are better?
         //System.out.print(ansi().saveCursorPosition());
         System.out.print(toPrint);
-        System.out.println(ansi().reset().cursor(37, 2).eraseScreen(Erase.FORWARD));
+        System.out.print(ansi().reset().cursor(TUIListener.COMMAND_INPUT_ROW, 3).eraseScreen(Erase.FORWARD));
         //FIXME: autoResetting... should keep it?
     }
 
@@ -76,10 +76,9 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(4, 1));
         printToPosition(ansi().cursor(5, 1).a("Premi Invio per iniziare..."));
         scanner.nextLine();
-
     }
 
-    private String readUntilRoutine(Ansi prompt, List<String> validInput){
+    private String readUntil(Ansi prompt, List<String> validInput) {
         String selection;
         do{
             clearTerminal();
@@ -90,12 +89,12 @@ public class TUIView extends View {
         return selection;
     }
 
-    public void connectToServerScreen() {
-        String language = readUntilRoutine(
+    public String connectToServerScreen() {
+        String language = readUntil(
                 ansi().cursor(1, 1).a("Scegli la lingua (Italiano-English): "),
                 List.of("Italiano", "English")
         );
-        String communicationTechnology = readUntilRoutine(
+        String communicationTechnology = readUntil(
                 ansi().cursor(1, 1).a("Scegli la tecnologia di comunicazione (RMI-Socket): "),
                 List.of("RMI", "Socket")
         );
@@ -104,18 +103,7 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(1,1).a("Scegli il tuo nickname: "));
         String nickname = scanner.nextLine();
         printToPosition(ansi().cursor(2,1).a("Connessione al server in corso..."));
-        try {
-            ClientController.getInstance().serverConnection
-                    .requestToServer(ClientController.getInstance().thisClient, new CreatePlayerCommand(nickname));
-        } catch (Exception e) {
-            //TODO: Logging to terminal in another position
-            e.printStackTrace();
-            //System.err.println("xxx Exception");
-            //printError();
-
-            //TODO: What to do if connection failed? Automatically retry connection, go into another state,
-            // redo the initial config(unlikely option)
-        }
+        return nickname;
     }
 
     public void connectedConfirmation() {
@@ -158,9 +146,10 @@ public class TUIView extends View {
 
     public void updateNickname(){
         //TODO: eraseForward potrebbe funzionare? Se sì, scrivere due print
-        System.out.println(ansi()
+        System.out.print(ansi()
                 .fg(Ansi.Color.RED).bold()
-                .cursor(1, 11).a(ClientController.getInstance().ownNickname).eraseLine().reset());
+                .cursor(1, 11).a(ClientController.getInstance().ownNickname).eraseLine().reset()
+                .cursor(TUIListener.COMMAND_INPUT_ROW, 3));
     }
 
     public void gameScreen() {
@@ -171,7 +160,7 @@ public class TUIView extends View {
         printCommonPlacedCards();
         printPlayerHand();
         printPlayerField();
-        printChat();
+        updateChat();
     }
 
     public void printStatsTable() {
@@ -207,7 +196,7 @@ public class TUIView extends View {
 
     public void printCommonPlacedCards() {
         //FIXME: erase or overwrite old placed cards?
-        printToPosition(ansi().cursor(8, 2).a("Common placed cards: "));
+        printToPosition(ansi().cursor(8, 2).bold().a("Common placed cards: ").reset());
         printRedCard(ansi().cursor(10, 2));
         printGreenCard(ansi().cursor(16, 2));
         printGreenCard(ansi().cursor(10, 22));
@@ -219,27 +208,33 @@ public class TUIView extends View {
 
     public void printPlayerHand() {
         //FIXME: erase or overwrite old hand/cards?
-        printToPosition(ansi().cursor(24, 2).a("Your hand: "));
-        printRedCard(ansi().cursor(26, 2));
-        printRedCard(ansi().cursor(32, 2));
-        printGreenCard(ansi().cursor(26, 22));
-        printGreenCard(ansi().cursor(32, 22));
-        printBlueCard(ansi().cursor(26, 42));
-        printBlueCard(ansi().cursor(32, 42));
+        printToPosition(ansi().cursor(28, 2).bold().a("Your hand: ").reset());
+        printToPosition(ansi().cursor(32, 3).a("Front:"));
+        printToPosition(ansi().cursor(38, 3).a("Back:"));
+        printRedCard(ansi().cursor(30, 10));
+        printRedCard(ansi().cursor(36, 10));
+        printGreenCard(ansi().cursor(30, 30));
+        printGreenCard(ansi().cursor(36, 30));
+        printBlueCard(ansi().cursor(30, 50));
+        printBlueCard(ansi().cursor(36, 50));
     }
 
     public void printPlayerField() {
         //FIXME: erase old field?
-        printRedCard(ansi().cursor(24, 102));
-        printBlueCard(ansi().cursor(17, 113));
+        printRedCard(ansi().cursor(18, 102));
+        printBlueCard(ansi().cursor(15, 113));
         printPurpleCard(ansi().cursor(21, 113));
         printGreenCard(ansi().cursor(18, 124));
         printRedCard(ansi().cursor(24, 124));
     }
 
-    public void printChat() {
-        printToPosition(ansi().cursor(34, 1).bold().a("Last chat messages: ").reset());
-        //TODO: stampare i messaggi della chat
+    public void updateChat() {
+        List<String> chatLog = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getChatLog();
+        printToPosition(ansi().cursor(42, 1).bold().a("Last chat messages: ").reset());
+        for (int i = 0; i < 3; i++)
+            printToPosition(ansi().cursor(43 + i, 3).eraseLine()
+                    .a((chatLog.size() >= 3 - i) ? chatLog.get(chatLog.size() - 3 + i) : "")
+            );
     }
 
     public void printRedCard(/*ClientCard card, */Ansi position) {

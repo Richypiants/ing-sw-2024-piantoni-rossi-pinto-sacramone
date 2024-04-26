@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ public class ClientGame extends GameLobby{
      */
     private ClientCard ownObjective;
     private int currentRound;
+    private final List<String> chatLog;
     /**
      *
      */
@@ -42,9 +44,11 @@ public class ClientGame extends GameLobby{
         this.COMMON_OBJECTIVES = new ClientCard[2];
         this.ownObjective = null;
         this.currentRound = 0;
+        this.chatLog = new ArrayList<>();
         //this.currentState = ???;
     }
 
+    //FIXME: useless??? remove...
     public ClientGame(int maxPlayers, List<ClientPlayer> players, ArrayList<ClientCard> ownHand,
                       ClientCard[] placedResourceCards, ClientCard[] placedGoldCards,
                       ClientCard[] commonObjectives, ClientCard ownObjective, int currentRound){
@@ -55,6 +59,7 @@ public class ClientGame extends GameLobby{
         this.COMMON_OBJECTIVES = commonObjectives;
         this.ownObjective = ownObjective;
         this.currentRound = currentRound;
+        this.chatLog = new ArrayList<>();
     }
 
     /**
@@ -133,5 +138,13 @@ public class ClientGame extends GameLobby{
 
     public void increaseRound(){
         currentRound++;
+    }
+
+    public List<String> getChatLog() {
+        return Collections.unmodifiableList(chatLog);
+    }
+
+    public void addMessageToChatLog(String message) {
+        chatLog.add(message);
     }
 }

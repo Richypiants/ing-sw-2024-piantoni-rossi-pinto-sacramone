@@ -33,7 +33,7 @@ public class RMIClientSkeleton implements RMIVirtualClient {
     }
 
     @Override
-    public void requestToClient(ClientCommand command) throws Exception {
+    public void requestToClient(ClientCommand command) throws RemoteException {
         command.execute(ClientController.getInstance());
 
         //The first parameter of the update message is interpreted, then the correct action will be applied on the corresponding class of the model

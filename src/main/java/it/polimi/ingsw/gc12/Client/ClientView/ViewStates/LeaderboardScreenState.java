@@ -4,8 +4,12 @@ import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 
 public class LeaderboardScreenState extends ViewState {
 
+    public LeaderboardScreenState() {
+    }
+
     @Override
-    public void transition() {
+    public void executeState() {
         ClientController.getInstance().viewState = new LobbyScreenState();
+        ClientController.getInstance().viewState.executeState();
     }
 }

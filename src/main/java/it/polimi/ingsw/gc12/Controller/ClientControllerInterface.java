@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public interface ClientControllerInterface extends ControllerInterface {
 
-    void throwException(Exception e) throws Exception;
+    void throwException(Exception e);
 
     void keepAlive();
 

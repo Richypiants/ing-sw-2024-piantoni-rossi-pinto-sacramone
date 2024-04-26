@@ -7,5 +7,6 @@ public class Main {
 
         //fare un nuovo thread per poter poi interruptare il server: fare setDaemon(true) a tutto?
         Server server = Server.getInstance();
+        server.start();
     }
 }

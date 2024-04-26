@@ -11,7 +11,7 @@ public class ThrowExceptionCommand implements ClientCommand {
     }
 
     @Override
-    public void execute(ClientControllerInterface clientController) throws Exception {
+    public void execute(ClientControllerInterface clientController) {
         clientController.throwException(EXCEPTION);
     }
 }

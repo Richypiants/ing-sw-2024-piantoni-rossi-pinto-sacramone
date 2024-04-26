@@ -10,7 +10,8 @@ public class Main {
         AnsiConsole.systemInstall();
         ClientController.getInstance().view = TUIView.getInstance();
         ClientController.getInstance().viewState = new TitleScreenState();
-        ClientController.getInstance().viewState.transition();
+        ClientController.getInstance().viewState.executeState();
+
         //TODO: add TUI to args
         //if (args[1].equalsIgnoreCase("TUI"))
             //view = new TUIView().run();

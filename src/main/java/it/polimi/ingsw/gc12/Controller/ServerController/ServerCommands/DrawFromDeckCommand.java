@@ -12,7 +12,7 @@ public class DrawFromDeckCommand implements ServerCommand {
     }
 
     @Override
-    public void execute(VirtualClient caller, ServerControllerInterface serverController) throws Exception {
+    public void execute(VirtualClient caller, ServerControllerInterface serverController) {
         serverController.drawFromDeck(caller, DECK);
     }
 }

@@ -14,7 +14,7 @@ public class DirectMessageCommand implements ServerCommand {
     }
 
     @Override
-    public void execute(VirtualClient caller, ServerControllerInterface serverController) throws Exception {
+    public void execute(VirtualClient caller, ServerControllerInterface serverController) {
         serverController.directMessage(caller, RECEIVER_NAME, MESSAGE);
     }
 }

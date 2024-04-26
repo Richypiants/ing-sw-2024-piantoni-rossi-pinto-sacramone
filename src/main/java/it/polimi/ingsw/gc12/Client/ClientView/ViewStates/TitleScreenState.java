@@ -5,11 +5,12 @@ import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 public class TitleScreenState extends ViewState {
 
     public TitleScreenState() {
-        ClientController.getInstance().view.titleScreen();
     }
 
     @Override
-    public void transition() {
+    public void executeState() {
+        ClientController.getInstance().view.titleScreen();
         ClientController.getInstance().viewState = new ConnectToServerScreenState();
+        ClientController.getInstance().viewState.executeState();
     }
 }

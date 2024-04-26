@@ -9,6 +9,7 @@ import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.util.concurrent.RejectedExecutionException;
 
 public class SocketClientHandler<A> extends SocketHandler<A> implements VirtualClient {
 
@@ -23,12 +24,13 @@ public class SocketClientHandler<A> extends SocketHandler<A> implements VirtualC
 
     @Override
     protected void executeReceivedCommand(Command receivedCommand) {
+        System.out.println("[SOCKET][CLIENT]: Request from " + this);
         try {
-            System.out.println("[SOCKET][CLIENT]: Request from " + this);
-            //TODO: make executors do this?
-            ((ServerCommand) receivedCommand).execute(this, ServerController.getInstance());
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
+            Server.getInstance().commandExecutorsPool.submit(
+                    () -> ((ServerCommand) receivedCommand).execute(this, ServerController.getInstance())
+            );
+        } catch (RejectedExecutionException e) {
+            //TODO: implement answer
         }
     }
 }

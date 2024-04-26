@@ -14,7 +14,7 @@ public class DrawFromVisibleCardsCommand implements ServerCommand {
     }
 
     @Override
-    public void execute(VirtualClient caller, ServerControllerInterface serverController) throws Exception {
+    public void execute(VirtualClient caller, ServerControllerInterface serverController) {
         serverController.drawFromVisibleCards(caller, DECK, POSITION);
     }
 

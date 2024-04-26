@@ -12,7 +12,7 @@ public class BroadcastMessageCommand implements ServerCommand {
     }
 
     @Override
-    public void execute(VirtualClient caller, ServerControllerInterface serverController) throws Exception {
+    public void execute(VirtualClient caller, ServerControllerInterface serverController) {
         serverController.broadcastMessage(caller, MESSAGE);
     }
 }
