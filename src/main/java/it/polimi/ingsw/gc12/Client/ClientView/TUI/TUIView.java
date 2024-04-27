@@ -5,8 +5,8 @@ import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import org.fusesource.jansi.Ansi;
 
+import java.io.Console;
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,7 +19,7 @@ public class TUIView extends View {
     private static TUIView SINGLETON_TUI_INSTANCE = null;
     private final ExecutorService singleThreadExecutor;
     private final TUIListener listener;
-    private final Scanner scanner = new Scanner(System.in);
+    private static /*(?)*/ final Console console = System.console();
 
     private TUIView() {
         singleThreadExecutor = Executors.newSingleThreadExecutor();
@@ -36,16 +36,18 @@ public class TUIView extends View {
         System.out.print(ansi().cursor(1, 1)
                 .eraseScreen(Erase.FORWARD).eraseScreen(Erase.BACKWARD)
                 .cursor(TUIListener.COMMAND_INPUT_ROW - 1, 1).a("------------------------------------------------------------------")
-                .cursor(TUIListener.COMMAND_INPUT_ROW, 1).a(">")
-                .cursorMove(1, 0)
+                .cursor(TUIListener.COMMAND_INPUT_ROW, 1)
+                .a("> [" + ClientController.getInstance().ownNickname + "] ")
         );
     }
 
     //TODO: currently erasing already written input chars
     public void printException(Exception e) {
-        System.out.print(ansi().cursor(TUIListener.EXCEPTIONS_ROW, 1));
+        System.out.print(ansi().cursor(TUIListener.EXCEPTIONS_ROW, 100));
         e.printStackTrace();
-        System.out.print(ansi().reset().cursor(TUIListener.COMMAND_INPUT_ROW, 3).eraseLine(Erase.FORWARD));
+        System.out.print(ansi().reset()
+                .cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseLine(Erase.FORWARD)
+        );
         //FIXME: autoResetting... should keep it?
     }
 
@@ -54,12 +56,16 @@ public class TUIView extends View {
         //FIXME: save and restoreCursorPosition are better?
         //System.out.print(ansi().saveCursorPosition());
         System.out.print(toPrint);
-        System.out.print(ansi().reset().cursor(TUIListener.COMMAND_INPUT_ROW, 3).eraseScreen(Erase.FORWARD));
+        System.out.print(ansi().reset()
+                .cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Erase.FORWARD)
+        );
         //FIXME: autoResetting... should keep it?
     }
 
     public void titleScreen() {
+        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().ownNickname.length();
         clearTerminal();
+
         printToPosition(ansi().cursor(1, 1).a("Starting Codex Naturalis..."));
         try {
             sleep(500);
@@ -75,7 +81,7 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(3, 1).a("Codex Naturalis Logo"));
         printToPosition(ansi().cursor(4, 1));
         printToPosition(ansi().cursor(5, 1).a("Premi Invio per iniziare..."));
-        scanner.nextLine();
+        console.readLine();
     }
 
     private String readUntil(Ansi prompt, List<String> validInput) {
@@ -83,7 +89,7 @@ public class TUIView extends View {
         do{
             clearTerminal();
             printToPosition(ansi().a(prompt));
-            selection = scanner.nextLine();
+            selection = console.readLine();
         } while(!validInput.contains(selection));
 
         return selection;
@@ -101,13 +107,15 @@ public class TUIView extends View {
         ClientController.getInstance().setCommunicationTechnology(communicationTechnology);
         clearTerminal();
         printToPosition(ansi().cursor(1,1).a("Scegli il tuo nickname: "));
-        String nickname = scanner.nextLine();
+        String nickname = console.readLine();
         printToPosition(ansi().cursor(2,1).a("Connessione al server in corso..."));
+
         return nickname;
     }
 
     public void connectedConfirmation() {
         printToPosition(ansi().cursor(3, 1).a("Connessione al server riuscita: nickname confermato!"));
+        listener.startReading();
         try {
             sleep(1000);
         } catch (InterruptedException e) {
@@ -116,6 +124,7 @@ public class TUIView extends View {
     }
 
     public void lobbyScreen() {
+        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().ownNickname.length();
         clearTerminal();
 
         int i = 1;
@@ -128,7 +137,6 @@ public class TUIView extends View {
                         ClientController.getInstance().currentLobbyOrGame) //TODO: stampare UUID?
                 )
         );
-        listener.startReading();
         printToPosition(ansi().cursor(i++, 1).a("[ACTIVE LOBBIES] "));
         for (var entry : ClientController.getInstance().lobbies.entrySet()) {
             printToPosition(ansi().cursor(i++, 1).a(entry.getKey() + ": " + entry.getValue()));
@@ -146,10 +154,11 @@ public class TUIView extends View {
 
     public void updateNickname(){
         //TODO: eraseForward potrebbe funzionare? Se sì, scrivere due print
+        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().ownNickname.length();
         System.out.print(ansi()
                 .fg(Ansi.Color.RED).bold()
                 .cursor(1, 11).a(ClientController.getInstance().ownNickname).eraseLine().reset()
-                .cursor(TUIListener.COMMAND_INPUT_ROW, 3));
+                .cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN));
     }
 
     public void gameScreen() {

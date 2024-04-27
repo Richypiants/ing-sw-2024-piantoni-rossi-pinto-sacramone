@@ -31,7 +31,7 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
     }
 
     //TODO: Handle Exceptions
-    public ByteBuffer writeObject(Object obj) throws IOException {
+    public synchronized ByteBuffer writeObject(Object obj) throws IOException {
         objectOutputStream.reset();
         objectOutputStream.writeObject(obj);
         objectOutputStream.flush();
@@ -63,7 +63,7 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
 
     @Override
     public void failed(Throwable exc, A attachment) {
-
+        exc.printStackTrace();
     }
 
     protected synchronized void sendRequest(Command command) {

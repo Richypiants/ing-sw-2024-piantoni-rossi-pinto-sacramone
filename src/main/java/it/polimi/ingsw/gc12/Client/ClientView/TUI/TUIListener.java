@@ -4,7 +4,11 @@ import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import org.fusesource.jansi.Ansi;
 
-import java.util.*;
+import java.io.Console;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+import java.util.UUID;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -12,7 +16,8 @@ public class TUIListener {
 
     private static TUIListener SINGLETON_TUI_LISTENER;
     public static int COMMAND_INPUT_ROW = 48;
-    public static int EXCEPTIONS_ROW = 50;
+    public static int COMMAND_INPUT_COLUMN = 6;
+    public static int EXCEPTIONS_ROW = 25;
 
     private TUIListener() {
     }
@@ -24,15 +29,22 @@ public class TUIListener {
     }
 
     public void startReading() {
-        Scanner scanner = new Scanner(System.in);
-        new Thread(() -> {
-            while (true) {
+        Console console = System.console();
+        Thread reader = new Thread(() -> {
+            String command = "";
+            do {
                 //FIXME: devo salvare la precedente posizione del cursore?
-                System.out.print(ansi().cursor(COMMAND_INPUT_ROW, 3).eraseScreen(Ansi.Erase.FORWARD));
-                parseCommand(scanner.nextLine());
-            }
+                try {
+                    command = console.readLine();
+                } catch (NoSuchElementException ignored) {
+                }
+                parseCommand(command);
+                System.out.print(ansi().cursor(COMMAND_INPUT_ROW, COMMAND_INPUT_COLUMN).eraseLine(Ansi.Erase.FORWARD));
+            } while (!command.equals("quit"));
         }
-        ).start();
+        );
+        reader.setDaemon(false);
+        reader.start();
     }
 
     private void runCommand(ArrayList<String> tokens) {
@@ -62,6 +74,7 @@ public class TUIListener {
             case "pickObjective" -> currentState.;
             case "placeCard" -> currentState.;
             */
+                case "quit" -> currentState.quit();
                 default -> System.out.println("Unknown command");
             }
         } catch (NoSuchElementException e) {

@@ -54,4 +54,11 @@ public class LobbyScreenState extends ViewState {
         ClientController.getInstance().viewState = new GameScreenState();
         ClientController.getInstance().viewState.executeState();
     }
+
+    @Override
+    public void quit() {
+        if (ClientController.getInstance().currentLobbyOrGame != null)
+            ClientController.getInstance().requestToServer(new LeaveLobbyCommand());
+        super.quit();
+    }
 }

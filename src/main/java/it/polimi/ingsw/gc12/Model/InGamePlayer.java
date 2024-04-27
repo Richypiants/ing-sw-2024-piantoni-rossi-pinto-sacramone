@@ -116,7 +116,7 @@ public class InGamePlayer extends Player {
             throws CardNotInHandException, NotEnoughResourcesException, InvalidCardPositionException {
         if (!getCardsInHand().contains(card))
             throw new CardNotInHandException();
-        if (card instanceof GoldCard)
+        if (card instanceof GoldCard && playedSide.equals(Side.FRONT))
             if (((GoldCard) card).getNeededResourcesToPlay().numberOfTimesSatisfied(card, this) <= 0)
                 throw new NotEnoughResourcesException();
 

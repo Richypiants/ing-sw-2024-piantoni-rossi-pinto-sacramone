@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 
 import java.util.UUID;
 
@@ -63,6 +64,16 @@ public abstract class ViewState {
 
     public void addChatMessage(String message) {
 
+    }
+
+    public void quit() {
+        ClientController.getInstance().thisClient = null;
+        ClientController.getInstance().serverConnection = null;
+        ClientController.getInstance().ownNickname = "";
+        ClientController.getInstance().currentUUID = null;
+        ClientController.getInstance().currentLobbyOrGame = null;
+        ClientController.getInstance().viewState = new TitleScreenState();
+        ClientController.getInstance().viewState.executeState();
     }
 
     public abstract void executeState();

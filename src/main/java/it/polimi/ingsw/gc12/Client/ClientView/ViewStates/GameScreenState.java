@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.BroadcastMessageCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.DirectMessageCommand;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.LeaveGameCommand;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 
 public class GameScreenState extends ViewState {
@@ -31,6 +32,12 @@ public class GameScreenState extends ViewState {
     public void addChatMessage(String message) {
         ((ClientGame) ClientController.getInstance().currentLobbyOrGame).addMessageToChatLog(message);
         ClientController.getInstance().view.updateChat();
+    }
+
+    @Override
+    public void quit() {
+        ClientController.getInstance().requestToServer(new LeaveGameCommand());
+        super.quit();
     }
 
     //TODO: when receiving victory:

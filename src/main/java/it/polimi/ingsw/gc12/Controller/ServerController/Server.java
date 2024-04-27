@@ -16,7 +16,7 @@ public class Server {
     public final ExecutorService commandExecutorsPool;
 
     private Server() {
-        commandExecutorsPool = new ThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.MINUTES,
+        commandExecutorsPool = new ThreadPoolExecutor(100, 120, Integer.MAX_VALUE, TimeUnit.MINUTES,
                 //TODO: check that it's the correct type of queue
                 new SynchronousQueue<>()
         );

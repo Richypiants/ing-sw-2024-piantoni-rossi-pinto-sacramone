@@ -138,7 +138,7 @@ public class ServerController implements ServerControllerInterface {
             return;
         }
 
-        Optional<Player> selectedPlayer = players.values().stream()
+        Optional<Player> selectedPlayer = playersToLobbiesAndGames.keySet().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
                 .findAny();
 
@@ -146,7 +146,10 @@ public class ServerController implements ServerControllerInterface {
             Player target = selectedPlayer.get();
             if((target instanceof InGamePlayer) && !((InGamePlayer) target).isActive()) {
                 Game targetGame = (Game) playersToLobbiesAndGames.get(target);
+                players.put(sender, target);
 
+                System.out.println("[SERVER]: sending SetNicknameCommand and RestoreGameCommand to client " + sender);
+                requestToClient(sender, new SetNicknameCommand(nickname)); //setNickname();
                 requestToClient(sender, new RestoreGameCommand(targetGame.generateDTO())); //restoreGame();
 
                 for (var player : targetGame.getPlayers())
@@ -208,6 +211,7 @@ public class ServerController implements ServerControllerInterface {
 
     public void keepAlive(VirtualClient sender) {
         if(hasNoPlayer(sender)) return;
+        System.out.println("[CLIENT]: keepAlive command received from " + sender);
 
         //TODO: update Timer on VirtualClient Timr (add attributes or methods for management)
         requestToClient(sender, new KeepAliveCommand());

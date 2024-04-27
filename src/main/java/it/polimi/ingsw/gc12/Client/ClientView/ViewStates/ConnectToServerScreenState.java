@@ -16,6 +16,8 @@ public class ConnectToServerScreenState extends ViewState {
         String nickname = ClientController.getInstance().view.connectToServerScreen();
         //TODO: print "would you like to retry?"
         do {
+            //TODO: problema se l'host è online ma la porta è chiusa, perchè lancia una exception
+            // "Connessione rifiutata dall'host remoto" tipo
             ClientController.getInstance().requestToServer(new CreatePlayerCommand(nickname));
             try {
                 sleep(10000);
@@ -47,9 +49,7 @@ public class ConnectToServerScreenState extends ViewState {
                 ClientController.getInstance().requestToServer(new KeepAliveCommand());
             }
         }); //keepAlive() thread
-        //FIXME: dovrebbe essere daemon e terminare assieme al resto del programma, ma non può perchè altrimenti
-        // dopo la scelta del nickname il client non prosegue non avendo nulla da fare...
-        keepAlive.setDaemon(false);
+        keepAlive.setDaemon(true);
         keepAlive.start();
 
         ClientController.getInstance().viewState = new LobbyScreenState();

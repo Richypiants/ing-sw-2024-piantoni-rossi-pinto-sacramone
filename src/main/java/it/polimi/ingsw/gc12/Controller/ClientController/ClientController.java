@@ -103,6 +103,8 @@ public class ClientController implements ClientControllerInterface {
 
     public void restoreGame(ClientGame gameDTO){
         currentLobbyOrGame = gameDTO;
+        viewState = new GameScreenState();
+        viewState.executeState();
     }
 
     public void setLobbies(Map<UUID, GameLobby> lobbies){
