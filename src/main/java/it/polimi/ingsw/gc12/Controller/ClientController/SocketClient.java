@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc12.Utilities.VirtualServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.ExecutionException;
@@ -27,11 +28,11 @@ public class SocketClient implements VirtualServer {
             serverHandler = new SocketServerHandler<>(channel, byteBufferIn);
             channel.read(byteBufferIn, null, serverHandler);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            ClientController.getInstance().errorLogger.log(e);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            ClientController.getInstance().errorLogger.log(e);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            ClientController.getInstance().errorLogger.log(e);
         }
 
         //FIXME: ...reference escaping?
@@ -39,9 +40,14 @@ public class SocketClient implements VirtualServer {
     }
 
     public static SocketClient getInstance() { //TODO: sincronizzazione (serve?) ed eventualmente lazy
-        if (SINGLETON_SOCKET_CLIENT == null)
-            SINGLETON_SOCKET_CLIENT = new SocketClient();
+        if(SINGLETON_SOCKET_CLIENT != null)
+            SINGLETON_SOCKET_CLIENT.close();
+        SINGLETON_SOCKET_CLIENT = new SocketClient();
         return SINGLETON_SOCKET_CLIENT;
+    }
+
+    private void close() {
+        serverHandler.close();
     }
 
     @Override

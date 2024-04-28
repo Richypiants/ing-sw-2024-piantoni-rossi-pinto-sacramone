@@ -69,6 +69,7 @@ public abstract class ViewState {
     public void quit() {
         ClientController.getInstance().thisClient = null;
         ClientController.getInstance().serverConnection = null;
+        ClientController.getInstance().keepAlive.interrupt();
         ClientController.getInstance().ownNickname = "";
         ClientController.getInstance().currentUUID = null;
         ClientController.getInstance().currentLobbyOrGame = null;

@@ -27,8 +27,7 @@ public class RMIClientSkeleton implements RMIVirtualClient {
     }
 
     public static RMIClientSkeleton getInstance() { //TODO: sincronizzazione (serve?) ed eventualmente lazy
-        if(SINGLETON_RMI_CLIENT == null)
-            SINGLETON_RMI_CLIENT = new RMIClientSkeleton();
+        SINGLETON_RMI_CLIENT = new RMIClientSkeleton();
         return SINGLETON_RMI_CLIENT;
     }
 

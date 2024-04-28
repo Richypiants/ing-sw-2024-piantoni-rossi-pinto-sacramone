@@ -22,7 +22,7 @@ public class ConnectToServerScreenState extends ViewState {
             try {
                 sleep(10000);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                ClientController.getInstance().errorLogger.log(e);
             }
         } while (ClientController.getInstance().serverConnection == null /*|| yes*/);
         //potenzialmente readUntil se anche la GUI ce l'avrà
@@ -38,21 +38,22 @@ public class ConnectToServerScreenState extends ViewState {
         ClientController.getInstance().view.connectedConfirmation();
 
         //KeepAlive timer FIXME: needed? there is a KEEPALIVE option on AsynchronousSocketChannel
-        Thread keepAlive = new Thread(() -> {
+        ClientController.getInstance().keepAlive = new Thread(() -> {
             while (true) {
                 try {
-                    sleep(60000);
+                    sleep(30000);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    ClientController.getInstance().errorLogger.log(e);
+                    break;
                 }
                 //TODO: update Timer on VirtualServer Timer (add attributes or methods for management)
                 ClientController.getInstance().requestToServer(new KeepAliveCommand());
             }
         }); //keepAlive() thread
-        keepAlive.setDaemon(true);
-        keepAlive.start();
+        ClientController.getInstance().keepAlive.setDaemon(true);
+        ClientController.getInstance().keepAlive.start();
 
-        ClientController.getInstance().viewState = new LobbyScreenState();
-        ClientController.getInstance().viewState.executeState();
+        //ClientController.getInstance().viewState = new LobbyScreenState();
+        //ClientController.getInstance().viewState.executeState();
     }
 }

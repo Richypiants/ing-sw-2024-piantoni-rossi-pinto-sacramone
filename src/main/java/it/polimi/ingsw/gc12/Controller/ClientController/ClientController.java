@@ -24,6 +24,7 @@ public class ClientController implements ClientControllerInterface {
     public ViewState viewState;
     public VirtualServer serverConnection;
     public VirtualClient thisClient;
+    public Thread keepAlive;
     /**
      * This player's nickname
      */
@@ -31,15 +32,18 @@ public class ClientController implements ClientControllerInterface {
     public Map<UUID, GameLobby> lobbies;
     public UUID currentUUID;
     public GameLobby currentLobbyOrGame;
+    public ErrorLogger errorLogger;
 
     private ClientController() {
         serverConnection = null;
         thisClient = null;
+        keepAlive = null;
         ownNickname = "";
         cardsList = loadCards();
         lobbies = new HashMap<>();
         currentUUID = null;
         currentLobbyOrGame = null;
+        errorLogger = new ErrorLogger("src/main/java/it/polimi/ingsw/gc12/Utilities/errorLog" + this + ".txt");
     }
 
     public static ClientController getInstance() {
@@ -67,7 +71,7 @@ public class ClientController implements ClientControllerInterface {
         try {
             serverConnection.requestToServer(thisClient, command);
         } catch (Exception e) {
-            view.printException(e);
+            errorLogger.log(e);
         }
     }
 
@@ -75,7 +79,7 @@ public class ClientController implements ClientControllerInterface {
         switch (communicationTechnology) {
             case "Socket" -> SocketClient.getInstance();
             case "RMI" -> RMIClientSkeleton.getInstance();
-            default -> System.err.println("Unknown communication technology");
+            default -> System.out.println("Unknown communication technology");
         }
     }
 
@@ -88,7 +92,7 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public void throwException(Exception e) {
-        view.printException(e);
+        errorLogger.log(e);
     }
 
     public void keepAlive() {

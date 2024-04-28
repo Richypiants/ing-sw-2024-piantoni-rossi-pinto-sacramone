@@ -7,8 +7,6 @@ import org.fusesource.jansi.Ansi;
 
 import java.io.Console;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static java.lang.Thread.sleep;
 import static org.fusesource.jansi.Ansi.Erase;
@@ -17,12 +15,10 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class TUIView extends View {
 
     private static TUIView SINGLETON_TUI_INSTANCE = null;
-    private final ExecutorService singleThreadExecutor;
     private final TUIListener listener;
     private static /*(?)*/ final Console console = System.console();
 
     private TUIView() {
-        singleThreadExecutor = Executors.newSingleThreadExecutor();
         listener = TUIListener.getInstance();
     }
 
@@ -42,10 +38,10 @@ public class TUIView extends View {
     }
 
     //TODO: currently erasing already written input chars
-    public void printException(Exception e) {
-        System.out.print(ansi().cursor(TUIListener.EXCEPTIONS_ROW, 100));
-        e.printStackTrace();
-        System.out.print(ansi().reset()
+    @Override
+    public void printError(Throwable error) {
+        System.out.print(ansi().cursor(TUIListener.EXCEPTIONS_ROW, 1)
+                .a(error.getMessage()).reset()
                 .cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseLine(Erase.FORWARD)
         );
         //FIXME: autoResetting... should keep it?
@@ -70,13 +66,13 @@ public class TUIView extends View {
         try {
             sleep(500);
         } catch (Exception e) {
-            e.printStackTrace();
+            ClientController.getInstance().errorLogger.log(e);
         }
         printToPosition(ansi().cursor(2, 1).a("Cranio Creations Logo"));
         try {
             sleep(500);
         } catch (Exception e) {
-            e.printStackTrace();
+            ClientController.getInstance().errorLogger.log(e);
         }
         printToPosition(ansi().cursor(3, 1).a("Codex Naturalis Logo"));
         printToPosition(ansi().cursor(4, 1));
@@ -90,19 +86,19 @@ public class TUIView extends View {
             clearTerminal();
             printToPosition(ansi().a(prompt));
             selection = console.readLine();
-        } while(!validInput.contains(selection));
+        } while(!validInput.contains(selection.trim().toLowerCase()));
 
         return selection;
     }
 
     public String connectToServerScreen() {
         String language = readUntil(
-                ansi().cursor(1, 1).a("Scegli la lingua (Italiano-English): "),
-                List.of("Italiano", "English")
+                ansi().cursor(1, 1).a("Scegli la lingua (Italiano/IT - English/EN): "),
+                List.of("italiano", "english", "it", "en")
         );
         String communicationTechnology = readUntil(
                 ansi().cursor(1, 1).a("Scegli la tecnologia di comunicazione (RMI-Socket): "),
-                List.of("RMI", "Socket")
+                List.of("rmi", "socket")
         );
         ClientController.getInstance().setCommunicationTechnology(communicationTechnology);
         clearTerminal();
@@ -114,17 +110,17 @@ public class TUIView extends View {
     }
 
     public void connectedConfirmation() {
+        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().ownNickname.length();
         printToPosition(ansi().cursor(3, 1).a("Connessione al server riuscita: nickname confermato!"));
         listener.startReading();
         try {
             sleep(1000);
         } catch (InterruptedException e) {
-            //Shouldn't happen
+            ClientController.getInstance().errorLogger.log(e);
         }
     }
 
     public void lobbyScreen() {
-        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().ownNickname.length();
         clearTerminal();
 
         int i = 1;

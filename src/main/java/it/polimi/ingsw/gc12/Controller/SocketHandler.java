@@ -48,9 +48,9 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
             receivedCommand = (Command) readObject();
             //System.out.println("[SOCKET-HANDLER]: Received command " + receivedCommand.getClass() + " from {" + channel.getRemoteAddress() + "}");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            printError(e);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            printError(e);
         }
 
         //FIXME: e se non lo trova? exception... ma per createPlayer?
@@ -80,7 +80,17 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
                 }
             });
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            printError(e);
         }
     }
+
+    public void close() {
+        try {
+            channel.close();
+        } catch (IOException e) {
+            printError(e);
+        }
+    }
+
+    public abstract void printError(Exception e);
 }

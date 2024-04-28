@@ -8,6 +8,7 @@ module it.polimi.ingsw.gc12 {
     requires java.rmi;
     requires jdk.javadoc;
     requires org.fusesource.jansi;
+    requires java.desktop;
 
     opens it.polimi.ingsw.gc12.Model to com.google.gson;
     opens it.polimi.ingsw.gc12.Utilities to com.google.gson;
@@ -20,6 +21,9 @@ module it.polimi.ingsw.gc12 {
     opens it.polimi.ingsw.gc12.Model.Cards to com.google.gson;
     exports it.polimi.ingsw.gc12.Model.Conditions to com.google.gson;
     opens it.polimi.ingsw.gc12.Model.Conditions to com.google.gson;
+    exports it.polimi.ingsw.gc12.Model.ClientModel to com.google.gson;
+    opens it.polimi.ingsw.gc12.Model.ClientModel to com.google.gson;
+
 
     exports it.polimi.ingsw.gc12.Utilities to com.google.gson, java.rmi;
     exports it.polimi.ingsw.gc12.Controller.ServerController to com.google.gson, java.rmi;

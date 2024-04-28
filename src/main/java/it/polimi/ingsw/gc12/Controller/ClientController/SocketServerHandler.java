@@ -19,16 +19,16 @@ public class SocketServerHandler<A> extends SocketHandler<A> implements VirtualS
 
     @Override
     public void requestToServer(VirtualClient caller, ServerCommand command) {
-        //TUIView.printDebug(ansi().a("[SOCKET-CLIENT]: sending command " + command.getClass()));
         sendRequest(command);
     }
 
     @Override
     protected void executeReceivedCommand(Command receivedCommand) {
-        try {
             ((ClientCommand) receivedCommand).execute(ClientController.getInstance());
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    }
+
+    @Override
+    public void printError(Exception e){
+        ClientController.getInstance().errorLogger.log(e);
     }
 }

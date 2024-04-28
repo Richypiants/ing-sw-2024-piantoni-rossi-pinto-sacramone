@@ -17,7 +17,7 @@ public class TUIListener {
     private static TUIListener SINGLETON_TUI_LISTENER;
     public static int COMMAND_INPUT_ROW = 48;
     public static int COMMAND_INPUT_COLUMN = 6;
-    public static int EXCEPTIONS_ROW = 25;
+    public static int EXCEPTIONS_ROW = 49;
 
     private TUIListener() {
     }
@@ -38,8 +38,8 @@ public class TUIListener {
                     command = console.readLine();
                 } catch (NoSuchElementException ignored) {
                 }
+                System.out.print(ansi().cursor(COMMAND_INPUT_ROW, COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
                 parseCommand(command);
-                System.out.print(ansi().cursor(COMMAND_INPUT_ROW, COMMAND_INPUT_COLUMN).eraseLine(Ansi.Erase.FORWARD));
             } while (!command.equals("quit"));
         }
         );
@@ -78,10 +78,11 @@ public class TUIListener {
                 default -> System.out.println("Unknown command");
             }
         } catch (NoSuchElementException e) {
-            //TODO: stampare "Formato del comando fornito non valido"
-            e.printStackTrace();
+            //TODO: stampare anche a terminale "Formato del comando fornito non valido"?
+            ClientController.getInstance().errorLogger.log(new NoSuchElementException("Formato del comando fornito non valido"));
         } catch (IllegalArgumentException e) {
-            //TODO: stampare "Parametri forniti invalidi"
+            //TODO: stampare anche a terminale "Parametri forniti invalidi"?
+            ClientController.getInstance().errorLogger.log(new IllegalArgumentException("Parametri forniti invalidi"));
         }
     }
 

@@ -33,4 +33,9 @@ public class SocketClientHandler<A> extends SocketHandler<A> implements VirtualC
             //TODO: implement answer
         }
     }
+
+    @Override
+    public void printError(Exception e){
+        e.printStackTrace();
+    }
 }

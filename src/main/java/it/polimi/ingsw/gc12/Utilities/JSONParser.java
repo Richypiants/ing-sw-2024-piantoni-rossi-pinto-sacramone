@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import it.polimi.ingsw.gc12.Model.Cards.Card;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.Conditions.CornersCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.PatternCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.PointsCondition;
@@ -28,6 +29,8 @@ public class JSONParser {
     private static final Gson GSON_CARD_BUILDER = new GsonBuilder().registerTypeAdapter(PointsCondition.class, new PointsConditionAdapter())
             .registerTypeAdapter(ResourcesCondition.class, new ResourcesConditionAdapter())
             .create();
+
+    private static final Gson CARD_IMAGE_RESOURCES_BUILDER = new GsonBuilder().registerTypeAdapter(Triplet.class, new TripletAdapter<String, Integer[], Integer>()).create();
 
     /**
      *     Generic method which returns an ArrayList<Card> made of a specific card hierarchy subtype, provided the
@@ -129,6 +132,83 @@ public class JSONParser {
             return new ResourcesCondition(resources);
         }
     }
+
+    private static class TripletAdapter<T1, T2, T3> extends TypeAdapter<Triplet<T1, T2, T3>> {
+        //This method is unused and only implemented due to the extends.
+        @Override
+        public void write(JsonWriter out, Triplet<T1, T2, T3> triplet) throws IOException {
+        }
+
+        @Override
+        public Triplet<T1, T2, T3> read(JsonReader in) throws IOException {
+            Gson GSON = new Gson();
+
+            in.beginObject();
+
+            T1 first = GSON.fromJson(in.nextString(), new TypeToken<>(){});
+            T2 second = GSON.fromJson(in.nextString(), new TypeToken<>(){});
+            T3 third = GSON.fromJson(in.nextString(), new TypeToken<>(){});
+
+            in.endObject();
+
+            return new Triplet<>(first, second, third);
+        }
+    }
+
+
+
+    public static ArrayList<ClientCard> clientCardsFromJSON(String filename) {
+        try {
+            return new ArrayList<>(CARD_IMAGE_RESOURCES_BUILDER.fromJson(
+                    Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/Utilities/JSON_Files/" + filename)),
+                    new TypeToken<ArrayList<ClientCard>>(){}));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            ArrayList<ArrayList<Triplet<String, Integer[], Integer>>> tmp1 = new ArrayList<>(CARD_IMAGE_RESOURCES_BUILDER.fromJson(
+                    Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/Utilities/JSON_Files/clientCardImageResources.json")),
+                    new TypeToken<ArrayList<ArrayList<Triplet<String, Integer[], Integer>>>>(){}));
+        } catch (Exception e) {
+
+        }
+        ArrayList<ClientCard> tmp = clientCardsFromJSON("clientCardImageResources.json");
+    }
 }
+
+
+/*
+[
+  {
+  "ID": 1,
+  "FRONT_SPRITE": "URL",
+  "BACK_SPRITE": "URL",
+  "TUI_SPRITES": {
+      "FRONT": [
+                  [ {"X": "M", "Y": [88, -1], "Z": 1}, {"X": " ", "Y": [-1, 88], "Z": 11}, {"X": " ", "Y": [-1,-1], "Z": 1} ],
+                  [ {"X": " ", "Y": [-1, 88], "Z": 13} ],
+                  [ {"X": " ", "Y": [-1, 88], "Z": 13} ],
+                  [ {"X": " ", "Y": [-1, 88], "Z": 13} ],
+                  [ {"X": "M", "Y": [88, -1], "Z": 1}, {"X": " ", "Y": [-1, 88], "Z": 11}, {"X": " ", "Y": [-1, 88], "Z": 1} ]
+              ],
+      "BACK": [
+                  [ {"X": " ", "Y": [-1,-1], "Z": 1}, {"X": " ", "Y": [-1, 88], "Z": 11}, {"X": " ", "Y": [-1,-1], "Z": 1} ],
+                  [ {"X": " ", "Y": [-1, 88], "Z": 13} ],
+                  [ {"X": " ", "Y": [-1, 88], "Z": 6}, {"X": "M","Y": [88, -1], "Z": 1}, {"X": " ", "Y": [-1, 88], "Z": 6} ],
+                  [ {"X": " ", "Y": [-1, 88], "Z": 13} ],
+                  [ {"X": " ", "Y": [-1,-1], "Z": 1}, {"X": " ", "Y": [-1, 88], "Z": 11}, {"X": " ", "Y": [-1,-1], "Z": 1} ]
+              ]
+    }
+  }
+]
+
+
+
+* */
+
+
 
 
