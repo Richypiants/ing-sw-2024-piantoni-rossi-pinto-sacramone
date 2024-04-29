@@ -18,7 +18,7 @@ public class ClientController implements ClientControllerInterface {
 
     private static final ClientController SINGLETON_INSTANCE = new ClientController();
 
-    private final Map<Integer, ClientCard> cardsList;
+    public final Map<Integer, ClientCard> cardsList;
     //FIXME: forse era meglio che rimanessero di competenza della View stessa nel ViewState...
     public View view;
     public ViewState viewState;
@@ -77,17 +77,16 @@ public class ClientController implements ClientControllerInterface {
 
     public void setCommunicationTechnology(String communicationTechnology) {
         switch (communicationTechnology) {
-            case "Socket" -> SocketClient.getInstance();
-            case "RMI" -> RMIClientSkeleton.getInstance();
+            case "socket" -> SocketClient.getInstance();
+            case "rmi" -> RMIClientSkeleton.getInstance();
             default -> System.out.println("Unknown communication technology");
         }
     }
 
     private Map<Integer, ClientCard> loadCards() {
-        //TODO: map of maps?
         Map<Integer, ClientCard> tmp = new HashMap<>();
-        /*Objects.requireNonNull(JSONParser.deckFromJSONConstructor("client_cards.json", new TypeToken<>(){}))
-                .forEach((card) -> tmp.put(card.ID, card));*/
+        Objects.requireNonNull(JSONParser.clientCardsFromJSON("client_cards.json"))
+                .forEach((card) -> tmp.put(card.ID, card));
         return Collections.unmodifiableMap(tmp);
     }
 

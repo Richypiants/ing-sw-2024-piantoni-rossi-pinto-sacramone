@@ -43,6 +43,11 @@ public class GoldCard extends PlayableCard {
         return RESOURCES_NEEDED_TO_PLAY;
     }
 
+    public PointsCondition getPointsCondition(){
+        //FIXME: unsafe?
+        return POINTS_CONDITION;
+    }
+
     /**
     Returns the number of points the target InGamePlayer is awarded upon playing this Gold Card by calculating
     how many times the points' condition is satisfied

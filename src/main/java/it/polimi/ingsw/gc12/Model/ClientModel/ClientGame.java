@@ -2,15 +2,14 @@ package it.polimi.ingsw.gc12.Model.ClientModel;
 
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.InGamePlayer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ClientGame extends GameLobby{
 
-    //private final ClientPlayer MYSELF;
+    private final ClientPlayer MYSELF;
     /**
      * The cards in this player's hand
      */
@@ -32,24 +31,30 @@ public class ClientGame extends GameLobby{
     // private GameState currentState;
 
     //TODO: costruire scoreboard
-    public ClientGame(Game game/*, Player myself*/) {
+    public ClientGame(Game game, InGamePlayer myself, Map<Integer, ClientCard> clientCards) {
         super(game.getMaxPlayers(), game.getPlayers().stream()
                 //.filter(Predicate.not(myself::equals))
                 .map(ClientPlayer::new)
                 .toList());
-        //this.MYSELF = new ClientPlayer(myself);
+        this.MYSELF = new ClientPlayer(myself);
         this.OWN_HAND = new ArrayList<>();
-        this.PLACED_RESOURCE_CARDS = new ClientCard[2];
-        this.PLACED_GOLD_CARDS = new ClientCard[2];
-        this.COMMON_OBJECTIVES = new ClientCard[2];
-        this.ownObjective = null;
+        this.PLACED_RESOURCE_CARDS = Arrays.stream(game.getPlacedResources())
+                .map((card) -> clientCards.get(card.ID))
+                .toArray(ClientCard[]::new);
+        this.PLACED_GOLD_CARDS = Arrays.stream(game.getPlacedGolds())
+                .map((card) -> clientCards.get(card.ID))
+                .toArray(ClientCard[]::new);
+        this.COMMON_OBJECTIVES = Arrays.stream(game.getCommonObjectives())
+                .map((card) -> clientCards.get(card.ID))
+                .toArray(ClientCard[]::new);
+        this.ownObjective = clientCards.get(myself.getSecretObjective().ID);
         this.currentRound = 0;
         this.chatLog = new ArrayList<>();
         //this.currentState = ???;
     }
 
     //FIXME: useless??? remove...
-    public ClientGame(int maxPlayers, List<ClientPlayer> players, ArrayList<ClientCard> ownHand,
+    /*public ClientGame(int maxPlayers, List<ClientPlayer> players, ArrayList<ClientCard> ownHand,
                       ClientCard[] placedResourceCards, ClientCard[] placedGoldCards,
                       ClientCard[] commonObjectives, ClientCard ownObjective, int currentRound){
         super(maxPlayers, players);
@@ -61,6 +66,7 @@ public class ClientGame extends GameLobby{
         this.currentRound = currentRound;
         this.chatLog = new ArrayList<>();
     }
+    */
 
     /**
      * Returns the player who is currently playing

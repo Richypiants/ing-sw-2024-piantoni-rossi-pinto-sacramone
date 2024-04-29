@@ -150,7 +150,7 @@ public class ServerController implements ServerControllerInterface {
 
                 System.out.println("[SERVER]: sending SetNicknameCommand and RestoreGameCommand to client " + sender);
                 requestToClient(sender, new SetNicknameCommand(nickname)); //setNickname();
-                requestToClient(sender, new RestoreGameCommand(targetGame.generateDTO())); //restoreGame();
+                requestToClient(sender, new RestoreGameCommand(targetGame.generateDTO((InGamePlayer) target))); //restoreGame();
 
                 for (var player : targetGame.getPlayers())
                     if (player.isActive()) {
@@ -308,7 +308,8 @@ public class ServerController implements ServerControllerInterface {
                 playersToLobbiesAndGames.remove(player);
                 playersToLobbiesAndGames.put(targetInGamePlayer, newGame);
 
-                requestToClient(targetClient, new StartGameCommand(lobbyUUID, newGame.generateDTO())); //startGame();
+                requestToClient(targetClient, new StartGameCommand(lobbyUUID, newGame.generateDTO(targetInGamePlayer)));
+                //startGame();
 
                 //FIXME: should clients inform that they are ready before? (ready() method call?)
                 //Calls to game creation, generateInitialCards ...

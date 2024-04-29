@@ -26,7 +26,7 @@ public class ResourcesCondition implements PointsCondition {
     /**
     Returns the list of resources of this condition
      */
-    protected Map<Resource, Integer> getConditionParameters() {
+    public Map<Resource, Integer> getConditionParameters() {
         return CONDITION;
     }
 

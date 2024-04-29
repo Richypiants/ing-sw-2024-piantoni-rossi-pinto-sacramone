@@ -2,7 +2,9 @@ package it.polimi.ingsw.gc12.Client.ClientView.TUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
+import it.polimi.ingsw.gc12.Utilities.Side;
 import org.fusesource.jansi.Ansi;
 
 import java.io.Console;
@@ -85,8 +87,8 @@ public class TUIView extends View {
         do{
             clearTerminal();
             printToPosition(ansi().a(prompt));
-            selection = console.readLine();
-        } while(!validInput.contains(selection.trim().toLowerCase()));
+            selection = console.readLine().trim().toLowerCase();
+        } while(!validInput.contains(selection));
 
         return selection;
     }
@@ -202,39 +204,53 @@ public class TUIView extends View {
     public void printCommonPlacedCards() {
         //FIXME: erase or overwrite old placed cards?
         printToPosition(ansi().cursor(8, 2).bold().a("Common placed cards: ").reset());
+
         printToPosition(ansi().cursor(12, 3).a("Resource cards:"));
+        int column = 20;
+        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getPlacedResources()) {
+            printToPosition(ansi().cursor(10, column).a(card.standardAnsi(Side.FRONT)));
+            column += 20;
+        }
+
+        column = 20;
         printToPosition(ansi().cursor(18, 3).a("Gold cards:"));
+        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getPlacedGold()){
+            printToPosition(ansi().cursor(16, column).a(card.upscaledAnsi(Side.FRONT)));
+            column += 20;
+        }
+
+        column = 20;
         printToPosition(ansi().cursor(24, 3).a("Objective cards:"));
-        printRedCard(ansi().cursor(10, 20));
-        printGreenCard(ansi().cursor(16, 20));
-        printGreenCard(ansi().cursor(10, 40));
-        printBlueCard(ansi().cursor(16, 40));
-        printRedCard(ansi().cursor(22, 20));
-        printBlueCard(ansi().cursor(22, 40));
+        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCommonObjectives()){
+            //printToPosition(ansi().cursor(22, column).a(card.standardAnsi(Side.FRONT)));
+            column += 6;
+        }
+
         printToPosition(ansi().cursor(20, 64).a("Secret objective:"));
-        printBlueCard(ansi().cursor(22, 64));
+        //printBlueCard(ansi().cursor(22, 64).a(((ClientGame) ClientController.getInstance.currentLobbyOrGame)getOwnObjective().standardAnsi(Side.FRONT);
     }
 
     public void printPlayerHand() {
         //FIXME: erase or overwrite old hand/cards?
+
+        int column = 10;
         printToPosition(ansi().cursor(28, 2).bold().a("Your hand: ").reset());
         printToPosition(ansi().cursor(32, 3).a("Front:"));
         printToPosition(ansi().cursor(38, 3).a("Back:"));
-        printRedCard(ansi().cursor(30, 10));
-        printRedCard(ansi().cursor(36, 10));
-        printGreenCard(ansi().cursor(30, 30));
-        printGreenCard(ansi().cursor(36, 30));
-        printBlueCard(ansi().cursor(30, 50));
-        printBlueCard(ansi().cursor(36, 50));
+        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand()){
+            printToPosition(ansi().cursor(30, column).a(card.standardAnsi(Side.FRONT)));
+            printToPosition(ansi().cursor(36, column).a(card.standardAnsi(Side.BACK)));
+            column += 20;
+        }
     }
 
     public void printPlayerField() {
         //FIXME: erase old field?
-        printRedCard(ansi().cursor(18, 102));
+        printRedCard(ClientController.getInstance().cardsList.get(81), Side.FRONT, ansi().cursor(18, 102));
         printBlueCard(ansi().cursor(15, 113));
         printPurpleCard(ansi().cursor(21, 113));
         printGreenCard(ansi().cursor(18, 124));
-        printRedCard(ansi().cursor(24, 124));
+        printRedCard(ClientController.getInstance().cardsList.get(81), Side.FRONT, ansi().cursor(24, 124));
     }
 
     public void updateChat() {
@@ -246,13 +262,15 @@ public class TUIView extends View {
             );
     }
 
-    public void printRedCard(/*ClientCard card, */Ansi position) {
+    public void printRedCard(ClientCard card, Side side, Ansi position) {
+        System.out.print(position);
+        printToPosition(position.a(card.standardAnsi(side)));
         //System.out.print(position.a("┌─────────────┐").reset());
-        System.out.print(position.a("M").bg(Ansi.Color.RED).a("    ").reset().a("2 S").bg(Ansi.Color.RED).a("    ").reset().a("M").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.RED).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.RED).a("     ").reset().a("MMM").bg(Ansi.Color.RED).a("     ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.RED).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("M").bg(Ansi.Color.RED).a("   ").reset().a("MMMMG").bg(Ansi.Color.RED).a("   ").reset().a("M").reset());
+        //System.out.print(position.a("M").bg(Ansi.Color.RED).a("    ").reset().a("2 S").bg(Ansi.Color.RED).a("    ").reset().a("M").reset());
+        //System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.RED).a("             ").reset());
+        //System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.RED).a("     ").reset().a("MMM").bg(Ansi.Color.RED).a("     ").reset());
+        //System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.RED).a("             ").reset());
+        //System.out.print(ansi().cursorMove(-13, 1).a("M").bg(Ansi.Color.RED).a("   ").reset().a("MMMMG").bg(Ansi.Color.RED).a("   ").reset().a("M").reset());
         //System.out.print(ansi().cursorMove(-15, 1).a("└─────────────┘").reset());
         /*System.out.println("""
                 ┌────┬───────┬────┬────┬────┬───────┬────┐

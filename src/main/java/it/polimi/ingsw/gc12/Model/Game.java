@@ -2,14 +2,17 @@ package it.polimi.ingsw.gc12.Model;
 
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.*;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.GameStates.GameState;
 import it.polimi.ingsw.gc12.Model.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
+import it.polimi.ingsw.gc12.Utilities.JSONParser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -229,8 +232,11 @@ public class Game extends GameLobby {
         return currentState;
     }
 
-    public ClientGame generateDTO(){
-        return new ClientGame(this);
+    public ClientGame generateDTO(InGamePlayer receiver){
+        //FIXME: orribile...
+        Map<Integer, ClientCard> clientCards = JSONParser.clientCardsFromJSON("src/main/java/it/polimi/ingsw/gc12/Utilities/JSON_Files/client_cards.json")
+                .stream().collect(Collectors.toMap((card) -> card.ID, (card) -> card));
+        return new ClientGame(this, receiver, clientCards);
         //TODO: create the DTO from the current class, we also need DTOs for creating ClientPlayer and ClientCard.
         /*    public ClientGame(int maxPlayers, List<ClientPlayer > players, ArrayList< ClientCard > ownHand,
                 ClientCard[] placedResourceCards, ClientCard[] placedGoldCards,

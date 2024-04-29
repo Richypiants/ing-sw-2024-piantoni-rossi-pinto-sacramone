@@ -6,14 +6,14 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import it.polimi.ingsw.gc12.Model.Cards.Card;
+import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.Conditions.CornersCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.PatternCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.PointsCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.ResourcesCondition;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class JSONParser {
             .registerTypeAdapter(ResourcesCondition.class, new ResourcesConditionAdapter())
             .create();
 
-    private static final Gson CARD_IMAGE_RESOURCES_BUILDER = new GsonBuilder().registerTypeAdapter(Triplet.class, new TripletAdapter<String, Integer[], Integer>()).create();
+    private static final Gson CARD_IMAGE_RESOURCES_BUILDER = new Gson();
 
     /**
      *     Generic method which returns an ArrayList<Card> made of a specific card hierarchy subtype, provided the
@@ -133,30 +133,6 @@ public class JSONParser {
         }
     }
 
-    private static class TripletAdapter<T1, T2, T3> extends TypeAdapter<Triplet<T1, T2, T3>> {
-        //This method is unused and only implemented due to the extends.
-        @Override
-        public void write(JsonWriter out, Triplet<T1, T2, T3> triplet) throws IOException {
-        }
-
-        @Override
-        public Triplet<T1, T2, T3> read(JsonReader in) throws IOException {
-            Gson GSON = new Gson();
-
-            in.beginObject();
-
-            T1 first = GSON.fromJson(in.nextString(), new TypeToken<>(){});
-            T2 second = GSON.fromJson(in.nextString(), new TypeToken<>(){});
-            T3 third = GSON.fromJson(in.nextString(), new TypeToken<>(){});
-
-            in.endObject();
-
-            return new Triplet<>(first, second, third);
-        }
-    }
-
-
-
     public static ArrayList<ClientCard> clientCardsFromJSON(String filename) {
         try {
             return new ArrayList<>(CARD_IMAGE_RESOURCES_BUILDER.fromJson(
@@ -167,48 +143,149 @@ public class JSONParser {
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            ArrayList<ArrayList<Triplet<String, Integer[], Integer>>> tmp1 = new ArrayList<>(CARD_IMAGE_RESOURCES_BUILDER.fromJson(
-                    Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/Utilities/JSON_Files/clientCardImageResources.json")),
-                    new TypeToken<ArrayList<ArrayList<Triplet<String, Integer[], Integer>>>>(){}));
-        } catch (Exception e) {
+    public static void generatePlayableCardsForTUI(){
+        ArrayList<ResourceCard> rc = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>(){});
+        ArrayList<GoldCard> gc = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>(){});
+        ArrayList<InitialCard> ic = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>(){});
+        //ArrayList<ObjectiveCard> oc = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>(){});
 
+        ArrayList<ClientCard> clientCards = new ArrayList<>();
+
+        assert rc != null;
+        assert gc != null;
+        assert ic != null;
+        for(var card : rc) {
+            clientCards.add(new ClientCard(card.ID, "front", "back",
+                            Map.of(
+                                    Side.FRONT, generatePlayableCardTUISprite(card, Side.FRONT),
+                                    Side.BACK, generatePlayableCardTUISprite(card, Side.BACK)
+                            )
+                    )
+            );
         }
-        ArrayList<ClientCard> tmp = clientCardsFromJSON("clientCardImageResources.json");
+        for(var card : gc) {
+            clientCards.add(new ClientCard(card.ID, "front", "back",
+                            Map.of(
+                                    Side.FRONT, generatePlayableCardTUISprite(card, Side.FRONT),
+                                    Side.BACK, generatePlayableCardTUISprite(card, Side.BACK)
+                            )
+                    )
+            );
+        }
+        for(var card : ic) {
+            clientCards.add(new ClientCard(card.ID, "front", "back",
+                            Map.of(
+                                    Side.FRONT, generatePlayableCardTUISprite(card, Side.FRONT),
+                                    Side.BACK, generatePlayableCardTUISprite(card, Side.BACK)
+                            )
+                    )
+            );
+        }
+
+        try {
+            new GsonBuilder().setPrettyPrinting().create().toJson(clientCards,
+                    new FileWriter("src/main/java/it/polimi/ingsw/gc12/Utilities/JSON_Files/client_cards.json")
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static ArrayList<ArrayList<Triplet<String, Integer[], Integer>>> generatePlayableCardTUISprite(PlayableCard card, Side side) {
+        //TODO: mappare nel colore giusto di FG e BG
+        int cardColor = (card instanceof InitialCard) ? 228/*222-255?*/ : card.getCenterBackResources().keySet().stream().findAny().orElseThrow().ANSI_COLOR;
+        Resource cornerResource;
+
+        ArrayList<ArrayList<Triplet<String, Integer[], Integer>>> sequence = new ArrayList<>();
+
+        for(int i = 0; i < 5; i++){
+            sequence.add(new ArrayList<>());
+        }
+
+        cornerResource = card.getCornerResource(side, -1, 1);
+        sequence.getFirst().add(new Triplet<>(cornerResource.SYMBOL,
+                new Integer[]{cornerResource.ANSI_COLOR,
+                        cornerResource.equals(Resource.NOT_A_CORNER) ? -1 : Resource.EMPTY.ANSI_COLOR
+                }, 1)
+        );
+        if(side.equals(Side.BACK) || card.POINTS_GRANTED == 0)
+            sequence.getFirst().add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 11));
+        else if(card instanceof GoldCard && ((GoldCard) card).getPointsCondition() != null){
+            PointsCondition cardCondition = ((GoldCard) card).getPointsCondition();
+            String stringForCondition = "";
+            int colorForCondition = Resource.EMPTY.ANSI_COLOR;
+            if(cardCondition instanceof CornersCondition)
+                stringForCondition = "C";
+            else {
+                Resource tmp = ((ResourcesCondition) cardCondition).getConditionParameters().keySet().stream().findAny().orElseThrow();
+                stringForCondition = tmp.SYMBOL;
+                colorForCondition = tmp.ANSI_COLOR;
+            }
+
+            sequence.getFirst().add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 3));
+            sequence.getFirst().add(new Triplet<>(String.valueOf(card.POINTS_GRANTED), new Integer[]{-1, -1}, 1));
+            sequence.getFirst().add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 3));
+            sequence.getFirst().add(new Triplet<>(stringForCondition, new Integer[]{colorForCondition, -1}, 1));
+            sequence.getFirst().add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 3));
+        } else {
+            sequence.getFirst().add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 5));
+            sequence.getFirst().add(new Triplet<>(String.valueOf(card.POINTS_GRANTED), new Integer[]{-1, -1}, 1));
+            sequence.getFirst().add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 5));
+        }
+        cornerResource = card.getCornerResource(side, 1, 1);
+        sequence.getFirst().add(new Triplet<>(cornerResource.SYMBOL,
+                        new Integer[]{cornerResource.ANSI_COLOR,
+                                cornerResource.equals(Resource.NOT_A_CORNER) ? -1 : Resource.EMPTY.ANSI_COLOR
+                        }, 1));
+
+        sequence.get(1).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 13));
+
+        if(side.equals(Side.BACK)) {
+            int numberOfResources = card.getCenterBackResources().values().stream().mapToInt((value) -> value).sum();
+            sequence.get(2).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (13 - numberOfResources + 1)/2));
+
+            for (var entry : card.getCenterBackResources().entrySet())
+                sequence.get(2).add(new Triplet<>(entry.getKey().SYMBOL,
+                        new Integer[]{entry.getKey().ANSI_COLOR,
+                                entry.getKey().equals(Resource.NOT_A_CORNER) ? -1 : Resource.EMPTY.ANSI_COLOR
+                        }, 1));
+            sequence.get(2).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (13 - numberOfResources + 1)/2));
+        } else {
+            sequence.get(2).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 13));
+        }
+
+        sequence.get(3).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 13));
+
+        cornerResource = card.getCornerResource(side, -1, -1);
+        sequence.get(4).add(new Triplet<>(cornerResource.SYMBOL,
+                new Integer[]{cornerResource.ANSI_COLOR,
+                        cornerResource.equals(Resource.NOT_A_CORNER) ? -1 : Resource.EMPTY.ANSI_COLOR
+                }, 1));
+        if(side.equals(Side.FRONT) && card instanceof GoldCard && ((GoldCard) card).getNeededResourcesToPlay() != null) {
+            Map<Resource, Integer> neededResources = ((GoldCard) card).getNeededResourcesToPlay().getConditionParameters();
+            int numberOfResources = neededResources.values().stream().mapToInt((value) -> value).sum();
+            sequence.get(4).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (11 - numberOfResources)/2));
+
+            for (var entry : neededResources.entrySet())
+                sequence.get(4).add(new Triplet<>(entry.getKey().SYMBOL,
+                        new Integer[]{entry.getKey().ANSI_COLOR,
+                                entry.getKey().equals(Resource.NOT_A_CORNER) ? -1 : Resource.EMPTY.ANSI_COLOR
+                        }, 1));
+            sequence.get(4).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (11 - numberOfResources + 1)/2));
+        } else {
+            sequence.get(4).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 11));
+        }
+        cornerResource = card.getCornerResource(side, -1, 1);
+        sequence.get(4).add(new Triplet<>(cornerResource.SYMBOL,
+                new Integer[]{cornerResource.ANSI_COLOR,
+                        cornerResource.equals(Resource.NOT_A_CORNER) ? -1 : Resource.EMPTY.ANSI_COLOR
+                }, 1));
+
+        return sequence;
+    }
+
+    public static void main(String[] args) {
+        generatePlayableCardsForTUI();
+        //ArrayList<ClientCard> tmp = clientCardsFromJSON("client_cards.json");
     }
 }
-
-
-/*
-[
-  {
-  "ID": 1,
-  "FRONT_SPRITE": "URL",
-  "BACK_SPRITE": "URL",
-  "TUI_SPRITES": {
-      "FRONT": [
-                  [ {"X": "M", "Y": [88, -1], "Z": 1}, {"X": " ", "Y": [-1, 88], "Z": 11}, {"X": " ", "Y": [-1,-1], "Z": 1} ],
-                  [ {"X": " ", "Y": [-1, 88], "Z": 13} ],
-                  [ {"X": " ", "Y": [-1, 88], "Z": 13} ],
-                  [ {"X": " ", "Y": [-1, 88], "Z": 13} ],
-                  [ {"X": "M", "Y": [88, -1], "Z": 1}, {"X": " ", "Y": [-1, 88], "Z": 11}, {"X": " ", "Y": [-1, 88], "Z": 1} ]
-              ],
-      "BACK": [
-                  [ {"X": " ", "Y": [-1,-1], "Z": 1}, {"X": " ", "Y": [-1, 88], "Z": 11}, {"X": " ", "Y": [-1,-1], "Z": 1} ],
-                  [ {"X": " ", "Y": [-1, 88], "Z": 13} ],
-                  [ {"X": " ", "Y": [-1, 88], "Z": 6}, {"X": "M","Y": [88, -1], "Z": 1}, {"X": " ", "Y": [-1, 88], "Z": 6} ],
-                  [ {"X": " ", "Y": [-1, 88], "Z": 13} ],
-                  [ {"X": " ", "Y": [-1,-1], "Z": 1}, {"X": " ", "Y": [-1, 88], "Z": 11}, {"X": " ", "Y": [-1,-1], "Z": 1} ]
-              ]
-    }
-  }
-]
-
-
-
-* */
-
-
-
-

@@ -11,47 +11,47 @@ public class Triplet<T1, T2, T3> implements Serializable {
     /**
     The first attribute of this triplet
      */
-    private final T1 x;
+    private final T1 X;
 
     /**
     The second attribute of this triplet
      */
-    private final T2 y;
+    private final T2 Y;
 
     /**
     The third attribute of this triplet
      */
-    private final T3 z;
+    private final T3 Z;
 
     /**
     Generates a triplet from the given parameters
      */
     //FIXME: possible reference escape (in GenericPair too?)
-    public Triplet(T1 x, T2 y, T3 z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public Triplet(T1 X, T2 Y, T3 Z) {
+        this.X = X;
+        this.Y = Y;
+        this.Z = Z;
     }
 
     /**
     Returns the first attribute of this triplet
      */
     public T1 getX() {
-        return x;
+        return X;
     }
 
     /**
     Returns the second attribute of this triplet
      */
     public T2 getY() {
-        return y;
+        return Y;
     }
 
     /**
     Returns the third attribute of this triplet
      */
     public T3 getZ() {
-        return z;
+        return Z;
     }
 
     //FIXME: delete these methods below?
@@ -60,21 +60,21 @@ public class Triplet<T1, T2, T3> implements Serializable {
     Returns a pair composed of the first and second attributes of this triplet
      */
     public GenericPair<T1, T2> getXY() {
-        return new GenericPair<T1, T2>(x, y);
+        return new GenericPair<>(X, Y);
     }
 
     /**
     Returns a pair composed of the first and third attributes of this triplet
      */
     public GenericPair<T1, T3> getXZ() {
-        return new GenericPair<T1, T3>(x, z);
+        return new GenericPair<>(X, Z);
     }
 
     /**
     Returns a pair composed of the second and third attributes of this triplet
      */
     public GenericPair<T2, T3> getYZ() {
-        return new GenericPair<T2, T3>(y, z);
+        return new GenericPair<>(Y, Z);
     }
 
     @Override
