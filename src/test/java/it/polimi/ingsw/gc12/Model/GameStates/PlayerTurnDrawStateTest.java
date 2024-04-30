@@ -9,14 +9,24 @@ import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidDeckPositionException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
+import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerTurnDrawStateTest {
 
@@ -31,6 +41,7 @@ class PlayerTurnDrawStateTest {
     VirtualClient client1;
     VirtualClient client2;
     ServerController server;
+    ChooseObjectiveCardsState state;
 
     @BeforeAll
     static void setCardsLists() {
@@ -72,7 +83,94 @@ class PlayerTurnDrawStateTest {
         server.players.put(client1, game.getPlayers().get(0));
         server.players.put(client2, game.getPlayers().get(1));
         server.playersToLobbiesAndGames.put(game.getPlayers().get(0), game);
+
         server.playersToLobbiesAndGames.put(game.getPlayers().get(1), game);
+        game.getCurrentState().transition();
+
+        int i = 0;
+        for (var target : game.getPlayers()) {
+            target.placeCard(new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
+            target.addCardToHand(resourceCards.get(i));
+            i++;
+            target.addCardToHand(resourceCards.get(i));
+            target.addCardToHand(goldCards.get(i));
+            i++;
+        }
+
+
+        Map<InGamePlayer, ArrayList<ObjectiveCard>> objectivesMap = new HashMap<>();
+        ArrayList<ObjectiveCard> obj_a = new ArrayList<>();
+        obj_a.add(objectiveCards.getFirst());
+        obj_a.add(objectiveCards.get(1));
+
+        ArrayList<ObjectiveCard> obj_a2 = new ArrayList<>();
+        obj_a2.add(objectiveCards.get(2));
+        obj_a2.add(objectiveCards.get(3));
+
+        objectivesMap.put(game.getPlayers().getFirst(), obj_a);
+        objectivesMap.put(game.getPlayers().getLast(), obj_a2);
+
+        state = new ChooseObjectiveCardsState(game, objectivesMap);
+
+        for (var target : game.getPlayers()) {
+            state.pickObjective(target, objectivesMap.get(target).getFirst());
+        }
+
+        game.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
 
     }
+
+    @Test
+    void correctTransitionTest_Draw1() throws Exception {
+        game.getCurrentState().drawFrom((InGamePlayer) game.getCurrentState().getCurrentPlayer(), "Resource");
+        assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
+        assertEquals(game.getPlayers().getFirst(), game.getCurrentState().getCurrentPlayer());
+    }
+
+    @Test
+    void correctTransitionTest_Draw2() throws Exception {
+        game.getCurrentState().drawFrom((InGamePlayer) game.getCurrentState().getCurrentPlayer(), "Resource", 1);
+        assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
+        assertEquals(game.getPlayers().getFirst(), game.getCurrentState().getCurrentPlayer());
+    }
+
+    @Test
+    void correctUnexpectedPlayerExceptionCall() throws Exception {
+        assertThrows(UnexpectedPlayerException.class, () -> game.getCurrentState().drawFrom(game.getPlayers().getLast(), "Resource"));
+
+    }
+
+    @Test
+    void correctInvalidDeckPositionException() throws Exception {
+        assertThrows(InvalidDeckPositionException.class, () -> game.getCurrentState().drawFrom((InGamePlayer) game.getCurrentState().getCurrentPlayer(), "Resource", 3));
+
+    }
+
+    @Test
+    void correctTransitionToVictoryCalculationState() throws Exception {
+        for (int i = 0; i < 38; i++) {
+            game.getCurrentState().drawFrom((InGamePlayer) game.getCurrentState().getCurrentPlayer(), "Resource");
+            game.getCurrentState().transition();
+
+        }
+
+        for (int i = 0; i < 38; i++) {
+            game.getCurrentState().drawFrom((InGamePlayer) game.getCurrentState().getCurrentPlayer(), "Gold");
+            game.getCurrentState().transition();
+
+        }
+
+        for (int i = 0; i < 5; i++) {
+
+            game.getCurrentState().transition();
+
+
+        }
+
+
+        assertInstanceOf(VictoryCalculationState.class, game.getCurrentState());
+
+    }
+
+
 }

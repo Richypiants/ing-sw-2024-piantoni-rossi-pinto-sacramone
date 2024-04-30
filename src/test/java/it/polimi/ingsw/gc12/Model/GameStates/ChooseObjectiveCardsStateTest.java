@@ -97,7 +97,6 @@ class ChooseObjectiveCardsStateTest {
 
         state = new ChooseObjectiveCardsState(game, objectivesMap);
 
-        // check that the gamestate doesn't change before that all the player choose de obj_secret card
         for (var target : game.getPlayers()) {
             state.pickObjective(target, objectivesMap.get(target).getFirst());
             if (target != game.getPlayers().getLast()) {
