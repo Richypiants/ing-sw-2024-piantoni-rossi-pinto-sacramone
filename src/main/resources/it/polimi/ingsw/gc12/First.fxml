@@ -13,7 +13,7 @@
            xmlns="http://javafx.com/javafx/21" fx:controller="it.polimi.ingsw.gc12.HelloController">
     <children>
         <Button fx:id="startButton" alignment="CENTER" layoutY="600" layoutX="607" mnemonicParsing="false"
-                onAction="#selectLanguage" prefHeight="38.0" prefWidth="323.0" text="Premi Invio per iniziare"
+                onAction="#keyPressed" prefHeight="38.0" prefWidth="323.0" text="Premi Invio per iniziare"
                 textAlignment="JUSTIFY" wrapText="true">
             <font>
                 <Font name="Castellar" size="16.0"/>
@@ -22,8 +22,7 @@
         <Rectangle fx:id="backgroundLabel" width="600" height="80" fill="black" opacity="0.8" arcWidth="20"
                    arcHeight="20"/>
         <Label fx:id="Codex" prefWidth="800.0" style="-fx-alignment: Center"
-               text="Benvenuto in Codex Naturalis" textAlignment="CENTER" textFill="#fafafa"
-        >
+               text="Benvenuto in Codex Naturalis" textAlignment="CENTER" textFill="#fafafa">
             <font>
                 <Font name="ARIAL" size="40.0"/>
             </font>

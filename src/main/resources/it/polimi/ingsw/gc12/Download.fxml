@@ -2,7 +2,7 @@
 
 
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 <Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
@@ -10,10 +10,10 @@
       prefWidth="600.0"
       fx:controller="it.polimi.ingsw.gc12.HelloController" xmlns="http://javafx.com/javafx/21">
     <children>
-        <ProgressBar fx:id="progressBar" layoutX="200.0" layoutY="191.0" prefWidth="400" progress="0.0"/>
-        <Label fx:id="download" layoutX="228.0" layoutY="131.0" prefHeight="34.0" prefWidth="144.0">
+        <ProgressIndicator layoutX="243.0" layoutY="209.0"/>
+        <Label fx:id="download" layoutX="228.0" layoutY="131.0" prefHeight="34.0" prefWidth="500.0" text="Ciao">
             <font>
-                <Font name="Bell MT" size="14"/>
+                <Font name="Bell MT" size="20"/>
             </font>
         </Label>
     </children>

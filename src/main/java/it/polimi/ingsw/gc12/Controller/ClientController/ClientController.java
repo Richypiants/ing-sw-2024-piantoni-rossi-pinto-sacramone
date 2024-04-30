@@ -76,7 +76,7 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public void setCommunicationTechnology(String communicationTechnology) {
-        switch (communicationTechnology) {
+        switch (communicationTechnology.trim().toLowerCase()) {
             case "socket" -> SocketClient.getInstance();
             case "rmi" -> RMIClientSkeleton.getInstance();
             default -> System.out.println("Unknown communication technology");

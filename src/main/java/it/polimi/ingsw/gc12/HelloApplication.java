@@ -1,9 +1,12 @@
 package it.polimi.ingsw.gc12;
 
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.TitleScreenState;
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,7 +22,12 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException, InterruptedException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("First.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1280, 720);
+        Parent root = fxmlLoader.load();
+        ClientController.getInstance().view = fxmlLoader.getController();
+        ClientController.getInstance().viewState = new TitleScreenState();
+        ClientController.getInstance().viewState.executeState();
+
+        Scene scene = new Scene(root, 1280, 720);
 
         Label Codex = (Label) fxmlLoader.getNamespace().get("Codex");
         Button startButton = (Button) fxmlLoader.getNamespace().get("startButton");
@@ -43,9 +51,5 @@ public class HelloApplication extends Application {
         stage.setTitle("Codex Naturalis");
         stage.setScene(scene);
         stage.show();
-    }
-
-    public static void main(String[] args) {
-        launch();
     }
 }

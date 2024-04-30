@@ -80,6 +80,7 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(4, 1));
         printToPosition(ansi().cursor(5, 1).a("Premi Invio per iniziare..."));
         console.readLine();
+        ClientController.getInstance().viewState.keyPressed();
     }
 
     private String readUntil(Ansi prompt, List<String> validInput) {
@@ -93,7 +94,7 @@ public class TUIView extends View {
         return selection;
     }
 
-    public String connectToServerScreen() {
+    public void connectToServerScreen() {
         String language = readUntil(
                 ansi().cursor(1, 1).a("Scegli la lingua (Italiano/IT - English/EN): "),
                 List.of("italiano", "english", "it", "en")
@@ -108,7 +109,7 @@ public class TUIView extends View {
         String nickname = console.readLine();
         printToPosition(ansi().cursor(2,1).a("Connessione al server in corso..."));
 
-        return nickname;
+        ClientController.getInstance().viewState.connect(nickname);
     }
 
     public void connectedConfirmation() {

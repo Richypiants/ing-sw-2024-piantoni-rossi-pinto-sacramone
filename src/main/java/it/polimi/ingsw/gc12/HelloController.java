@@ -1,8 +1,10 @@
 package it.polimi.ingsw.gc12;
 
+import it.polimi.ingsw.gc12.Client.ClientView.View;
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +21,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloController {
+public class HelloController extends View {
+
+    public static HelloController SINGLETON_GUI_INSTANCE = null;
 
     Parent root;
     Scene scene;
@@ -31,35 +35,86 @@ public class HelloController {
     Label StatusLabel;
 
     @FXML
-    TextField NicknameField;
+    TextField nicknameField;
 
     @FXML
     Button startButton;
 
     @FXML
+    ComboBox<String> language;
+
+    @FXML
+    ComboBox<String> connection;
+
+    @FXML
+    Label languageError;
+    @FXML
+    private Button show;
+
+    @FXML
     TreeView newGame;
+
     @FXML
     Button join;
 
+    public HelloController() {
+
+    }
+
+    public static HelloController getInstance() {
+        if (SINGLETON_GUI_INSTANCE == null)
+            SINGLETON_GUI_INSTANCE = new HelloController();
+        return SINGLETON_GUI_INSTANCE;
+    }
+
+    @Override
+    public void printError(Throwable t) {
+        //TODO: popup con l'exception
+    }
+
+    @Override
+    public void titleScreen() {
+    }
+
     @FXML
-    protected void selectLanguage(ActionEvent event) throws IOException {
+    public void keyPressed(ActionEvent event) {
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        ClientController.getInstance().viewState.keyPressed();
+    }
+
+    @Override
+    public void connectToServerScreen() {
+        try {
+            selectLanguage();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void selectLanguage() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Language.fxml"));
         Parent root = loader.load(); // Carica il file FXML e ottiene il root
 
         // Ottieni lo stage corrente e imposta la nuova scena
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root, 1800, 850);
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();
 
-        ComboBox language = (ComboBox) loader.getNamespace().get("language");
-        language.setValue("Select a Language");
+        language = (ComboBox<String>) loader.getNamespace().get("language");
+        language.setPromptText("Select a Language");
         language.setItems(languageList);
     }
 
     @FXML
-    protected void selectConnection(ActionEvent event) throws IOException {
+    private void selectConnection(ActionEvent event) throws IOException {
+        //TODO: manca il retrieve della lingua e la decisione
+
+        if (language.valueProperty().get() == null) {
+            languageError.setText("Selezionare prima una lingua");
+            return;
+        }
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Connection.fxml"));
         Parent root = loader.load(); // Carica il file FXML e ottiene il root
 
@@ -70,13 +125,16 @@ public class HelloController {
         stage.setMaximized(true);
         stage.show();
 
-        ComboBox connection = (ComboBox) loader.getNamespace().get("connection");
+        connection = (ComboBox<String>) loader.getNamespace().get("connection");
         connection.setValue("Select a Connection");
         connection.setItems(connectionList);
     }
 
     @FXML
     protected void newPane(ActionEvent event) throws IOException {
+        //Before changing scene, we notify the chosen comm technology to the controller so that it initializes it
+        ClientController.getInstance().setCommunicationTechnology(connection.valueProperty().get());
+
         Parent root = FXMLLoader.load(getClass().getResource("Second.fxml"));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root, 1800, 850);
@@ -87,63 +145,76 @@ public class HelloController {
 
     @FXML
     protected void Yes(ActionEvent event) throws IOException {
-        if (NicknameField.getCharacters().length() >= 5) {
+        if (nicknameField.getText().length() >= 5) {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Download.fxml"));
             Parent root = loader.load(); // Carica il file FXML e ottiene il root
 
             // Ottieni lo stage corrente e imposta la nuova scena
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root, 1800, 850);
             stage.setScene(scene);
             stage.setMaximized(true);
             stage.show();
 
             Label downloadLabel = (Label) loader.getNamespace().get("download");
-            ProgressBar progressBar = (ProgressBar) loader.getNamespace().get("progressBar");
 
             if (downloadLabel != null) {
-                downloadLabel.setText("Nickname OK - Caricamento");
+                downloadLabel.setText("Ciao: " + nicknameField.getText() + " - Attendi la fine del caricamento");
             } else {
                 System.out.println("Label non trovata nel FXML.");
             }
 
-            if (progressBar != null) {
-                Task<Void> task = new Task<Void>() {
-                    @Override
-                    protected Void call() {
-                        for (int i = 0; i <= 100; i++) {
-                            updateProgress(i, 100);
-                            try {
-                                Thread.sleep(25); // Regola questa durata per gestire la velocità del caricamento
-                            } catch (InterruptedException e) {
-                                if (isCancelled()) {
-                                    break;
-                                }
-                            }
-                        }
-                        return null;
-                    }
-                };
-
-                progressBar.progressProperty().bind(task.progressProperty());
-                Thread thread = new Thread(task);
-                thread.setDaemon(true); // Imposta il thread come daemon per non impedire la chiusura dell'applicazione
-                thread.start();
-            } else {
-                System.out.println("ProgressBar non trovata nel FXML.");
-            }
-
-        } else if (NicknameField.getCharacters().length() < 5 && NicknameField.getCharacters().length() > 0) {
+        } else if (nicknameField.getText().length() < 5 && !nicknameField.getText().isEmpty()) {
             StatusLabel.setText("Nickname troppo corto, almeno 5 caratteri");
         } else {
             StatusLabel.setText("Inserire prima un nickname");
         }
+
+        new Thread(() -> ClientController.getInstance().viewState.connect(nicknameField.getText()));
     }
 
 
     @FXML
     protected void No() throws IOException {
         StatusLabel.setText("Status: Not logged in");
+    }
+
+    @Override
+    public void connectedConfirmation() {
+    }
+
+    @Override
+    public void lobbyScreen() {
+        Platform.runLater(() -> {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Third.fxml"));
+            Parent root = null; // Carica il file FXML e ottiene il root
+            try {
+                root = loader.load();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            Stage oldStage = stage;
+            stage = new Stage();
+            oldStage.close();
+            Scene scene = new Scene(root, 1800, 850);
+            stage.setScene(scene);
+            stage.setMaximized(true);
+            stage.show();
+        });
+    }
+
+    @Override
+    public void gameScreen() {
+    }
+
+    @Override
+    public void updateNickname() {
+
+    }
+
+    @Override
+    public void updateChat() {
+
     }
 
     public void BackToTitleScreen(ActionEvent event) throws IOException {

@@ -8,6 +8,8 @@ import it.polimi.ingsw.gc12.Controller.SetNicknameCommand;
 
 import java.util.UUID;
 
+import static java.lang.Thread.sleep;
+
 public class LobbyScreenState extends ViewState {
 
     public LobbyScreenState() {
@@ -15,6 +17,11 @@ public class LobbyScreenState extends ViewState {
 
     @Override
     public void executeState() {
+        try {
+            sleep(20000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         ClientController.getInstance().view.lobbyScreen();
     }
 

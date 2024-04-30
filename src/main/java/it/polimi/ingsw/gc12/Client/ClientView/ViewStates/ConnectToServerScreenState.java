@@ -13,7 +13,11 @@ public class ConnectToServerScreenState extends ViewState {
 
     @Override
     public void executeState() {
-        String nickname = ClientController.getInstance().view.connectToServerScreen();
+        ClientController.getInstance().view.connectToServerScreen();
+    }
+
+    @Override
+    public void connect(String nickname) {
         //TODO: print "would you like to retry?"
         do {
             //TODO: problema se l'host è online ma la porta è chiusa, perchè lancia una exception

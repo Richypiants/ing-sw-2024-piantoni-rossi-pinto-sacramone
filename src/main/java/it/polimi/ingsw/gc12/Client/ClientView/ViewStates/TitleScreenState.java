@@ -10,6 +10,10 @@ public class TitleScreenState extends ViewState {
     @Override
     public void executeState() {
         ClientController.getInstance().view.titleScreen();
+    }
+
+    @Override
+    public void keyPressed() {
         ClientController.getInstance().viewState = new ConnectToServerScreenState();
         ClientController.getInstance().viewState.executeState();
     }

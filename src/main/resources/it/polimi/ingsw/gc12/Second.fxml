@@ -19,7 +19,7 @@
                 text="Si"/>
         <Button fx:id="NoButton" layoutX="178.0" layoutY="253.0" onAction="#No" prefHeight="55.0" prefWidth="55.0"
                 text="No"/>
-        <TextField fx:id="NicknameField" layoutX="177.0" layoutY="163.0" prefHeight="31.0" prefWidth="243.0">
+        <TextField fx:id="nicknameField" layoutX="177.0" layoutY="163.0" prefHeight="31.0" prefWidth="243.0">
             <font>
                 <Font name="Bell MT" size="20.0"/>
             </font>

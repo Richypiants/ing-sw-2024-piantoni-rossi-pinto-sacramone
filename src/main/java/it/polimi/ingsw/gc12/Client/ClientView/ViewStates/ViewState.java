@@ -26,8 +26,16 @@ public abstract class ViewState {
         selectedView = view;
     }
 
+    public void keyPressed() {
+
+    }
+
     public void setNickname(String nickname){
         //"throw Exception"
+    }
+
+    public void connect(String nickname) {
+
     }
 
     public void createLobby(int maxPlayers){
