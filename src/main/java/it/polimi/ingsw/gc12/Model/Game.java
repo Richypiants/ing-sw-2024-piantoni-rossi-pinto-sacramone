@@ -234,7 +234,7 @@ public class Game extends GameLobby {
 
     public ClientGame generateDTO(InGamePlayer receiver){
         //FIXME: orribile...
-        Map<Integer, ClientCard> clientCards = JSONParser.clientCardsFromJSON("src/main/java/it/polimi/ingsw/gc12/Utilities/JSON_Files/client_cards.json")
+        Map<Integer, ClientCard> clientCards = JSONParser.clientCardsFromJSON("client_cards.json")
                 .stream().collect(Collectors.toMap((card) -> card.ID, (card) -> card));
         return new ClientGame(this, receiver, clientCards);
         //TODO: create the DTO from the current class, we also need DTOs for creating ClientPlayer and ClientCard.

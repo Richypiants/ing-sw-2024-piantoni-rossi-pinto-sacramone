@@ -193,7 +193,7 @@ public class JSONParser {
 
     private static ArrayList<ArrayList<Triplet<String, Integer[], Integer>>> generatePlayableCardTUISprite(PlayableCard card, Side side) {
         //TODO: mappare nel colore giusto di FG e BG
-        int cardColor = (card instanceof InitialCard) ? 228/*222-255?*/ : card.getCenterBackResources().keySet().stream().findAny().orElseThrow().ANSI_COLOR;
+        int cardColor = (card instanceof InitialCard) ? 228/*222-255? - 231?*/ : card.getCenterBackResources().keySet().stream().findAny().orElseThrow().ANSI_COLOR;
         Resource cornerResource;
 
         ArrayList<ArrayList<Triplet<String, Integer[], Integer>>> sequence = new ArrayList<>();
@@ -223,9 +223,8 @@ public class JSONParser {
             }
 
             sequence.getFirst().add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 3));
-            sequence.getFirst().add(new Triplet<>(String.valueOf(card.POINTS_GRANTED), new Integer[]{-1, -1}, 1));
-            sequence.getFirst().add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 3));
-            sequence.getFirst().add(new Triplet<>(stringForCondition, new Integer[]{colorForCondition, -1}, 1));
+            sequence.getFirst().add(new Triplet<>(card.POINTS_GRANTED + "   " + stringForCondition,
+                    new Integer[]{colorForCondition, -1}, 1));
             sequence.getFirst().add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 3));
         } else {
             sequence.getFirst().add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 5));
@@ -270,7 +269,7 @@ public class JSONParser {
                 sequence.get(4).add(new Triplet<>(entry.getKey().SYMBOL,
                         new Integer[]{entry.getKey().ANSI_COLOR,
                                 entry.getKey().equals(Resource.NOT_A_CORNER) ? -1 : Resource.EMPTY.ANSI_COLOR
-                        }, 1));
+                        }, entry.getValue()));
             sequence.get(4).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (11 - numberOfResources + 1)/2));
         } else {
             sequence.get(4).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 11));

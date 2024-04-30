@@ -5,7 +5,7 @@ An enumeration of all the possible "resources" values in card corners and back-c
  */
 public enum Resource {
 
-    NOT_A_CORNER(" ", -1), EMPTY(" ", 223),
+    NOT_A_CORNER(" ", -1), EMPTY(" ", -1),
     WOLF("W", 32), BUTTERFLY("B", 207),
     GRASS("G", 82), MUSHROOM("M", 88),
     INK("I", 94), FEATHER("F", 94),

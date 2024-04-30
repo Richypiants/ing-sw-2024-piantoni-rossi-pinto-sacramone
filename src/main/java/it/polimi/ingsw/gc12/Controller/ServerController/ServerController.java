@@ -308,6 +308,7 @@ public class ServerController implements ServerControllerInterface {
                 playersToLobbiesAndGames.remove(player);
                 playersToLobbiesAndGames.put(targetInGamePlayer, newGame);
 
+                System.out.println("[SERVER]: sending StartGameCommand to clients starting game");
                 requestToClient(targetClient, new StartGameCommand(lobbyUUID, newGame.generateDTO(targetInGamePlayer)));
                 //startGame();
 
@@ -354,6 +355,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void pickObjective(VirtualClient sender, int cardID) {
+        System.out.println("[CLIENT]: PickObjectiveCommand received and being executed");
         if (hasNoPlayer(sender) || inGame(sender, false)) return;
 
         if(!cardsList.containsKey(cardID)){
@@ -408,6 +410,8 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void placeCard(VirtualClient sender, GenericPair<Integer, Integer> coordinates, int cardID, Side playedSide) {
+        System.out.println("[CLIENT]: PlaceCardCommand received and being executed");
+
         if (hasNoPlayer(sender) || inGame(sender, false) || !validCard(sender, cardID)) return;
 
         if(Arrays.stream(Side.values()).noneMatch((side) -> side.equals(playedSide))){
@@ -477,6 +481,7 @@ public class ServerController implements ServerControllerInterface {
             return;
         }
 
+        System.out.println("[SERVER]: sending PlaceCardCommand to clients");
         for(var player : targetGame.getPlayers()) {
             VirtualClient targetClient = keyReverseLookup(players, player::equals);
             requestToClient(
@@ -489,6 +494,8 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void drawFromDeck(VirtualClient sender, String deck) {
+        System.out.println("[CLIENT]: DrawFromDeckCommand received and being executed");
+
         if (hasNoPlayer(sender) || inGame(sender, false)) return;
 
         InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
@@ -530,11 +537,13 @@ public class ServerController implements ServerControllerInterface {
             return;
         }
 
+        System.out.println("[SERVER]: sending ReceiveCardCommand to clients");
         requestToClient(sender, new ReceiveCardCommand(List.of(targetPlayer.getCardsInHand().getLast().ID)));
         //receiveCard();
     }
 
     public void drawFromVisibleCards(VirtualClient sender, String deck, int position) {
+        System.out.println("[CLIENT]: DrawFromVisibleCardsCommand received and being executed");
         if (hasNoPlayer(sender) || inGame(sender, false)) return;
 
         InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
@@ -583,6 +592,7 @@ public class ServerController implements ServerControllerInterface {
             return;
         }
 
+        System.out.println("[SERVER]: sending ReceiveCardCommand to clients");
         requestToClient(sender, new ReceiveCardCommand(List.of(targetPlayer.getCardsInHand().getLast().ID)));
         //receiveCard();
 
@@ -592,7 +602,7 @@ public class ServerController implements ServerControllerInterface {
             newCard.add(new Triplet<>(targetGame.getPlacedResources()[position].ID, deck, position));
         else newCard.add(new Triplet<>(targetGame.getPlacedGolds()[position].ID, deck, position));
 
-
+        System.out.println("[SERVER]: sending ReplaceCardCommand to clients");
         for(var player : targetGame.getPlayers()) {
             VirtualClient targetClient = keyReverseLookup(players, player::equals);
             requestToClient(targetClient, new ReplaceCardCommand(newCard)); //replaceCard();
@@ -600,6 +610,7 @@ public class ServerController implements ServerControllerInterface {
     }
 
     public void leaveGame(VirtualClient sender) {
+        System.out.println("[CLIENT]: LeaveGameCommand received and being executed");
         if (hasNoPlayer(sender) || inGame(sender, false)) return;
 
         InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
@@ -611,6 +622,8 @@ public class ServerController implements ServerControllerInterface {
         long activePlayers = targetGame.getPlayers().stream()
                 .filter(InGamePlayer::isActive)
                 .count();
+
+        System.out.println("[SERVER]: sending ToggleActiveCommand to clients");
 
         for(var player : targetGame.getPlayers())
             if(player.isActive()) {
