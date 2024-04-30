@@ -13,7 +13,7 @@
            xmlns="http://javafx.com/javafx/21" fx:controller="it.polimi.ingsw.gc12.HelloController">
     <children>
         <Button fx:id="startButton" alignment="CENTER" layoutY="600" layoutX="607" mnemonicParsing="false"
-                onAction="#selectConnection" prefHeight="38.0" prefWidth="323.0" text="Premi Invio per iniziare"
+                onAction="#selectLanguage" prefHeight="38.0" prefWidth="323.0" text="Premi Invio per iniziare"
                 textAlignment="JUSTIFY" wrapText="true">
             <font>
                 <Font name="Castellar" size="16.0"/>

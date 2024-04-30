@@ -76,7 +76,7 @@ public class HelloController {
     }
 
     @FXML
-    protected void ciao(ActionEvent event) throws IOException {
+    protected void newPane(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("Second.fxml"));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root, 1800, 850);

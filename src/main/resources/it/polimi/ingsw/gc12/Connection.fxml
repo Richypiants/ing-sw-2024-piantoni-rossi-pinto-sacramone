@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.layout.Pane?>
 <Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
@@ -9,5 +10,9 @@
       fx:controller="it.polimi.ingsw.gc12.HelloController">
     <children>
         <ComboBox fx:id="connection" layoutX="225.0" layoutY="188.0" prefWidth="150.0" promptText="Select a language"/>
+        <Button fx:id="startButton" alignment="CENTER" layoutY="600" layoutX="607" mnemonicParsing="false"
+                onAction="#newPane" prefHeight="38.0" prefWidth="323.0" text="Premi Invio per iniziare"
+                textAlignment="JUSTIFY" wrapText="true">
+        </Button>
     </children>
 </Pane>
