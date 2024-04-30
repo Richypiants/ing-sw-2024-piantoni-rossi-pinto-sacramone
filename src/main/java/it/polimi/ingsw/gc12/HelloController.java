@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,6 +24,8 @@ public class HelloController {
     Parent root;
     Scene scene;
     Stage stage;
+    ObservableList<String> languageList = FXCollections.observableArrayList("Italiano", "English");
+    ObservableList<String> connectionList = FXCollections.observableArrayList("Socket", "RMI");
 
     @FXML
     Label StatusLabel;
@@ -38,7 +42,41 @@ public class HelloController {
     Button join;
 
     @FXML
-    protected void newPane(ActionEvent event) throws IOException {
+    protected void selectLanguage(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Language.fxml"));
+        Parent root = loader.load(); // Carica il file FXML e ottiene il root
+
+        // Ottieni lo stage corrente e imposta la nuova scena
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root, 1800, 850);
+        stage.setScene(scene);
+        stage.setMaximized(true);
+        stage.show();
+
+        ComboBox language = (ComboBox) loader.getNamespace().get("language");
+        language.setValue("Select a Language");
+        language.setItems(languageList);
+    }
+
+    @FXML
+    protected void selectConnection(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Connection.fxml"));
+        Parent root = loader.load(); // Carica il file FXML e ottiene il root
+
+        // Ottieni lo stage corrente e imposta la nuova scena
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root, 1800, 850);
+        stage.setScene(scene);
+        stage.setMaximized(true);
+        stage.show();
+
+        ComboBox connection = (ComboBox) loader.getNamespace().get("connection");
+        connection.setValue("Select a Connection");
+        connection.setItems(connectionList);
+    }
+
+    @FXML
+    protected void ciao(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("Second.fxml"));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root, 1800, 850);

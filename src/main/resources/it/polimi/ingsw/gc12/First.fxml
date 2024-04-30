@@ -8,11 +8,12 @@
 <StackPane xmlns:fx="http://javafx.com/fxml/1"
            fx:id="First" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
            minWidth="-Infinity"
-           style="-fx-background-image: url(file:///C:/Users/jacop/Desktop/imagecodex3.jpg); -fx-background-repeat: no-repeat; -fx-background-size: stretch;"
+           style="-fx-background-image: url(file:///C:/Users/jacop/Desktop/imagecodex3.jpg);
+           -fx-background-repeat: no-repeat; -fx-background-size: stretch;"
            xmlns="http://javafx.com/javafx/21" fx:controller="it.polimi.ingsw.gc12.HelloController">
     <children>
         <Button fx:id="startButton" alignment="CENTER" layoutY="600" layoutX="607" mnemonicParsing="false"
-                onAction="#newPane" prefHeight="38.0" prefWidth="323.0" text="Premi Invio per iniziare"
+                onAction="#selectConnection" prefHeight="38.0" prefWidth="323.0" text="Premi Invio per iniziare"
                 textAlignment="JUSTIFY" wrapText="true">
             <font>
                 <Font name="Castellar" size="16.0"/>

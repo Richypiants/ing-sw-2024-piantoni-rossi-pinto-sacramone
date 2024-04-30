@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.Pane?>
+<Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="400.0"
+      prefWidth="600.0" xmlns="http://javafx.com/javafx/21"
+      fx:controller="it.polimi.ingsw.gc12.HelloController">
+    <children>
+        <ComboBox fx:id="language" layoutX="225.0" layoutY="188.0" prefWidth="150.0" promptText="Select a language"/>
+    </children>
+</Pane>
