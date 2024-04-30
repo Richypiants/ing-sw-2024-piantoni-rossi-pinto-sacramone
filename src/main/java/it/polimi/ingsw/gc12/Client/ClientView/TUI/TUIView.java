@@ -208,14 +208,14 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(12, 3).a("Resource cards:"));
         int column = 20;
         for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getPlacedResources()) {
-            printToPosition(ansi().cursor(10, column).a(card.standardAnsi(Side.FRONT)));
+            printToPosition(ansi().cursor(10, column).a(standardAnsi(card, Side.FRONT)));
             column += 20;
         }
 
         column = 20;
         printToPosition(ansi().cursor(18, 3).a("Gold cards:"));
         for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getPlacedGold()){
-            printToPosition(ansi().cursor(16, column).a(card.upscaledAnsi(Side.FRONT)));
+            printToPosition(ansi().cursor(16, column).a(standardAnsi(card, Side.FRONT)));
             column += 20;
         }
 
@@ -238,8 +238,8 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(32, 3).a("Front:"));
         printToPosition(ansi().cursor(38, 3).a("Back:"));
         for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand()){
-            printToPosition(ansi().cursor(30, column).a(card.standardAnsi(Side.FRONT)));
-            printToPosition(ansi().cursor(36, column).a(card.standardAnsi(Side.BACK)));
+            printToPosition(ansi().cursor(30, column).a(standardAnsi(card, Side.FRONT)));
+            printToPosition(ansi().cursor(36, column).a(standardAnsi(card, Side.BACK)));
             column += 20;
         }
     }
@@ -262,9 +262,67 @@ public class TUIView extends View {
             );
     }
 
+    public Ansi standardAnsi(ClientCard card, Side side) {
+        if(card == null) return Ansi.ansi();
+
+        Ansi sprite = Ansi.ansi();
+        for (var line : card.TUI_SPRITES.get(side)) {
+            for (var triplet : line) {
+                if (triplet.getY()[0] != -1)
+                    sprite = sprite.fg(triplet.getY()[0]);
+                if (triplet.getY()[1] != -1)
+                    sprite = sprite.bg(triplet.getY()[1]);
+
+                for (int i = 0; i < triplet.getZ(); i++)
+                    sprite.a(triplet.getX());
+
+                sprite = sprite.reset();
+            }
+            sprite.cursorMove(-13, 1);
+        }
+
+        return sprite;
+    }
+
+    public Ansi upscaledAnsi(ClientCard card, Side side) {
+        if(card == null) return Ansi.ansi();
+
+        Ansi sprite = Ansi.ansi();
+        Ansi[] tmp = new Ansi[3];
+        for (var line : card.TUI_SPRITES.get(side)) {
+            for (int i = 0; i < 3; i++)
+                tmp[i] = Ansi.ansi();
+
+            for (var triplet : line) {
+                for (int i = 0; i < 3; i++) {
+                    if (triplet.getY()[0] != -1)
+                        tmp[i] = tmp[i].fg(triplet.getY()[0]);
+                    if (triplet.getY()[1] != -1)
+                        tmp[i] = tmp[i].bg(triplet.getY()[1]);
+                }
+
+                for (int i = 0; i < triplet.getZ(); i++)
+                    if (triplet.getX().charAt(0) != ' ') {
+                        tmp[0].a("   ");
+                        tmp[1].a(" " + triplet.getX().charAt(0) + " ");
+                        tmp[2].a("   ");
+                    } else
+                        for (int j = 0; j < 3; j++)
+                            tmp[j].a("   ");
+
+                for (int i = 0; i < 3; i++) {
+                    tmp[i].reset();
+                }
+            }
+            sprite.a(tmp[0]).cursorMove(-13, 1).a(tmp[1]).cursorMove(-13, 1).a(tmp[2]).cursorMove(-13, 1);
+        }
+
+        return sprite;
+    }
+
     public void printRedCard(ClientCard card, Side side, Ansi position) {
         System.out.print(position);
-        printToPosition(position.a(card.standardAnsi(side)));
+        printToPosition(position.a(standardAnsi(card, side)));
         //System.out.print(position.a("┌─────────────┐").reset());
         //System.out.print(position.a("M").bg(Ansi.Color.RED).a("    ").reset().a("2 S").bg(Ansi.Color.RED).a("    ").reset().a("M").reset());
         //System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.RED).a("             ").reset());

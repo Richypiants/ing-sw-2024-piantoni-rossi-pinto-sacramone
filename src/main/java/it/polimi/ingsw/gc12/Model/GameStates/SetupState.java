@@ -23,29 +23,14 @@ public class SetupState extends GameState {
     public void transition() {
         super.transition();
 
-        //Sending common cards here
-        ArrayList<Triplet<Integer, String, Integer>> cardPlacements = new ArrayList<>();
-        for (int i = 0; i < GAME.getPlacedResources().length; i++)
-            cardPlacements.add(new Triplet<>(GAME.getPlacedResources()[i].ID, "Resource", i));
-        for (int i = 0; i < GAME.getPlacedGolds().length; i++)
-            cardPlacements.add(new Triplet<>(GAME.getPlacedGolds()[i].ID, "Gold", i));
-
-        //TODO: manage exception
-        for (var target : GAME.getPlayers()) {
-            try {
-                keyReverseLookup(ServerController.getInstance().players, target::equals)
-                        .requestToClient(new ReplaceCardCommand(cardPlacements));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
         CardDeck<InitialCard> initialCardsDeck = new CardDeck<>(
                 ServerController.getInstance().cardsList.values().stream()
                         .filter((card -> card instanceof InitialCard))
                         .map((card) -> (InitialCard) card)
                         .toList()
         );
+
+        System.out.println("[SERVER]: sending ReceiveCardCommand to clients");
         for (var target : GAME.getPlayers()) {
             InitialCard tmp = initialCardsDeck.draw();
             target.addCardToHand(tmp);

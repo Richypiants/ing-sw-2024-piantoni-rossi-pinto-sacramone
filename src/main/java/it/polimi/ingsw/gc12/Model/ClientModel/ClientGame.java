@@ -4,10 +4,11 @@ import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ClientGame extends GameLobby{
+public class ClientGame extends GameLobby implements Serializable {
 
     private final ClientPlayer MYSELF;
     /**
@@ -45,9 +46,9 @@ public class ClientGame extends GameLobby{
                 .map((card) -> clientCards.get(card.ID))
                 .toArray(ClientCard[]::new);
         this.COMMON_OBJECTIVES = Arrays.stream(game.getCommonObjectives())
-                .map((card) -> clientCards.get(card.ID))
+                .map((card) -> card == null ? null : clientCards.get(card.ID))
                 .toArray(ClientCard[]::new);
-        this.ownObjective = clientCards.get(myself.getSecretObjective().ID);
+        this.ownObjective = myself.getSecretObjective() == null ? null : clientCards.get(myself.getSecretObjective().ID);
         this.currentRound = 0;
         this.chatLog = new ArrayList<>();
         //this.currentState = ???;

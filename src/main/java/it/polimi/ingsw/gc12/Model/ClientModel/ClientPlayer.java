@@ -5,12 +5,13 @@ import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 
-public class ClientPlayer extends Player{
+public class ClientPlayer extends Player implements Serializable {
 
     /**
      * The resources owned by this player currently
