@@ -52,23 +52,19 @@ public abstract class ViewState {
 
     }
 
-    public void returnToTitleScreen(){
-
-    }
-
-    public void startGame() {
-
-    }
-
     public void placeCard(GenericPair<Integer, Integer> coordinates, int inHandPosition, Side playedSide) {
 
     }
 
-    public void drawFromDeck() {
+    public void placeCard(int inHandPosition) {
 
     }
 
-    public void drawFromVisibleCards() {
+    public void drawFromDeck(String deck) {
+
+    }
+
+    public void drawFromVisibleCards(String deck, int position) {
 
     }
 

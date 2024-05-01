@@ -23,7 +23,8 @@ public class Main {
                 ClientController.getInstance().viewState = new TitleScreenState();
                 ClientController.getInstance().viewState.executeState();
             } else if (graphics.equals("gui")) {
-                Application.launch(HelloApplication.class, args);
+                //FIXME: want to get controller here...
+                new Thread(() -> Application.launch(HelloApplication.class, args)).start();
             }
         } while (!graphics.equals("tui") && !graphics.equals("gui"));
     }

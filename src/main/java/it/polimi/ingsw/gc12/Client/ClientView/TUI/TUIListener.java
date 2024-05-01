@@ -7,7 +7,10 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 import org.fusesource.jansi.Ansi;
 
 import java.io.Console;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+import java.util.UUID;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -56,11 +59,11 @@ public class TUIListener {
             switch (tokens.removeFirst().trim()) {
                 case "setNickname" -> currentState.setNickname(tokens.removeFirst());
                 case "createLobby" -> {
-                    errorMessage = "expected numero di giocatori nella lobby";
+                    errorMessage = "expected numero di giocatori nella lobby as first argument";
                     currentState.createLobby(Integer.parseInt(tokens.removeFirst()));
                 }
                 case "joinLobby" -> {
-                    errorMessage = "expected lobbyUUID";
+                    errorMessage = "expected lobbyUUID as second argument";
                     currentState.joinLobby((UUID.fromString(tokens.removeFirst())));
                 }
                 case "leaveLobby" -> currentState.leaveLobby();
@@ -75,15 +78,16 @@ public class TUIListener {
                 case "placeCard" ->
                     currentState.placeCard(
                             new GenericPair<>(Integer.parseInt(tokens.removeFirst()), Integer.parseInt(tokens.removeFirst())),
-                            Integer.parseInt(tokens.removeFirst()),
+                            Integer.parseInt(tokens.removeFirst()) - 1,
                             convertSide(tokens.removeFirst())
-                );
-                case "drawFromDeck" -> currentState.drawFromDeck(
-
-                );
-                case "drawFromVisibleCards" -> currentState.drawFromVisibleCards(
-
-                );
+                    );
+                case "drawFromDeck" -> currentState.drawFromDeck(tokens.removeFirst());
+                case "drawFromVisibleCards" -> {
+                    errorMessage = "expected position to draw from as second argument";
+                    currentState.drawFromVisibleCards(
+                            tokens.removeFirst(), Integer.parseInt(tokens.removeFirst())
+                    );
+                }
                 case "quit" -> currentState.quit();
                 default -> System.out.println("Unknown command");
             }
@@ -91,6 +95,7 @@ public class TUIListener {
             ClientController.getInstance().errorLogger.log(new NoSuchElementException("Formato del comando fornito non valido: parametri forniti insufficienti"));
         } catch (IllegalArgumentException e) {
             //TODO: check this
+            // infatti è rotto
             if(!e.getMessage().isEmpty()) errorMessage = e.getMessage();
             ClientController.getInstance().errorLogger.log(new IllegalArgumentException("Parametri forniti invalidi: " + errorMessage));
         }
@@ -108,12 +113,12 @@ public class TUIListener {
         runCommand(tokens);
     }
 
-    private Side convertSide(String input){
+    //TODO: sposterei nello state per single resp principle...
+    private Side convertSide(String input) {
         return switch(input.trim().toLowerCase()){
             case "front" -> Side.FRONT;
             case "back" -> Side.BACK;
             default -> throw new IllegalArgumentException("unknown side string given: " + input);
         };
     }
-
 }

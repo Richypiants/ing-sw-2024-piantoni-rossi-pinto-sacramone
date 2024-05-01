@@ -13,7 +13,8 @@ import it.polimi.ingsw.gc12.Model.Conditions.PatternCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.PointsCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.ResourcesCondition;
 
-import java.io.*;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -241,7 +242,7 @@ public class JSONParser {
 
         if(side.equals(Side.BACK)) {
             int numberOfResources = card.getCenterBackResources().values().stream().mapToInt((value) -> value).sum();
-            sequence.get(2).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (13 - numberOfResources + 1)/2));
+            sequence.get(2).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (13 - numberOfResources) / 2));
 
             for (var entry : card.getCenterBackResources().entrySet())
                 sequence.get(2).add(new Triplet<>(entry.getKey().SYMBOL,

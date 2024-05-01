@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.GameScreenState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.CreateLobbyCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.JoinLobbyCommand;
@@ -8,8 +7,6 @@ import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.LeaveLobb
 import it.polimi.ingsw.gc12.Controller.SetNicknameCommand;
 
 import java.util.UUID;
-
-import static java.lang.Thread.sleep;
 
 public class LobbyScreenState extends ViewState {
 
@@ -49,18 +46,6 @@ public class LobbyScreenState extends ViewState {
     @Override
     public void leaveLobby(){
         ClientController.getInstance().requestToServer(new LeaveLobbyCommand());
-    }
-
-    @Override
-    public void returnToTitleScreen(){
-        ClientController.getInstance().viewState = new TitleScreenState();
-        ClientController.getInstance().viewState.executeState();
-    }
-
-    @Override
-    public void startGame() {
-        ClientController.getInstance().viewState = new GameScreenState();
-        ClientController.getInstance().viewState.executeState();
     }
 
     @Override

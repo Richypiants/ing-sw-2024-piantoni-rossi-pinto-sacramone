@@ -22,6 +22,7 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException, InterruptedException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("First.fxml"));
+        //FIXME: ... fxmlLoader.setController(ClientController.getInstance().view);
         Parent root = fxmlLoader.load();
         ClientController.getInstance().view = fxmlLoader.getController();
         ClientController.getInstance().viewState = new TitleScreenState();

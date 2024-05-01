@@ -1,7 +1,8 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.GameScreenState;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseInitialCardsState;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LobbyScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
@@ -106,7 +107,8 @@ public class ClientController implements ClientControllerInterface {
 
     public void restoreGame(ClientGame gameDTO){
         currentLobbyOrGame = gameDTO;
-        viewState = new GameScreenState();
+        //TODO: decide which game state
+        // viewState = new GameScreenState();
         viewState.executeState();
     }
 
@@ -143,7 +145,7 @@ public class ClientController implements ClientControllerInterface {
         currentLobbyOrGame = gameDTO;
         //FIXME: send clientGame directly?
 
-        viewState = new GameScreenState();
+        viewState = new ChooseInitialCardsState();
         viewState.executeState();
     }
 
@@ -159,11 +161,18 @@ public class ClientController implements ClientControllerInterface {
         thisPlayer.setOwnedResources(ownedResources);
         thisPlayer.setOpenCorners(openCorners);
         thisPlayer.setPoints(points);
+
+        //new PlayerTurnDrawState() dello stesso giocatore...
     }
 
     public void receiveCard(List<Integer> cardIDs) {
         for (var cards : cardIDs)
             ((ClientGame) currentLobbyOrGame).addCardToHand(cardsList.get(cards));
+
+        //FIXME: non sempre...
+        viewState = new ChooseObjectiveCardsState();
+        viewState.executeState();
+        //new PlayerTurnPlayState() ma degli avversari...
     }
 
     public void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {
@@ -174,6 +183,8 @@ public class ClientController implements ClientControllerInterface {
                 ((ClientGame) currentLobbyOrGame).setPlacedGold(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
             else if (cardPlacement.getY().trim().equalsIgnoreCase("OBJECTIVE"))
                 ((ClientGame) currentLobbyOrGame).setCommonObjectives(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
+
+        //new PlayerTurnPlayState() di un avversario oppure proprio...in realtà se un avversario pesca da un deck come lo capisco?
     }
 
     public void toggleActive(String nickname){

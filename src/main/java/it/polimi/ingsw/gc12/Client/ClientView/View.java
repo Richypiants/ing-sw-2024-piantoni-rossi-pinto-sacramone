@@ -19,4 +19,10 @@ public abstract class View { //FIXME: turn into interface maybe?
     public abstract void updateChat();
 
     public abstract void showInitialCardsChoice();
+
+    public abstract void showObjectiveCardsChoice();
+
+    public abstract void showField();
+
+    public abstract void showHand();
 }

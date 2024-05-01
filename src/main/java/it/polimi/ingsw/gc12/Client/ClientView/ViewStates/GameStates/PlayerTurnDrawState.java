@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.DrawFromDeckCommand;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.DrawFromVisibleCardsCommand;
 
 public class PlayerTurnDrawState extends GameScreenState {
 
@@ -13,12 +15,26 @@ public class PlayerTurnDrawState extends GameScreenState {
     }
 
     @Override
-    public void drawFromDeck() {
-
+    public void drawFromDeck(String deck) {
+        if (invalidDeck(deck)) throw new IllegalArgumentException("deck fornito da cui pescare invalido");
+        try {
+            ClientController.getInstance().requestToServer(new DrawFromDeckCommand(deck));
+        } catch (Exception e) {
+            ClientController.getInstance().view.printError(e);
+        }
     }
 
     @Override
-    public void drawFromVisibleCards() {
+    public void drawFromVisibleCards(String deck, int position) {
+        if (invalidDeck(deck)) throw new IllegalArgumentException("area fornita da cui pescare invalida");
+        try {
+            ClientController.getInstance().requestToServer(new DrawFromVisibleCardsCommand(deck, position));
+        } catch (Exception e) {
+            ClientController.getInstance().view.printError(e);
+        }
+    }
 
+    private boolean invalidDeck(String deck) {
+        return !(deck.equals("Resource") || deck.equals("Gold"));
     }
 }

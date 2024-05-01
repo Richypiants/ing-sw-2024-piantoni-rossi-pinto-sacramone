@@ -166,8 +166,9 @@ public class TUIView extends View {
         printStatsTable();
         printOpponentsFieldsMiniaturized();
         printCommonPlacedCards();
-        printPlayerHand();
-        printPlayerField();
+        //FIXME: decomment when field is correctly printed (even when empty)
+        //showField();
+        showHand();
         updateChat();
     }
 
@@ -231,29 +232,6 @@ public class TUIView extends View {
         //printBlueCard(ansi().cursor(22, 64).a(((ClientGame) ClientController.getInstance.currentLobbyOrGame)getOwnObjective().standardAnsi(Side.FRONT);
     }
 
-    public void printPlayerHand() {
-        //FIXME: erase or overwrite old hand/cards?
-
-        int column = 10;
-        printToPosition(ansi().cursor(28, 2).bold().a("Your hand: ").reset());
-        printToPosition(ansi().cursor(32, 3).a("Front:"));
-        printToPosition(ansi().cursor(38, 3).a("Back:"));
-        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand()){
-            printToPosition(ansi().cursor(30, column).a(standardAnsi(card, Side.FRONT)));
-            printToPosition(ansi().cursor(36, column).a(standardAnsi(card, Side.BACK)));
-            column += 20;
-        }
-    }
-
-    public void printPlayerField() {
-        //FIXME: erase old field?
-        printRedCard(ClientController.getInstance().cardsList.get(81), Side.FRONT, ansi().cursor(18, 102));
-        printBlueCard(ansi().cursor(15, 113));
-        printPurpleCard(ansi().cursor(21, 113));
-        printGreenCard(ansi().cursor(18, 124));
-        printRedCard(ClientController.getInstance().cardsList.get(81), Side.FRONT, ansi().cursor(24, 124));
-    }
-
     public void updateChat() {
         List<String> chatLog = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getChatLog();
         printToPosition(ansi().cursor(42, 2).bold().a("Last chat messages: ").reset());
@@ -315,14 +293,53 @@ public class TUIView extends View {
                     tmp[i].reset();
                 }
             }
-            sprite.a(tmp[0]).cursorMove(-13, 1).a(tmp[1]).cursorMove(-13, 1).a(tmp[2]).cursorMove(-13, 1);
+            sprite.a(tmp[0]).cursorMove(-39, 1).a(tmp[1]).cursorMove(-39, 1).a(tmp[2]).cursorMove(-39, 1);
         }
 
         return sprite;
     }
 
-    public void showInitialCardsChoice(){
+    public void showInitialCardsChoice() {
+        ClientCard card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().getFirst();
+        printToPosition(ansi().cursor(15, 120).bold().eraseLine(Erase.FORWARD)
+                .a("Choose which side you want to play your assigned initial card on: ").reset());
+        printToPosition(ansi().cursor(20, 120).a(upscaledAnsi(card, Side.FRONT)));
+        printToPosition(ansi().cursor(20, 180).a(upscaledAnsi(card, Side.BACK)));
+    }
 
+    @Override
+    public void showObjectiveCardsChoice() {
+        int column = 120;
+        printToPosition(ansi().cursor(15, 120).bold().eraseLine(Erase.FORWARD)
+                .a("Choose which card you want to keep as your secret objective: ").reset());
+        for (var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand()) {
+            printToPosition(ansi().cursor(20, column).a(standardAnsi(card, Side.BACK)));
+            column += 60;
+        }
+    }
+
+    @Override
+    public void showField() {
+        //FIXME: erase old field?
+        printRedCard(ClientController.getInstance().cardsList.get(81), Side.FRONT, ansi().cursor(18, 102));
+        printBlueCard(ansi().cursor(15, 113));
+        printPurpleCard(ansi().cursor(21, 113));
+        printGreenCard(ansi().cursor(18, 124));
+        printRedCard(ClientController.getInstance().cardsList.get(81), Side.FRONT, ansi().cursor(24, 124));
+    }
+
+    @Override
+    public void showHand() {
+        //FIXME: erase or overwrite old hand/cards?
+        int column = 10;
+        printToPosition(ansi().cursor(28, 2).bold().a("Your hand: ").reset());
+        printToPosition(ansi().cursor(32, 3).a("Front:"));
+        printToPosition(ansi().cursor(38, 3).a("Back:"));
+        for (var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand()) {
+            printToPosition(ansi().cursor(30, column).a(standardAnsi(card, Side.FRONT)));
+            printToPosition(ansi().cursor(36, column).a(standardAnsi(card, Side.BACK)));
+            column += 20;
+        }
     }
 
     public void printRedCard(ClientCard card, Side side, Ansi position) {

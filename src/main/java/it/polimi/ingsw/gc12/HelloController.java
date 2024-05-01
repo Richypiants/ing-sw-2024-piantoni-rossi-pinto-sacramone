@@ -23,7 +23,7 @@ import java.io.IOException;
 
 public class HelloController extends View {
 
-    public static HelloController SINGLETON_GUI_INSTANCE = null;
+    private static HelloController SINGLETON_GUI_INSTANCE = null;
 
     Parent root;
     Scene scene;
@@ -58,7 +58,6 @@ public class HelloController extends View {
     Button join;
 
     public HelloController() {
-
     }
 
     public static HelloController getInstance() {
@@ -214,6 +213,26 @@ public class HelloController extends View {
 
     @Override
     public void updateChat() {
+
+    }
+
+    @Override
+    public void showInitialCardsChoice() {
+
+    }
+
+    @Override
+    public void showObjectiveCardsChoice() {
+
+    }
+
+    @Override
+    public void showField() {
+
+    }
+
+    @Override
+    public void showHand() {
 
     }
 

@@ -5,13 +5,32 @@ import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.BroadcastMessageCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.DirectMessageCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.LeaveGameCommand;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.PlaceCardCommand;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.Side;
 
 public abstract class GameScreenState extends ViewState {
 
     @Override
     public void executeState() {
         ClientController.getInstance().view.gameScreen();
+    }
+
+    protected void sendCardToPlace(GenericPair<Integer, Integer> coordinates, int inHandPosition, Side playedSide) {
+        ClientCard card = null;
+        try {
+            card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().get(inHandPosition);
+        } catch (IndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("nessuna carta presente alla posizione specificata della mano");
+        }
+
+        try {
+            ClientController.getInstance().requestToServer(new PlaceCardCommand(coordinates, card.ID, playedSide));
+        } catch (Exception e) {
+            ClientController.getInstance().view.printError(e);
+        }
     }
 
     @Override
