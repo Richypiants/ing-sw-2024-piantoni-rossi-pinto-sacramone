@@ -12,15 +12,19 @@ public class Main {
 
     public static void main(String[] args) {
         //FIXME: perchè System.console() dava null?
-        System.out.println("Select the desired application graphics (TUI - GUI): ");
-        String graphics = new Scanner(System.in).nextLine().toLowerCase();
-        if (graphics.equals("tui")) {
-            AnsiConsole.systemInstall();
-            ClientController.getInstance().view = TUIView.getInstance();
-            ClientController.getInstance().viewState = new TitleScreenState();
-            ClientController.getInstance().viewState.executeState();
-        } else if (graphics.equals("gui")) {
-            Application.launch(HelloApplication.class, args);
-        }
+        Scanner scanner = new Scanner(System.in);
+        String graphics = "";
+        do {
+            System.out.println("Select the desired application graphics (TUI - GUI): ");
+            graphics = scanner.nextLine().toLowerCase();
+            if (graphics.equals("tui")) {
+                AnsiConsole.systemInstall();
+                ClientController.getInstance().view = TUIView.getInstance();
+                ClientController.getInstance().viewState = new TitleScreenState();
+                ClientController.getInstance().viewState.executeState();
+            } else if (graphics.equals("gui")) {
+                Application.launch(HelloApplication.class, args);
+            }
+        } while (!graphics.equals("tui") && !graphics.equals("gui"));
     }
 }

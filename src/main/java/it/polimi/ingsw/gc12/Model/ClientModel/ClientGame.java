@@ -28,8 +28,6 @@ public class ClientGame extends GameLobby implements Serializable {
     /**
      *
      */
-    //TODO: vedere se sarà necessario
-    // private GameState currentState;
 
     //TODO: costruire scoreboard
     public ClientGame(Game game, InGamePlayer myself, Map<Integer, ClientCard> clientCards) {
@@ -51,7 +49,6 @@ public class ClientGame extends GameLobby implements Serializable {
         this.ownObjective = myself.getSecretObjective() == null ? null : clientCards.get(myself.getSecretObjective().ID);
         this.currentRound = 0;
         this.chatLog = new ArrayList<>();
-        //this.currentState = ???;
     }
 
     //FIXME: useless??? remove...

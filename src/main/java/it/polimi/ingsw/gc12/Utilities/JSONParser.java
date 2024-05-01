@@ -205,7 +205,7 @@ public class JSONParser {
         cornerResource = card.getCornerResource(side, -1, 1);
         sequence.getFirst().add(new Triplet<>(cornerResource.SYMBOL,
                 new Integer[]{cornerResource.ANSI_COLOR,
-                        cornerResource.equals(Resource.NOT_A_CORNER) ? -1 : Resource.EMPTY.ANSI_COLOR
+                        cornerResource.equals(Resource.NOT_A_CORNER) ? cardColor : Resource.EMPTY.ANSI_COLOR
                 }, 1)
         );
         if(side.equals(Side.BACK) || card.POINTS_GRANTED == 0)
@@ -234,7 +234,7 @@ public class JSONParser {
         cornerResource = card.getCornerResource(side, 1, 1);
         sequence.getFirst().add(new Triplet<>(cornerResource.SYMBOL,
                         new Integer[]{cornerResource.ANSI_COLOR,
-                                cornerResource.equals(Resource.NOT_A_CORNER) ? -1 : Resource.EMPTY.ANSI_COLOR
+                                cornerResource.equals(Resource.NOT_A_CORNER) ? cardColor : Resource.EMPTY.ANSI_COLOR
                         }, 1));
 
         sequence.get(1).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 13));
@@ -246,7 +246,7 @@ public class JSONParser {
             for (var entry : card.getCenterBackResources().entrySet())
                 sequence.get(2).add(new Triplet<>(entry.getKey().SYMBOL,
                         new Integer[]{entry.getKey().ANSI_COLOR,
-                                entry.getKey().equals(Resource.NOT_A_CORNER) ? -1 : Resource.EMPTY.ANSI_COLOR
+                                entry.getKey().equals(Resource.NOT_A_CORNER) ? cardColor : Resource.EMPTY.ANSI_COLOR
                         }, 1));
             sequence.get(2).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (13 - numberOfResources + 1)/2));
         } else {
@@ -258,7 +258,7 @@ public class JSONParser {
         cornerResource = card.getCornerResource(side, -1, -1);
         sequence.get(4).add(new Triplet<>(cornerResource.SYMBOL,
                 new Integer[]{cornerResource.ANSI_COLOR,
-                        cornerResource.equals(Resource.NOT_A_CORNER) ? -1 : Resource.EMPTY.ANSI_COLOR
+                        cornerResource.equals(Resource.NOT_A_CORNER) ? cardColor : Resource.EMPTY.ANSI_COLOR
                 }, 1));
         if(side.equals(Side.FRONT) && card instanceof GoldCard && ((GoldCard) card).getNeededResourcesToPlay() != null) {
             Map<Resource, Integer> neededResources = ((GoldCard) card).getNeededResourcesToPlay().getConditionParameters();
@@ -268,16 +268,16 @@ public class JSONParser {
             for (var entry : neededResources.entrySet())
                 sequence.get(4).add(new Triplet<>(entry.getKey().SYMBOL,
                         new Integer[]{entry.getKey().ANSI_COLOR,
-                                entry.getKey().equals(Resource.NOT_A_CORNER) ? -1 : Resource.EMPTY.ANSI_COLOR
+                                entry.getKey().equals(Resource.NOT_A_CORNER) ? cardColor : Resource.EMPTY.ANSI_COLOR
                         }, entry.getValue()));
             sequence.get(4).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (11 - numberOfResources + 1)/2));
         } else {
             sequence.get(4).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 11));
         }
-        cornerResource = card.getCornerResource(side, -1, 1);
+        cornerResource = card.getCornerResource(side, 1, -1);
         sequence.get(4).add(new Triplet<>(cornerResource.SYMBOL,
                 new Integer[]{cornerResource.ANSI_COLOR,
-                        cornerResource.equals(Resource.NOT_A_CORNER) ? -1 : Resource.EMPTY.ANSI_COLOR
+                        cornerResource.equals(Resource.NOT_A_CORNER) ? cardColor : Resource.EMPTY.ANSI_COLOR
                 }, 1));
 
         return sequence;

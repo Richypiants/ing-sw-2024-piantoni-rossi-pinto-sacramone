@@ -321,6 +321,10 @@ public class TUIView extends View {
         return sprite;
     }
 
+    public void showInitialCardsChoice(){
+
+    }
+
     public void printRedCard(ClientCard card, Side side, Ansi position) {
         System.out.print(position);
         printToPosition(position.a(standardAnsi(card, side)));

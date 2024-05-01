@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.GameScreenState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.CreateLobbyCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.JoinLobbyCommand;
@@ -17,11 +18,11 @@ public class LobbyScreenState extends ViewState {
 
     @Override
     public void executeState() {
-        try {
+        /*try {
             sleep(20000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
+        }*/
         ClientController.getInstance().view.lobbyScreen();
     }
 

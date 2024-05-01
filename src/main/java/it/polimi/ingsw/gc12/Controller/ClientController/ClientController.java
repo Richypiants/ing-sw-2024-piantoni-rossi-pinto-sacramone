@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameScreenState;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.GameScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LobbyScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;

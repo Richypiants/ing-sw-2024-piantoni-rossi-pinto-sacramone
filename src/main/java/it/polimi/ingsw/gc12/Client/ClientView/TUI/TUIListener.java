@@ -2,13 +2,12 @@ package it.polimi.ingsw.gc12.Client.ClientView.TUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.Side;
 import org.fusesource.jansi.Ansi;
 
 import java.io.Console;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
-import java.util.UUID;
+import java.util.*;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -33,7 +32,6 @@ public class TUIListener {
         Thread reader = new Thread(() -> {
             String command = "";
             do {
-                //FIXME: devo salvare la precedente posizione del cursore?
                 try {
                     command = console.readLine();
                 } catch (NoSuchElementException ignored) {
@@ -48,41 +46,53 @@ public class TUIListener {
     }
 
     private void runCommand(ArrayList<String> tokens) {
-        //TODO: Search if a more clean strategy exists
 
         ViewState currentState = ClientController.getInstance().viewState;
+        String errorMessage = "";
 
         //TODO: Every case has to check type parameters before calling the State method or eventually die
 
         try {
             switch (tokens.removeFirst().trim()) {
-                case "setNickname" -> currentState.setNickname(tokens.getFirst());
-                case "createLobby" -> currentState.createLobby(Integer.parseInt(tokens.getFirst()));
-                case "joinLobby" -> currentState.joinLobby((UUID.fromString(tokens.getFirst())));
+                case "setNickname" -> currentState.setNickname(tokens.removeFirst());
+                case "createLobby" -> {
+                    errorMessage = "expected numero di giocatori nella lobby";
+                    currentState.createLobby(Integer.parseInt(tokens.removeFirst()));
+                }
+                case "joinLobby" -> {
+                    errorMessage = "expected lobbyUUID";
+                    currentState.joinLobby((UUID.fromString(tokens.removeFirst())));
+                }
                 case "leaveLobby" -> currentState.leaveLobby();
-                case "broadcastMessage" -> currentState.broadcastMessage(
-                        tokens.stream().reduce("", (a, b) -> a + " " + b)
-                );
+                case "broadcastMessage" -> {
+                    currentState.broadcastMessage(
+                            tokens.stream().reduce("", (a, b) -> a + " " + b)
+                    );
+                }
                 case "directMessage" -> currentState.directMessage(
                         tokens.removeFirst(), tokens.stream().reduce("", (a, b) -> a + " " + b)
                 );
-            /*
-            case "drawFromDeck" -> currentState;
-            case "drawFromVisibleCards" -> currentState.;
-            case "keepAlive" -> currentState.;
-            case "leaveGame" -> currentState.;
-            case "pickObjective" -> currentState.;
-            case "placeCard" -> currentState.;
-            */
+                case "placeCard" ->
+                    currentState.placeCard(
+                            new GenericPair<>(Integer.parseInt(tokens.removeFirst()), Integer.parseInt(tokens.removeFirst())),
+                            Integer.parseInt(tokens.removeFirst()),
+                            convertSide(tokens.removeFirst())
+                );
+                case "drawFromDeck" -> currentState.drawFromDeck(
+
+                );
+                case "drawFromVisibleCards" -> currentState.drawFromVisibleCards(
+
+                );
                 case "quit" -> currentState.quit();
                 default -> System.out.println("Unknown command");
             }
         } catch (NoSuchElementException e) {
-            //TODO: stampare anche a terminale "Formato del comando fornito non valido"?
-            ClientController.getInstance().errorLogger.log(new NoSuchElementException("Formato del comando fornito non valido"));
+            ClientController.getInstance().errorLogger.log(new NoSuchElementException("Formato del comando fornito non valido: parametri forniti insufficienti"));
         } catch (IllegalArgumentException e) {
-            //TODO: stampare anche a terminale "Parametri forniti invalidi"?
-            ClientController.getInstance().errorLogger.log(new IllegalArgumentException("Parametri forniti invalidi"));
+            //TODO: check this
+            if(!e.getMessage().isEmpty()) errorMessage = e.getMessage();
+            ClientController.getInstance().errorLogger.log(new IllegalArgumentException("Parametri forniti invalidi: " + errorMessage));
         }
     }
 
@@ -96,6 +106,14 @@ public class TUIListener {
         }
 
         runCommand(tokens);
+    }
+
+    private Side convertSide(String input){
+        return switch(input.trim().toLowerCase()){
+            case "front" -> Side.FRONT;
+            case "back" -> Side.BACK;
+            default -> throw new IllegalArgumentException("unknown side string given: " + input);
+        };
     }
 
 }
