@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.DrawFromDeckCommand;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.DrawFromVisibleCardsCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.DrawFromDeckCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.DrawFromVisibleCardsCommand;
 
 public class PlayerTurnDrawState extends GameScreenState {
 
@@ -36,5 +36,10 @@ public class PlayerTurnDrawState extends GameScreenState {
 
     private boolean invalidDeck(String deck) {
         return !(deck.equals("Resource") || deck.equals("Gold"));
+    }
+
+    @Override
+    public void transition() {
+        ClientController.getInstance().viewState = new PlayerTurnPlayState();
     }
 }

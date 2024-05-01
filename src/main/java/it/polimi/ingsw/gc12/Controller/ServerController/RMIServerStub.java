@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.ServerCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Utilities.RMIVirtualServer;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 

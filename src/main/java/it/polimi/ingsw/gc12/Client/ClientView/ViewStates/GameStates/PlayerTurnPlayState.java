@@ -18,4 +18,9 @@ public class PlayerTurnPlayState extends GameScreenState {
     public void placeCard(GenericPair<Integer, Integer> coordinates, int inHandPosition, Side playedSide) {
         sendCardToPlace(coordinates, inHandPosition, playedSide);
     }
+
+    @Override
+    public void transition() {
+        ClientController.getInstance().viewState = new PlayerTurnDrawState();
+    }
 }

@@ -1,12 +1,11 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.ServerCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.VirtualServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.ExecutionException;

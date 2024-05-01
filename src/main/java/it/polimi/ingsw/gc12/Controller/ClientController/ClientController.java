@@ -2,11 +2,12 @@ package it.polimi.ingsw.gc12.Controller.ClientController;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseInitialCardsState;
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.GameScreenState;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.PlayerTurnPlayState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LobbyScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.ServerCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
@@ -140,13 +141,10 @@ public class ClientController implements ClientControllerInterface {
         viewState.executeState();
     }
 
-    public void startGame(UUID lobbyUUID, ClientGame gameDTO) {
+    public synchronized void startGame(UUID lobbyUUID, ClientGame gameDTO) {
         updateLobby(lobbyUUID, gameDTO);
         currentLobbyOrGame = gameDTO;
         //FIXME: send clientGame directly?
-
-        viewState = new ChooseInitialCardsState();
-        viewState.executeState();
     }
 
     public void placeCard(String nickname, GenericPair<Integer, Integer> coordinates, int cardID,
@@ -158,19 +156,31 @@ public class ClientController implements ClientControllerInterface {
                 .orElseThrow();
 
         thisPlayer.placeCard(coordinates, cardsList.get(cardID), playedSide);
+        if (nickname.equals(ownNickname)) ((ClientGame) currentLobbyOrGame).removeCardFromHand(cardsList.get(cardID));
         thisPlayer.setOwnedResources(ownedResources);
         thisPlayer.setOpenCorners(openCorners);
         thisPlayer.setPoints(points);
 
+        //FIXME: sbagliatissimo
+        if (viewState instanceof PlayerTurnPlayState) {
+            ((GameScreenState) viewState).transition();
+            viewState.executeState();
+        }
         //new PlayerTurnDrawState() dello stesso giocatore...
     }
 
-    public void receiveCard(List<Integer> cardIDs) {
+    public synchronized void receiveCard(List<Integer> cardIDs) {
         for (var cards : cardIDs)
             ((ClientGame) currentLobbyOrGame).addCardToHand(cardsList.get(cards));
 
-        //FIXME: non sempre...
-        viewState = new ChooseObjectiveCardsState();
+        //FIXME: sbagliatissimo...
+        if (viewState instanceof LobbyScreenState) {
+            viewState = new ChooseInitialCardsState();
+            viewState.executeState();
+            return;
+        }
+        //viewState = new ChooseObjectiveCardsState();
+        ((GameScreenState) viewState).transition();
         viewState.executeState();
         //new PlayerTurnPlayState() ma degli avversari...
     }

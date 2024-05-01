@@ -2,10 +2,10 @@ package it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates;
 
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.BroadcastMessageCommand;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.DirectMessageCommand;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.LeaveGameCommand;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.PlaceCardCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.BroadcastMessageCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.DirectMessageCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.LeaveGameCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.PlaceCardCommand;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
@@ -56,6 +56,8 @@ public abstract class GameScreenState extends ViewState {
         ClientController.getInstance().requestToServer(new LeaveGameCommand());
         super.quit();
     }
+
+    public abstract void transition();
 
     //TODO: when receiving victory:
     //ClientController.getInstance().viewState = new LeaderboardScreenState();

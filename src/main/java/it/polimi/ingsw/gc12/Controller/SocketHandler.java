@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.Controller;
 
+import it.polimi.ingsw.gc12.Controller.Commands.Command;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;

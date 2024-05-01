@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;

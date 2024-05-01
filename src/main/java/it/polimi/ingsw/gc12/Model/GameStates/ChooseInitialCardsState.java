@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.PlaceCardCommand;
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ReceiveCardCommand;
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ReplaceCardCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.PlaceCardCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveCardCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReplaceCardCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.CardDeck;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;

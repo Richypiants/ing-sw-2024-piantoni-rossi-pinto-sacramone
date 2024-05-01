@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
+import it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIApplication;
 import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.TitleScreenState;
-import it.polimi.ingsw.gc12.HelloApplication;
 import javafx.application.Application;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -24,7 +24,7 @@ public class Main {
                 ClientController.getInstance().viewState.executeState();
             } else if (graphics.equals("gui")) {
                 //FIXME: want to get controller here...
-                new Thread(() -> Application.launch(HelloApplication.class, args)).start();
+                new Thread(() -> Application.launch(GUIApplication.class, args)).start();
             }
         } while (!graphics.equals("tui") && !graphics.equals("gui"));
     }

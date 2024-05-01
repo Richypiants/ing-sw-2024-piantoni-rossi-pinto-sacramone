@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
 import com.google.gson.reflect.TypeToken;
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.InitialCard;

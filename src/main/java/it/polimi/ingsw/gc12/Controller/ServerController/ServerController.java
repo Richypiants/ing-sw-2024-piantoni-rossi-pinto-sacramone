@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
 import com.google.gson.reflect.TypeToken;
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.*;
-import it.polimi.ingsw.gc12.Controller.KeepAliveCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.*;
+import it.polimi.ingsw.gc12.Controller.Commands.KeepAliveCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.SetNicknameCommand;
 import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
-import it.polimi.ingsw.gc12.Controller.SetNicknameCommand;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;

@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Controller.KeepAliveCommand;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.CreatePlayerCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.KeepAliveCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.CreatePlayerCommand;
 
 import static java.lang.Thread.sleep;
 

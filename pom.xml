@@ -83,7 +83,7 @@
             <!-- Default configuration for running with: mvn clean javafx:run -->
             <id>default-cli</id>
             <configuration>
-              <mainClass>it.polimi.ingsw.gc12/it.polimi.ingsw.gc12.HelloApplication</mainClass>
+                <mainClass>it.polimi.ingsw.gc12/it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIApplication</mainClass>
               <launcher>app</launcher>
               <jlinkZipName>app</jlinkZipName>
               <jlinkImageName>app</jlinkImageName>
@@ -95,5 +95,12 @@
         </executions>
       </plugin>
     </plugins>
+
+      <resources>
+          <resource>
+              <directory>src/main/resources</directory>
+              <filtering>true</filtering>
+          </resource>
+      </resources>
   </build>
 </project>

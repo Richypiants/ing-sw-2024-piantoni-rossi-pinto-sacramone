@@ -95,10 +95,11 @@ public class TUIView extends View {
     }
 
     public void connectToServerScreen() {
-        String language = readUntil(
+        /*String language = readUntil(
                 ansi().cursor(1, 1).a("Scegli la lingua (Italiano/IT - English/EN): "),
                 List.of("italiano", "english", "it", "en")
         );
+         */
         String communicationTechnology = readUntil(
                 ansi().cursor(1, 1).a("Scegli la tecnologia di comunicazione (RMI-Socket): "),
                 List.of("rmi", "socket")
@@ -309,13 +310,14 @@ public class TUIView extends View {
 
     @Override
     public void showObjectiveCardsChoice() {
-        int column = 120;
+        ClientCard card = null;
+
         printToPosition(ansi().cursor(15, 120).bold().eraseLine(Erase.FORWARD)
                 .a("Choose which card you want to keep as your secret objective: ").reset());
-        for (var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand()) {
-            printToPosition(ansi().cursor(20, column).a(standardAnsi(card, Side.BACK)));
-            column += 60;
-        }
+        card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().get(3);
+        printToPosition(ansi().cursor(20, 120).a(standardAnsi(card, Side.FRONT)));
+        card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().get(4);
+        printToPosition(ansi().cursor(20, 180).a(standardAnsi(card, Side.FRONT)));
     }
 
     @Override

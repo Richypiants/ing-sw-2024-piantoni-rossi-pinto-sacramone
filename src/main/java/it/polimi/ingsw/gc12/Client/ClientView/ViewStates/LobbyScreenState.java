@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.CreateLobbyCommand;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.JoinLobbyCommand;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.LeaveLobbyCommand;
-import it.polimi.ingsw.gc12.Controller.SetNicknameCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.CreateLobbyCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.JoinLobbyCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.LeaveLobbyCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.SetNicknameCommand;
 
 import java.util.UUID;
 

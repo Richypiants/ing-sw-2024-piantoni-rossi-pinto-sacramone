@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands.ClientCommand;
-import it.polimi.ingsw.gc12.Controller.Command;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.ServerCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.Command;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Controller.SocketHandler;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 

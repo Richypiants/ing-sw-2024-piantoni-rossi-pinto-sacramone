@@ -13,8 +13,6 @@ module it.polimi.ingsw.gc12 {
     opens it.polimi.ingsw.gc12.Model to com.google.gson;
     opens it.polimi.ingsw.gc12.Utilities to com.google.gson;
     exports it.polimi.ingsw.gc12.Model to com.google.gson;
-    opens it.polimi.ingsw.gc12 to javafx.fxml;
-    exports it.polimi.ingsw.gc12;
     exports it.polimi.ingsw.gc12.Model.GameStates to com.google.gson;
     opens it.polimi.ingsw.gc12.Model.GameStates to com.google.gson;
     exports it.polimi.ingsw.gc12.Model.Cards to com.google.gson;
@@ -32,7 +30,10 @@ module it.polimi.ingsw.gc12 {
     exports it.polimi.ingsw.gc12.Utilities.Exceptions;
     opens it.polimi.ingsw.gc12.Utilities.Exceptions to com.google.gson;
     exports it.polimi.ingsw.gc12.Controller;
-    exports it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands;
-    exports it.polimi.ingsw.gc12.Controller.ClientController.ClientCommands;
+    exports it.polimi.ingsw.gc12.Controller.Commands.ServerCommands;
+    exports it.polimi.ingsw.gc12.Controller.Commands.ClientCommands;
+    exports it.polimi.ingsw.gc12.Controller.Commands;
+    opens it.polimi.ingsw.gc12.Client.ClientView.GUI to javafx.fxml;
+    exports it.polimi.ingsw.gc12.Client.ClientView.GUI;
     // exports it.polimi.ingsw.gc12.Client.ClientView.GUI;
 }

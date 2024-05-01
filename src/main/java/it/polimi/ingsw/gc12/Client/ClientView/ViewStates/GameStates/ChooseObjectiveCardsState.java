@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerCommands.PickObjectiveCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.PickObjectiveCommand;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 
@@ -31,5 +31,10 @@ public class ChooseObjectiveCardsState extends GameScreenState {
         } catch (Exception e) {
             ClientController.getInstance().view.printError(e);
         }
+    }
+
+    @Override
+    public void transition() {
+        ClientController.getInstance().viewState = new PlayerTurnPlayState();
     }
 }
