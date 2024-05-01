@@ -44,7 +44,7 @@ public class HelloApplication extends Application {
         StackPane.setMargin(backgroundLabel, new Insets(-screenHeight * 0.2, 0, 0, 0));
         StackPane.setAlignment(startButton, Pos.CENTER);
         StackPane.setMargin(startButton, new Insets(screenHeight * 0.425, 0, 0, 0));
-        stage.setMaximized(true);
+        stage.setFullScreen(true);
 
         // Image icon = new Image("C:/Users/jacop/Desktop/Stage.png");
         // stage.getIcons().add(icon);

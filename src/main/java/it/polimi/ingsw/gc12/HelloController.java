@@ -32,7 +32,7 @@ public class HelloController extends View {
     ObservableList<String> connectionList = FXCollections.observableArrayList("Socket", "RMI");
 
     @FXML
-    Label StatusLabel;
+    Label statusLabel;
 
     @FXML
     TextField nicknameField;
@@ -47,9 +47,7 @@ public class HelloController extends View {
     ComboBox<String> connection;
 
     @FXML
-    Label languageError;
-    @FXML
-    private Button show;
+    Label error;
 
     @FXML
     TreeView newGame;
@@ -91,42 +89,46 @@ public class HelloController extends View {
     }
 
     private void selectLanguage() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Language.fxml"));
-        Parent root = loader.load(); // Carica il file FXML e ottiene il root
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Language.fxml"));
+        Parent root = fxmlLoader.load(); // Carica il file FXML e ottiene il root
 
         // Ottieni lo stage corrente e imposta la nuova scena
-        Scene scene = new Scene(root, 1800, 850);
-        stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
+        Scene scene = new Scene(root, 1200, 700);
 
-        language = (ComboBox<String>) loader.getNamespace().get("language");
+        language = (ComboBox<String>) fxmlLoader.getNamespace().get("language");
         language.setPromptText("Select a Language");
         language.setItems(languageList);
-    }
 
-    @FXML
-    private void selectConnection(ActionEvent event) throws IOException {
-        //TODO: manca il retrieve della lingua e la decisione
+        connection = (ComboBox<String>) fxmlLoader.getNamespace().get("connection");
+        connection.setValue("Select a Connection");
+        connection.setItems(connectionList);
 
-        if (language.valueProperty().get() == null) {
-            languageError.setText("Selezionare prima una lingua");
-            return;
-        }
+        Button button = (Button) fxmlLoader.getNamespace().get("button");
+        Label error = (Label) fxmlLoader.getNamespace().get("error");
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Connection.fxml"));
-        Parent root = loader.load(); // Carica il file FXML e ottiene il root
+        Label nicknameLabel = (Label) fxmlLoader.getNamespace().get("nicknameLabel");
+        TextField nicknameField = (TextField) fxmlLoader.getNamespace().get("nicknameField");
 
-        // Ottieni lo stage corrente e imposta la nuova scena
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root, 1800, 850);
+        // Dimensione Schermo
+        double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+
+        StackPane.setAlignment(language, Pos.CENTER);
+        StackPane.setMargin(language, new Insets(-screenHeight * 0.2, 0, 0, -screenHeight * 0.8));
+        StackPane.setAlignment(connection, Pos.CENTER);
+        StackPane.setMargin(connection, new Insets(-screenHeight * 0.2, 0, 0, screenHeight * 0.8));
+        StackPane.setAlignment(button, Pos.CENTER);
+        StackPane.setMargin(button, new Insets(screenHeight * 0.1, 0, 0, 0));
+        StackPane.setAlignment(error, Pos.CENTER);
+        StackPane.setMargin(error, new Insets(0, 0, 0, 0));
+
+        StackPane.setAlignment(nicknameLabel, Pos.CENTER);
+        StackPane.setMargin(nicknameLabel, new Insets(-screenHeight * 0.3, 0, 0, 0));
+        StackPane.setAlignment(nicknameField, Pos.CENTER);
+        StackPane.setMargin(nicknameField, new Insets(-screenHeight * 0.2, screenHeight * 0.75, 0, screenHeight * 0.75));
+
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();
-
-        connection = (ComboBox<String>) loader.getNamespace().get("connection");
-        connection.setValue("Select a Connection");
-        connection.setItems(connectionList);
     }
 
     @FXML
@@ -138,7 +140,7 @@ public class HelloController extends View {
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root, 1800, 850);
         stage.setScene(scene);
-        stage.setMaximized(true);
+        stage.setFullScreen(true);
         stage.show();
     }
 
@@ -164,9 +166,9 @@ public class HelloController extends View {
             }
 
         } else if (nicknameField.getText().length() < 5 && !nicknameField.getText().isEmpty()) {
-            StatusLabel.setText("Nickname troppo corto, almeno 5 caratteri");
+            statusLabel.setText("Nickname troppo corto, almeno 5 caratteri");
         } else {
-            StatusLabel.setText("Inserire prima un nickname");
+            statusLabel.setText("Inserire prima un nickname");
         }
 
         new Thread(() -> ClientController.getInstance().viewState.connect(nicknameField.getText()));
@@ -175,7 +177,7 @@ public class HelloController extends View {
 
     @FXML
     protected void No() throws IOException {
-        StatusLabel.setText("Status: Not logged in");
+        statusLabel.setText("Status: Not logged in");
     }
 
     @Override
@@ -184,6 +186,21 @@ public class HelloController extends View {
 
     @Override
     public void lobbyScreen() {
+        if (nicknameField.getText().length() <= 0) {
+            error.setText("Inserire un nickname prima di proseguire");
+            return;
+        }
+
+        if (connection.valueProperty().get() == null) {
+            error.setText("Selezionare una connessione prima di proseguire");
+            return;
+        }
+
+        if (language.valueProperty().get() == null) {
+            error.setText("Selezionare una lingua prima di proseguire");
+            return;
+        }
+
         Platform.runLater(() -> {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Third.fxml"));
             Parent root = null; // Carica il file FXML e ottiene il root
