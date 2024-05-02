@@ -10,6 +10,7 @@ import org.fusesource.jansi.Ansi;
 
 import java.io.Console;
 import java.util.List;
+import java.util.function.ToIntBiFunction;
 
 import static java.lang.Thread.sleep;
 import static org.fusesource.jansi.Ansi.Erase;
@@ -179,7 +180,6 @@ public class TUIView extends View {
         printStatsTable();
         printOpponentsFieldsMiniaturized();
         printCommonPlacedCards();
-        //FIXME: decomment when field is correctly printed (even when empty)
         showField();
         showHand();
         updateChat();
@@ -327,47 +327,64 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(15, 120).bold().eraseLine(Erase.FORWARD)
                 .a("Choose which card you want to keep as your secret objective: ").reset());
         card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().get(3);
-        printToPosition(ansi().cursor(20, 120).a(standardAnsi(card, Side.FRONT)));
+        printToPosition(ansi().cursor(20, 120).a(upscaledAnsi(card, Side.FRONT)));
         card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().get(4);
-        printToPosition(ansi().cursor(20, 180).a(standardAnsi(card, Side.FRONT)));
+        printToPosition(ansi().cursor(20, 180).a(upscaledAnsi(card, Side.FRONT)));
+    }
+
+    private GenericPair<Integer, Integer> findExtremeCoordinates(ToIntBiFunction<Integer, Integer> criterion) {
+        return ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getThisPlayer()
+                .getPlacedCards().keySet().stream()
+                .reduce(new GenericPair<>(0, 0),
+                        (a, b) -> new GenericPair<>(
+                                criterion.applyAsInt(a.getX(), b.getX()),
+                                criterion.applyAsInt(a.getY(), b.getY())
+                        )
+                );
     }
 
     @Override
     public void showField() {
         //FIXME: erase old field?
         //TODO: write the correct print function, that iterates all over the field
-        final int FIELD_LENGTH = 100;
-        final int FIELD_HEIGHT = 100;
-        final int FIELD_TOP_LEFT_X = 5;
-        final int FIELD_TOP_LEFT_Y = 100;
-        final int FIELD_CENTER_X = FIELD_TOP_LEFT_X + FIELD_LENGTH/2;
-        final int FIELD_CENTER_Y = FIELD_TOP_LEFT_Y + FIELD_HEIGHT/2;
+        final GenericPair<Integer, Integer> FIELD_SIZE = new GenericPair<>(40, 160); //x: width, y: height
+        final GenericPair<Integer, Integer> FIELD_TOP_LEFT = new GenericPair<>(10, 80); //x: startingRow, y: startingColumn
+        final GenericPair<Integer, Integer> FIELD_CENTER = new GenericPair<>(
+                FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX()/2,
+                FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY()/2
+        );
+        final GenericPair<Integer, Integer> CARD_SIZE = new GenericPair<>(13, 5);
 
-        final int CARD_LENGTH = 13;
-        final int CARD_HEIGHT = 5;
+        //Manually computed over examples
+        final GenericPair<Integer, Integer> CURSOR_OFFSET = new GenericPair<>(3, 11);
 
-        /**
-         *
-         *
-         *
-         * Algorithm:
-         *
-         * search minX, minY, maxX maxY
-         * calculate the avg. values of x,y
-         *
-         * The initial card will be printed at the DeltaX, DeltaY position of the medium point
-         *
-         * **/
+        GenericPair<Integer, Integer> maxCoordinates = findExtremeCoordinates(Math::max);
+        GenericPair<Integer, Integer> minCoordinates = findExtremeCoordinates(Math::min);
 
-        GenericPair<ClientCard, Side> placedCardAndSide = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getThisPlayer().getPlacedCards().get(new GenericPair<>(0,0));
-        printToPosition( ansi().cursor(18, 124).a(standardAnsi(placedCardAndSide.getX(), placedCardAndSide.getY())));
+        final GenericPair<Float, Float> fieldCenterOfGravity =
+                new GenericPair<>(
+                        ((float) minCoordinates.getX() + maxCoordinates.getX()) / 2,
+                        ((float) minCoordinates.getX() + maxCoordinates.getX()) / 2
+                );
 
-        /*
-        printRedCard(ClientController.getInstance().cardsList.get(81), Side.FRONT, ansi().cursor(18, 102));
-        printBlueCard(ansi().cursor(15, 113));
-        printPurpleCard(ansi().cursor(21, 113));
-        printGreenCard(ansi().cursor(18, 124));
-        printRedCard(ClientController.getInstance().cardsList.get(81), Side.FRONT, ansi().cursor(24, 124));*/
+        final GenericPair<Integer, Integer> initialCardCenter = new GenericPair<>(
+                FIELD_CENTER.getX() + (int) -fieldCenterOfGravity.getX() * CURSOR_OFFSET.getX(),
+                FIELD_CENTER.getY() + (int) -fieldCenterOfGravity.getY() * CURSOR_OFFSET.getY()
+        );
+
+        final GenericPair<Integer, Integer> initialCardPosition = new GenericPair<>(
+                initialCardCenter.getX() - CARD_SIZE.getX()/2,
+                initialCardCenter.getY() - CARD_SIZE.getY()/2
+        );
+
+        ((ClientGame) ClientController.getInstance().currentLobbyOrGame)
+                .getThisPlayer().getPlacedCards().sequencedEntrySet()
+                .forEach((entry) -> printToPosition(ansi().cursor(
+                        initialCardPosition.getX() - entry.getKey().getX() * CURSOR_OFFSET.getX(),
+                        initialCardPosition.getY() + entry.getKey().getY() * CURSOR_OFFSET.getY()
+                                ).a(standardAnsi(entry.getValue().getX(), entry.getValue().getY()))
+                        )
+                );
     }
 
     @Override
@@ -383,116 +400,4 @@ public class TUIView extends View {
             column += 20;
         }
     }
-
-    public void printRedCard(ClientCard card, Side side, Ansi position) {
-        System.out.print(position);
-        printToPosition(position.a(standardAnsi(card, side)));
-        //System.out.print(position.a("┌─────────────┐").reset());
-        //System.out.print(position.a("M").bg(Ansi.Color.RED).a("    ").reset().a("2 S").bg(Ansi.Color.RED).a("    ").reset().a("M").reset());
-        //System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.RED).a("             ").reset());
-        //System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.RED).a("     ").reset().a("MMM").bg(Ansi.Color.RED).a("     ").reset());
-        //System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.RED).a("             ").reset());
-        //System.out.print(ansi().cursorMove(-13, 1).a("M").bg(Ansi.Color.RED).a("   ").reset().a("MMMMG").bg(Ansi.Color.RED).a("   ").reset().a("M").reset());
-        //System.out.print(ansi().cursorMove(-15, 1).a("└─────────────┘").reset());
-        /*System.out.println("""
-                ┌────┬───────┬────┬────┬────┬───────┬────┐
-                │    │       │    │    │    │       │    │
-                ├────┘       └────┘    └────┘       └────┤
-                │            ┌────┬────┬────┐            │
-                │            │    │    │    │            │
-                │            └────┴────┴────┘            │
-                ├────┐  ┌────┬────┬────┬────┬────┐  ┌────┤
-                │    │  │    │    │    │    │    │  │    │
-                └────┴──┴────┴────┴────┴────┴────┴──┴────┘
-                """);*/
-    }
-
-    public void printBlueCard(/*ClientCard card, */Ansi position) {
-        //System.out.print(position.a("┌─────────────┐").reset());
-        System.out.print(position.a("W").bg(Ansi.Color.BLUE).a("    ").reset().a("2 S").bg(Ansi.Color.BLUE).a("    ").reset().a("M").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.BLUE).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.BLUE).a("     ").reset().a("MMM").bg(Ansi.Color.BLUE).a("     ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.BLUE).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("M").bg(Ansi.Color.BLUE).a("   ").reset().a("MMMMG").bg(Ansi.Color.BLUE).a("   ").reset().a("M").reset());
-        //System.out.print(ansi().cursorMove(-15, 1).a("└─────────────┘").reset());
-    }
-
-    public void printPurpleCard(/*ClientCard card, */Ansi position) {
-        //System.out.print(position.a("┌─────────────┐").reset());
-        System.out.print(position.a("W").bg(Ansi.Color.MAGENTA).a("    ").reset().a("2 S").bg(Ansi.Color.MAGENTA).a("    ").reset().a("M").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.MAGENTA).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.MAGENTA).a("     ").reset().a("MMM").bg(Ansi.Color.MAGENTA).a("     ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.MAGENTA).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("M").bg(Ansi.Color.MAGENTA).a("   ").reset().a("MMMMG").bg(Ansi.Color.MAGENTA).a("   ").reset().a("M").reset());
-        //System.out.print(ansi().cursorMove(-15, 1).a("└─────────────┘").reset());
-    }
-
-    public void printGreenCard(/*ClientCard card, */Ansi position) {
-        //System.out.print(position.a("┌─────────────┐").reset());
-        System.out.print(position.a("W").bg(Ansi.Color.GREEN).a("    ").reset().a("2 S").bg(Ansi.Color.GREEN).a("    ").reset().a("M").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.GREEN).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.GREEN).a("     ").reset().a("MMM").bg(Ansi.Color.GREEN).a("     ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(Ansi.Color.GREEN).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("M").bg(Ansi.Color.GREEN).a("   ").reset().a("MMMMG").bg(Ansi.Color.GREEN).a("   ").reset().a("M").reset());
-        //System.out.print(ansi().cursorMove(-15, 1).a("└─────────────┘").reset());
-    }
-
-    public void printRedCard2(/*ClientCard card, */Ansi position) {
-        //System.out.print(position.a("┌─────────────┐").reset());
-        System.out.print(position.bg(196).a(" ").bg(88).a("    ").reset().a("2 S").bg(88).a("     ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(88).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(88).a("     ").bg(196).a("   ").bg(88).a("     ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(88).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).bg(196).a(" ").bg(88).a("   ").bg(196).a("    ").bg(82).a(" ").bg(88).a("   ").reset().bg(196).a(" ").reset());
-        //System.out.print(ansi().cursorMove(-15, 1).a("└─────────────┘").reset());
-        /*System.out.println("""
-                ┌────┬───────┬────┬────┬────┬───────┬────┐
-                │    │       │    │    │    │       │    │
-                ├────┘       └────┘    └────┘       └────┤
-                │            ┌────┬────┬────┐            │
-                │            │    │    │    │            │
-                │            └────┴────┴────┘            │
-                ├────┐  ┌────┬────┬────┬────┬────┐  ┌────┤
-                │    │  │    │    │    │    │    │  │    │
-                └────┴──┴────┴────┴────┴────┴────┴──┴────┘
-                """);*/
-    }
-
-    public void printBlueCard2(/*ClientCard card, */Ansi position) {
-        //System.out.print(position.a("┌─────────────┐").reset());
-        System.out.print(position.bg(32).a(" ").bg(20).a("    ").reset().a("2 S").bg(20).a("     ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(20).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(20).a("     ").bg(32).a("   ").bg(20).a("     ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(20).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).bg(32).a(" ").bg(20).a("   ").bg(196).a("    ").bg(30).a(" ").bg(20).a("   ").reset().bg(32).a(" ").reset());
-        //System.out.print(ansi().cursorMove(-15, 1).a("└─────────────┘").reset());
-    }
-
-    public void printPurpleCard2(/*ClientCard card, */Ansi position) {
-        //System.out.print(position.a("┌─────────────┐").reset());
-        System.out.print(position.bg(207).a(" ").bg(127).a("    ").reset().a("2 S").bg(127).a("     ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(127).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(127).a("     ").bg(207).a("   ").bg(127).a("     ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(127).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).bg(207).a(" ").bg(127).a("   ").bg(196).a("    ").bg(82).a(" ").bg(127).a("   ").reset().bg(207).a(" ").reset());
-        //System.out.print(ansi().cursorMove(-15, 1).a("└─────────────┘").reset());
-    }
-
-    public void printGreenCard2(/*ClientCard card, */Ansi position) {
-        //System.out.print(position.a("┌─────────────┐").reset());
-        System.out.print(position.bg(82).a(" ").bg(22).a("    ").reset().a("2 S").bg(22).a("     ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(22).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(22).a("     ").bg(82).a("   ").bg(22).a("     ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).a("").bg(22).a("             ").reset());
-        System.out.print(ansi().cursorMove(-13, 1).bg(82).a(" ").bg(22).a("   ").bg(82).a("    ").bg(196).a(" ").bg(22).a("   ").reset().bg(82).a(" ").reset());
-        //System.out.print(ansi().cursorMove(-15, 1).a("└─────────────┘").reset());
-    }
-
-    /*
-    1) Title screen (Cranio Creations + Codex Naturalis + Premi un tasto per iniziare...)
-    (+ da qualche parte choose language / connection technology)
-    2) Choose a nickname + Connecting to server...
-    3) Lobbies menu
-    4) Game view
-     */
 }

@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.Model.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.PlaceCardCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveCardCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveObjectiveChoice;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReplaceCardCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.CardDeck;
@@ -110,7 +111,7 @@ public class ChooseInitialCardsState extends GameState {
                 //Sending the personal objective selection
                 keyReverseLookup(ServerController.getInstance().players, target::equals)
                         .requestToClient(
-                                new ReceiveCardCommand(
+                                new ReceiveObjectiveChoice(
                                         objectivesSelection.get(target).stream()
                                                 .map((card) -> card.ID)
                                                 .toList()

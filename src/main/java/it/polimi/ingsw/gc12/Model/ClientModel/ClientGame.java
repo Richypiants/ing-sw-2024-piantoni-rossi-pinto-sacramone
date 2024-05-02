@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc12.Model.InGamePlayer;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ClientGame extends GameLobby implements Serializable {
@@ -35,7 +36,7 @@ public class ClientGame extends GameLobby implements Serializable {
                 //.filter(Predicate.not(myself::equals))
                 .map(ClientPlayer::new)
                 .toList());
-        this.MYSELF = new ClientPlayer(myself);
+        this.MYSELF = getPlayers().stream().filter((player) -> player.getNickname().equals(myself.getNickname())).findAny().orElseThrow();
         this.OWN_HAND = new ArrayList<>();
         this.PLACED_RESOURCE_CARDS = Arrays.stream(game.getPlacedResources())
                 .map((card) -> clientCards.get(card.ID))

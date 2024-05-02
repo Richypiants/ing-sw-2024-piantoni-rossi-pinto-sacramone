@@ -32,6 +32,8 @@ public interface ClientControllerInterface extends ControllerInterface {
                    EnumMap<Resource, Integer> ownedResources, List<GenericPair<Integer, Integer>> openCorners,
                    int points);
 
+    void receiveObjectiveChoice(List<Integer> cardIDs);
+
     void receiveCard(List<Integer> cardIDs);
 
     void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements);

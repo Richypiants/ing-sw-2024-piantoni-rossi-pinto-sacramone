@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.Controller.ClientController;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseInitialCardsState;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.GameScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.PlayerTurnPlayState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LobbyScreenState;
@@ -162,8 +163,9 @@ public class ClientController implements ClientControllerInterface {
         thisPlayer.setPoints(points);
 
         if(viewState instanceof ChooseInitialCardsState){
-            if(nickname.equals(SINGLETON_INSTANCE.ownNickname))
+            if(nickname.equals(SINGLETON_INSTANCE.ownNickname)){
                 view.gameScreen();
+            }
             return;
         }
 
@@ -185,10 +187,18 @@ public class ClientController implements ClientControllerInterface {
             viewState.executeState();
             return;
         }
-        //viewState = new ChooseObjectiveCardsState();
+
         ((GameScreenState) viewState).transition();
         viewState.executeState();
         //new PlayerTurnPlayState() ma degli avversari...
+    }
+
+    public void receiveObjectiveChoice(List<Integer> cardIDs) {
+        for (var cards : cardIDs)
+            ((ClientGame) currentLobbyOrGame).addCardToHand(cardsList.get(cards));
+
+        viewState = new ChooseObjectiveCardsState();
+        viewState.executeState();
     }
 
     public void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {
