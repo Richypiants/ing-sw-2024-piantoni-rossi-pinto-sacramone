@@ -18,19 +18,17 @@ public class ChooseObjectiveCardsState extends GameScreenState {
     }
 
     @Override
-    public void placeCard(int inHandPosition) {
+    public void pickObjective(int selection){
+        //Selection should be [0,1]
         ClientCard card = null;
+        final int OFFSET_IN_HAND = 2;
         try {
-            card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().get(inHandPosition);
-        } catch (NoSuchElementException e) {
-            throw new IllegalArgumentException("nessuna carta presente alla posizione specificata della mano");
+            card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().get(selection + OFFSET_IN_HAND);
+        } catch (IndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("Nessuna carta presente alla posizione specificata della mano");
         }
 
-        try {
-            ClientController.getInstance().requestToServer(new PickObjectiveCommand(card.ID));
-        } catch (Exception e) {
-            ClientController.getInstance().view.printError(e);
-        }
+        ClientController.getInstance().requestToServer(new PickObjectiveCommand(card.ID));
     }
 
     @Override

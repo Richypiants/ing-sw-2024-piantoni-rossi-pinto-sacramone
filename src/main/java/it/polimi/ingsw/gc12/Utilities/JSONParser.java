@@ -6,12 +6,14 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.Conditions.CornersCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.PatternCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.PointsCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.ResourcesCondition;
+import org.fusesource.jansi.AnsiConsole;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -285,7 +287,19 @@ public class JSONParser {
     }
 
     public static void main(String[] args) {
-        generatePlayableCardsForTUI();
+
+        //generatePlayableCardsForTUI();
+
+
         //ArrayList<ClientCard> tmp = clientCardsFromJSON("client_cards.json");
+        /*AnsiConsole.systemInstall();
+        TUIView instance = TUIView.getInstance();
+        ArrayList<ClientCard> test = clientCardsFromJSON("client_cards.json");
+
+        for(int i = 86; i < 102; i++) {
+            System.out.println(instance.standardAnsi(test.get(i), Side.BACK));
+            System.out.println();
+        }*/
+
     }
 }

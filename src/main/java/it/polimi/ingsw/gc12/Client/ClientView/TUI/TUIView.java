@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import org.fusesource.jansi.Ansi;
 
@@ -146,9 +147,21 @@ public class TUIView extends View {
                 """
                             'createLobby <maxPlayers>' per creare una lobby,
                             'joinLobby <lobbyUUID>' per joinare una lobby esistente,
-                            'setNickname <newNickname>' per cambiare il proprio nickname:
-                            'leaveLobby' per lasciare la lobby in cui si e' attualmente
-                        """ //TODO: leaveLobby andrebbe promptato solo dopo
+                            'setNickname <newNickname>' per cambiare il proprio nickname,
+                            'leaveLobby' per lasciare la lobby in cui si e' attualmente,
+                            'quit' per ritornare alla schermata iniziale
+                            -------------------------------------------------------------
+                            'broadcastMessage <message>' per inviare un messaggio in gioco,
+                            'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco
+                            ------------------------------------------------------------- 
+                            'placeCard <x> <y> <inHandPosition> <side>' (x,y): coordinate di piazzamento, inHandPosition: indice di carta, side: lato scelto [front]|[back]
+                            'pickObjective <selection>' [1]|[2] per selezionare il proprio obiettivo segreto,
+                            'drawFromDeck <deck>' [resource][gold] per pescare una carta coperta dal deck di carte risorsa|oro,
+                            'drawFromVisibleCards <deck> <position>' [resource][gold] [1][2] per pescare una carta scoperta dal deck di carte risorsa|oro.
+                """
+                //TODO: leaveLobby andrebbe promptato solo dopo
+                //FIXME: al momento tutti gli usages dei comandi sono stampati qui,
+                // quelli in gioco vanno spostati nella schermata di gioco
         ));
     }
 
@@ -168,7 +181,7 @@ public class TUIView extends View {
         printOpponentsFieldsMiniaturized();
         printCommonPlacedCards();
         //FIXME: decomment when field is correctly printed (even when empty)
-        //showField();
+        showField();
         showHand();
         updateChat();
     }
@@ -323,11 +336,39 @@ public class TUIView extends View {
     @Override
     public void showField() {
         //FIXME: erase old field?
+        //TODO: write the correct print function, that iterates all over the field
+        final int FIELD_LENGTH = 100;
+        final int FIELD_HEIGHT = 100;
+        final int FIELD_TOP_LEFT_X = 5;
+        final int FIELD_TOP_LEFT_Y = 100;
+        final int FIELD_CENTER_X = FIELD_TOP_LEFT_X + FIELD_LENGTH/2;
+        final int FIELD_CENTER_Y = FIELD_TOP_LEFT_Y + FIELD_HEIGHT/2;
+
+        final int CARD_LENGTH = 13;
+        final int CARD_HEIGHT = 5;
+
+        /**
+         *
+         *
+         *
+         * Algorithm:
+         *
+         * search minX, minY, maxX maxY
+         * calculate the avg. values of x,y
+         *
+         * The initial card will be printed at the DeltaX, DeltaY position of the medium point
+         *
+         * **/
+
+        GenericPair<ClientCard, Side> placedCardAndSide = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getThisPlayer().getPlacedCards().get(new GenericPair<>(0,0));
+        printToPosition( ansi().cursor(18, 124).a(standardAnsi(placedCardAndSide.getX(), placedCardAndSide.getY())));
+
+        /*
         printRedCard(ClientController.getInstance().cardsList.get(81), Side.FRONT, ansi().cursor(18, 102));
         printBlueCard(ansi().cursor(15, 113));
         printPurpleCard(ansi().cursor(21, 113));
         printGreenCard(ansi().cursor(18, 124));
-        printRedCard(ClientController.getInstance().cardsList.get(81), Side.FRONT, ansi().cursor(24, 124));
+        printRedCard(ClientController.getInstance().cardsList.get(81), Side.FRONT, ansi().cursor(24, 124));*/
     }
 
     @Override
