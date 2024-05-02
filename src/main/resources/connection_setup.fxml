@@ -5,12 +5,14 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="languagePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-           minWidth="-Infinity" xmlns="http://javafx.com/javafx/21"
->
+           minWidth="-Infinity" xmlns="http://javafx.com/javafx/21">
     <children>
         <ComboBox fx:id="language" prefWidth="150.0" promptText="Select a language"/>
         <Label fx:id="error" prefWidth="800.0" style="-fx-alignment: Center"
                textAlignment="CENTER" textFill="#000000">
+            <font>
+                <Font name="Bell MT" size="14.0"/>
+            </font>
         </Label>
         <Button fx:id="button" alignment="CENTER" mnemonicParsing="false"
                 prefHeight="38.0" prefWidth="323.0" text="OK"
@@ -18,7 +20,8 @@
         </Button>
         <ComboBox fx:id="connection" layoutX="225.0" layoutY="188.0" prefWidth="150.0" promptText="Select a language"/>
 
-        <Label fx:id="nicknameLabel" alignment="CENTER" layoutX="198.0" layoutY="115.0" text="Nickname">
+        <Label fx:id="nicknameLabel" alignment="CENTER" layoutX="198.0" layoutY="115.0" text="Nickname"
+               textFill="#000000">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>

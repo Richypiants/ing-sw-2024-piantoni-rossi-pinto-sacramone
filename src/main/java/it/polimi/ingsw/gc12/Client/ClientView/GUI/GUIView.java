@@ -16,7 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -87,21 +87,15 @@ public class GUIView extends View {
                 stage.setFullScreen(!stage.isFullScreen());
         });
 
-        Label Codex = (Label) fxmlLoader.getNamespace().get("Codex");
         Button startButton = (Button) fxmlLoader.getNamespace().get("startButton");
         startButton.setOnAction(this::keyPressed);
-        Rectangle backgroundLabel = (Rectangle) fxmlLoader.getNamespace().get("backgroundLabel");
         StackPane First = (StackPane) fxmlLoader.getNamespace().get("First");
 
         // Dimensione Schermo
         double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
 
-        StackPane.setAlignment(Codex, Pos.CENTER);
-        StackPane.setMargin(Codex, new Insets(-screenHeight * 0.2, 0, 0, 0));
-        StackPane.setAlignment(backgroundLabel, Pos.CENTER);
-        StackPane.setMargin(backgroundLabel, new Insets(-screenHeight * 0.2, 0, 0, 0));
         StackPane.setAlignment(startButton, Pos.CENTER);
-        StackPane.setMargin(startButton, new Insets(screenHeight * 0.425, 0, 0, 0));
+        StackPane.setMargin(startButton, new Insets(screenHeight * 0.8, 0, 0, 0));
 
         // Image icon = new Image("C:/Users/jacop/Desktop/Stage.png");
         // stage.getIcons().add(icon);
@@ -122,13 +116,13 @@ public class GUIView extends View {
     @Override
     public void connectToServerScreen() {
         try {
-            selectLanguage();
+            selection();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void selectLanguage() throws IOException {
+    private void selection() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/connection_setup.fxml"));
         fxmlLoader.setController(ClientController.getInstance().view);
         Parent root = fxmlLoader.load(); // Carica il file FXML e ottiene il root
@@ -146,7 +140,7 @@ public class GUIView extends View {
         Button button = (Button) fxmlLoader.getNamespace().get("button");
         button.setOnAction(event -> {
             try {
-                yes(event);
+                waitingForConnection(event);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -175,7 +169,7 @@ public class GUIView extends View {
     }
 
     @FXML
-    protected void yes(ActionEvent event) throws IOException {
+    protected void waitingForConnection(ActionEvent event) throws IOException {
         if (nicknameField.getText().length() <= 0) {
             error.setText("Inserire un nickname prima di proseguire");
             return;
@@ -198,20 +192,25 @@ public class GUIView extends View {
         stage.getScene().setRoot(root);
 
         Label downloadLabel = (Label) fxmlLoader.getNamespace().get("download");
+        ProgressIndicator progressIndicator = (ProgressIndicator) fxmlLoader.getNamespace().get("progress");
+
+        // Dimensione Schermo
+        double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+
+        StackPane.setAlignment(downloadLabel, Pos.CENTER);
+        StackPane.setMargin(downloadLabel, new Insets(-screenHeight * 0.1, 0, 0, 0));
+        StackPane.setAlignment(progressIndicator, Pos.CENTER);
+        StackPane.setMargin(progressIndicator, new Insets(screenHeight * 0.1, 0, 0, 0));
 
         if (downloadLabel != null) {
-            downloadLabel.setText("Ciao: " + nicknameField.getText() + " - Attendi la fine del caricamento");
+            downloadLabel.setText("Ciao " + nicknameField.getText() + "\nStiamo caricando il Codex Naturalis");
+            downloadLabel.setTextAlignment(TextAlignment.CENTER);
         } else {
-            System.out.println("Label non trovata nel FXML.");
+            System.out.println("Label non trovata nel FXML");
         }
 
-        //Before changing scene, we notify the chosen comm technology to the controller so that it initializes it
+        // Before changing scene, we notify the chosen comm technology to the controller so that it initializes it
         new Thread(() -> ClientController.getInstance().viewState.connect(connection.valueProperty().get(), nicknameField.getText())).start();
-    }
-
-    @FXML
-    protected void no() throws IOException {
-        statusLabel.setText("Status: Not logged in");
     }
 
     @Override
@@ -267,37 +266,8 @@ public class GUIView extends View {
 
     }
 
-    public void BackToTitleScreen(ActionEvent event) throws IOException {
-        // Carica il FXML e ottiene il root node correttamente
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/title_screen.fxml"));
-        Parent root = fxmlLoader.load();  // Carica la vista FXML
-
-        // Ottiene lo stage corrente da event source
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-        // Crea la scena con la dimensione specificata
-        Scene scene = new Scene(root, 1800, 850);
-
-        // Accesso ai componenti nel namespace del FXMLLoader
-        Label Codex = (Label) fxmlLoader.getNamespace().get("Codex");
-        Button startButton = (Button) fxmlLoader.getNamespace().get("startButton");
-        Rectangle backgroundLabel = (Rectangle) fxmlLoader.getNamespace().get("backgroundLabel");
-        StackPane First = (StackPane) fxmlLoader.getNamespace().get("First");
-
-        // Dimensione Schermo
-        double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
-
-        StackPane.setAlignment(Codex, Pos.CENTER);
-        StackPane.setMargin(Codex, new Insets(-screenHeight * 0.2, 0, 0, 0));
-        StackPane.setAlignment(backgroundLabel, Pos.CENTER);
-        StackPane.setMargin(backgroundLabel, new Insets(-screenHeight * 0.2, 0, 0, 0));
-        StackPane.setAlignment(startButton, Pos.CENTER);
-        StackPane.setMargin(startButton, new Insets(screenHeight * 0.425, 0, 0, 0));
-
-        // Imposta la scena e massimizza il palcoscenico
-        stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
+    public void BackToTitleScreen() {
+        titleScreen();
     }
 
 
