@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
 import it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIApplication;
+import it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.TitleScreenState;
 import javafx.application.Application;
@@ -23,7 +24,7 @@ public class Main {
                 ClientController.getInstance().viewState = new TitleScreenState();
                 ClientController.getInstance().viewState.executeState();
             } else if (graphics.equals("gui")) {
-                //FIXME: want to get controller here...
+                ClientController.getInstance().view = GUIView.getInstance();
                 new Thread(() -> Application.launch(GUIApplication.class, args)).start();
             }
         } while (!graphics.equals("tui") && !graphics.equals("gui"));

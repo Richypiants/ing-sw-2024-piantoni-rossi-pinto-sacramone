@@ -15,9 +15,9 @@
                 <Font name="Bell MT" size="30.0"/>
             </font>
         </Label>
-        <Button fx:id="YesButton" layoutX="366.0" layoutY="253.0" onAction="#Yes" prefHeight="55.0" prefWidth="55.0"
+        <Button fx:id="YesButton" layoutX="366.0" layoutY="253.0" onAction="#yes" prefHeight="55.0" prefWidth="55.0"
                 text="Si"/>
-        <Button fx:id="NoButton" layoutX="178.0" layoutY="253.0" onAction="#No" prefHeight="55.0" prefWidth="55.0"
+        <Button fx:id="NoButton" layoutX="178.0" layoutY="253.0" onAction="#no" prefHeight="55.0" prefWidth="55.0"
                 text="No"/>
         <TextField fx:id="nicknameField" layoutX="177.0" layoutY="163.0" prefHeight="31.0" prefWidth="243.0">
             <font>

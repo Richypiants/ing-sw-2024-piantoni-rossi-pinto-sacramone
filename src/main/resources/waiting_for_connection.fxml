@@ -8,7 +8,7 @@
 <Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       prefHeight="400.0"
       prefWidth="600.0"
-      fx:controller="it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIView" xmlns="http://javafx.com/javafx/21">
+      xmlns="http://javafx.com/javafx/21">
     <children>
         <ProgressIndicator layoutX="243.0" layoutY="209.0"/>
         <Label fx:id="download" layoutX="228.0" layoutY="131.0" prefHeight="34.0" prefWidth="500.0" text="Ciao">

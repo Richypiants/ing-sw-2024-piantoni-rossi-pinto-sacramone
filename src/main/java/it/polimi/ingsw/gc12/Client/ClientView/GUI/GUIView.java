@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc12.Client.ClientView.GUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -14,6 +13,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
@@ -25,8 +26,6 @@ public class GUIView extends View {
 
     private static GUIView SINGLETON_GUI_INSTANCE = null;
 
-    Parent root;
-    Scene scene;
     Stage stage;
     ObservableList<String> languageList = FXCollections.observableArrayList("Italiano", "English");
     ObservableList<String> connectionList = FXCollections.observableArrayList("Socket", "RMI");
@@ -55,7 +54,7 @@ public class GUIView extends View {
     @FXML
     Button join;
 
-    public GUIView() {
+    private GUIView() {
     }
 
     public static GUIView getInstance() {
@@ -71,11 +70,52 @@ public class GUIView extends View {
 
     @Override
     public void titleScreen() {
+        FXMLLoader fxmlLoader = new FXMLLoader(GUIApplication.class.getResource("/title_screen.fxml"));
+        fxmlLoader.setController(ClientController.getInstance().view);
+        Parent root = null;
+        try {
+            root = fxmlLoader.load();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Scene scene = new Scene(root, 1280, 720);
+        stage.setScene(scene);
+
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, (event) -> {
+            if (event.getCode().equals(KeyCode.F11))
+                stage.setFullScreen(!stage.isFullScreen());
+        });
+
+        Label Codex = (Label) fxmlLoader.getNamespace().get("Codex");
+        Button startButton = (Button) fxmlLoader.getNamespace().get("startButton");
+        startButton.setOnAction(this::keyPressed);
+        Rectangle backgroundLabel = (Rectangle) fxmlLoader.getNamespace().get("backgroundLabel");
+        StackPane First = (StackPane) fxmlLoader.getNamespace().get("First");
+
+        // Dimensione Schermo
+        double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+
+        StackPane.setAlignment(Codex, Pos.CENTER);
+        StackPane.setMargin(Codex, new Insets(-screenHeight * 0.2, 0, 0, 0));
+        StackPane.setAlignment(backgroundLabel, Pos.CENTER);
+        StackPane.setMargin(backgroundLabel, new Insets(-screenHeight * 0.2, 0, 0, 0));
+        StackPane.setAlignment(startButton, Pos.CENTER);
+        StackPane.setMargin(startButton, new Insets(screenHeight * 0.425, 0, 0, 0));
+
+        // Image icon = new Image("C:/Users/jacop/Desktop/Stage.png");
+        // stage.getIcons().add(icon);
+
+        stage.setTitle("Codex Naturalis");
+        stage.setFullScreen(true);
+        stage.setResizable(false);
+        stage.centerOnScreen();
+        //FIXME: non funziona e non indirizza gli input sulla schermata... stage.requestFocus();
+        stage.show();
     }
 
     @FXML
     public void keyPressed(ActionEvent event) {
-        //stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         ClientController.getInstance().viewState.keyPressed();
     }
 
@@ -89,22 +129,28 @@ public class GUIView extends View {
     }
 
     private void selectLanguage() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Language.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/connection_setup.fxml"));
+        fxmlLoader.setController(ClientController.getInstance().view);
         Parent root = fxmlLoader.load(); // Carica il file FXML e ottiene il root
 
-        // Ottieni lo stage corrente e imposta la nuova scena
-        //Scene scene = new Scene(root, 1200, 700);
         stage.getScene().setRoot(root);
 
         language = (ComboBox<String>) fxmlLoader.getNamespace().get("language");
-        language.setPromptText("Select a Language");
+        language.setPromptText("Select language");
         language.setItems(languageList);
 
         connection = (ComboBox<String>) fxmlLoader.getNamespace().get("connection");
-        connection.setValue("Select a Connection");
+        connection.setValue("Select communication technology");
         connection.setItems(connectionList);
 
         Button button = (Button) fxmlLoader.getNamespace().get("button");
+        button.setOnAction(event -> {
+            try {
+                yes(event);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         Label error = (Label) fxmlLoader.getNamespace().get("error");
 
         Label nicknameLabel = (Label) fxmlLoader.getNamespace().get("nicknameLabel");
@@ -126,69 +172,10 @@ public class GUIView extends View {
         StackPane.setMargin(nicknameLabel, new Insets(-screenHeight * 0.3, 0, 0, 0));
         StackPane.setAlignment(nicknameField, Pos.CENTER);
         StackPane.setMargin(nicknameField, new Insets(-screenHeight * 0.2, screenHeight * 0.75, 0, screenHeight * 0.75));
-
-        //FIXME: con questo nuovo metodo getScene().setRoot() non servono più!
-        //stage.setScene(scene);
-        //stage.setFullScreen(true);
-        //stage.setMaximized(true);
-        //stage.show();
     }
 
     @FXML
-    protected void newPane(ActionEvent event) throws IOException {
-        //Before changing scene, we notify the chosen comm technology to the controller so that it initializes it
-        ClientController.getInstance().setCommunicationTechnology(connection.valueProperty().get());
-
-        Parent root = FXMLLoader.load(getClass().getResource("/Second.fxml"));
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root, 1800, 850);
-        stage.setScene(scene);
-        stage.setFullScreen(true);
-        stage.show();
-    }
-
-    @FXML
-    protected void Yes(ActionEvent event) throws IOException {
-        if (nicknameField.getText().length() >= 5) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Download.fxml"));
-            Parent root = loader.load(); // Carica il file FXML e ottiene il root
-
-            // Ottieni lo stage corrente e imposta la nuova scena
-            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root, 1800, 850);
-            stage.setScene(scene);
-            stage.setMaximized(true);
-            stage.show();
-
-            Label downloadLabel = (Label) loader.getNamespace().get("download");
-
-            if (downloadLabel != null) {
-                downloadLabel.setText("Ciao: " + nicknameField.getText() + " - Attendi la fine del caricamento");
-            } else {
-                System.out.println("Label non trovata nel FXML.");
-            }
-
-        } else if (nicknameField.getText().length() < 5 && !nicknameField.getText().isEmpty()) {
-            statusLabel.setText("Nickname troppo corto, almeno 5 caratteri");
-        } else {
-            statusLabel.setText("Inserire prima un nickname");
-        }
-
-        new Thread(() -> ClientController.getInstance().viewState.connect(nicknameField.getText()));
-    }
-
-
-    @FXML
-    protected void No() throws IOException {
-        statusLabel.setText("Status: Not logged in");
-    }
-
-    @Override
-    public void connectedConfirmation() {
-    }
-
-    @Override
-    public void lobbyScreen() {
+    protected void yes(ActionEvent event) throws IOException {
         if (nicknameField.getText().length() <= 0) {
             error.setText("Inserire un nickname prima di proseguire");
             return;
@@ -204,22 +191,46 @@ public class GUIView extends View {
             return;
         }
 
-        Platform.runLater(() -> {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Third.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/waiting_for_connection.fxml"));
+        fxmlLoader.setController(ClientController.getInstance().view);
+        Parent root = fxmlLoader.load(); // Carica il file FXML e ottiene il root
+
+        stage.getScene().setRoot(root);
+
+        Label downloadLabel = (Label) fxmlLoader.getNamespace().get("download");
+
+        if (downloadLabel != null) {
+            downloadLabel.setText("Ciao: " + nicknameField.getText() + " - Attendi la fine del caricamento");
+        } else {
+            System.out.println("Label non trovata nel FXML.");
+        }
+
+        //Before changing scene, we notify the chosen comm technology to the controller so that it initializes it
+        new Thread(() -> ClientController.getInstance().viewState.connect(connection.valueProperty().get(), nicknameField.getText())).start();
+    }
+
+    @FXML
+    protected void no() throws IOException {
+        statusLabel.setText("Status: Not logged in");
+    }
+
+    @Override
+    public void connectedConfirmation() {
+    }
+
+    @Override
+    public void lobbyScreen() {
+        //Platform.runLater(() -> {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/main_menu.fxml"));
+        fxmlLoader.setController(ClientController.getInstance().view);
             Parent root = null; // Carica il file FXML e ottiene il root
             try {
-                root = loader.load();
+                root = fxmlLoader.load();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            Stage oldStage = stage;
-            stage = new Stage();
-            oldStage.close();
-            Scene scene = new Scene(root, 1800, 850);
-            stage.setScene(scene);
-            stage.setMaximized(true);
-            stage.show();
-        });
+        stage.getScene().setRoot(root);
+        //});
     }
 
     @Override
@@ -258,7 +269,7 @@ public class GUIView extends View {
 
     public void BackToTitleScreen(ActionEvent event) throws IOException {
         // Carica il FXML e ottiene il root node correttamente
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/First.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/title_screen.fxml"));
         Parent root = fxmlLoader.load();  // Carica la vista FXML
 
         // Ottiene lo stage corrente da event source
@@ -300,7 +311,7 @@ public class GUIView extends View {
     }
 
     public void ChangeNickname(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/Second.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/change_nickname.fxml"));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root, 1800, 850);
         stage.setScene(scene);
@@ -309,7 +320,7 @@ public class GUIView extends View {
     }
 
     public void LeaveGame(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/Third.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/main_menu.fxml"));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root, 1800, 850);
         stage.setScene(scene);

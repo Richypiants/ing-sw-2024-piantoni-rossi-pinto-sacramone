@@ -36,7 +36,7 @@ public abstract class ViewState {
         //"throw Exception"
     }
 
-    public void connect(String nickname) {
+    public void connect(String communicationTechnology, String nickname) {
 
     }
 

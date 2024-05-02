@@ -17,9 +17,10 @@ public class ConnectToServerScreenState extends ViewState {
     }
 
     @Override
-    public void connect(String nickname) {
+    public void connect(String communicationTechnology, String nickname) {
         //TODO: print "would you like to retry?"
         do {
+            ClientController.getInstance().setCommunicationTechnology(communicationTechnology);
             //TODO: problema se l'host è online ma la porta è chiusa, perchè lancia una exception
             // "Connessione rifiutata dall'host remoto" tipo
             ClientController.getInstance().requestToServer(new CreatePlayerCommand(nickname));
@@ -28,7 +29,7 @@ public class ConnectToServerScreenState extends ViewState {
             } catch (Exception e) {
                 ClientController.getInstance().errorLogger.log(e);
             }
-        } while (ClientController.getInstance().serverConnection == null /*|| yes*/);
+        } while (ClientController.getInstance().serverConnection == null /*|| nicknameNotAccepted || yes*/);
         //potenzialmente readUntil se anche la GUI ce l'avrà
 
         /*if(yes)){

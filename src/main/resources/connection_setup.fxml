@@ -6,14 +6,14 @@
 <?import javafx.scene.text.Font?>
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="languagePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
            minWidth="-Infinity" xmlns="http://javafx.com/javafx/21"
-           fx:controller="it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIView">
+>
     <children>
         <ComboBox fx:id="language" prefWidth="150.0" promptText="Select a language"/>
         <Label fx:id="error" prefWidth="800.0" style="-fx-alignment: Center"
                textAlignment="CENTER" textFill="#000000">
         </Label>
         <Button fx:id="button" alignment="CENTER" mnemonicParsing="false"
-                onAction="#newPane" prefHeight="38.0" prefWidth="323.0" text="OK"
+                prefHeight="38.0" prefWidth="323.0" text="OK"
                 textAlignment="JUSTIFY" wrapText="true">
         </Button>
         <ComboBox fx:id="connection" layoutX="225.0" layoutY="188.0" prefWidth="150.0" promptText="Select a language"/>

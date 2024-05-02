@@ -104,13 +104,12 @@ public class TUIView extends View {
                 ansi().cursor(1, 1).a("Scegli la tecnologia di comunicazione (RMI-Socket): "),
                 List.of("rmi", "socket")
         );
-        ClientController.getInstance().setCommunicationTechnology(communicationTechnology);
         clearTerminal();
         printToPosition(ansi().cursor(1,1).a("Scegli il tuo nickname: "));
         String nickname = console.readLine();
         printToPosition(ansi().cursor(2,1).a("Connessione al server in corso..."));
 
-        ClientController.getInstance().viewState.connect(nickname);
+        ClientController.getInstance().viewState.connect(communicationTechnology, nickname);
     }
 
     public void connectedConfirmation() {
