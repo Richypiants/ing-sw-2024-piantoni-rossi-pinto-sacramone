@@ -77,6 +77,9 @@ public class ClientGame extends GameLobby implements Serializable {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    public ClientPlayer getThisPlayer(){
+        return this.MYSELF;
+    }
     public ArrayList<ClientCard> getCardsInHand(){
         return OWN_HAND; //TODO: copia?
     }

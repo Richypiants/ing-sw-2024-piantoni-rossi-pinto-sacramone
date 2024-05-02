@@ -68,6 +68,10 @@ public abstract class ViewState {
 
     }
 
+    public void pickObjective(int cardID){
+
+    }
+
     public void updateNickname() {
 
     }

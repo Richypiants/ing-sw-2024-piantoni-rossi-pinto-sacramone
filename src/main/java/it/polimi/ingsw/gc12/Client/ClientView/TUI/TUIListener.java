@@ -81,6 +81,7 @@ public class TUIListener {
                             Integer.parseInt(tokens.removeFirst()) - 1,
                             convertSide(tokens.removeFirst())
                     );
+                case "pickObjective" -> currentState.pickObjective(Integer.parseInt(tokens.removeFirst()));
                 case "drawFromDeck" -> currentState.drawFromDeck(tokens.removeFirst());
                 case "drawFromVisibleCards" -> {
                     errorMessage = "expected position to draw from as second argument";

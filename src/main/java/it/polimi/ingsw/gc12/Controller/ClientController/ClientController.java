@@ -161,8 +161,14 @@ public class ClientController implements ClientControllerInterface {
         thisPlayer.setOpenCorners(openCorners);
         thisPlayer.setPoints(points);
 
+        if(viewState instanceof ChooseInitialCardsState){
+            if(nickname.equals(SINGLETON_INSTANCE.ownNickname))
+                view.gameScreen();
+            return;
+        }
+
         //FIXME: sbagliatissimo
-        if (viewState instanceof PlayerTurnPlayState) {
+        if(viewState instanceof PlayerTurnPlayState) {
             ((GameScreenState) viewState).transition();
             viewState.executeState();
         }
