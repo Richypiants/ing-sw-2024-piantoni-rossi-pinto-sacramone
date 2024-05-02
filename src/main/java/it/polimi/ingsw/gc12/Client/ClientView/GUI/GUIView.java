@@ -229,6 +229,10 @@ public class GUIView extends View {
                 throw new RuntimeException(e);
             }
         stage.getScene().setRoot(root);
+
+        Button button = (Button) fxmlLoader.getNamespace().get("BackTitleButton");
+        button.setOnAction(event -> ClientController.getInstance().viewState.quit());
+
         //});
     }
 
@@ -265,11 +269,6 @@ public class GUIView extends View {
     public void showHand() {
 
     }
-
-    public void BackToTitleScreen() {
-        titleScreen();
-    }
-
 
     public void NewGame(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/Fourth.fxml"));
