@@ -70,7 +70,7 @@ public class GUIView extends View {
 
     @Override
     public void titleScreen() {
-        FXMLLoader fxmlLoader = new FXMLLoader(GUIApplication.class.getResource("/title_screen.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(GUIApplication.class.getResource("/fxml/title_screen.fxml"));
         fxmlLoader.setController(ClientController.getInstance().view);
         Parent root = null;
         try {
@@ -85,11 +85,12 @@ public class GUIView extends View {
         stage.addEventHandler(KeyEvent.KEY_PRESSED, (event) -> {
             if (event.getCode().equals(KeyCode.F11))
                 stage.setFullScreen(!stage.isFullScreen());
+            //TODO: + show hint per rientrare in fullscreen
         });
 
         Button startButton = (Button) fxmlLoader.getNamespace().get("startButton");
         startButton.setOnAction(this::keyPressed);
-        StackPane First = (StackPane) fxmlLoader.getNamespace().get("First");
+        //StackPane First = (StackPane) fxmlLoader.getNamespace().get("titleScreen");
 
         // Dimensione Schermo
         double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
@@ -123,7 +124,7 @@ public class GUIView extends View {
     }
 
     private void selection() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/connection_setup.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/connection_setup.fxml"));
         fxmlLoader.setController(ClientController.getInstance().view);
         Parent root = fxmlLoader.load(); // Carica il file FXML e ottiene il root
 
@@ -185,7 +186,7 @@ public class GUIView extends View {
             return;
         }
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/waiting_for_connection.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/waiting_for_connection.fxml"));
         fxmlLoader.setController(ClientController.getInstance().view);
         Parent root = fxmlLoader.load(); // Carica il file FXML e ottiene il root
 
@@ -220,7 +221,7 @@ public class GUIView extends View {
     @Override
     public void lobbyScreen() {
         //Platform.runLater(() -> {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/main_menu.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/lobby_menu.fxml"));
         fxmlLoader.setController(ClientController.getInstance().view);
             Parent root = null; // Carica il file FXML e ottiene il root
             try {
@@ -271,7 +272,7 @@ public class GUIView extends View {
     }
 
     public void NewGame(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/Fourth.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Fourth.fxml"));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root, 1800, 850);
         stage.setScene(scene);
@@ -280,7 +281,7 @@ public class GUIView extends View {
     }
 
     public void ChangeNickname(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/change_nickname.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/change_nickname.fxml"));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root, 1800, 850);
         stage.setScene(scene);
@@ -289,7 +290,7 @@ public class GUIView extends View {
     }
 
     public void LeaveGame(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/main_menu.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/lobby_menu.fxml"));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root, 1800, 850);
         stage.setScene(scene);

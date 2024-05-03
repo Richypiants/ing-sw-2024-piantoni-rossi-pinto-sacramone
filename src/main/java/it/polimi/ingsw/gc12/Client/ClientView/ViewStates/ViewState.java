@@ -5,9 +5,12 @@ import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
+import java.util.List;
 import java.util.UUID;
 
 public abstract class ViewState {
+
+    public List<String> TUICommands = null;
 
     protected static View selectedView;
     protected static ViewState currentState;

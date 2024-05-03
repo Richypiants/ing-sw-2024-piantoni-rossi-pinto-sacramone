@@ -10,7 +10,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.concurrent.*;
 
-public class Server {
+public class Server implements Runnable {
 
     private final static Server SINGLETON_SERVER = new Server();
     public final ExecutorService commandExecutorsPool;
@@ -22,7 +22,7 @@ public class Server {
         );
     }
 
-    public void start() {
+    public void run() {
         //RMI server setup
         Registry registry = null;
         try {
@@ -35,20 +35,18 @@ public class Server {
         System.out.println("[RMI]: Server listening on {" + registry + "}");
 
         //Socket server setup
-        try {
-            AsynchronousServerSocketChannel serverSocket = AsynchronousServerSocketChannel.open()
-                    .bind(new InetSocketAddress("localhost"/*"codexnaturalis.polimi.it"*/, 5000));
-            //ExecutorService executorsPool = Executors.newCachedThreadPool(/*thread factory here to change default
-            //keepAlive timeout and set maximum number of Threads*/)
+        try (
+                AsynchronousServerSocketChannel serverSocket = AsynchronousServerSocketChannel.open()
+                        .bind(new InetSocketAddress("localhost"/*"codexnaturalis.polimi.it"*/, 5000));
+                //ExecutorService executorsPool = Executors.newCachedThreadPool(/*thread factory here to change default
+                //keepAlive timeout and set maximum number of Threads*/)
+                //FIXME: how about the ip?
+        ) {
             System.out.println("[SOCKET]: Server listening on {" + serverSocket.getLocalAddress() + "}");
-            //FIXME: how about the ip?
 
             //TODO: choose behaviour (direct handoff vs unbounded vs bounded): currently chosen bounded
             //BlockingQueue<> clientsAwaitingConnection = new ArrayBlockingQueue<>(/*capacity here*/); // this is a bounded queue
 
-            //System.out.println(((InetSocketAddress)serverSocket.getLocalAddress()).getHostString());
-
-            /* finchè non leggiamo fine: */
             while (true) {
                 AsynchronousSocketChannel channel = serverSocket.accept().get();
 
@@ -80,6 +78,8 @@ public class Server {
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
+            // Main interrupts this thread when closing down server
+            // serverSocket channel is autoclosed because of the try-with-resources statement
             throw new RuntimeException(e);
         }
     }

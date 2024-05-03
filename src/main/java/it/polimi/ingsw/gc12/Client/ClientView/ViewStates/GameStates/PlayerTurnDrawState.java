@@ -4,9 +4,18 @@ import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.DrawFromDeckCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.DrawFromVisibleCardsCommand;
 
+import java.util.List;
+
 public class PlayerTurnDrawState extends GameScreenState {
 
-    public PlayerTurnDrawState(){}
+    public PlayerTurnDrawState() {
+        TUICommands = List.of(
+                "'drawFromDeck <deck>' [resource][gold] per pescare una carta coperta dal deck di carte risorsa|oro",
+                "'drawFromVisibleCards <deck> <position>' [resource][gold] [1][2] per pescare una carta scoperta dal deck di carte risorsa|oro",
+                "'broadcastMessage <message>' per inviare un messaggio in gioco",
+                "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco"
+        );
+    }
 
     @Override
     public void executeState() {

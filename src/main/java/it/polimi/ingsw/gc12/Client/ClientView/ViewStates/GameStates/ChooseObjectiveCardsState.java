@@ -3,13 +3,20 @@ package it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.PickObjectiveCommand;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
-import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 
-import java.util.NoSuchElementException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChooseObjectiveCardsState extends GameScreenState {
 
-    public ChooseObjectiveCardsState(){}
+    public ArrayList<ClientCard> objectivesSelection = new ArrayList<>();
+
+    public ChooseObjectiveCardsState() {
+        TUICommands = List.of("'pickObjective <selection>' [1][2] per selezionare il proprio obiettivo segreto",
+                "'broadcastMessage <message>' per inviare un messaggio in gioco",
+                "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco"
+        );
+    }
 
     @Override
     public void executeState() {
@@ -21,11 +28,10 @@ public class ChooseObjectiveCardsState extends GameScreenState {
     public void pickObjective(int selection){
         //Selection should be [0,1]
         ClientCard card = null;
-        final int OFFSET_IN_HAND = 2;
         try {
-            card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().get(selection + OFFSET_IN_HAND);
+            card = objectivesSelection.get(selection);
         } catch (IndexOutOfBoundsException e) {
-            throw new IllegalArgumentException("Nessuna carta presente alla posizione specificata della mano");
+            throw new IllegalArgumentException("nessuna carta obiettivo presente alla posizione specificata");
         }
 
         ClientController.getInstance().requestToServer(new PickObjectiveCommand(card.ID));

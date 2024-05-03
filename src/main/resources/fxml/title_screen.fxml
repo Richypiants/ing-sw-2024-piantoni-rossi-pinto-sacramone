@@ -4,9 +4,9 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 <StackPane xmlns:fx="http://javafx.com/fxml/1"
-           fx:id="First" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+           fx:id="titleScreenPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
            minWidth="-Infinity"
-           style="-fx-background-image: url(file:///C:/Users/jacop/Desktop/imagecodex3.jpg);
+           style="-fx-background-image: url('/images/title_screen_bg.jpg');
            -fx-background-repeat: no-repeat; -fx-background-size: stretch;"
            xmlns="http://javafx.com/javafx/21">
     <children>

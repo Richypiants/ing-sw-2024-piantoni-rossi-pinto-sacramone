@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Utilities.RMIVirtualServer;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
@@ -30,7 +31,14 @@ public class RMIServerStub implements RMIVirtualServer {
         try {
             Server.getInstance().commandExecutorsPool.submit(() -> command.execute(caller, ServerController.getInstance()));
         } catch (RejectedExecutionException e) {
-            //TODO: implement answer
+            try {
+                caller.requestToClient(new ThrowExceptionCommand(
+                        //FIXME: not ideal to shut connection down... maybe don't accept more than a predecided number of connections?
+                        new RejectedExecutionException("This server is currently busy, shutting down connection: try again later..."))
+                );
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 

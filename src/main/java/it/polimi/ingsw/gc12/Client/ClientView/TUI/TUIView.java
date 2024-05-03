@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Client.ClientView.TUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
@@ -21,6 +22,16 @@ public class TUIView extends View {
     private static TUIView SINGLETON_TUI_INSTANCE = null;
     private final TUIListener listener;
     private static /*(?)*/ final Console console = System.console();
+
+    private final GenericPair<Integer, Integer> FIELD_SIZE = new GenericPair<>(40, 160); //x: height, y: width
+    private final GenericPair<Integer, Integer> FIELD_TOP_LEFT = new GenericPair<>(10, 95); //x: startingRow, y: startingColumn
+    private final GenericPair<Integer, Integer> FIELD_CENTER = new GenericPair<>(
+            FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() / 2,
+            FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() / 2
+    );
+    private final GenericPair<Integer, Integer> CARD_SIZE = new GenericPair<>(13, 5);
+    //Manually computed over examples
+    private final GenericPair<Integer, Integer> CURSOR_OFFSET = new GenericPair<>(3, 11);
 
     private TUIView() {
         listener = TUIListener.getInstance();
@@ -57,9 +68,20 @@ public class TUIView extends View {
         //System.out.print(ansi().saveCursorPosition());
         System.out.print(toPrint);
         System.out.print(ansi().reset()
-                .cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Erase.FORWARD)
+                .cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseLine(Erase.FORWARD)
         );
         //FIXME: autoResetting... should keep it?
+    }
+
+    private String readUntil(Ansi prompt, List<String> validInput) {
+        String selection;
+        do {
+            clearTerminal();
+            printToPosition(ansi().a(prompt));
+            selection = console.readLine().trim().toLowerCase();
+        } while (!validInput.contains(selection));
+
+        return selection;
     }
 
     public void titleScreen() {
@@ -83,17 +105,6 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(5, 1).a("Premi Invio per iniziare..."));
         console.readLine();
         ClientController.getInstance().viewState.keyPressed();
-    }
-
-    private String readUntil(Ansi prompt, List<String> validInput) {
-        String selection;
-        do{
-            clearTerminal();
-            printToPosition(ansi().a(prompt));
-            selection = console.readLine().trim().toLowerCase();
-        } while(!validInput.contains(selection));
-
-        return selection;
     }
 
     public void connectToServerScreen() {
@@ -149,40 +160,40 @@ public class TUIView extends View {
                             'joinLobby <lobbyUUID>' per joinare una lobby esistente,
                             'setNickname <newNickname>' per cambiare il proprio nickname,
                             'leaveLobby' per lasciare la lobby in cui si e' attualmente,
-                            'quit' per ritornare alla schermata iniziale
-                            -------------------------------------------------------------
-                            'broadcastMessage <message>' per inviare un messaggio in gioco,
-                            'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco
-                            ------------------------------------------------------------- 
-                            'placeCard <x> <y> <inHandPosition> <side>' (x,y): coordinate di piazzamento, inHandPosition: indice di carta, side: lato scelto [front]|[back]
-                            'pickObjective <selection>' [1]|[2] per selezionare il proprio obiettivo segreto,
-                            'drawFromDeck <deck>' [resource][gold] per pescare una carta coperta dal deck di carte risorsa|oro,
-                            'drawFromVisibleCards <deck> <position>' [resource][gold] [1][2] per pescare una carta scoperta dal deck di carte risorsa|oro.
+                                    'quit' per ritornare alla schermata del titolo
                 """
                 //TODO: leaveLobby andrebbe promptato solo dopo
-                //FIXME: al momento tutti gli usages dei comandi sono stampati qui,
-                // quelli in gioco vanno spostati nella schermata di gioco
         ));
     }
 
     public void updateNickname(){
-        //TODO: eraseForward potrebbe funzionare? Se sì, scrivere due print
+        //FIXME: è così veloce che mi limiterei a richiamare lobbyScreen...
         TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().ownNickname.length();
-        System.out.print(ansi()
-                .fg(Ansi.Color.RED).bold()
-                .cursor(1, 11).a(ClientController.getInstance().ownNickname).eraseLine().reset()
-                .cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN));
+        lobbyScreen();
+        //printToPosition(ansi().cursor(1, 11).eraseLine(Erase.FORWARD).fg(Ansi.Color.RED).bold()
+        //        .a(ClientController.getInstance().ownNickname).eraseLine().reset());
+        //TODO: altrimenti: erasare il nickname dalla inputLine
     }
 
     public void gameScreen() {
         clearTerminal();
 
         printStatsTable();
-        printOpponentsFieldsMiniaturized();
         printCommonPlacedCards();
+        printDecks();
+        printOpponentsFieldsMiniaturized();
         showField();
         showHand();
         updateChat();
+
+        //FIXME: eventuale showOpponentField <opponentName>???
+        //FIXME: al momento comandi filtrati per stato di gioco, replicati in ogni viewState, orribile anche perchè alla GUI non servono...
+        // però forse possiamo avere una lista di prompt e caricare quelli da mostrare a seconda di TUI o GUI?
+        // (per esempio, trascina una carta per posizionarla)
+        int i = 42;
+        printToPosition(ansi().cursor(i++, 2).bold().a("Available commands list:"));
+        for (var command : ClientController.getInstance().viewState.TUICommands)
+            printToPosition(ansi().cursor(i++, 4).a(command));
     }
 
     public void printStatsTable() {
@@ -208,48 +219,63 @@ public class TUIView extends View {
                     .cursor(i, 70).a("0")
                     .cursor(i, 83).a("0")
                     .cursor(i, 94).a("0")
-                    .cursor(i++, 105).a("0")
+                    .cursor(i, 105).a("0")
+                    .cursor(i++, 117).a("0")
             );
+    }
+
+    public void printCommonPlacedCards() {
+        //erasing old placed cards
+        for (int i = 12; i < 24; i++)
+            printToPosition(ansi().cursor(i, 53).eraseLine(Erase.BACKWARD));
+
+        printToPosition(ansi().cursor(8, 23).bold().a("Common placed cards: ").reset());
+
+        //FIXME: gestire i null delle carte non presenti
+        printToPosition(ansi().cursor(12, 3).a("Resource:"));
+        int column = 15;
+        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getPlacedResources()) {
+            printToPosition(ansi().cursor(10, column).a(standardAnsi(card, Side.FRONT)));
+            column += 20;
+        }
+
+        column = 15;
+        printToPosition(ansi().cursor(18, 3).a("Gold:"));
+        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getPlacedGold()){
+            printToPosition(ansi().cursor(16, column).a(standardAnsi(card, Side.FRONT)));
+            column += 20;
+        }
+
+        column = 15;
+        printToPosition(ansi().cursor(24, 3).a("Objective:"));
+        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCommonObjectives()){
+            printToPosition(ansi().cursor(22, column).a(standardAnsi(card, Side.FRONT)));
+            column += 20;
+        }
+
+        printToPosition(ansi().cursor(24, 54).a("Secret:"));
+        printToPosition(ansi().cursor(22, 64).a(standardAnsi(((ClientGame) ClientController.getInstance().currentLobbyOrGame).getOwnObjective(), Side.FRONT)));
+    }
+
+    public void printDecks() {
+        printToPosition(ansi().cursor(8, 68).bold().a("Decks: "));
+
+        //FIXME: in realtà bisogna printare i back delle carte in cima al deck... (farseli mandare?)
+        ClientCard card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().getFirst();
+        printToPosition(ansi().cursor(10, 64).a(standardAnsi(card, Side.FRONT)));
+        card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().getFirst();
+        printToPosition(ansi().cursor(12, 64).a(standardAnsi(card, Side.FRONT)));
     }
 
     public void printOpponentsFieldsMiniaturized() {
 
     }
 
-    public void printCommonPlacedCards() {
-        //FIXME: erase or overwrite old placed cards?
-        printToPosition(ansi().cursor(8, 2).bold().a("Common placed cards: ").reset());
-
-        printToPosition(ansi().cursor(12, 3).a("Resource cards:"));
-        int column = 20;
-        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getPlacedResources()) {
-            printToPosition(ansi().cursor(10, column).a(standardAnsi(card, Side.FRONT)));
-            column += 20;
-        }
-
-        column = 20;
-        printToPosition(ansi().cursor(18, 3).a("Gold cards:"));
-        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getPlacedGold()){
-            printToPosition(ansi().cursor(16, column).a(standardAnsi(card, Side.FRONT)));
-            column += 20;
-        }
-
-        column = 20;
-        printToPosition(ansi().cursor(24, 3).a("Objective cards:"));
-        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCommonObjectives()){
-            //printToPosition(ansi().cursor(22, column).a(card.standardAnsi(Side.FRONT)));
-            column += 6;
-        }
-
-        printToPosition(ansi().cursor(20, 64).a("Secret objective:"));
-        //printBlueCard(ansi().cursor(22, 64).a(((ClientGame) ClientController.getInstance.currentLobbyOrGame)getOwnObjective().standardAnsi(Side.FRONT);
-    }
-
     public void updateChat() {
         List<String> chatLog = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getChatLog();
-        printToPosition(ansi().cursor(42, 2).bold().a("Last chat messages: ").reset());
+        printToPosition(ansi().cursor(2, 130).bold().a("Last chat messages: ").reset());
         for (int i = 0; i < 3; i++)
-            printToPosition(ansi().cursor(43 + i, 4).eraseLine()
+            printToPosition(ansi().cursor(3 + i, 132).eraseLine(Erase.FORWARD)
                     .a((chatLog.size() >= 3 - i) ? chatLog.get(chatLog.size() - 3 + i) : "")
             );
     }
@@ -313,6 +339,11 @@ public class TUIView extends View {
     }
 
     public void showInitialCardsChoice() {
+        //erasing field area
+        int fieldStartingColumn = FIELD_TOP_LEFT.getY();
+        for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
+            printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Erase.FORWARD));
+
         ClientCard card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().getFirst();
         printToPosition(ansi().cursor(15, 120).bold().eraseLine(Erase.FORWARD)
                 .a("Choose which side you want to play your assigned initial card on: ").reset());
@@ -322,13 +353,16 @@ public class TUIView extends View {
 
     @Override
     public void showObjectiveCardsChoice() {
-        ClientCard card = null;
+        //erasing field area
+        int fieldStartingColumn = FIELD_TOP_LEFT.getY();
+        for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
+            printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Erase.FORWARD));
 
         printToPosition(ansi().cursor(15, 120).bold().eraseLine(Erase.FORWARD)
                 .a("Choose which card you want to keep as your secret objective: ").reset());
-        card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().get(3);
+        ClientCard card = ((ChooseObjectiveCardsState) ClientController.getInstance().viewState).objectivesSelection.getFirst();
         printToPosition(ansi().cursor(20, 120).a(upscaledAnsi(card, Side.FRONT)));
-        card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().get(4);
+        card = ((ChooseObjectiveCardsState) ClientController.getInstance().viewState).objectivesSelection.get(1);
         printToPosition(ansi().cursor(20, 180).a(upscaledAnsi(card, Side.FRONT)));
     }
 
@@ -345,18 +379,12 @@ public class TUIView extends View {
 
     @Override
     public void showField() {
-        //FIXME: erase old field?
-        //TODO: write the correct print function, that iterates all over the field
-        final GenericPair<Integer, Integer> FIELD_SIZE = new GenericPair<>(40, 160); //x: width, y: height
-        final GenericPair<Integer, Integer> FIELD_TOP_LEFT = new GenericPair<>(10, 80); //x: startingRow, y: startingColumn
-        final GenericPair<Integer, Integer> FIELD_CENTER = new GenericPair<>(
-                FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX()/2,
-                FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY()/2
-        );
-        final GenericPair<Integer, Integer> CARD_SIZE = new GenericPair<>(13, 5);
+        //erasing field area
+        int fieldStartingColumn = FIELD_TOP_LEFT.getY();
+        for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
+            printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Erase.FORWARD));
 
-        //Manually computed over examples
-        final GenericPair<Integer, Integer> CURSOR_OFFSET = new GenericPair<>(3, 11);
+        //TODO: write the correct print function, that iterates all over the field (nota di piants: ????? che vuol dire?)
 
         GenericPair<Integer, Integer> maxCoordinates = findExtremeCoordinates(Math::max);
         GenericPair<Integer, Integer> minCoordinates = findExtremeCoordinates(Math::min);
@@ -389,7 +417,8 @@ public class TUIView extends View {
 
     @Override
     public void showHand() {
-        //FIXME: erase or overwrite old hand/cards?
+        //FIXME: erase or overwrite old hand/cards? (is it needed or you always have at least 3 cards in hand?)
+
         int column = 10;
         printToPosition(ansi().cursor(28, 2).bold().a("Your hand: ").reset());
         printToPosition(ansi().cursor(32, 3).a("Front:"));

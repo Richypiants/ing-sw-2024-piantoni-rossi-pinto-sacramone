@@ -178,8 +178,8 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public synchronized void receiveCard(List<Integer> cardIDs) {
-        for (var cards : cardIDs)
-            ((ClientGame) currentLobbyOrGame).addCardToHand(cardsList.get(cards));
+        for (var cardID : cardIDs)
+            ((ClientGame) currentLobbyOrGame).addCardToHand(cardsList.get(cardID));
 
         //FIXME: sbagliatissimo...
         if (viewState instanceof LobbyScreenState) {
@@ -194,10 +194,11 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public void receiveObjectiveChoice(List<Integer> cardIDs) {
-        for (var cards : cardIDs)
-            ((ClientGame) currentLobbyOrGame).addCardToHand(cardsList.get(cards));
-
         viewState = new ChooseObjectiveCardsState();
+
+        for (var cardID : cardIDs)
+            ((ChooseObjectiveCardsState) viewState).objectivesSelection.add(cardsList.get(cardID));
+
         viewState.executeState();
     }
 

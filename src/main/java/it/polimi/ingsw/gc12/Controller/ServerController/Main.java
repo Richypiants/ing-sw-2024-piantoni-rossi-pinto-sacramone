@@ -3,10 +3,16 @@ package it.polimi.ingsw.gc12.Controller.ServerController;
 public class Main {
 
     public static void main(String[] args) {
-        //Caricamento di tutti i comandi validi
+        Thread serverThread = new Thread(Server.getInstance());
+        serverThread.setDaemon(true);
+        serverThread.start(); //FIXME: rendere il server un vero e proprio thread o tenere Runnable?
 
-        //fare un nuovo thread per poter poi interruptare il server: fare setDaemon(true) a tutto?
-        Server server = Server.getInstance();
-        server.start();
+        String interrupt;
+        do {
+            interrupt = System.console().readLine();
+        } while (!interrupt.trim().equalsIgnoreCase("close"));
+        Server.getInstance().commandExecutorsPool.shutdownNow();
+        serverThread.interrupt();
+        //TODO: main doesn't completely stop, other shutdown to perform?
     }
 }
