@@ -2,6 +2,8 @@ package it.polimi.ingsw.gc12.Client.ClientView.GUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Model.GameLobby;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,12 +17,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class GUIView extends View {
 
@@ -29,6 +35,7 @@ public class GUIView extends View {
     Stage stage;
     ObservableList<String> languageList = FXCollections.observableArrayList("Italiano", "English");
     ObservableList<String> connectionList = FXCollections.observableArrayList("Socket", "RMI");
+    ObservableList<Integer> maxPlayersSelector = FXCollections.observableArrayList(2, 3, 4);
 
     @FXML
     TextField nicknameField;
@@ -119,11 +126,11 @@ public class GUIView extends View {
         stage.getScene().setRoot(root);
 
         //TODO: al posto della lingua, far inserire indirizzo IP del server!
-        language = (ComboBox<String>) fxmlLoader.getNamespace().get("language");
+        ComboBox<String> language = (ComboBox<String>) fxmlLoader.getNamespace().get("language");
         language.setPromptText("Select language");
         language.setItems(languageList);
 
-        connection = (ComboBox<String>) fxmlLoader.getNamespace().get("connection");
+        ComboBox<String> connection = (ComboBox<String>) fxmlLoader.getNamespace().get("connection");
         connection.setValue("Select communication technology");
         connection.setItems(connectionList);
 
@@ -210,21 +217,59 @@ public class GUIView extends View {
 
     @Override
     public void lobbyScreen() {
-        //Platform.runLater(() -> {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/lobby_menu.fxml"));
-        fxmlLoader.setController(ClientController.getInstance().view);
+        Platform.runLater(() -> {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/lobby_menu.fxml"));
+            fxmlLoader.setController(ClientController.getInstance().view);
             Parent root = null; // Carica il file FXML e ottiene il root
             try {
                 root = fxmlLoader.load();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        stage.getScene().setRoot(root);
 
-        Button button = (Button) fxmlLoader.getNamespace().get("BackTitleButton");
-        button.setOnAction(event -> ClientController.getInstance().viewState.quit());
+            Button button = (Button) fxmlLoader.getNamespace().get("BackTitleButton");
+            button.setOnAction(event -> ClientController.getInstance().viewState.quit());
 
-        //});
+            ScrollPane lobbiesPane = (ScrollPane) fxmlLoader.getNamespace().get("lobbiesPane");
+            AnchorPane lobbiesList = (AnchorPane) lobbiesPane.getContent();
+
+            //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
+            for (var lobby : ClientController.getInstance().lobbies.entrySet())
+                lobbiesList.getChildren().add(createLobbyListElement(lobby.getKey(), lobby.getValue()));
+
+            Popup popup = new Popup();
+
+            ComboBox<Integer> maxPlayers = (ComboBox<Integer>) fxmlLoader.getNamespace().get("maxPlayersInput");
+
+            maxPlayers.setValue(2);
+            maxPlayers.setItems(maxPlayersSelector);
+
+            Label players = (Label) fxmlLoader.getNamespace().get("players");
+            Button okPlayers = (Button) fxmlLoader.getNamespace().get("okPlayers");
+
+            popup.centerOnScreen();
+            popup.getContent().add(players);
+            popup.getContent().add(maxPlayers);
+            popup.getContent().add(okPlayers);
+
+            popup.setHeight(500);
+            popup.setWidth(700);
+
+            players.setAlignment(Pos.CENTER);
+
+            okPlayers.setOnAction(event ->
+                    {
+                        ClientController.getInstance().viewState.createLobby(maxPlayers.getValue());
+                        popup.hide();
+                    }
+            );
+
+            Button lobby = (Button) fxmlLoader.getNamespace().get("CreateGameButton");
+            lobby.setOnAction(event -> popup.show(stage));
+
+            popup.hide();
+            stage.getScene().setRoot(root);
+        });
     }
 
     @Override
@@ -287,36 +332,46 @@ public class GUIView extends View {
         stage.setMaximized(true);
         stage.show();
     }
-/*
-    public void CreateGame(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/your_lobby_fxml.fxml"));
-        VBox lobbyContainer = fxmlLoader.load();
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
+    private HBox createLobbyListElement(UUID lobbyUUID, GameLobby lobby) {
         // Box
         HBox lobbyBox = new HBox(10);
         lobbyBox.setPadding(new Insets(15, 12, 15, 12));
 
         // Label giocatori
-        Label playerCount = new Label(); // da aggiornare (probabilmente globale)
+        Label playerCount = new Label(String.valueOf(lobby.getMaxPlayers()));
         playerCount.setStyle("-fx-font-size: 16px;");
 
+
         // Label nomi
-        Label playerName = new Label(); // da aggiornare (probabilemente globale)
-        playerName.setStyle("-fx-font-size: 14px;");
+        for (var player : lobby.getPlayers()) {
+            Label playerName = new Label(player.getNickname());
+            playerName.setStyle("-fx-font-size: 14px;");
+            lobbyBox.getChildren().add(playerName);
+        }
 
-        // Pulsante Join
-        Button joinButton = new Button("JOIN");
-        joinButton.setOnAction(e -> {
-            // finire
-        });
+        if (ClientController.getInstance().currentLobbyOrGame == null) {
+            Button joinButton = new Button("JOIN");
+            joinButton.setOnAction(e ->
+                    {
+                        ClientController.getInstance().viewState.joinLobby(lobbyUUID);
+                    }
+            );
+            lobbyBox.getChildren().add(joinButton);
+        } else {
+            if (ClientController.getInstance().currentLobbyOrGame.equals(lobby)) {
+                Button leaveButton = new Button("LEAVE");
+                leaveButton.setOnAction(e ->
+                        {
+                            ClientController.getInstance().viewState.leaveLobby();
+                        }
+                );
+                lobbyBox.getChildren().add(leaveButton);
+            }
+        }
 
-        lobbyBox.getChildren().addAll(playerCount, playerName, joinButton);
-        lobbyContainer.getChildren().add(lobbyBox);
+        lobbyBox.getChildren().add(playerCount);
 
-        Scene scene = new Scene(lobbyContainer, 300, 600);
-        stage.setScene(scene);
-        stage.show();
+        return lobbyBox;
     }
- */
 }
