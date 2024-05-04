@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.CardDeck;
 import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
 import it.polimi.ingsw.gc12.Model.Game;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 
 import java.util.List;
 
@@ -28,17 +29,22 @@ public class SetupState extends GameState {
         );
 
         System.out.println("[SERVER]: sending ReceiveCardCommand to clients");
-        for (var target : GAME.getPlayers()) {
-            InitialCard tmp = initialCardsDeck.draw();
-            target.addCardToHand(tmp);
+        try {
+            for (var target : GAME.getPlayers()) {
+                InitialCard tmp = initialCardsDeck.draw();
+                target.addCardToHand(tmp);
 
-            //TODO: manage exceptions
-            try {
-                keyReverseLookup(ServerController.getInstance().players, target::equals)
-                        .requestToClient(new ReceiveCardCommand(List.of(tmp.ID)));
-            } catch (Throwable t) {
-                t.printStackTrace();
+                //TODO: manage exceptions
+                try {
+                    keyReverseLookup(ServerController.getInstance().players, target::equals)
+                            .requestToClient(new ReceiveCardCommand(List.of(tmp.ID)));
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
             }
+        } catch (EmptyDeckException e) {
+            //cannot happen as deck has just been created
+            e.printStackTrace();
         }
 
         GAME.setState(new ChooseInitialCardsState(GAME));

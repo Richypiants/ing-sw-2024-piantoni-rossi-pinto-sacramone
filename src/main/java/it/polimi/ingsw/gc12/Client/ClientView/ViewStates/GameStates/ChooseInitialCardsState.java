@@ -10,8 +10,7 @@ public class ChooseInitialCardsState extends GameScreenState{
 
     public ChooseInitialCardsState() {
         TUICommands = List.of(
-                "'placeCard <x> <y> <inHandPosition> <side>' (x,y): coordinate di piazzamento,",
-                "    inHandPosition: [1]...[n], side: [front][back]",
+                "'pickInitial <side> [front][back],",
                 "'broadcastMessage <message>' per inviare un messaggio in gioco",
                 "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco"
         );

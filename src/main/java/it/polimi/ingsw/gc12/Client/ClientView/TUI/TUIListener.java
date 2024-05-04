@@ -75,6 +75,7 @@ public class TUIListener {
                 case "directMessage" -> currentState.directMessage(
                         tokens.removeFirst(), tokens.stream().reduce("", (a, b) -> a + " " + b)
                 );
+                case "pickInitial" -> currentState.placeCard(new GenericPair<>(0, 0), 0, convertSide(tokens.removeFirst())) ;
                 case "placeCard" ->
                     currentState.placeCard(
                             new GenericPair<>(Integer.parseInt(tokens.removeFirst()), Integer.parseInt(tokens.removeFirst())),

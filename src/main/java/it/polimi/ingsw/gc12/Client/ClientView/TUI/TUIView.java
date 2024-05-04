@@ -160,7 +160,7 @@ public class TUIView extends View {
                             'joinLobby <lobbyUUID>' per joinare una lobby esistente,
                             'setNickname <newNickname>' per cambiare il proprio nickname,
                             'leaveLobby' per lasciare la lobby in cui si e' attualmente,
-                                    'quit' per ritornare alla schermata del titolo
+                            'quit' per ritornare alla schermata del titolo
                 """
                 //TODO: leaveLobby andrebbe promptato solo dopo
         ));
@@ -178,6 +178,7 @@ public class TUIView extends View {
     public void gameScreen() {
         clearTerminal();
 
+        printRoundInfo();
         printStatsTable();
         printCommonPlacedCards();
         printDecks();
@@ -194,6 +195,11 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(i++, 2).bold().a("Available commands list:"));
         for (var command : ClientController.getInstance().viewState.TUICommands)
             printToPosition(ansi().cursor(i++, 4).a(command));
+    }
+
+    public void printRoundInfo() {
+        printToPosition(ansi().cursor(2,2).bold().a("[TURN #" +
+                ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCurrentRound() + "]").reset());
     }
 
     public void printStatsTable() {
@@ -261,10 +267,10 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(8, 68).bold().a("Decks: "));
 
         //FIXME: in realtà bisogna printare i back delle carte in cima al deck... (farseli mandare?)
-        ClientCard card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().getFirst();
-        printToPosition(ansi().cursor(10, 64).a(standardAnsi(card, Side.FRONT)));
-        card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().getFirst();
-        printToPosition(ansi().cursor(12, 64).a(standardAnsi(card, Side.FRONT)));
+        ClientCard card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getTopDeckResourceCard();
+        printToPosition(ansi().cursor(10, 64).a(standardAnsi(card, Side.BACK)));
+        card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getTopDeckGoldCard();
+        printToPosition(ansi().cursor(16, 64).a(standardAnsi(card, Side.BACK)));
     }
 
     public void printOpponentsFieldsMiniaturized() {

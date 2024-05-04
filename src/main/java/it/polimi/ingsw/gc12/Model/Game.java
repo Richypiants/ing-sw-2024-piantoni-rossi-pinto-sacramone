@@ -74,12 +74,18 @@ public class Game extends GameLobby {
                 .toList());
 
         this.PLACED_RESOURCE_CARDS = new ResourceCard[2];
-        PLACED_RESOURCE_CARDS[0] = RESOURCE_CARDS_DECK.draw();
-        PLACED_RESOURCE_CARDS[1] = RESOURCE_CARDS_DECK.draw();
-
         this.PLACED_GOLD_CARDS = new GoldCard[2];
-        PLACED_GOLD_CARDS[0] = GOLD_CARDS_DECK.draw();
-        PLACED_GOLD_CARDS[1] = GOLD_CARDS_DECK.draw();
+
+        try {
+            PLACED_RESOURCE_CARDS[0] = RESOURCE_CARDS_DECK.draw();
+            PLACED_RESOURCE_CARDS[1] = RESOURCE_CARDS_DECK.draw();
+
+            PLACED_GOLD_CARDS[0] = GOLD_CARDS_DECK.draw();
+            PLACED_GOLD_CARDS[1] = GOLD_CARDS_DECK.draw();
+        } catch(EmptyDeckException e) {
+            //cannot happen as deck has just been initialized
+            e.printStackTrace();
+        }
 
         this.COMMON_OBJECTIVES = new ObjectiveCard[2];
 
@@ -181,8 +187,6 @@ public class Game extends GameLobby {
      * Draws from the deck passed as parameter and returns the drawn card
      */
     public <T extends Card> T drawFrom(CardDeck<T> deck) throws EmptyDeckException {
-        if (deck.isEmpty())
-            throw new EmptyDeckException();
         return deck.draw();
     }
 
@@ -218,6 +222,9 @@ public class Game extends GameLobby {
         return returnedCard;
     }
 
+    public <T extends Card> T peekFrom(CardDeck<T> deck){
+        return deck.peek();
+    }
     /**
      * Changes the currentState of this game to newState
      */

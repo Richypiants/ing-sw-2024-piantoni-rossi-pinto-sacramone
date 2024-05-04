@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.GameTransitionCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveCardCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReplaceCardCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
@@ -11,6 +12,7 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidDeckPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnknownStringException;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
+import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.util.List;
 
@@ -122,8 +124,19 @@ public class PlayerTurnDrawState extends GameState {
             GAME.setState(new VictoryCalculationState(GAME, currentPlayer, counter));
             return;
         }
-
         nextPlayer();
+
+        System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
+        for (var targetPlayer : GAME.getPlayers()) {
+            //TODO: manage exceptions
+            try {
+                VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
+                target.requestToClient(new GameTransitionCommand());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         //TODO: send alert a tutti i giocatori tipo "è il turno di"?
         GAME.setState(new PlayerTurnPlayState(GAME, currentPlayer, counter));
     }

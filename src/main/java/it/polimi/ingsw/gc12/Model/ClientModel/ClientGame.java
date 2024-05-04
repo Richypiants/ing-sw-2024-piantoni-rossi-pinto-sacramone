@@ -20,6 +20,9 @@ public class ClientGame extends GameLobby implements Serializable {
     private final ClientCard[] PLACED_RESOURCE_CARDS;
     private final ClientCard[] PLACED_GOLD_CARDS;
     private final ClientCard[] COMMON_OBJECTIVES;
+
+    private ClientCard topDeckResourceCard;
+    private ClientCard topDeckGoldCard;
     /**
      * The secret Objective Card chosen by this player
      */
@@ -47,6 +50,8 @@ public class ClientGame extends GameLobby implements Serializable {
         this.COMMON_OBJECTIVES = Arrays.stream(game.getCommonObjectives())
                 .map((card) -> card == null ? null : clientCards.get(card.ID))
                 .toArray(ClientCard[]::new);
+        this.topDeckResourceCard = clientCards.get(game.peekFrom(game.getResourceCardsDeck()) == null ? -1 : game.peekFrom(game.getResourceCardsDeck()).ID);
+        this.topDeckGoldCard = clientCards.get(game.peekFrom(game.getGoldCardsDeck()) == null ? -1 : game.peekFrom(game.getGoldCardsDeck()).ID);
         this.ownObjective = myself.getSecretObjective() == null ? null : clientCards.get(myself.getSecretObjective().ID);
         this.currentRound = 0;
         this.chatLog = new ArrayList<>();
@@ -130,6 +135,22 @@ public class ClientGame extends GameLobby implements Serializable {
 
     public void setCommonObjectives(ClientCard objective, int position) {
         COMMON_OBJECTIVES[position] = objective;
+    }
+
+    public ClientCard getTopDeckResourceCard() {
+        return topDeckResourceCard;
+    }
+
+    public void setTopDeckResourceCard(ClientCard card) {
+        topDeckResourceCard = card;
+    }
+
+    public ClientCard getTopDeckGoldCard() {
+        return topDeckGoldCard;
+    }
+
+    public void setTopDeckGoldCard(ClientCard card) {
+        topDeckGoldCard = card;
     }
 
     public ClientCard getOwnObjective(){

@@ -61,7 +61,7 @@ class CardDeckTest {
         CardDeck<ResourceCard> deck = new CardDeck<>(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
         }));
 
-        game.getPlayers().getFirst().addCardToHand(deck.draw());
+        assertDoesNotThrow(() -> game.getPlayers().getFirst().addCardToHand(deck.draw()));
         assert (!game.getPlayers().getFirst().getCardsInHand().isEmpty());
     }
 
@@ -71,7 +71,7 @@ class CardDeckTest {
         }));
 
         while (!deck.isEmpty()) {
-            assertInstanceOf(ResourceCard.class, deck.draw());
+            assertDoesNotThrow(() -> assertInstanceOf(ResourceCard.class, deck.draw()));
         }
 
         assertTrue(deck.isEmpty());

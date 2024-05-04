@@ -4,7 +4,6 @@ import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseInitialCardsState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.GameScreenState;
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.PlayerTurnPlayState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LobbyScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
@@ -146,6 +145,8 @@ public class ClientController implements ClientControllerInterface {
         updateLobby(lobbyUUID, gameDTO);
         currentLobbyOrGame = gameDTO;
         //FIXME: send clientGame directly?
+
+        viewState = new ChooseInitialCardsState();
     }
 
     public void placeCard(String nickname, GenericPair<Integer, Integer> coordinates, int cardID,
@@ -166,36 +167,17 @@ public class ClientController implements ClientControllerInterface {
             if(nickname.equals(SINGLETON_INSTANCE.ownNickname)){
                 view.gameScreen();
             }
-            return;
         }
-
-        //FIXME: sbagliatissimo
-        if(viewState instanceof PlayerTurnPlayState) {
-            ((GameScreenState) viewState).transition();
-            viewState.executeState();
-        }
-        //new PlayerTurnDrawState() dello stesso giocatore...
     }
 
     public synchronized void receiveCard(List<Integer> cardIDs) {
         for (var cardID : cardIDs)
             ((ClientGame) currentLobbyOrGame).addCardToHand(cardsList.get(cardID));
 
-        //FIXME: sbagliatissimo...
-        if (viewState instanceof LobbyScreenState) {
-            viewState = new ChooseInitialCardsState();
-            viewState.executeState();
-            return;
-        }
-
-        ((GameScreenState) viewState).transition();
         viewState.executeState();
-        //new PlayerTurnPlayState() ma degli avversari...
     }
 
     public void receiveObjectiveChoice(List<Integer> cardIDs) {
-        viewState = new ChooseObjectiveCardsState();
-
         for (var cardID : cardIDs)
             ((ChooseObjectiveCardsState) viewState).objectivesSelection.add(cardsList.get(cardID));
 
@@ -203,15 +185,23 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {
-        for(var cardPlacement : cardPlacements)
-            if (cardPlacement.getY().trim().equalsIgnoreCase("RESOURCE"))
-                ((ClientGame) currentLobbyOrGame).setPlacedResources(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
-            else if (cardPlacement.getY().trim().equalsIgnoreCase("GOLD"))
-                ((ClientGame) currentLobbyOrGame).setPlacedGold(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
-            else if (cardPlacement.getY().trim().equalsIgnoreCase("OBJECTIVE"))
-                ((ClientGame) currentLobbyOrGame).setCommonObjectives(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
+        for(var cardPlacement : cardPlacements) {
+            ClientCard card = cardsList.get(cardPlacement.getX());
+            switch (cardPlacement.getY().trim()) {
+                case "RESOURCE_DECK" -> ((ClientGame) currentLobbyOrGame).setTopDeckResourceCard(card);
+                case "GOLD_DECK" -> ((ClientGame) currentLobbyOrGame).setTopDeckGoldCard(cardsList.get(cardPlacement.getX()));
+                case "RESOURCE_VISIBLE" -> ((ClientGame) currentLobbyOrGame).setPlacedResources(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
+                case "GOLD_VISIBLE" -> ((ClientGame) currentLobbyOrGame).setPlacedGold(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
+                case "OBJECTIVE_VISIBLE" -> ((ClientGame) currentLobbyOrGame).setCommonObjectives(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
+            }
+        }
 
-        //new PlayerTurnPlayState() di un avversario oppure proprio...in realtà se un avversario pesca da un deck come lo capisco?
+        viewState.executeState();
+    }
+
+    public void transition() {
+        ((GameScreenState) viewState).transition();
+        viewState.executeState();
     }
 
     public void toggleActive(String nickname){

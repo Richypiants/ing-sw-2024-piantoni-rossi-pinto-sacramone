@@ -1,13 +1,18 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.GameTransitionCommand;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.AlreadySetCardException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
+import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.util.ArrayList;
 import java.util.Map;
+
+import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class ChooseObjectiveCardsState extends GameState {
 
@@ -39,6 +44,18 @@ public class ChooseObjectiveCardsState extends GameState {
     @Override
     public void transition() {
         super.transition();
+
+        System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
+        for (var targetPlayer : GAME.getPlayers()) {
+            //TODO: manage exceptions
+            try {
+                VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
+
+                target.requestToClient(new GameTransitionCommand());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         //TODO: ci starebbe segnalare che tutti sono pronti e il gioco inizia? Tipo far comparire "Gioco iniziato"
         // oppure "Turno 1"

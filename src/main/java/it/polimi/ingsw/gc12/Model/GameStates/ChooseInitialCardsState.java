@@ -1,9 +1,6 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.PlaceCardCommand;
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveCardCommand;
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveObjectiveChoice;
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReplaceCardCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.*;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.CardDeck;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
@@ -17,6 +14,7 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
+import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,37 +84,44 @@ public class ChooseInitialCardsState extends GameState {
                 .toList());
 
         ObjectiveCard[] objectiveCardsToGame = new ObjectiveCard[2];
-        objectiveCardsToGame[0] = objectivesDeck.draw();
-        objectiveCardsToGame[1] = objectivesDeck.draw();
-        GAME.setCommonObjectives(objectiveCardsToGame);
         Map<InGamePlayer, ArrayList<ObjectiveCard>> objectivesSelection = new HashMap<>();
 
-        for (InGamePlayer target : super.GAME.getPlayers()) {
-            ArrayList<ObjectiveCard> personalObjectiveCards = new ArrayList<>();
-            personalObjectiveCards.add(objectivesDeck.draw());
-            personalObjectiveCards.add(objectivesDeck.draw());
-            objectivesSelection.put(target, personalObjectiveCards);
+        try {
+            objectiveCardsToGame[0] = objectivesDeck.draw();
+            objectiveCardsToGame[1] = objectivesDeck.draw();
+
+            GAME.setCommonObjectives(objectiveCardsToGame);
+
+            for (InGamePlayer target : super.GAME.getPlayers()) {
+                ArrayList<ObjectiveCard> personalObjectiveCards = new ArrayList<>();
+                personalObjectiveCards.add(objectivesDeck.draw());
+                personalObjectiveCards.add(objectivesDeck.draw());
+                objectivesSelection.put(target, personalObjectiveCards);
+            }
+        } catch(EmptyDeckException e){
+            //cannot happen as deck has just been created
+            e.printStackTrace();
         }
 
         ArrayList<Triplet<Integer, String, Integer>> objectiveCardPlacements = new ArrayList<>();
         for (int i = 0; i < GAME.getCommonObjectives().length; i++)
             objectiveCardPlacements.add(new Triplet<>(GAME.getCommonObjectives()[i].ID, "Objective", i));
 
-        for (var target : GAME.getPlayers()) {
+        for (var targetPlayer : GAME.getPlayers()) {
             //TODO: manage exceptions
             try {
+                VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
                 //Sending the common objective cards
-                keyReverseLookup(ServerController.getInstance().players, target::equals)
-                        .requestToClient(new ReplaceCardCommand(objectiveCardPlacements));
+                target.requestToClient(new ReplaceCardCommand(objectiveCardPlacements));
                 //Sending the personal objective selection
-                keyReverseLookup(ServerController.getInstance().players, target::equals)
-                        .requestToClient(
+                target.requestToClient(
                                 new ReceiveObjectiveChoice(
-                                        objectivesSelection.get(target).stream()
+                                        objectivesSelection.get(targetPlayer).stream()
                                                 .map((card) -> card.ID)
                                                 .toList()
                                 )
                         );
+                target.requestToClient(new GameTransitionCommand());
             } catch (Exception e) {
                 e.printStackTrace();
             }

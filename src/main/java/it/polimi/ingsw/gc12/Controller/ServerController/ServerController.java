@@ -138,13 +138,25 @@ public class ServerController implements ServerControllerInterface {
             return;
         }
 
-        Optional<Player> selectedPlayer = playersToLobbiesAndGames.keySet().stream()
+        Optional<Player> selectedPlayer = players.values().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
                 .findAny();
 
         if(selectedPlayer.isPresent()){
-            Player target = selectedPlayer.get();
-            if((target instanceof InGamePlayer) && !((InGamePlayer) target).isActive()) {
+            System.out.println("[SERVER]: sending an Exception while trying to log in to " + sender);
+            requestToClient(
+                    sender,
+                    new ThrowExceptionCommand(
+                            new IllegalArgumentException("Provided nickname is already taken")
+                    )
+            ); //throwException();
+        } else {
+            Optional<Player> selectedGamePlayer = playersToLobbiesAndGames.keySet().stream()
+                    .filter((player) -> player.getNickname().equals(nickname))
+                    .findAny();
+
+            if(selectedGamePlayer.isPresent()) {
+                Player target = selectedGamePlayer.get();
                 Game targetGame = (Game) playersToLobbiesAndGames.get(target);
                 players.put(sender, target);
 
@@ -162,26 +174,20 @@ public class ServerController implements ServerControllerInterface {
                 //FIXME: restoreGame va chiamata anche quando non c'è il gioco ma il file salvato perchè il server
                 // era crashato
                 // inoltre serve uno stato awaitingReconnectionsState (potremmo usarlo come timeout?)
-            } else
+            } else {
+                Player target = new Player(nickname);
+                players.put(sender, target);
+                System.out.println("[SERVER]: sending SetNicknameCommand and SetLobbiesCommand to client " + sender);
+                requestToClient(sender, new SetNicknameCommand(nickname)); //setNickname();
                 requestToClient(
                         sender,
-                        new ThrowExceptionCommand(
-                                new IllegalArgumentException("Provided nickname is already taken")
+                        new SetLobbiesCommand(
+                                lobbiesAndGames.entrySet().stream()
+                                        .filter((entry) -> !(entry.getValue() instanceof Game))
+                                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
                         )
-                ); //throwException();
-        } else {
-            Player target = new Player(nickname);
-            players.put(sender, target);
-            System.out.println("[SERVER]: sending SetNicknameCommand and SetLobbiesCommand to client " + sender);
-            requestToClient(sender, new SetNicknameCommand(nickname)); //setNickname();
-            requestToClient(
-                    sender,
-                    new SetLobbiesCommand(
-                            lobbiesAndGames.entrySet().stream()
-                                    .filter((entry) -> !(entry.getValue() instanceof Game))
-                                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                    )
-            ); //setLobbies();
+                ); //setLobbies();
+            }
         }
     }
 
@@ -296,6 +302,7 @@ public class ServerController implements ServerControllerInterface {
 
             lobbiesAndGames.put(lobbyUUID, newGame);
 
+            System.out.println("[SERVER]: sending StartGameCommand to clients starting game");
             //TODO: estrarre la logica di evoluzione dei player da Game (altrimenti, fixare i get) E SINCRONIZZAREEEE
             for(var player : lobby.getPlayers()){
                 VirtualClient targetClient = keyReverseLookup(players, player::equals);
@@ -308,7 +315,6 @@ public class ServerController implements ServerControllerInterface {
                 playersToLobbiesAndGames.remove(player);
                 playersToLobbiesAndGames.put(targetInGamePlayer, newGame);
 
-                System.out.println("[SERVER]: sending StartGameCommand to clients starting game");
                 requestToClient(targetClient, new StartGameCommand(lobbyUUID, newGame.generateDTO(targetInGamePlayer)));
                 //startGame();
 
@@ -537,9 +543,24 @@ public class ServerController implements ServerControllerInterface {
             return;
         }
 
-        System.out.println("[SERVER]: sending ReceiveCardCommand to clients");
+        System.out.println("[SERVER]: sending ReceiveCardCommand to client");
         requestToClient(sender, new ReceiveCardCommand(List.of(targetPlayer.getCardsInHand().getLast().ID)));
-        //receiveCard();
+
+
+        System.out.println("[SERVER]: sending ReplaceCardCommand to clients");
+
+        CardDeck<? extends Card> selectedDeck;
+        if (deck.trim().equalsIgnoreCase("RESOURCE"))
+            selectedDeck = targetGame.getResourceCardsDeck();
+        else
+            selectedDeck = targetGame.getGoldCardsDeck();
+
+        for(var player : targetGame.getPlayers()) {
+            VirtualClient targetClient = keyReverseLookup(players, player::equals);
+            requestToClient(targetClient, new ReplaceCardCommand(List.of(new Triplet<>(
+                    targetGame.peekFrom(selectedDeck) == null ? -1 : targetGame.peekFrom(selectedDeck).ID, deck.toUpperCase()+"_DECK", -1)
+            )));
+        }
     }
 
     public void drawFromVisibleCards(VirtualClient sender, String deck, int position) {

@@ -20,16 +20,34 @@ public class ConnectToServerScreenState extends ViewState {
     public void connect(String communicationTechnology, String nickname) {
         //TODO: print "would you like to retry?"
         do {
-            ClientController.getInstance().setCommunicationTechnology(communicationTechnology);
-            //TODO: problema se l'host è online ma la porta è chiusa, perchè lancia una exception
-            // "Connessione rifiutata dall'host remoto" tipo
-            ClientController.getInstance().requestToServer(new CreatePlayerCommand(nickname));
             try {
-                sleep(10000);
-            } catch (Exception e) {
-                ClientController.getInstance().errorLogger.log(e);
+                ClientController.getInstance().setCommunicationTechnology(communicationTechnology);
+            } catch(Exception e1) {
+                //TODO: problema se l'host è online ma la porta è chiusa, perchè lancia una exception
+                // "Connessione rifiutata dall'host remoto" tipo
+                ClientController.getInstance().errorLogger.log(e1);
+
+                try {
+                    sleep(10000);
+                } catch (Exception e2) {
+                    ClientController.getInstance().errorLogger.log(e2);
+                }
             }
         } while (ClientController.getInstance().serverConnection == null /*|| nicknameNotAccepted || yes*/);
+
+        //TODO: se ricevo nickname già in uso, ripetere la richiesta
+        try {
+            ClientController.getInstance().requestToServer(new CreatePlayerCommand(nickname));
+        } catch(Exception e) {
+            ClientController.getInstance().errorLogger.log(e);
+        }
+
+        //TODO: e se la rete è lenta e ci mette di più, errore di rete?
+        try {
+            sleep(10000);
+        } catch (Exception e2) {
+            ClientController.getInstance().errorLogger.log(e2);
+        }
         //potenzialmente readUntil se anche la GUI ce l'avrà
 
         /*if(yes)){

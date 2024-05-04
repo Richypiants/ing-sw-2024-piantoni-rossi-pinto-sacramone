@@ -40,6 +40,8 @@ public interface ClientControllerInterface extends ControllerInterface {
 
     void toggleActive(String nickname);
 
+    void transition();
+
     void endGame(List<Triplet<String, Integer, Integer>> pointsStats);
 
     void addChatMessage(String senderNickname, String chatMessage, boolean isPrivate);

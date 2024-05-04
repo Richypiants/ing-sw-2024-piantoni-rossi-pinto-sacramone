@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.Model.Cards;
 
+import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,13 +40,16 @@ public class CardDeck<T extends Card>{
     /**
     Pops the first card of the stack and returns it to the caller
      */
-    public T draw() {
-        if (!this.DECK.isEmpty()) {
-            return this.DECK.pop();
-        }
+    public T draw() throws EmptyDeckException {
+        if (DECK.isEmpty())
+            throw new EmptyDeckException();
+        return this.DECK.pop();
+    }
 
-        //TODO: add EmptyDeckException?
-        return null; // Placeholder for empty deck scenario
+    public T peek() {
+        if(DECK.isEmpty())
+            return null;
+        return this.DECK.peek();
     }
 
     /**
