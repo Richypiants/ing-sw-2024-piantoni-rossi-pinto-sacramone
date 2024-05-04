@@ -31,13 +31,7 @@ public class GUIView extends View {
     ObservableList<String> connectionList = FXCollections.observableArrayList("Socket", "RMI");
 
     @FXML
-    Label statusLabel;
-
-    @FXML
     TextField nicknameField;
-
-    @FXML
-    Button startButton;
 
     @FXML
     ComboBox<String> language;
@@ -47,12 +41,6 @@ public class GUIView extends View {
 
     @FXML
     Label error;
-
-    @FXML
-    TreeView newGame;
-
-    @FXML
-    Button join;
 
     private GUIView() {
     }
@@ -147,8 +135,8 @@ public class GUIView extends View {
                 e.printStackTrace();
             }
         });
-        Label error = (Label) fxmlLoader.getNamespace().get("error");
 
+        Label error = (Label) fxmlLoader.getNamespace().get("error");
         Label nicknameLabel = (Label) fxmlLoader.getNamespace().get("nicknameLabel");
         TextField nicknameField = (TextField) fxmlLoader.getNamespace().get("nicknameField");
 
@@ -217,6 +205,7 @@ public class GUIView extends View {
 
     @Override
     public void connectedConfirmation() {
+
     }
 
     @Override
@@ -298,4 +287,36 @@ public class GUIView extends View {
         stage.setMaximized(true);
         stage.show();
     }
+/*
+    public void CreateGame(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/your_lobby_fxml.fxml"));
+        VBox lobbyContainer = fxmlLoader.load();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+        // Box
+        HBox lobbyBox = new HBox(10);
+        lobbyBox.setPadding(new Insets(15, 12, 15, 12));
+
+        // Label giocatori
+        Label playerCount = new Label(); // da aggiornare (probabilmente globale)
+        playerCount.setStyle("-fx-font-size: 16px;");
+
+        // Label nomi
+        Label playerName = new Label(); // da aggiornare (probabilemente globale)
+        playerName.setStyle("-fx-font-size: 14px;");
+
+        // Pulsante Join
+        Button joinButton = new Button("JOIN");
+        joinButton.setOnAction(e -> {
+            // finire
+        });
+
+        lobbyBox.getChildren().addAll(playerCount, playerName, joinButton);
+        lobbyContainer.getChildren().add(lobbyBox);
+
+        Scene scene = new Scene(lobbyContainer, 300, 600);
+        stage.setScene(scene);
+        stage.show();
+    }
+ */
 }
