@@ -108,11 +108,16 @@ public class TUIView extends View {
     }
 
     public void connectToServerScreen() {
+        clearTerminal();
         /*String language = readUntil(
                 ansi().cursor(1, 1).a("Scegli la lingua (Italiano/IT - English/EN): "),
                 List.of("italiano", "english", "it", "en")
         );
+        clearTerminal();
          */
+        printToPosition(ansi().cursor(1, 1).a("Inserisci l'indirizzo IP del server (leave empty for 'localhost'): "));
+        ClientController.getInstance().serverIPAddress = console.readLine();
+        clearTerminal();
         String communicationTechnology = readUntil(
                 ansi().cursor(1, 1).a("Scegli la tecnologia di comunicazione (RMI-Socket): "),
                 List.of("rmi", "socket")

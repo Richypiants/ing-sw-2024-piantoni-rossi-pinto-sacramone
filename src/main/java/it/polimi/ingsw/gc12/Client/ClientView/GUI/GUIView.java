@@ -130,6 +130,7 @@ public class GUIView extends View {
 
         stage.getScene().setRoot(root);
 
+        //TODO: al posto della lingua, far inserire indirizzo IP del server!
         language = (ComboBox<String>) fxmlLoader.getNamespace().get("language");
         language.setPromptText("Select language");
         language.setItems(languageList);
@@ -171,7 +172,7 @@ public class GUIView extends View {
 
     @FXML
     protected void waitingForConnection(ActionEvent event) throws IOException {
-        if (nicknameField.getText().length() <= 0) {
+        if (nicknameField.getText().isEmpty()) {
             error.setText("Inserire un nickname prima di proseguire");
             return;
         }

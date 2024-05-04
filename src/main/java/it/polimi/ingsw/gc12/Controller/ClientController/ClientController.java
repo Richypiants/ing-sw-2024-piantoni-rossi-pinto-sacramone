@@ -24,6 +24,7 @@ public class ClientController implements ClientControllerInterface {
     //FIXME: forse era meglio che rimanessero di competenza della View stessa nel ViewState...
     public View view;
     public ViewState viewState;
+    public String serverIPAddress = "localhost";
     public VirtualServer serverConnection;
     public VirtualClient thisClient;
     public Thread keepAlive;
@@ -141,6 +142,7 @@ public class ClientController implements ClientControllerInterface {
         viewState.executeState();
     }
 
+    //FIXME: da qui in poi i synchronized servono davvero oppure risolvendo la writePending e facendo una coda di comandi si risolve?
     public synchronized void startGame(UUID lobbyUUID, ClientGame gameDTO) {
         updateLobby(lobbyUUID, gameDTO);
         currentLobbyOrGame = gameDTO;
@@ -149,7 +151,7 @@ public class ClientController implements ClientControllerInterface {
         viewState = new ChooseInitialCardsState();
     }
 
-    public void placeCard(String nickname, GenericPair<Integer, Integer> coordinates, int cardID,
+    public synchronized void placeCard(String nickname, GenericPair<Integer, Integer> coordinates, int cardID,
                           Side playedSide, EnumMap<Resource, Integer> ownedResources,
                           List<GenericPair<Integer, Integer>> openCorners, int points) {
         ClientPlayer thisPlayer = ((ClientGame) currentLobbyOrGame).getPlayers().stream()
@@ -177,14 +179,14 @@ public class ClientController implements ClientControllerInterface {
         viewState.executeState();
     }
 
-    public void receiveObjectiveChoice(List<Integer> cardIDs) {
+    public synchronized void receiveObjectiveChoice(List<Integer> cardIDs) {
         for (var cardID : cardIDs)
             ((ChooseObjectiveCardsState) viewState).objectivesSelection.add(cardsList.get(cardID));
 
         viewState.executeState();
     }
 
-    public void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {
+    public synchronized void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {
         for(var cardPlacement : cardPlacements) {
             ClientCard card = cardsList.get(cardPlacement.getX());
             switch (cardPlacement.getY().trim()) {
@@ -199,7 +201,7 @@ public class ClientController implements ClientControllerInterface {
         viewState.executeState();
     }
 
-    public void transition() {
+    public synchronized void transition() {
         ((GameScreenState) viewState).transition();
         viewState.executeState();
     }

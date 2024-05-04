@@ -20,7 +20,7 @@ public class SocketClient implements VirtualServer {
         try {
             AsynchronousSocketChannel channel = AsynchronousSocketChannel.open().bind(null);
             //TODO: when do we close this? in keepAlive not received?
-            channel.connect(new InetSocketAddress("localhost", 5000)).get();
+            channel.connect(new InetSocketAddress(ClientController.getInstance().serverIPAddress, 5000)).get();
 
             //TODO: change size of array and write first message
             ByteBuffer byteBufferIn = ByteBuffer.wrap(new byte[65536]);

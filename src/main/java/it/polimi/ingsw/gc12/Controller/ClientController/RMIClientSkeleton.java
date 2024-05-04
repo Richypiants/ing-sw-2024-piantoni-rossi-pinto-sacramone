@@ -16,7 +16,7 @@ public class RMIClientSkeleton implements RMIVirtualClient {
 
     private RMIClientSkeleton() {
         try {
-            Registry registry = LocateRegistry.getRegistry("localhost", 5001);
+            Registry registry = LocateRegistry.getRegistry(ClientController.getInstance().serverIPAddress, 5001);
             ClientController.getInstance().serverConnection =
                     ((RMIVirtualServer) registry.lookup("codex_naturalis_rmi"));
             UnicastRemoteObject.exportObject(this, 5002);
