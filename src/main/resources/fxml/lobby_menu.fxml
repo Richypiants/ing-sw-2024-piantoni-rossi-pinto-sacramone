@@ -15,7 +15,7 @@
                 <Font name="Bell MT" size="14.0"/>
             </font>
         </Button>
-        <Button fx:id="NicknameButton" alignment="CENTER" layoutX="51.0" layoutY="200.0" mnemonicParsing="false"
+        <Button fx:id="nicknameButton" alignment="CENTER" layoutX="51.0" layoutY="200.0" mnemonicParsing="false"
                 prefHeight="27.0" prefWidth="141.0" text="Change Nickname">
             <font>
                 <Font name="Bell MT" size="14.0"/>

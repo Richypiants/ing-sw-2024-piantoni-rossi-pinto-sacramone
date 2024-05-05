@@ -20,6 +20,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
@@ -237,37 +238,113 @@ public class GUIView extends View {
             for (var lobby : ClientController.getInstance().lobbies.entrySet())
                 lobbiesList.getChildren().add(createLobbyListElement(lobby.getKey(), lobby.getValue()));
 
-            Popup popup = new Popup();
+            String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
+
+            // New lobby Popup
+            Popup lobbyPopup = new Popup();
+
+            VBox popupLobbyBox = new VBox(10);
+            popupLobbyBox.setAlignment(Pos.CENTER);
 
             ComboBox<Integer> maxPlayers = (ComboBox<Integer>) fxmlLoader.getNamespace().get("maxPlayersInput");
-
             maxPlayers.setValue(2);
             maxPlayers.setItems(maxPlayersSelector);
 
             Label players = (Label) fxmlLoader.getNamespace().get("players");
             Button okPlayers = (Button) fxmlLoader.getNamespace().get("okPlayers");
 
-            popup.centerOnScreen();
-            popup.getContent().add(players);
-            popup.getContent().add(maxPlayers);
-            popup.getContent().add(okPlayers);
+            popupLobbyBox.getChildren().addAll(players, maxPlayers, okPlayers);
+            lobbyPopup.getContent().add(popupLobbyBox);
 
-            popup.setHeight(500);
-            popup.setWidth(700);
+            lobbyPopup.setHeight(500);
+            lobbyPopup.setWidth(700);
+            popupLobbyBox.setStyle(style);
 
-            players.setAlignment(Pos.CENTER);
+            lobbyPopup.setAutoFix(true);
+            lobbyPopup.setAutoHide(true);
+            lobbyPopup.setHideOnEscape(true);
 
-            okPlayers.setOnAction(event ->
-                    {
+            okPlayers.setOnAction(event -> {
                         ClientController.getInstance().viewState.createLobby(maxPlayers.getValue());
-                        popup.hide();
-                    }
-            );
+                lobbyPopup.hide();
+            });
 
             Button lobby = (Button) fxmlLoader.getNamespace().get("CreateGameButton");
-            lobby.setOnAction(event -> popup.show(stage));
+            lobby.setOnAction(event -> {
+                lobbyPopup.show(stage);
+                lobbyPopup.centerOnScreen();
+            });
 
-            popup.hide();
+            // Nickname Popup
+            Popup nickPopup = new Popup();
+
+            VBox popupNickBox = new VBox(10);
+            popupNickBox.setAlignment(Pos.CENTER);
+
+            Label nickname = new Label("Inserisci un nuovo nickname");
+            TextField nicknameField = new TextField();
+            Button okNicknameButton = new Button("Ok");
+
+            popupNickBox.getChildren().addAll(nickname, nicknameField, okNicknameButton);
+            nickPopup.getContent().add(popupNickBox);
+
+            nickPopup.setHeight(500);
+            nickPopup.setWidth(700);
+            popupNickBox.setStyle(style);
+
+            nickPopup.setAutoFix(true);
+            nickPopup.setAutoHide(true);
+            nickPopup.setHideOnEscape(true);
+
+            Button changeNickname = (Button) fxmlLoader.getNamespace().get("nicknameButton");
+            changeNickname.setOnAction(event -> {
+                nickPopup.show(stage);
+                nickPopup.centerOnScreen();
+            });
+
+            okNicknameButton.setOnAction(event -> {
+                ClientController.getInstance().viewState.setNickname(nicknameField.getText());
+                nickPopup.hide();
+            });
+
+                /*
+
+                // Popup error
+                Popup errorPopup = new Popup();
+
+                VBox popupErrorBox = new VBox(10);
+                popupErrorBox.setAlignment(Pos.CENTER);
+
+                Label error = new Label("Non puoi cambiare nickname\nse sei dentro ad una lobby");
+                error.setAlignment(Pos.CENTER);
+                error.setTextAlignment(TextAlignment.CENTER);
+                // Button okError = new Button("Ok"); // se si ri-aggiunge bottone allora metterlo anche in addAll
+
+                popupErrorBox.getChildren().add(error);
+                errorPopup.getContent().addAll(popupErrorBox);
+
+                errorPopup.setHeight(500);
+                errorPopup.setWidth(700);
+                popupErrorBox.setStyle(style);
+
+                errorPopup.setAutoFix(true);
+                errorPopup.setAutoHide(true);
+                errorPopup.setHideOnEscape(true);
+
+                Button changeNickname = (Button) fxmlLoader.getNamespace().get("nicknameButton");
+                changeNickname.setOnAction(event -> {
+                    errorPopup.show(stage);
+                    errorPopup.centerOnScreen();
+                });
+
+//                okError.setOnAction(event ->
+//                        {
+//                            errorPopup.hide();
+//                        }
+//                );
+
+                 */
+
             stage.getScene().setRoot(root);
         });
     }
@@ -315,13 +392,8 @@ public class GUIView extends View {
         stage.show();
     }
 
-    public void ChangeNickname(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/change_nickname.fxml"));
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root, 1800, 850);
-        stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
+    public Popup createPopup() {
+        return null;
     }
 
     public void LeaveGame(ActionEvent event) throws IOException {
