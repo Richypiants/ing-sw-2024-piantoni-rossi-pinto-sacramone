@@ -114,6 +114,8 @@ public class ChooseInitialCardsState extends GameState {
                 VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
                 //Sending the common objective cards
                 target.requestToClient(new ReplaceCardCommand(objectiveCardPlacements));
+                //Request view state transition to client
+                target.requestToClient(new GameTransitionCommand());
                 //Sending the personal objective selection
                 target.requestToClient(
                                 new ReceiveObjectiveChoice(
@@ -122,7 +124,6 @@ public class ChooseInitialCardsState extends GameState {
                                                 .toList()
                                 )
                         );
-                target.requestToClient(new GameTransitionCommand());
             } catch (Exception e) {
                 e.printStackTrace();
             }

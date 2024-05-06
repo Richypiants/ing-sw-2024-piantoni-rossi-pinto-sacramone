@@ -19,7 +19,7 @@ public class RMIClientSkeleton implements RMIVirtualClient {
             Registry registry = LocateRegistry.getRegistry(ClientController.getInstance().serverIPAddress, 5001);
             ClientController.getInstance().serverConnection =
                     ((RMIVirtualServer) registry.lookup("codex_naturalis_rmi"));
-            UnicastRemoteObject.exportObject(this, 5002);
+            UnicastRemoteObject.exportObject(this, 0);
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
         }

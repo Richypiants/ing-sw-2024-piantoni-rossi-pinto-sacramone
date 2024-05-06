@@ -285,11 +285,8 @@ public class JSONParser {
     }
 
     public static void main(String[] args) {
+        generatePlayableCardsForTUI();
 
-        //generatePlayableCardsForTUI();
-
-
-        //ArrayList<ClientCard> tmp = clientCardsFromJSON("client_cards.json");
         /*AnsiConsole.systemInstall();
         TUIView instance = TUIView.getInstance();
         ArrayList<ClientCard> test = clientCardsFromJSON("client_cards.json");

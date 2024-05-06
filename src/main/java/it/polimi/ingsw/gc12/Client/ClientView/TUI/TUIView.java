@@ -8,6 +8,7 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import org.fusesource.jansi.Ansi;
 
@@ -211,6 +212,7 @@ public class TUIView extends View {
     }
 
     public void printStatsTable() {
+        //TODO: make a for cycle on Resource.values()?
         int i = 2;
         printToPosition(ansi().cursor(i++, 23)
                 .bold().a("Points | ").reset()
@@ -227,14 +229,13 @@ public class TUIView extends View {
         for (var player : ClientController.getInstance().currentLobbyOrGame.getPlayers())
             printToPosition(ansi().cursor(i, 2).a("[#" + (i - 2) + "] ").a(player.getNickname())
                     .cursor(i, 26).a("0")
-                    .cursor(i, 38).a("0")
-                    .cursor(i, 49).a("0")
-                    .cursor(i, 59).a("0")
-                    .cursor(i, 70).a("0")
-                    .cursor(i, 83).a("0")
-                    .cursor(i, 94).a("0")
-                    .cursor(i, 105).a("0")
-                    .cursor(i++, 117).a("0")
+                    .cursor(i, 36).a("0")
+                    .cursor(i, 48).a("0")
+                    .cursor(i, 60).a("0")
+                    .cursor(i, 73).a("0")
+                    .cursor(i, 86).a("0")
+                    .cursor(i, 99).a("0")
+                    .cursor(i, 112).a("0")
             );
     }
 
@@ -274,7 +275,7 @@ public class TUIView extends View {
     public void printDecks() {
         printToPosition(ansi().cursor(8, 68).bold().a("Decks: "));
 
-        //FIXME: in realtà bisogna printare i back delle carte in cima al deck... (farseli mandare?)
+        //FIXME: in realtà bisognerebbe farsi mandare solo i back delle carte e non tutto...
         ClientCard card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getTopDeckResourceCard();
         printToPosition(ansi().cursor(10, 64).a(standardAnsi(card, Side.BACK)));
         card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getTopDeckGoldCard();
@@ -283,14 +284,14 @@ public class TUIView extends View {
 
     public void printOpponentsFieldsMiniaturized() {
         GenericPair<Integer, Integer> REDUCED_FIELD_SIZE = new GenericPair<>(11, 9);
-        GenericPair<Integer, Integer> TOP_LEFT_REDUCED_FIELD = new GenericPair<>(10, 79);
+        GenericPair<Integer, Integer> TOP_LEFT_REDUCED_FIELD = new GenericPair<>(10, 89);
         GenericPair<Integer, Integer> CENTER_REDUCED_FIELD =
                 new GenericPair<>(
                         TOP_LEFT_REDUCED_FIELD.getX() + REDUCED_FIELD_SIZE.getY() / 2,
                         TOP_LEFT_REDUCED_FIELD.getY() + REDUCED_FIELD_SIZE.getX() / 2
                 );
         int FIELD_SPACING = REDUCED_FIELD_SIZE.getY() + 1;
-        printToPosition(ansi().cursor(8, 79).a("Opponents' Fields: "));
+        printToPosition(ansi().cursor(8, 89).bold().a("Opponents' Fields: "));
 
         int playerIndex = 0;
         var players = ClientController.getInstance().currentLobbyOrGame.getPlayers();
@@ -399,10 +400,12 @@ public class TUIView extends View {
 
         printToPosition(ansi().cursor(15, 120).bold().eraseLine(Erase.FORWARD)
                 .a("Choose which card you want to keep as your secret objective: ").reset());
-        ClientCard card = ((ChooseObjectiveCardsState) ClientController.getInstance().viewState).objectivesSelection.getFirst();
-        printToPosition(ansi().cursor(20, 120).a(upscaledAnsi(card, Side.FRONT)));
-        card = ((ChooseObjectiveCardsState) ClientController.getInstance().viewState).objectivesSelection.get(1);
-        printToPosition(ansi().cursor(20, 180).a(upscaledAnsi(card, Side.FRONT)));
+        if (!((ChooseObjectiveCardsState) ClientController.getInstance().viewState).objectivesSelection.isEmpty()) {
+            ClientCard card = ((ChooseObjectiveCardsState) ClientController.getInstance().viewState).objectivesSelection.getFirst();
+            printToPosition(ansi().cursor(20, 120).a(upscaledAnsi(card, Side.FRONT)));
+            card = ((ChooseObjectiveCardsState) ClientController.getInstance().viewState).objectivesSelection.get(1);
+            printToPosition(ansi().cursor(20, 180).a(upscaledAnsi(card, Side.FRONT)));
+        }
     }
 
     private GenericPair<Integer, Integer> findExtremeCoordinates(ToIntBiFunction<Integer, Integer> criterion) {

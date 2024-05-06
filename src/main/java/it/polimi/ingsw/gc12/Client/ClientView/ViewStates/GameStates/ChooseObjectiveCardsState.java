@@ -26,10 +26,9 @@ public class ChooseObjectiveCardsState extends GameScreenState {
 
     @Override
     public void pickObjective(int selection){
-        //Selection should be [0,1]
         ClientCard card = null;
         try {
-            card = objectivesSelection.get(selection);
+            card = objectivesSelection.get(selection - 1);
         } catch (IndexOutOfBoundsException e) {
             throw new IllegalArgumentException("nessuna carta obiettivo presente alla posizione specificata");
         }

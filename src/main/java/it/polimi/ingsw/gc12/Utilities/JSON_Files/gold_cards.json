@@ -7,7 +7,36 @@
     "RESOURCES_NEEDED_TO_PLAY": {
       "FUNGI": 2, "ANIMAL": 1},
     "CORNERS": {
-      "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "FEATHER"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "NOT_A_CORNER"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "EMPTY"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "QUILL"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "EMPTY"
+        ]
+      ],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{"QUILL": 1}]}
@@ -97,7 +126,36 @@
     "RESOURCES_NEEDED_TO_PLAY": {
       "FUNGI": 3},
     "CORNERS": {
-      "FRONT": [[{"X": -1, "Y": 1}, "FEATHER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "QUILL"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "EMPTY"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "NOT_A_CORNER"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "NOT_A_CORNER"
+        ]
+      ],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
@@ -133,7 +191,36 @@
     "RESOURCES_NEEDED_TO_PLAY": {
       "PLANT": 2, "INSECT": 1},
     "CORNERS": {
-      "FRONT": [[{"X": -1, "Y": 1}, "FEATHER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "EMPTY"]],
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "QUILL"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "EMPTY"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "NOT_A_CORNER"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "EMPTY"
+        ]
+      ],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{
@@ -212,7 +299,36 @@
     "RESOURCES_NEEDED_TO_PLAY": {
       "PLANT": 3},
     "CORNERS": {
-      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "FEATHER"]],
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "EMPTY"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "NOT_A_CORNER"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "NOT_A_CORNER"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "QUILL"
+        ]
+      ],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
@@ -286,7 +402,36 @@
     "RESOURCES_NEEDED_TO_PLAY": {
       "ANIMAL": 2, "FUNGI": 1},
     "CORNERS": {
-      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "FEATHER"]],
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "EMPTY"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "NOT_A_CORNER"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "EMPTY"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "QUILL"
+        ]
+      ],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{
@@ -364,7 +509,36 @@
     "RESOURCES_NEEDED_TO_PLAY": {
       "ANIMAL": 3},
     "CORNERS": {
-      "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "FEATHER"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "NOT_A_CORNER"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "EMPTY"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "QUILL"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "NOT_A_CORNER"
+        ]
+      ],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },
@@ -388,7 +562,36 @@
     "RESOURCES_NEEDED_TO_PLAY": {
       "INSECT": 2, "PLANT": 1},
     "CORNERS": {
-      "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "FEATHER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "EMPTY"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "QUILL"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "EMPTY"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "NOT_A_CORNER"
+        ]
+      ],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     },
     "POINTS_CONDITION": { "RESOURCE": [{
@@ -492,7 +695,36 @@
     "RESOURCES_NEEDED_TO_PLAY": {
       "INSECT": 3},
     "CORNERS": {
-      "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "FEATHER"]],
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "NOT_A_CORNER"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "NOT_A_CORNER"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "EMPTY"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "QUILL"
+        ]
+      ],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
     }
   },

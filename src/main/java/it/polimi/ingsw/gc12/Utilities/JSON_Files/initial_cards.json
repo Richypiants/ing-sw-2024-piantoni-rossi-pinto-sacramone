@@ -4,23 +4,170 @@
     "CENTER_BACK_RESOURCES": {
       "INSECT": 1},
     "CORNERS": {
-      "FRONT": [[{"X": -1, "Y": 1}, "MUSHROOM"], [{"X": 1, "Y": 1}, "GRASS"], [{"X": 1, "Y": -1}, "WOLF"], [{"X": -1, "Y": -1}, "BUTTERFLY"]],
-      "BACK": [[{"X": -1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": 1}, "GRASS"],[{"X": 1, "Y": -1}, "EMPTY"],[{"X": -1, "Y": -1}, "BUTTERFLY"]]}
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "FUNGI"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "PLANT"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "ANIMAL"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "INSECT"
+        ]
+      ],
+      "BACK": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "EMPTY"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "PLANT"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "EMPTY"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "INSECT"
+        ]
+      ]
+    }
   },
   {
     "ID": "82",
     "CENTER_BACK_RESOURCES": {
       "FUNGI": 1},
     "CORNERS" : {
-      "FRONT": [[{"X": -1, "Y": 1}, "GRASS"],[{"X": 1, "Y": 1}, "WOLF"],[{"X": 1, "Y": -1}, "BUTTERFLY"],[{"X": -1, "Y": -1}, "MUSHROOM"]],
-      "BACK": [[{"X": -1, "Y": 1}, "WOLF"],[{"X": 1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": -1}, "MUSHROOM"],[{"X": -1, "Y": -1}, "EMPTY"]]}
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "PLANT"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "ANIMAL"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "INSECT"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "FUNGI"
+        ]
+      ],
+      "BACK": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "ANIMAL"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "EMPTY"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "FUNGI"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "EMPTY"
+        ]
+      ]
+    }
   },
   {
     "ID": "83",
     "CENTER_BACK_RESOURCES": {
       "PLANT": 1, "FUNGI": 1},
     "CORNERS" : {
-      "FRONT": [[{"X": -1, "Y": 1}, "BUTTERFLY"],[{"X": 1, "Y": 1}, "WOLF"],[{"X": 1, "Y": -1}, "GRASS"],[{"X": -1, "Y": -1}, "MUSHROOM"]],
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "INSECT"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "ANIMAL"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "PLANT"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "FUNGI"
+        ]
+      ],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": -1}, "EMPTY"],[{"X": -1, "Y": -1}, "EMPTY"]]}
   },
   {
@@ -28,7 +175,36 @@
     "CENTER_BACK_RESOURCES": {
       "ANIMAL": 1, "INSECT": 1},
     "CORNERS" : {
-      "FRONT": [[{"X": -1, "Y": 1}, "GRASS"],[{"X": 1, "Y": 1}, "BUTTERFLY"],[{"X": 1, "Y": -1}, "MUSHROOM"],[{"X": -1, "Y": -1}, "WOLF"]],
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "PLANT"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "INSECT"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "FUNGI"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "ANIMAL"
+        ]
+      ],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": -1}, "EMPTY"],[{"X": -1, "Y": -1}, "EMPTY"]]}
   },
   {
@@ -36,7 +212,36 @@
     "CENTER_BACK_RESOURCES": {
       "ANIMAL": 1, "INSECT": 1, "PLANT": 1},
     "CORNERS" : {
-      "FRONT": [[{"X": -1, "Y": 1}, "BUTTERFLY"],[{"X": 1, "Y": 1}, "MUSHROOM"],[{"X": 1, "Y": -1}, "WOLF"],[{"X": -1, "Y": -1}, "GRASS"]],
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "INSECT"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "FUNGI"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "ANIMAL"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "PLANT"
+        ]
+      ],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": -1}, "NOT_A_CORNER"],[{"X": -1, "Y": -1}, "NOT_A_CORNER"]]}
   },
   {
@@ -44,7 +249,36 @@
     "CENTER_BACK_RESOURCES": {
       "PLANT": 1, "ANIMAL": 1, "FUNGI": 1},
     "CORNERS" : {
-      "FRONT": [[{"X": -1, "Y": 1}, "MUSHROOM"],[{"X": 1, "Y": 1}, "WOLF"],[{"X": 1, "Y": -1}, "BUTTERFLY"],[{"X": -1, "Y": -1}, "GRASS"]],
+      "FRONT": [
+        [
+          {
+            "X": -1,
+            "Y": 1
+          },
+          "FUNGI"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": 1
+          },
+          "ANIMAL"
+        ],
+        [
+          {
+            "X": 1,
+            "Y": -1
+          },
+          "INSECT"
+        ],
+        [
+          {
+            "X": -1,
+            "Y": -1
+          },
+          "PLANT"
+        ]
+      ],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": -1}, "NOT_A_CORNER"],[{"X": -1, "Y": -1}, "NOT_A_CORNER"]]}
   }
 ]
