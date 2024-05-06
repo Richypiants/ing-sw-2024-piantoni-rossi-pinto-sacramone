@@ -2,67 +2,96 @@
 {
   "ID": 87,
   "POINTS_GRANTED": 2,
-  "POINTS_CONDITION": {"PATTERN": [{"MUSHROOM": [0 , 0]}, {"MUSHROOM": [1 , 1]}, {"MUSHROOM": [2 , 2]}]}
+  "POINTS_CONDITION": {"PATTERN": [{
+    "FUNGI": [0 , 0]}, {
+    "FUNGI": [1 , 1]}, {
+    "FUNGI": [2 , 2]}]}
 },
 {
 "ID": 88,
 "POINTS_GRANTED": 2,
-"POINTS_CONDITION": {"PATTERN": [{"GRASS": [0 , 0]}, {"GRASS": [1 , -1]}, {"GRASS": [2 , -2]}]}
+"POINTS_CONDITION": {"PATTERN": [{
+  "PLANT": [0 , 0]}, {
+  "PLANT": [1 , -1]}, {
+  "PLANT": [2 , -2]}]}
 },
 {
 "ID": 89,
 "POINTS_GRANTED": 2,
-"POINTS_CONDITION": {"PATTERN": [{"WOLF": [0 , 0]}, {"WOLF": [1 , 1]}, {"WOLF": [2 , 2]}]}
+"POINTS_CONDITION": {"PATTERN": [{
+  "ANIMAL": [0 , 0]}, {
+  "ANIMAL": [1 , 1]}, {
+  "ANIMAL": [2 , 2]}]}
 },
 {
 "ID": 90,
 "POINTS_GRANTED": 2,
-"POINTS_CONDITION": {"PATTERN": [{"BUTTERFLY": [0 , 0]}, {"BUTTERFLY": [1 , -1]}, {"BUTTERFLY": [2 , -2]}]}
+"POINTS_CONDITION": {"PATTERN": [{
+  "INSECT": [0 , 0]}, {
+  "INSECT": [1 , -1]}, {
+  "INSECT": [2 , -2]}]}
 },
 {
 "ID": 91,
 "POINTS_GRANTED": 3,
-"POINTS_CONDITION": {"PATTERN": [{"MUSHROOM": [0 , 0]}, {"MUSHROOM": [0 , -2]}, {"GRASS": [1 , -3]}]}
+"POINTS_CONDITION": {"PATTERN": [{
+  "FUNGI": [0 , 0]}, {
+  "FUNGI": [0 , -2]}, {
+  "PLANT": [1 , -3]}]}
 },
 {
 "ID": 92,
 "POINTS_GRANTED": 3,
-"POINTS_CONDITION": {"PATTERN": [{"GRASS": [0 , 0]}, {"GRASS": [0 , -2]}, {"BUTTERFLY": [-1 , -3]}]}
+"POINTS_CONDITION": {"PATTERN": [{
+  "PLANT": [0 , 0]}, {
+  "PLANT": [0 , -2]}, {
+  "INSECT": [-1 , -3]}]}
 },
 {
 "ID": 93,
 "POINTS_GRANTED": 3,
-"POINTS_CONDITION": {"PATTERN": [{"WOLF": [0 , 0]}, {"WOLF": [0 , 2]}, {"MUSHROOM": [1 , 3]}]}
+"POINTS_CONDITION": {"PATTERN": [{
+  "ANIMAL": [0 , 0]}, {
+  "ANIMAL": [0 , 2]}, {
+  "FUNGI": [1 , 3]}]}
 },
 {
 "ID": 94,
 "POINTS_GRANTED": 3,
-"POINTS_CONDITION": {"PATTERN": [{"BUTTERFLY": [0 , 0]}, {"BUTTERFLY": [0 , 2]}, {"WOLF": [-1 , 3]}]}
+"POINTS_CONDITION": {"PATTERN": [{
+  "INSECT": [0 , 0]}, {
+  "INSECT": [0 , 2]}, {
+  "ANIMAL": [-1 , 3]}]}
 },
 {
 "ID": 95,
 "POINTS_GRANTED": 2,
-"POINTS_CONDITION": {"RESOURCE": [{"MUSHROOM": 3}]}
+"POINTS_CONDITION": {"RESOURCE": [{
+  "FUNGI": 3}]}
 },
 {
 "ID": 96,
 "POINTS_GRANTED": 2,
-"POINTS_CONDITION": {"RESOURCE": [{"GRASS": 3}]}
+"POINTS_CONDITION": {"RESOURCE": [{
+  "PLANT": 3}]}
 },
 {
 "ID": 97,
 "POINTS_GRANTED": 2,
-"POINTS_CONDITION": {"RESOURCE": [{"WOLF": 3}]}
+"POINTS_CONDITION": {"RESOURCE": [{
+  "ANIMAL": 3}]}
 },
 {
 "ID": 98,
 "POINTS_GRANTED": 2,
-"POINTS_CONDITION": {"RESOURCE": [{"BUTTERFLY": 3}]}
+"POINTS_CONDITION": {"RESOURCE": [{
+  "INSECT": 3}]}
 },
 {
 "ID": 99,
 "POINTS_GRANTED": 3,
-"POINTS_CONDITION": {"RESOURCE": [{"FEATHER": 1},{"INK": 1},{"SCROLL": 1}]}
+"POINTS_CONDITION": {"RESOURCE": [{
+  "QUILL": 1},{"INK": 1},{"SCROLL": 1}]}
 },
 {
 "ID": 100,
@@ -77,6 +106,7 @@
 {
 "ID": 102,
 "POINTS_GRANTED": 2,
-"POINTS_CONDITION": {"RESOURCE": [{"FEATHER": 2}]}
+"POINTS_CONDITION": {"RESOURCE": [{
+  "QUILL": 2}]}
 }
 ]

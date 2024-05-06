@@ -107,6 +107,7 @@ public class ChooseInitialCardsState extends GameState {
         for (int i = 0; i < GAME.getCommonObjectives().length; i++)
             objectiveCardPlacements.add(new Triplet<>(GAME.getCommonObjectives()[i].ID, "Objective", i));
 
+        System.out.println("[SERVER]: Sending Common and Personal Objectives, GameTransitionCommand to clients in "+ GAME.toString());
         for (var targetPlayer : GAME.getPlayers()) {
             //TODO: manage exceptions
             try {

@@ -6,9 +6,9 @@ An enumeration of all the possible "resources" values in card corners and back-c
 public enum Resource {
 
     NOT_A_CORNER(" ", -1), EMPTY(" ", -1),
-    WOLF("W", 32), BUTTERFLY("B", 207),
-    GRASS("G", 82), MUSHROOM("M", 88),
-    INK("I", 94), FEATHER("F", 94),
+    ANIMAL("A", 32), INSECT("I", 207),
+    PLANT("P", 82), FUNGI("F", 88),
+    INK("I", 94), QUILL("Q", 94),
     SCROLL("S", 94);
 
     public final String SYMBOL;

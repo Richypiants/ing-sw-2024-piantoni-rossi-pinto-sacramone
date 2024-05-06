@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class PlayableCardTest {
     private static ArrayList<ResourceCard> resourceCards;
@@ -29,22 +30,22 @@ class PlayableCardTest {
     @Test
     void getCornerResource() {
 
-        assertEquals(Resource.GRASS, initialCards.get(0).getCornerResource(Side.BACK, 1, 1));
-        assertEquals(Resource.BUTTERFLY, initialCards.get(0).getCornerResource(Side.BACK, -1, -1));
+        assertEquals(Resource.PLANT, initialCards.get(0).getCornerResource(Side.BACK, 1, 1));
+        assertEquals(Resource.INSECT, initialCards.get(0).getCornerResource(Side.BACK, -1, -1));
 
-        assertEquals(1, initialCards.get(0).getCenterBackResources().get(Resource.BUTTERFLY));
-        assertEquals(null, initialCards.get(0).getCenterBackResources().get(Resource.GRASS));
-        assertEquals(null, initialCards.get(0).getCenterBackResources().get(Resource.MUSHROOM));
-        assertEquals(null, initialCards.get(0).getCenterBackResources().get(Resource.WOLF));
+        assertEquals(1, initialCards.get(0).getCenterBackResources().get(Resource.INSECT));
+        assertNull(initialCards.get(0).getCenterBackResources().get(Resource.PLANT));
+        assertNull(initialCards.get(0).getCenterBackResources().get(Resource.FUNGI));
+        assertNull(initialCards.get(0).getCenterBackResources().get(Resource.ANIMAL));
 
-        assertEquals(Resource.MUSHROOM, resourceCards.get(0).getCornerResource(Side.FRONT, -1, 1));
-        assertEquals(Resource.MUSHROOM, resourceCards.get(0).getCornerResource(Side.FRONT, -1, -1));
+        assertEquals(Resource.FUNGI, resourceCards.get(0).getCornerResource(Side.FRONT, -1, 1));
+        assertEquals(Resource.FUNGI, resourceCards.get(0).getCornerResource(Side.FRONT, -1, -1));
         assertEquals(Resource.NOT_A_CORNER, resourceCards.get(0).getCornerResource(Side.FRONT, 1, -1));
         assertEquals(Resource.EMPTY, resourceCards.get(0).getCornerResource(Side.FRONT, 1, 1));
 
         assertEquals(Resource.NOT_A_CORNER, goldCards.get(0).getCornerResource(Side.FRONT, -1, 1));
         assertEquals(Resource.EMPTY, goldCards.get(0).getCornerResource(Side.FRONT, -1, -1));
-        assertEquals(Resource.FEATHER, goldCards.get(0).getCornerResource(Side.FRONT, 1, -1));
+        assertEquals(Resource.QUILL, goldCards.get(0).getCornerResource(Side.FRONT, 1, -1));
         assertEquals(Resource.EMPTY, goldCards.get(0).getCornerResource(Side.FRONT, 1, 1));
     }
 }

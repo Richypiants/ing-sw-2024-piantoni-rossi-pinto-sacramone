@@ -1,42 +1,48 @@
 [
   {
     "ID": "81",
-    "CENTER_BACK_RESOURCES": {"BUTTERFLY": 1},
+    "CENTER_BACK_RESOURCES": {
+      "INSECT": 1},
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "MUSHROOM"], [{"X": 1, "Y": 1}, "GRASS"], [{"X": 1, "Y": -1}, "WOLF"], [{"X": -1, "Y": -1}, "BUTTERFLY"]],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": 1}, "GRASS"],[{"X": 1, "Y": -1}, "EMPTY"],[{"X": -1, "Y": -1}, "BUTTERFLY"]]}
   },
   {
     "ID": "82",
-    "CENTER_BACK_RESOURCES": {"MUSHROOM": 1},
+    "CENTER_BACK_RESOURCES": {
+      "FUNGI": 1},
     "CORNERS" : {
       "FRONT": [[{"X": -1, "Y": 1}, "GRASS"],[{"X": 1, "Y": 1}, "WOLF"],[{"X": 1, "Y": -1}, "BUTTERFLY"],[{"X": -1, "Y": -1}, "MUSHROOM"]],
       "BACK": [[{"X": -1, "Y": 1}, "WOLF"],[{"X": 1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": -1}, "MUSHROOM"],[{"X": -1, "Y": -1}, "EMPTY"]]}
   },
   {
     "ID": "83",
-    "CENTER_BACK_RESOURCES": {"GRASS": 1, "MUSHROOM": 1},
+    "CENTER_BACK_RESOURCES": {
+      "PLANT": 1, "FUNGI": 1},
     "CORNERS" : {
       "FRONT": [[{"X": -1, "Y": 1}, "BUTTERFLY"],[{"X": 1, "Y": 1}, "WOLF"],[{"X": 1, "Y": -1}, "GRASS"],[{"X": -1, "Y": -1}, "MUSHROOM"]],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": -1}, "EMPTY"],[{"X": -1, "Y": -1}, "EMPTY"]]}
   },
   {
     "ID": "84",
-    "CENTER_BACK_RESOURCES": {"WOLF": 1, "BUTTERFLY": 1},
+    "CENTER_BACK_RESOURCES": {
+      "ANIMAL": 1, "INSECT": 1},
     "CORNERS" : {
       "FRONT": [[{"X": -1, "Y": 1}, "GRASS"],[{"X": 1, "Y": 1}, "BUTTERFLY"],[{"X": 1, "Y": -1}, "MUSHROOM"],[{"X": -1, "Y": -1}, "WOLF"]],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": -1}, "EMPTY"],[{"X": -1, "Y": -1}, "EMPTY"]]}
   },
   {
     "ID": "85",
-    "CENTER_BACK_RESOURCES": {"WOLF": 1, "BUTTERFLY": 1, "GRASS": 1},
+    "CENTER_BACK_RESOURCES": {
+      "ANIMAL": 1, "INSECT": 1, "PLANT": 1},
     "CORNERS" : {
       "FRONT": [[{"X": -1, "Y": 1}, "BUTTERFLY"],[{"X": 1, "Y": 1}, "MUSHROOM"],[{"X": 1, "Y": -1}, "WOLF"],[{"X": -1, "Y": -1}, "GRASS"]],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": -1}, "NOT_A_CORNER"],[{"X": -1, "Y": -1}, "NOT_A_CORNER"]]}
   },
   {
     "ID": "86",
-    "CENTER_BACK_RESOURCES": {"GRASS": 1, "WOLF": 1, "MUSHROOM": 1},
+    "CENTER_BACK_RESOURCES": {
+      "PLANT": 1, "ANIMAL": 1, "FUNGI": 1},
     "CORNERS" : {
       "FRONT": [[{"X": -1, "Y": 1}, "MUSHROOM"],[{"X": 1, "Y": 1}, "WOLF"],[{"X": 1, "Y": -1}, "BUTTERFLY"],[{"X": -1, "Y": -1}, "GRASS"]],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": 1}, "EMPTY"],[{"X": 1, "Y": -1}, "NOT_A_CORNER"],[{"X": -1, "Y": -1}, "NOT_A_CORNER"]]}

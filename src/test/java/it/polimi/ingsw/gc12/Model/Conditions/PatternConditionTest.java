@@ -49,9 +49,9 @@ class PatternConditionTest {
                         new PatternCondition[]{
                                 new PatternCondition(
                                         List.of(
-                                                new Triplet<>(0, 0, Resource.WOLF),
-                                                new Triplet<>(0, -2, Resource.WOLF),
-                                                new Triplet<>(1, 1, Resource.WOLF)
+                                                new Triplet<>(0, 0, Resource.ANIMAL),
+                                                new Triplet<>(0, -2, Resource.ANIMAL),
+                                                new Triplet<>(1, 1, Resource.ANIMAL)
                                         )
                                 )
                         },

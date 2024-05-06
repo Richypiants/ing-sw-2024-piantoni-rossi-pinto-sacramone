@@ -6,14 +6,12 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.Conditions.CornersCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.PatternCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.PointsCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.ResourcesCondition;
-import org.fusesource.jansi.AnsiConsole;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -53,13 +51,13 @@ public class JSONParser {
      */
     private static Resource conversionHelper(String resource){
         return switch (resource) {
-            case "MUSHROOM" -> Resource.MUSHROOM;
-            case "WOLF" -> Resource.WOLF;
-            case "GRASS" -> Resource.GRASS;
-            case "BUTTERFLY" -> Resource.BUTTERFLY;
+            case "FUNGI" -> Resource.FUNGI;
+            case "ANIMAL" -> Resource.ANIMAL;
+            case "PLANT" -> Resource.PLANT;
+            case "INSECT" -> Resource.INSECT;
             case "SCROLL" -> Resource.SCROLL;
             case "INK" -> Resource.INK;
-            case "FEATHER" -> Resource.FEATHER;
+            case "QUILL" -> Resource.QUILL;
             default -> null;
         };
     }

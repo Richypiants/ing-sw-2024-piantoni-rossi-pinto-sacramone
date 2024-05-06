@@ -3,7 +3,7 @@
     "ID": 1,
     "POINTS_GRANTED": 0,
     "CENTER_BACK_RESOURCES": {
-      "MUSHROOM": 1
+      "FUNGI": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "MUSHROOM"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "MUSHROOM"]],
@@ -14,7 +14,7 @@
     "ID": "2",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "MUSHROOM": 1
+      "FUNGI": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "MUSHROOM"], [{"X": 1, "Y": 1}, "MUSHROOM"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
@@ -25,7 +25,7 @@
     "ID": "3",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "MUSHROOM": 1
+      "FUNGI": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "MUSHROOM"], [{"X": -1, "Y": -1}, "MUSHROOM"]],
@@ -36,7 +36,7 @@
     "ID": "4",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "MUSHROOM": 1
+      "FUNGI": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "MUSHROOM"], [{"X": 1, "Y": -1}, "MUSHROOM"], [{"X": -1, "Y": -1}, "EMPTY"]],
@@ -47,7 +47,7 @@
     "ID": "5",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "MUSHROOM": 1
+      "FUNGI": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "FEATHER"], [{"X": 1, "Y": -1}, "MUSHROOM"], [{"X": -1, "Y": -1}, "GRASS"]],
@@ -58,7 +58,7 @@
     "ID": "6",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "MUSHROOM": 1
+      "FUNGI": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "INK"], [{"X": 1, "Y": 1}, "MUSHROOM"], [{"X": 1, "Y": -1}, "WOLF"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
@@ -69,7 +69,7 @@
     "ID": "7",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "MUSHROOM": 1
+      "FUNGI": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "MUSHROOM"], [{"X": 1, "Y": 1}, "BUTTERFLY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "SCROLL"]],
@@ -80,7 +80,7 @@
     "ID": "8",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": {
-      "MUSHROOM": 1
+      "FUNGI": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "MUSHROOM"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "EMPTY"]],
@@ -91,7 +91,7 @@
     "ID": "9",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": {
-      "MUSHROOM": 1
+      "FUNGI": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "MUSHROOM"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]],
@@ -102,7 +102,7 @@
     "ID": "10",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": {
-      "MUSHROOM": 1
+      "FUNGI": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "MUSHROOM"]],
@@ -113,7 +113,7 @@
     "ID": "11",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "GRASS": 1
+      "PLANT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "GRASS"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "GRASS"]],
@@ -124,7 +124,7 @@
     "ID": "12",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "GRASS": 1
+      "PLANT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "GRASS"], [{"X": 1, "Y": 1}, "GRASS"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
@@ -135,7 +135,7 @@
     "ID": "13",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "GRASS": 1
+      "PLANT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "GRASS"], [{"X": -1, "Y": -1}, "GRASS"]],
@@ -146,7 +146,7 @@
     "ID": "14",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "GRASS": 1
+      "PLANT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "GRASS"], [{"X": 1, "Y": -1}, "GRASS"], [{"X": -1, "Y": -1}, "EMPTY"]],
@@ -157,7 +157,7 @@
     "ID": "15",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "GRASS": 1
+      "PLANT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "BUTTERFLY"], [{"X": 1, "Y": -1}, "GRASS"], [{"X": -1, "Y": -1}, "FEATHER"]],
@@ -168,7 +168,7 @@
     "ID": "16",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "GRASS": 1
+      "PLANT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "MUSHROOM"], [{"X": 1, "Y": 1}, "GRASS"], [{"X": 1, "Y": -1}, "INK"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
@@ -179,7 +179,7 @@
     "ID": "17",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "GRASS": 1
+      "PLANT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "SCROLL"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "WOLF"], [{"X": -1, "Y": -1}, "GRASS"]],
@@ -190,7 +190,7 @@
     "ID": "18",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": {
-      "GRASS": 1
+      "PLANT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "GRASS"]],
@@ -201,7 +201,7 @@
     "ID": "19",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": {
-      "GRASS": 1
+      "PLANT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "GRASS"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
@@ -212,7 +212,7 @@
     "ID": "20",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "GRASS": 1
+      "PLANT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "GRASS"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]],
@@ -223,7 +223,7 @@
     "ID": "21",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "WOLF": 1
+      "ANIMAL": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "WOLF"], [{"X": 1, "Y": 1}, "WOLF"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "EMPTY"]],
@@ -234,7 +234,7 @@
     "ID": "22",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "WOLF": 1
+      "ANIMAL": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "WOLF"], [{"X": -1, "Y": -1}, "WOLF"]],
@@ -245,7 +245,7 @@
     "ID": "23",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "WOLF": 1
+      "ANIMAL": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "WOLF"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "WOLF"]],
@@ -256,7 +256,7 @@
     "ID": "24",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "WOLF": 1
+      "ANIMAL": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "WOLF"], [{"X": 1, "Y": -1}, "WOLF"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
@@ -267,7 +267,7 @@
     "ID": "25",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "WOLF": 1
+      "ANIMAL": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "BUTTERFLY"], [{"X": 1, "Y": -1}, "WOLF"], [{"X": -1, "Y": -1}, "INK"]],
@@ -278,7 +278,7 @@
     "ID": "26",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "WOLF": 1
+      "ANIMAL": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "GRASS"], [{"X": 1, "Y": 1}, "WOLF"], [{"X": 1, "Y": -1}, "SCROLL"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
@@ -289,7 +289,7 @@
     "ID": "27",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "WOLF": 1
+      "ANIMAL": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "FEATHER"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "MUSHROOM"], [{"X": -1, "Y": -1}, "WOLF"]],
@@ -300,7 +300,7 @@
     "ID": "28",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": {
-      "WOLF": 1
+      "ANIMAL": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "WOLF"]],
@@ -311,7 +311,7 @@
     "ID": "29",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": {
-      "WOLF": 1
+      "ANIMAL": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "WOLF"], [{"X": -1, "Y": -1}, "EMPTY"]],
@@ -322,7 +322,7 @@
     "ID": "30",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": {
-      "WOLF": 1
+      "ANIMAL": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "WOLF"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "EMPTY"]],
@@ -333,7 +333,7 @@
     "ID": "31",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "BUTTERFLY": 1
+      "INSECT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "BUTTERFLY"], [{"X": 1, "Y": 1}, "BUTTERFLY"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "EMPTY"]],
@@ -344,7 +344,7 @@
     "ID": "32",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "BUTTERFLY": 1
+      "INSECT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "BUTTERFLY"], [{"X": -1, "Y": -1}, "BUTTERFLY"]],
@@ -355,7 +355,7 @@
     "ID": "33",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "BUTTERFLY": 1
+      "INSECT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "BUTTERFLY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "BUTTERFLY"]],
@@ -366,7 +366,7 @@
     "ID": "34",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "BUTTERFLY": 1
+      "INSECT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "BUTTERFLY"], [{"X": 1, "Y": -1}, "BUTTERFLY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
@@ -377,7 +377,7 @@
     "ID": "35",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "BUTTERFLY": 1
+      "INSECT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "FEATHER"], [{"X": 1, "Y": -1}, "BUTTERFLY"], [{"X": -1, "Y": -1}, "WOLF"]],
@@ -388,7 +388,7 @@
     "ID": "36",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "BUTTERFLY": 1
+      "INSECT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "SCROLL"], [{"X": 1, "Y": 1}, "BUTTERFLY"], [{"X": 1, "Y": -1}, "MUSHROOM"], [{"X": -1, "Y": -1}, "EMPTY"]],
@@ -399,7 +399,7 @@
     "ID": "37",
     "POINTS_GRANTED": "0",
     "CENTER_BACK_RESOURCES": {
-      "BUTTERFLY": 1
+      "INSECT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "BUTTERFLY"], [{"X": 1, "Y": 1}, "GRASS"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "INK"]],
@@ -410,7 +410,7 @@
     "ID": "38",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": {
-      "BUTTERFLY": 1
+      "INSECT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "BUTTERFLY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]],
@@ -421,7 +421,7 @@
     "ID": "39",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": {
-      "BUTTERFLY": 1
+      "INSECT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "BUTTERFLY"], [{"X": -1, "Y": -1}, "NOT_A_CORNER"]],
@@ -432,7 +432,7 @@
     "ID": "40",
     "POINTS_GRANTED": "1",
     "CENTER_BACK_RESOURCES": {
-      "BUTTERFLY": 1
+      "INSECT": 1
     },
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": 1}, "BUTTERFLY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]],

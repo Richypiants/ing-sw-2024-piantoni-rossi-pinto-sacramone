@@ -214,14 +214,14 @@ public class TUIView extends View {
         int i = 2;
         printToPosition(ansi().cursor(i++, 23)
                 .bold().a("Points | ").reset()
-                .fg(Ansi.Color.RED).a("Mushroom [M]").reset()
+                .fg(Ansi.Color.RED).a("Fungi [F]").reset()
                 .a(" | ")
-                .fg(Ansi.Color.GREEN).a("Grass [G]").reset()
+                .fg(Ansi.Color.GREEN).a("Plant [P]").reset()
                 .a(" | ")
-                .fg(Ansi.Color.BLUE).a("Wolf [W]").reset()
+                .fg(Ansi.Color.BLUE).a("Animal [A]").reset()
                 .a(" | ")
-                .fg(Ansi.Color.MAGENTA).a("Butterfly [B]").reset()
-                .fg(94).a(" | Scroll [S] | Potion [P] | Feather [F]").reset()
+                .fg(Ansi.Color.MAGENTA).a("Insect [I]").reset()
+                .fg(94).a(" | Scroll [S] | Potion [P] | Quill [Q]").reset()
         );
 
         for (var player : ClientController.getInstance().currentLobbyOrGame.getPlayers())
@@ -282,29 +282,30 @@ public class TUIView extends View {
     }
 
     public void printOpponentsFieldsMiniaturized() {
-        GenericPair<Integer, Integer> REDUCED_FIELD_SIZE = new GenericPair<>(11, 5);
-        GenericPair<Integer, Integer> TOP_LEFT_REDUCED_FIELD = new GenericPair<>(2, 50);
+        GenericPair<Integer, Integer> REDUCED_FIELD_SIZE = new GenericPair<>(11, 9);
+        GenericPair<Integer, Integer> TOP_LEFT_REDUCED_FIELD = new GenericPair<>(10, 79);
         GenericPair<Integer, Integer> CENTER_REDUCED_FIELD =
                 new GenericPair<>(
-                        TOP_LEFT_REDUCED_FIELD.getY() + REDUCED_FIELD_SIZE.getY() / 2,
-                        TOP_LEFT_REDUCED_FIELD.getX() + REDUCED_FIELD_SIZE.getX() / 2
+                        TOP_LEFT_REDUCED_FIELD.getX() + REDUCED_FIELD_SIZE.getY() / 2,
+                        TOP_LEFT_REDUCED_FIELD.getY() + REDUCED_FIELD_SIZE.getX() / 2
                 );
-        int FIELD_SPACING = REDUCED_FIELD_SIZE.getX() + 1;
+        int FIELD_SPACING = REDUCED_FIELD_SIZE.getY() + 1;
+        printToPosition(ansi().cursor(8, 79).a("Opponents' Fields: "));
 
-        int playerIndex = 1;
-        for (Player player : ClientController.getInstance().currentLobbyOrGame.getPlayers()) {
-
+        int playerIndex = 0;
+        var players = ClientController.getInstance().currentLobbyOrGame.getPlayers();
+        players.remove(((ClientGame) ClientController.getInstance().currentLobbyOrGame).getThisPlayer());
+        for (Player player : players) {
             LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> field =
                     ((ClientPlayer) player).getPlacedCards();
 
             for (var entry : field.sequencedEntrySet()) {
                 printToPosition(ansi().cursor(
-                                CENTER_REDUCED_FIELD.getX() - entry.getKey().getX(),
-                                (playerIndex * FIELD_SPACING) + CENTER_REDUCED_FIELD.getY() + entry.getKey().getY())
-                        .bg(entry.getValue().getX().TUI_SPRITES.get(Side.BACK).get(2).get(0).getY()[1]).a(" ")
+                                (playerIndex * FIELD_SPACING) + CENTER_REDUCED_FIELD.getX() - entry.getKey().getX(),
+                                CENTER_REDUCED_FIELD.getY() + entry.getKey().getY())
+                        .bg(entry.getValue().getX().TUI_SPRITES.get(Side.BACK).get(2).getFirst().getY()[1]).a(" ")
                 );
             }
-
             playerIndex++;
         }
     }

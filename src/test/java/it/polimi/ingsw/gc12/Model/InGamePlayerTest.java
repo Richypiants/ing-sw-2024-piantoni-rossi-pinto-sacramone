@@ -86,21 +86,21 @@ class InGamePlayerTest {
         playerGame.addCardToHand(initialCards.get(1));
         playerGame.placeCard(new GenericPair<>(0, 0), playerGame.getCardsInHand().getFirst(), Side.BACK);
 
-        assertEquals(2, playerGame.getOwnedResources().get(Resource.MUSHROOM));
-        assertEquals(1, playerGame.getOwnedResources().get(Resource.WOLF));
+        assertEquals(2, playerGame.getOwnedResources().get(Resource.FUNGI));
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.ANIMAL));
 
         playerGame.addCardToHand(resourceCards.get(0));
         playerGame.addCardToHand(resourceCards.get(1));
 
         playerGame.placeCard(new GenericPair<>(-1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
 
-        assertEquals(4, playerGame.getOwnedResources().get(Resource.MUSHROOM));
-        assertEquals(0, playerGame.getOwnedResources().get(Resource.WOLF));
+        assertEquals(4, playerGame.getOwnedResources().get(Resource.FUNGI));
+        assertEquals(0, playerGame.getOwnedResources().get(Resource.ANIMAL));
 
         playerGame.placeCard(new GenericPair<>(1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
 
-        assertEquals(6, playerGame.getOwnedResources().get(Resource.MUSHROOM));
-        assertEquals(0, playerGame.getOwnedResources().get(Resource.WOLF));
+        assertEquals(6, playerGame.getOwnedResources().get(Resource.FUNGI));
+        assertEquals(0, playerGame.getOwnedResources().get(Resource.ANIMAL));
     }
 
     @Test
@@ -109,20 +109,20 @@ class InGamePlayerTest {
         playerGame.addCardToHand(initialCards.getFirst());
         playerGame.placeCard(new GenericPair<>(0, 0), playerGame.getCardsInHand().getFirst(), Side.FRONT);
 
-        assertEquals(1, playerGame.getOwnedResources().get(Resource.MUSHROOM));
-        assertEquals(1, playerGame.getOwnedResources().get(Resource.WOLF));
-        assertEquals(1, playerGame.getOwnedResources().get(Resource.GRASS));
-        assertEquals(1, playerGame.getOwnedResources().get(Resource.BUTTERFLY));
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.FUNGI));
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.ANIMAL));
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.PLANT));
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.INSECT));
 
         playerGame.addCardToHand(resourceCards.get(30));
         playerGame.addCardToHand(goldCards.get(33));
 
         playerGame.placeCard(new GenericPair<>(1, -1), playerGame.getCardsInHand().getFirst(), Side.BACK);
 
-        assertEquals(1, playerGame.getOwnedResources().get(Resource.MUSHROOM));
-        assertEquals(0, playerGame.getOwnedResources().get(Resource.WOLF));
-        assertEquals(1, playerGame.getOwnedResources().get(Resource.GRASS));
-        assertEquals(2, playerGame.getOwnedResources().get(Resource.BUTTERFLY));
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.FUNGI));
+        assertEquals(0, playerGame.getOwnedResources().get(Resource.ANIMAL));
+        assertEquals(1, playerGame.getOwnedResources().get(Resource.PLANT));
+        assertEquals(2, playerGame.getOwnedResources().get(Resource.INSECT));
 
         assertThrows(NotEnoughResourcesException.class, () -> playerGame.placeCard(new GenericPair<>(1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT));
     }
@@ -152,7 +152,7 @@ class InGamePlayerTest {
         playerGame.placeCard(new GenericPair<>(1, 1), c2, Side.FRONT);
         playerGame.placeCard(new GenericPair<>(2, 2), c3, Side.FRONT);
 
-        assertEquals(6, playerGame.getOwnedResources().get(Resource.WOLF));
+        assertEquals(6, playerGame.getOwnedResources().get(Resource.ANIMAL));
     }
 
     @Test
