@@ -3,6 +3,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
             minWidth="-Infinity"
@@ -27,9 +28,9 @@
                 <Font name="Bell MT" size="14.0"/>
             </font>
         </Button>
-        <ScrollPane fx:id="lobbiesPane" layoutX="221.0" layoutY="25.0" prefHeight="599.0" prefWidth="681.0">
+        <ScrollPane fx:id="lobbiesPane" layoutX="221.0" layoutY="25.0" prefHeight="599.0" prefWidth="1400.0">
             <content>
-                <AnchorPane fx:id="anchor" minHeight="0.0" minWidth="0.0" prefHeight="601.0" prefWidth="671.0"/>
+                <VBox fx:id="anchor" minHeight="0.0" minWidth="0.0" prefHeight="601.0" prefWidth="1402.0"/>
             </content>
         </ScrollPane>
         <ComboBox fx:id="maxPlayersInput" prefWidth="150.0" promptText="Select maximum number of players:"/>
@@ -44,5 +45,10 @@
                 <Font name="Bell MT" size="14.0"/>
             </font>
         </Button>
+        <Label fx:id="profile" alignment="TOP_RIGHT">
+            <font>
+                <Font name="Bell MT" size="14.0"/>
+            </font>
+        </Label>
     </children>
 </AnchorPane>

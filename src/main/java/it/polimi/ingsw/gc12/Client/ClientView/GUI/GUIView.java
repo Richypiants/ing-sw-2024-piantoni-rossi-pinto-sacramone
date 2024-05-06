@@ -17,7 +17,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -42,6 +41,9 @@ public class GUIView extends View {
     TextField nicknameField;
 
     @FXML
+    Label profile;
+
+    @FXML
     ComboBox<String> language;
 
     @FXML
@@ -62,6 +64,36 @@ public class GUIView extends View {
     @Override
     public void printError(Throwable t) {
         //TODO: popup con l'exception
+
+        Platform.runLater(() -> {
+
+            String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
+
+            //Popup error
+            Popup errorPopup = new Popup();
+
+            VBox popupErrorBox = new VBox(10);
+            popupErrorBox.setAlignment(Pos.CENTER);
+
+            Label error = new Label();
+            error.setAlignment(Pos.CENTER);
+            error.setTextAlignment(TextAlignment.CENTER);
+            // Button okError = new Button("Ok"); // se si ri-aggiunge bottone allora metterlo anche in addAll
+
+            popupErrorBox.getChildren().add(error);
+            errorPopup.getContent().addAll(popupErrorBox);
+
+            errorPopup.setHeight(500);
+            errorPopup.setWidth(700);
+            popupErrorBox.setStyle(style);
+
+            errorPopup.setAutoFix(true);
+            errorPopup.setAutoHide(true);
+            errorPopup.setHideOnEscape(true);
+
+            error.setText(t.getMessage());
+            errorPopup.show(stage);
+        });
     }
 
     @Override
@@ -228,15 +260,24 @@ public class GUIView extends View {
                 throw new RuntimeException(e);
             }
 
+            profile.setText("Profile: " + ClientController.getInstance().ownNickname);
+            profile.setTextAlignment(TextAlignment.CENTER);
+            profile.setAlignment(Pos.TOP_LEFT);
+
             Button button = (Button) fxmlLoader.getNamespace().get("BackTitleButton");
             button.setOnAction(event -> ClientController.getInstance().viewState.quit());
 
             ScrollPane lobbiesPane = (ScrollPane) fxmlLoader.getNamespace().get("lobbiesPane");
-            AnchorPane lobbiesList = (AnchorPane) lobbiesPane.getContent();
+            VBox lobbiesList = new VBox(10);
+            lobbiesList.setPadding(new Insets(10));
+            lobbiesList.setAlignment(Pos.TOP_CENTER);
 
             //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
-            for (var lobby : ClientController.getInstance().lobbies.entrySet())
+            for (var lobby : ClientController.getInstance().lobbies.entrySet()) {
                 lobbiesList.getChildren().add(createLobbyListElement(lobby.getKey(), lobby.getValue()));
+            }
+
+            lobbiesPane.setContent(lobbiesList);
 
             String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
 
@@ -265,7 +306,7 @@ public class GUIView extends View {
             lobbyPopup.setHideOnEscape(true);
 
             okPlayers.setOnAction(event -> {
-                        ClientController.getInstance().viewState.createLobby(maxPlayers.getValue());
+                ClientController.getInstance().viewState.createLobby(maxPlayers.getValue());
                 lobbyPopup.hide();
             });
 
@@ -306,44 +347,6 @@ public class GUIView extends View {
                 ClientController.getInstance().viewState.setNickname(nicknameField.getText());
                 nickPopup.hide();
             });
-
-                /*
-
-                // Popup error
-                Popup errorPopup = new Popup();
-
-                VBox popupErrorBox = new VBox(10);
-                popupErrorBox.setAlignment(Pos.CENTER);
-
-                Label error = new Label("Non puoi cambiare nickname\nse sei dentro ad una lobby");
-                error.setAlignment(Pos.CENTER);
-                error.setTextAlignment(TextAlignment.CENTER);
-                // Button okError = new Button("Ok"); // se si ri-aggiunge bottone allora metterlo anche in addAll
-
-                popupErrorBox.getChildren().add(error);
-                errorPopup.getContent().addAll(popupErrorBox);
-
-                errorPopup.setHeight(500);
-                errorPopup.setWidth(700);
-                popupErrorBox.setStyle(style);
-
-                errorPopup.setAutoFix(true);
-                errorPopup.setAutoHide(true);
-                errorPopup.setHideOnEscape(true);
-
-                Button changeNickname = (Button) fxmlLoader.getNamespace().get("nicknameButton");
-                changeNickname.setOnAction(event -> {
-                    errorPopup.show(stage);
-                    errorPopup.centerOnScreen();
-                });
-
-//                okError.setOnAction(event ->
-//                        {
-//                            errorPopup.hide();
-//                        }
-//                );
-
-                 */
 
             stage.getScene().setRoot(root);
         });
@@ -392,10 +395,6 @@ public class GUIView extends View {
         stage.show();
     }
 
-    public Popup createPopup() {
-        return null;
-    }
-
     public void LeaveGame(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/lobby_menu.fxml"));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -406,6 +405,8 @@ public class GUIView extends View {
     }
 
     private HBox createLobbyListElement(UUID lobbyUUID, GameLobby lobby) {
+        String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
+
         // Box
         HBox lobbyBox = new HBox(10);
         lobbyBox.setPadding(new Insets(15, 12, 15, 12));
@@ -414,13 +415,14 @@ public class GUIView extends View {
         Label playerCount = new Label(String.valueOf(lobby.getMaxPlayers()));
         playerCount.setStyle("-fx-font-size: 16px;");
 
-
         // Label nomi
         for (var player : lobby.getPlayers()) {
             Label playerName = new Label(player.getNickname());
             playerName.setStyle("-fx-font-size: 14px;");
             lobbyBox.getChildren().add(playerName);
         }
+
+        lobbyBox.setStyle(style);
 
         if (ClientController.getInstance().currentLobbyOrGame == null) {
             Button joinButton = new Button("JOIN");
