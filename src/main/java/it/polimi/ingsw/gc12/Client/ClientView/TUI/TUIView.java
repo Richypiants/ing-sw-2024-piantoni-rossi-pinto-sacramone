@@ -5,11 +5,14 @@ import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObject
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
+import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import org.fusesource.jansi.Ansi;
 
 import java.io.Console;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.ToIntBiFunction;
 
@@ -279,7 +282,31 @@ public class TUIView extends View {
     }
 
     public void printOpponentsFieldsMiniaturized() {
+        GenericPair<Integer, Integer> REDUCED_FIELD_SIZE = new GenericPair<>(11, 5);
+        GenericPair<Integer, Integer> TOP_LEFT_REDUCED_FIELD = new GenericPair<>(2, 50);
+        GenericPair<Integer, Integer> CENTER_REDUCED_FIELD =
+                new GenericPair<>(
+                        TOP_LEFT_REDUCED_FIELD.getY() + REDUCED_FIELD_SIZE.getY() / 2,
+                        TOP_LEFT_REDUCED_FIELD.getX() + REDUCED_FIELD_SIZE.getX() / 2
+                );
+        int FIELD_SPACING = REDUCED_FIELD_SIZE.getX() + 1;
 
+        int playerIndex = 1;
+        for (Player player : ClientController.getInstance().currentLobbyOrGame.getPlayers()) {
+
+            LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> field =
+                    ((ClientPlayer) player).getPlacedCards();
+
+            for (var entry : field.sequencedEntrySet()) {
+                printToPosition(ansi().cursor(
+                                CENTER_REDUCED_FIELD.getX() - entry.getKey().getX(),
+                                (playerIndex * FIELD_SPACING) + CENTER_REDUCED_FIELD.getY() + entry.getKey().getY())
+                        .bg(entry.getValue().getX().TUI_SPRITES.get(Side.BACK).get(2).get(0).getY()[1]).a(" ")
+                );
+            }
+
+            playerIndex++;
+        }
     }
 
     public void updateChat() {

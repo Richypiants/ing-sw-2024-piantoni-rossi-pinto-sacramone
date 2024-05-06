@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> {
 
@@ -14,14 +15,15 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
     private ObjectInputStream objectInputStream = null;
     private final ObjectOutputStream objectOutputStream;
     private final ByteArrayOutputStream byteOutputStream;
+    private final LinkedBlockingQueue<ByteBuffer> writeQueue;
 
     public SocketHandler(AsynchronousSocketChannel channel, ByteBuffer buffer) throws IOException {
         this.channel = channel;
         this.inputBuffer = buffer;
         //TODO: handle exceptions (in methods below too)
         this.byteOutputStream = new ByteArrayOutputStream();
-        objectOutputStream = new ObjectOutputStream(byteOutputStream);
-        //quando voglio scrivere:
+        this.objectOutputStream = new ObjectOutputStream(byteOutputStream);
+        this.writeQueue = new LinkedBlockingQueue<>();
     }
 
     //TODO: Handle Exceptions
@@ -33,7 +35,7 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
     }
 
     //TODO: Handle Exceptions
-    public synchronized ByteBuffer writeObject(Object obj) throws IOException {
+    public ByteBuffer writeObject(Object obj) throws IOException {
         objectOutputStream.reset();
         objectOutputStream.writeObject(obj);
         objectOutputStream.flush();
@@ -68,12 +70,38 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
         exc.printStackTrace();
     }
 
-    protected synchronized void sendRequest(Command command) {
+    protected void sendRequest(Command command) {
         try {
-            channel.write(writeObject(command), null, new CompletionHandler<>() {
+            ByteBuffer outputBuffer = writeObject(command);
+            try {
+                writeQueue.put(outputBuffer);
+                if(writeQueue.size() > 1)
+                    synchronized(outputBuffer) {
+                        try {
+                            outputBuffer.wait();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            channel.write(outputBuffer, null, new CompletionHandler<>() {
                 //TODO: non serve... cancellare?
                 @Override
                 public void completed(Integer result, Object attachment) {
+                    try {
+                        writeQueue.take();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if(!writeQueue.isEmpty()) {
+                        ByteBuffer notifiedBuffer = writeQueue.peek();
+                        synchronized(notifiedBuffer) {
+                            notifiedBuffer.notify();
+                        }
+                    }
                 }
 
                 @Override
