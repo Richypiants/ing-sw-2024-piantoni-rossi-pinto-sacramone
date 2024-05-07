@@ -28,9 +28,9 @@
                 <Font name="Bell MT" size="14.0"/>
             </font>
         </Button>
-        <ScrollPane fx:id="lobbiesPane" layoutX="221.0" layoutY="25.0" prefHeight="599.0" prefWidth="1400.0">
+        <ScrollPane fx:id="lobbiesPane" layoutX="400.0" layoutY="30.0" prefHeight="800.0" prefWidth="1100.0">
             <content>
-                <VBox fx:id="anchor" minHeight="0.0" minWidth="0.0" prefHeight="601.0" prefWidth="1402.0"/>
+                <VBox fx:id="anchor" minHeight="0.0" minWidth="0.0" prefHeight="802.0" prefWidth="1102.0"/>
             </content>
         </ScrollPane>
         <ComboBox fx:id="maxPlayersInput" prefWidth="150.0" promptText="Select maximum number of players:"/>

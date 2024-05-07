@@ -15,8 +15,10 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -354,6 +356,45 @@ public class GUIView extends View {
 
     @Override
     public void gameScreen() {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/game_screen.fxml"));
+        fxmlLoader.setController(ClientController.getInstance().view);
+        Parent root = null; // Carica il file FXML e ottiene il root
+        try {
+            root = fxmlLoader.load();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        stage.getScene().setRoot(root);
+
+        Button leaveGame = (Button) fxmlLoader.getNamespace().get("leaveButton");
+        Button chat = (Button) fxmlLoader.getNamespace().get("chatButton");
+        ImageView score = (ImageView) fxmlLoader.getNamespace().get("score");
+        ImageView objective = (ImageView) fxmlLoader.getNamespace().get("objective");
+        ImageView resource = (ImageView) fxmlLoader.getNamespace().get("resource");
+        ImageView gold = (ImageView) fxmlLoader.getNamespace().get("gold");
+
+        // Dimensione Schermo
+        double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+
+        // Posizionamento usando AnchorPane
+        AnchorPane.setRightAnchor(leaveGame, 20.0); // Distanza 10 pixel dal bordo destro
+        AnchorPane.setBottomAnchor(leaveGame, 20.0); // Distanza 10 pixel dal bordo superiore
+
+        AnchorPane.setRightAnchor(chat, 20.0); // Distanza 10 pixel dal bordo destro
+        AnchorPane.setTopAnchor(chat, screenHeight * 0.5); // 50 pixel sotto il leaveGame
+
+        AnchorPane.setTopAnchor(score, 20.0); // Distanza 10 pixel dal bordo superiore
+        AnchorPane.setLeftAnchor(score, 20.0); // Distanza 10 pixel dal bordo sinistro
+
+        AnchorPane.setTopAnchor(objective, screenHeight * 0.6); // Distanza pari al 10% dell'altezza dello schermo dal bordo superiore
+        AnchorPane.setLeftAnchor(objective, 20.0); // Distanza 10 pixel dal bordo sinistro
+
+        AnchorPane.setTopAnchor(resource, screenHeight * 0.7); // Distanza pari al 20% dell'altezza dello schermo dal bordo superiore
+        AnchorPane.setLeftAnchor(resource, 20.0); // Distanza 10 pixel dal bordo sinistro
+
+        AnchorPane.setTopAnchor(gold, screenHeight * 0.8); // Distanza pari al 30% dell'altezza dello schermo dal bordo superiore
+        AnchorPane.setLeftAnchor(gold, 20.0); // Distanza 10 pixel dal bordo sinistro
     }
 
     @Override
@@ -387,7 +428,7 @@ public class GUIView extends View {
     }
 
     public void NewGame(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Fourth.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/game_screen.fxml"));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root, 1800, 850);
         stage.setScene(scene);
