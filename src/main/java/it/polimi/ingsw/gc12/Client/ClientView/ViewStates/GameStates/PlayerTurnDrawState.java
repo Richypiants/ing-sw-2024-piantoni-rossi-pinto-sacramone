@@ -21,6 +21,7 @@ public class PlayerTurnDrawState extends GameScreenState {
     public void executeState() {
         super.executeState();
         ClientController.getInstance().view.showField();
+        ClientController.getInstance().view.showCommonPlacedCards();
     }
 
     @Override
@@ -36,15 +37,16 @@ public class PlayerTurnDrawState extends GameScreenState {
     @Override
     public void drawFromVisibleCards(String deck, int position) {
         if (invalidDeck(deck)) throw new IllegalArgumentException("area fornita da cui pescare invalida");
+        if (position != 1 && position != 2) throw new IllegalArgumentException("position fornita da cui pescare invalida");
         try {
-            ClientController.getInstance().requestToServer(new DrawFromVisibleCardsCommand(deck, position));
+            ClientController.getInstance().requestToServer(new DrawFromVisibleCardsCommand(deck, position - 1));
         } catch (Exception e) {
             ClientController.getInstance().view.printError(e);
         }
     }
 
     private boolean invalidDeck(String deck) {
-        return !(deck.equals("Resource") || deck.equals("Gold"));
+        return !(deck.equalsIgnoreCase("resource") || deck.equalsIgnoreCase("gold"));
     }
 
     @Override

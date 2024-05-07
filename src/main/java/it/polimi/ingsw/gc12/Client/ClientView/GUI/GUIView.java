@@ -418,6 +418,11 @@ public class GUIView extends View {
     }
 
     @Override
+    public void showCommonPlacedCards() {
+
+    }
+
+    @Override
     public void showField() {
 
     }

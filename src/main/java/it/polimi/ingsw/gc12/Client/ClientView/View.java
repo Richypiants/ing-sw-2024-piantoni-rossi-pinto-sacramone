@@ -22,6 +22,8 @@ public abstract class View { //FIXME: turn into interface maybe?
 
     public abstract void showObjectiveCardsChoice();
 
+    public abstract void showCommonPlacedCards();
+
     public abstract void showField();
 
     public abstract void showHand();

@@ -13,6 +13,7 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 import org.fusesource.jansi.Ansi;
 
 import java.io.Console;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.ToIntBiFunction;
@@ -189,7 +190,7 @@ public class TUIView extends View {
 
         printRoundInfo();
         printStatsTable();
-        printCommonPlacedCards();
+        showCommonPlacedCards();
         printDecks();
         printOpponentsFieldsMiniaturized();
         showField();
@@ -226,20 +227,22 @@ public class TUIView extends View {
                 .fg(94).a(" | Scroll [S] | Ink [K] | Quill [Q]").reset()
         );
 
-        for (var player : ClientController.getInstance().currentLobbyOrGame.getPlayers())
+        for (ClientPlayer player : ((ClientGame)ClientController.getInstance().currentLobbyOrGame).getPlayers()) {
+            EnumMap<Resource, Integer> playerResources = player.getOwnedResources();
             printToPosition(ansi().cursor(i, 2).a("[#" + (i - 2) + "] ").a(player.getNickname())
-                    .cursor(i, 26).a("0")
-                    .cursor(i, 36).a("0")
-                    .cursor(i, 48).a("0")
-                    .cursor(i, 60).a("0")
-                    .cursor(i, 73).a("0")
-                    .cursor(i, 86).a("0")
-                    .cursor(i, 98).a("0")
-                    .cursor(i++, 108).a("0")
+                    .cursor(i, 26).a(player.getPoints()) //POINTS
+                    .cursor(i, 36).a(playerResources.containsKey(Resource.FUNGI) ? playerResources.get(Resource.FUNGI) : "0") //FUNGI
+                    .cursor(i, 48).a(playerResources.containsKey(Resource.PLANT) ? playerResources.get(Resource.PLANT) : "0") //PLANT
+                    .cursor(i, 60).a(playerResources.containsKey(Resource.ANIMAL) ? playerResources.get(Resource.ANIMAL) : "0") //ANIMAL
+                    .cursor(i, 73).a(playerResources.containsKey(Resource.INSECT) ? playerResources.get(Resource.INSECT) : "0") //INSECT
+                    .cursor(i, 86).a(playerResources.containsKey(Resource.SCROLL) ? playerResources.get(Resource.SCROLL) : "0") //SCROLL
+                    .cursor(i, 98).a(playerResources.containsKey(Resource.INK) ? playerResources.get(Resource.INK) : "0") //INK
+                    .cursor(i++, 108).a(playerResources.containsKey(Resource.QUILL) ? playerResources.get(Resource.QUILL) : "0") //QUILL
             );
+        }
     }
 
-    public void printCommonPlacedCards() {
+    public void showCommonPlacedCards() {
         //erasing old placed cards
         for (int i = 12; i < 24; i++)
             printToPosition(ansi().cursor(i, 53).eraseLine(Erase.BACKWARD));
