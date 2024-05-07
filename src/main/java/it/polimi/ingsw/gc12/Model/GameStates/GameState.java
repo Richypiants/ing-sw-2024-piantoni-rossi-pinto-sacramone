@@ -38,8 +38,9 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
         if (currentPlayer == GAME.getPlayers().size()) {
             GAME.increaseTurn();
         }
-        while (!GAME.getPlayers().get(currentPlayer).isActive())
+        do {
             currentPlayer = (currentPlayer + 1) % GAME.getPlayers().size();
+        } while(!GAME.getPlayers().get(currentPlayer).isActive());
     }
 
     public void pickObjective(InGamePlayer target, ObjectiveCard objective)

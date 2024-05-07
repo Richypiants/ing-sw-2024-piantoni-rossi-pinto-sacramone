@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ConfirmSelectionCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.GameTransitionCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
@@ -24,15 +25,22 @@ public class ChooseObjectiveCardsState extends GameState {
     }
 
     @Override
-    public void pickObjective(InGamePlayer target, ObjectiveCard objective)
+    public void pickObjective(InGamePlayer targetPlayer, ObjectiveCard objective)
             throws CardNotInHandException, AlreadySetCardException {
-        if(!objectivesMap.get(target).contains(objective))
+        if(!objectivesMap.get(targetPlayer).contains(objective))
             throw new CardNotInHandException();
 
-        if (target.getSecretObjective() == null)
-            target.setSecretObjective(objective);
+        if (targetPlayer.getSecretObjective() == null)
+            targetPlayer.setSecretObjective(objective);
         else
             throw new AlreadySetCardException();
+
+        try {
+            keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals)
+                    .requestToClient(new ConfirmSelectionCommand(objective.ID));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         //FIXME: dopo timeout e disconnessione: eseguo un'azione random per i player disconnessi
         if(GAME.getPlayers().stream()
@@ -56,9 +64,6 @@ public class ChooseObjectiveCardsState extends GameState {
                 e.printStackTrace();
             }
         }
-
-        //TODO: ci starebbe segnalare che tutti sono pronti e il gioco inizia? Tipo far comparire "Gioco iniziato"
-        // oppure "Turno 1"
 
         GAME.setState(new PlayerTurnPlayState(GAME, 0, -1));
     }

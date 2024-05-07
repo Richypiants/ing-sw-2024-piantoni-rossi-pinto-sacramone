@@ -63,6 +63,7 @@ public class ChooseInitialCardsState extends GameState {
                 //This cannot happen as the deck is always full at the start of the game
             }
 
+            System.out.println("[SERVER]: Sending cards in hand to clients in "+ GAME.toString());
             //TODO: manage exceptions
             try {
                 keyReverseLookup(ServerController.getInstance().players, target::equals)
@@ -105,7 +106,7 @@ public class ChooseInitialCardsState extends GameState {
 
         ArrayList<Triplet<Integer, String, Integer>> objectiveCardPlacements = new ArrayList<>();
         for (int i = 0; i < GAME.getCommonObjectives().length; i++)
-            objectiveCardPlacements.add(new Triplet<>(GAME.getCommonObjectives()[i].ID, "Objective", i));
+            objectiveCardPlacements.add(new Triplet<>(GAME.getCommonObjectives()[i].ID, "OBJECTIVE_VISIBLE", i));
 
         System.out.println("[SERVER]: Sending Common and Personal Objectives, GameTransitionCommand to clients in "+ GAME.toString());
         for (var targetPlayer : GAME.getPlayers()) {

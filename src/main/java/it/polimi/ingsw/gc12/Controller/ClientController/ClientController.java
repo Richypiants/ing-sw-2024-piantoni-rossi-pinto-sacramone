@@ -151,6 +151,11 @@ public class ClientController implements ClientControllerInterface {
         viewState = new ChooseInitialCardsState();
     }
 
+    public void confirmObjectiveChoice(int cardID){
+        ((ClientGame) currentLobbyOrGame).setOwnObjective(cardsList.get(cardID));
+        view.gameScreen();
+    }
+
     public synchronized void placeCard(String nickname, GenericPair<Integer, Integer> coordinates, int cardID,
                           Side playedSide, EnumMap<Resource, Integer> ownedResources,
                           List<GenericPair<Integer, Integer>> openCorners, int points) {
@@ -173,8 +178,11 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public synchronized void receiveCard(List<Integer> cardIDs) {
-        for (var cardID : cardIDs)
+        for (var cardID : cardIDs) {
+            //TODO: cancellare
+            System.err.println(cardID);
             ((ClientGame) currentLobbyOrGame).addCardToHand(cardsList.get(cardID));
+        }
 
         viewState.executeState();
     }

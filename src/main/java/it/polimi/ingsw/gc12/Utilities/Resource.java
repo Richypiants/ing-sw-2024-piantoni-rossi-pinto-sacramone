@@ -8,7 +8,7 @@ public enum Resource {
     NOT_A_CORNER(" ", -1), EMPTY(" ", -1),
     ANIMAL("A", 32), INSECT("I", 207),
     PLANT("P", 82), FUNGI("F", 88),
-    INK("I", 94), QUILL("Q", 94),
+    INK("K", 94), QUILL("Q", 94),
     SCROLL("S", 94);
 
     public final String SYMBOL;

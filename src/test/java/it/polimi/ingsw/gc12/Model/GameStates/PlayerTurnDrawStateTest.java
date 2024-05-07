@@ -124,14 +124,14 @@ class PlayerTurnDrawStateTest {
     void correctTransitionTest_Draw1() throws Exception {
         game.getCurrentState().drawFrom((InGamePlayer) game.getCurrentState().getCurrentPlayer(), "Resource");
         assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
-        assertEquals(game.getPlayers().getFirst(), game.getCurrentState().getCurrentPlayer());
+        assertEquals(game.getPlayers().get(1), game.getCurrentState().getCurrentPlayer());
     }
 
     @Test
     void correctTransitionTest_Draw2() throws Exception {
         game.getCurrentState().drawFrom((InGamePlayer) game.getCurrentState().getCurrentPlayer(), "Resource", 1);
         assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
-        assertEquals(game.getPlayers().getFirst(), game.getCurrentState().getCurrentPlayer());
+        assertEquals(game.getPlayers().get(1), game.getCurrentState().getCurrentPlayer());
     }
 
     @Test

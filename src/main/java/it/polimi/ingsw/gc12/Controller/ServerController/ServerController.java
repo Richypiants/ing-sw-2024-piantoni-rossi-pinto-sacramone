@@ -516,7 +516,6 @@ public class ServerController implements ServerControllerInterface {
                             new ForbiddenActionException("Cannot draw a card from a deck in this state")
                     )
             ); //throwException();
-            return;
         } catch (UnexpectedPlayerException e){
             requestToClient(
                     sender,
@@ -524,7 +523,6 @@ public class ServerController implements ServerControllerInterface {
                             new UnexpectedPlayerException("Not this player's turn")
                     )
             ); //throwException();
-            return;
         } catch (UnknownStringException e){
             requestToClient(
                     sender,
@@ -532,7 +530,6 @@ public class ServerController implements ServerControllerInterface {
                             new UnknownStringException("No such deck exists")
                     )
             ); //throwException();
-            return;
         } catch (EmptyDeckException e) {
             requestToClient(
                     sender,
@@ -540,26 +537,6 @@ public class ServerController implements ServerControllerInterface {
                             new EmptyDeckException("Selected deck is empty")
                     )
             ); //throwException();
-            return;
-        }
-
-        System.out.println("[SERVER]: sending ReceiveCardCommand to client");
-        requestToClient(sender, new ReceiveCardCommand(List.of(targetPlayer.getCardsInHand().getLast().ID)));
-
-
-        System.out.println("[SERVER]: sending ReplaceCardCommand to clients");
-
-        CardDeck<? extends Card> selectedDeck;
-        if (deck.trim().equalsIgnoreCase("RESOURCE"))
-            selectedDeck = targetGame.getResourceCardsDeck();
-        else
-            selectedDeck = targetGame.getGoldCardsDeck();
-
-        for(var player : targetGame.getPlayers()) {
-            VirtualClient targetClient = keyReverseLookup(players, player::equals);
-            requestToClient(targetClient, new ReplaceCardCommand(List.of(new Triplet<>(
-                    targetGame.peekFrom(selectedDeck) == null ? -1 : targetGame.peekFrom(selectedDeck).ID, deck.toUpperCase()+"_DECK", -1)
-            )));
         }
     }
 
@@ -579,14 +556,12 @@ public class ServerController implements ServerControllerInterface {
                             new ForbiddenActionException("Cannot draw a visible card in this state")
                     )
             ); //throwException();
-            return;
         } catch (UnexpectedPlayerException e){
             requestToClient(sender,
                     new ThrowExceptionCommand(
                             new UnexpectedPlayerException("Not this player's turn")
                     )
             ); //throwException();
-            return;
         } catch (InvalidDeckPositionException e){
             requestToClient(
                     sender,
@@ -594,7 +569,6 @@ public class ServerController implements ServerControllerInterface {
                             new InvalidDeckPositionException("Cannot understand which card to draw")
                     )
             ); //throwException();
-            return;
         } catch (UnknownStringException e){
             requestToClient(
                     sender,
@@ -602,7 +576,6 @@ public class ServerController implements ServerControllerInterface {
                             new UnknownStringException("No such placed cards exist")
                     )
             ); //throwException();
-            return;
         } catch (EmptyDeckException e) {
             requestToClient(
                     sender,
@@ -610,23 +583,6 @@ public class ServerController implements ServerControllerInterface {
                             new EmptyDeckException("No card in selected slot")
                     )
             ); //throwException();
-            return;
-        }
-
-        System.out.println("[SERVER]: sending ReceiveCardCommand to clients");
-        requestToClient(sender, new ReceiveCardCommand(List.of(targetPlayer.getCardsInHand().getLast().ID)));
-        //receiveCard();
-
-        //FIXME: ... (a sto punto faccio direttamente la getArray qua e lo passo nella funzione draw nello stato)
-        ArrayList<Triplet<Integer, String, Integer>> newCard = new ArrayList<>();
-        if (deck.trim().equalsIgnoreCase("RESOURCE"))
-            newCard.add(new Triplet<>(targetGame.getPlacedResources()[position].ID, deck, position));
-        else newCard.add(new Triplet<>(targetGame.getPlacedGolds()[position].ID, deck, position));
-
-        System.out.println("[SERVER]: sending ReplaceCardCommand to clients");
-        for(var player : targetGame.getPlayers()) {
-            VirtualClient targetClient = keyReverseLookup(players, player::equals);
-            requestToClient(targetClient, new ReplaceCardCommand(newCard)); //replaceCard();
         }
     }
 

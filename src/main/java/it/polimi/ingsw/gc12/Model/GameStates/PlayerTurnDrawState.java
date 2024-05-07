@@ -41,6 +41,7 @@ public class PlayerTurnDrawState extends GameState {
 
         target.addCardToHand(drawnCard);
 
+        System.out.println("[SERVER]: Sending drawn card to current player and new top deck card to clients in "+ GAME.toString());
         try {
             keyReverseLookup(ServerController.getInstance().players, target::equals)
                     .requestToClient(new ReceiveCardCommand(List.of(drawnCard.ID)));
@@ -65,8 +66,8 @@ public class PlayerTurnDrawState extends GameState {
             throw new InvalidDeckPositionException();
         }
 
-        PlayableCard drawnCard = null;
-        PlayableCard replacingCard = null;
+        PlayableCard drawnCard;
+        PlayableCard replacingCard;
 
         if (whichType.trim().equalsIgnoreCase("RESOURCE")) {
             drawnCard = GAME.drawFrom(GAME.getPlacedResources(), position);
@@ -79,7 +80,8 @@ public class PlayerTurnDrawState extends GameState {
 
         target.addCardToHand(drawnCard);
 
-        for (var player : GAME.getPlayers())
+        System.out.println("[SERVER]: Sending drawn card to current player and new visible card to clients in "+ GAME.toString());
+        for (var player : GAME.getPlayers()) {
             if (player.equals(target))
                 try {
                     keyReverseLookup(ServerController.getInstance().players, target::equals)
@@ -87,19 +89,20 @@ public class PlayerTurnDrawState extends GameState {
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-            else
-                try {
-                    keyReverseLookup(ServerController.getInstance().players, target::equals)
-                            .requestToClient(
-                                    new ReplaceCardCommand(
-                                            List.of(
-                                                    new Triplet<>(replacingCard.ID, whichType, position)
-                                            )
-                                    )
-                            );
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+
+            try {
+                keyReverseLookup(ServerController.getInstance().players, target::equals)
+                        .requestToClient(
+                                new ReplaceCardCommand(
+                                        List.of(
+                                                new Triplet<>(replacingCard.ID, whichType, position)
+                                        )
+                                )
+                        );
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
 
 
         transition();

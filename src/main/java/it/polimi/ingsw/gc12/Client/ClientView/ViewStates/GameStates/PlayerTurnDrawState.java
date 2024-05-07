@@ -49,6 +49,9 @@ public class PlayerTurnDrawState extends GameScreenState {
 
     @Override
     public void transition() {
+        /*if(...){
+            increaseRound();
+        }*/
         ClientController.getInstance().viewState = new PlayerTurnPlayState();
     }
 }

@@ -30,6 +30,7 @@ public class PlayerTurnPlayState extends GameState {
         if (!target.equals(GAME.getPlayers().get(currentPlayer)))
             throw new UnexpectedPlayerException();
 
+        System.out.println("[SERVER]: Sending card placed by current player to clients in "+ GAME.toString());
         for (var player : GAME.getPlayers())
             try {
                 keyReverseLookup(ServerController.getInstance().players, player::equals)

@@ -223,7 +223,7 @@ public class TUIView extends View {
                 .fg(Ansi.Color.BLUE).a("Animal [A]").reset()
                 .a(" | ")
                 .fg(Ansi.Color.MAGENTA).a("Insect [I]").reset()
-                .fg(94).a(" | Scroll [S] | Potion [P] | Quill [Q]").reset()
+                .fg(94).a(" | Scroll [S] | Ink [K] | Quill [Q]").reset()
         );
 
         for (var player : ClientController.getInstance().currentLobbyOrGame.getPlayers())
@@ -234,8 +234,8 @@ public class TUIView extends View {
                     .cursor(i, 60).a("0")
                     .cursor(i, 73).a("0")
                     .cursor(i, 86).a("0")
-                    .cursor(i, 99).a("0")
-                    .cursor(i, 112).a("0")
+                    .cursor(i, 98).a("0")
+                    .cursor(i++, 108).a("0")
             );
     }
 
@@ -291,7 +291,7 @@ public class TUIView extends View {
                         TOP_LEFT_REDUCED_FIELD.getY() + REDUCED_FIELD_SIZE.getX() / 2
                 );
         int FIELD_SPACING = REDUCED_FIELD_SIZE.getY() + 1;
-        printToPosition(ansi().cursor(8, 89).bold().a("Opponents' Fields: "));
+        printToPosition(ansi().cursor(8, 84).bold().a("Opponents' Fields: "));
 
         int playerIndex = 0;
         var players = ClientController.getInstance().currentLobbyOrGame.getPlayers();

@@ -39,6 +39,7 @@ public class VictoryCalculationState extends GameState {
         );
         pointsStats.reversed();
 
+        System.out.println("[SERVER]: Sending leaderboard stats to clients in "+ GAME.toString());
         //TODO : Handle exceptions in the correct way and not like this
         try {
             // Sending leaderboard stats
@@ -70,6 +71,8 @@ public class VictoryCalculationState extends GameState {
             ServerController.getInstance().playersToLobbiesAndGames.put(player, returnLobby);
         }
 
+        System.out.println("[SERVER]: Sending lobbies to clients previously in "+ GAME.toString());
+
         try {
             // Sending lobbies list to players who were in this game (because they didn't have it updated)
             for (var target : returnLobby.getPlayers()) {
@@ -84,6 +87,7 @@ public class VictoryCalculationState extends GameState {
                         );
             }
 
+            System.out.println("[SERVER]: Recreating lobby with clients in "+ GAME.toString());
             // Update lobbies' lists of all other active players
             for (var client : ServerController.getInstance().players.keySet())
                 if (!(ServerController.getInstance().players.get(client) instanceof InGamePlayer))

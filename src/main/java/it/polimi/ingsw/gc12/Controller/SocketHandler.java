@@ -61,6 +61,8 @@ public abstract class SocketHandler<A> implements CompletionHandler<Integer, A> 
         // exceptions: noSuchMethod, InvalidParametersForMethod, NoPlayerFound(sendCreatePlayer),...
 
         inputBuffer.clear();
+
+        //FIXME: aggiungere coda qui!!!!
         synchronized (this) {
             channel.read(inputBuffer, attachment, this);
             executeReceivedCommand(receivedCommand);
