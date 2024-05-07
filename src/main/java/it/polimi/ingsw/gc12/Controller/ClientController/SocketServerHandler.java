@@ -24,7 +24,9 @@ public class SocketServerHandler<A> extends SocketHandler<A> implements VirtualS
 
     @Override
     protected void executeReceivedCommand(Command receivedCommand) {
-            ((ClientCommand) receivedCommand).execute(ClientController.getInstance());
+        SocketClient.getInstance().commandExecutorsPool.submit(
+                () -> ((ClientCommand) receivedCommand).execute(ClientController.getInstance())
+        );
     }
 
     @Override

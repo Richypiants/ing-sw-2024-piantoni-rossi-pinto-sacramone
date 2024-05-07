@@ -42,4 +42,8 @@ public class RMIServerStub implements RMIVirtualServer {
         }
     }
 
+    @Override
+    public void close() {
+    }
+
 }

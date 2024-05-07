@@ -9,14 +9,19 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SocketClient implements VirtualServer {
 
     private static SocketClient SINGLETON_SOCKET_CLIENT = null;
     private static SocketServerHandler<?> serverHandler = null;
+    public final ExecutorService commandExecutorsPool;
 
     private SocketClient() {
         //FIXME: how about the ip?
+        this.commandExecutorsPool = Executors.newSingleThreadExecutor();
+
         try {
             AsynchronousSocketChannel channel = AsynchronousSocketChannel.open().bind(null);
             //TODO: when do we close this? in keepAlive not received?
@@ -39,13 +44,13 @@ public class SocketClient implements VirtualServer {
     }
 
     public static SocketClient getInstance() { //TODO: sincronizzazione (serve?) ed eventualmente lazy
-        if(SINGLETON_SOCKET_CLIENT != null)
-            SINGLETON_SOCKET_CLIENT.close();
-        SINGLETON_SOCKET_CLIENT = new SocketClient();
+        if (SINGLETON_SOCKET_CLIENT == null)
+            SINGLETON_SOCKET_CLIENT = new SocketClient();
         return SINGLETON_SOCKET_CLIENT;
     }
 
-    private void close() {
+    public void close() {
+        SINGLETON_SOCKET_CLIENT = null;
         serverHandler.close();
     }
 

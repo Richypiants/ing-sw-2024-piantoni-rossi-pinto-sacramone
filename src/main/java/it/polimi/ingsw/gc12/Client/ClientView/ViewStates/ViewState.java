@@ -93,6 +93,11 @@ public abstract class ViewState {
 
     public void quit() {
         ClientController.getInstance().thisClient = null;
+        try {
+            ClientController.getInstance().serverConnection.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         ClientController.getInstance().serverConnection = null;
         ClientController.getInstance().keepAlive.interrupt();
         ClientController.getInstance().ownNickname = "";
