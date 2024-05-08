@@ -31,22 +31,41 @@ public class PlayerTurnDrawState extends GameState {
             throw new UnexpectedPlayerException();
 
         PlayableCard drawnCard = null;
+        PlayableCard replacingCard = null;
 
         if (deck.trim().equalsIgnoreCase("RESOURCE")) {
             drawnCard = GAME.drawFrom(GAME.getResourceCardsDeck());
+            replacingCard = GAME.getResourceCardsDeck().peek();
         } else if (deck.trim().equalsIgnoreCase("GOLD")) {
             drawnCard = GAME.drawFrom(GAME.getGoldCardsDeck());
+            replacingCard = GAME.getGoldCardsDeck().peek();
         } else
             throw new UnknownStringException();
 
         target.addCardToHand(drawnCard);
 
         System.out.println("[SERVER]: Sending drawn card to current player and new top deck card to clients in "+ GAME.toString());
-        try {
-            keyReverseLookup(ServerController.getInstance().players, target::equals)
-                    .requestToClient(new ReceiveCardCommand(List.of(drawnCard.ID)));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        for (var player : GAME.getPlayers()) {
+            if (player.equals(target))
+                try {
+                    keyReverseLookup(ServerController.getInstance().players, target::equals)
+                            .requestToClient(new ReceiveCardCommand(List.of(drawnCard.ID)));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
+            try {
+                keyReverseLookup(ServerController.getInstance().players, target::equals)
+                        .requestToClient(
+                                new ReplaceCardCommand(
+                                        List.of(
+                                                new Triplet<>(replacingCard.ID, deck + "_deck", -1)
+                                        )
+                                )
+                        );
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
         transition();
@@ -95,7 +114,7 @@ public class PlayerTurnDrawState extends GameState {
                         .requestToClient(
                                 new ReplaceCardCommand(
                                         List.of(
-                                                new Triplet<>(replacingCard.ID, whichType, position)
+                                                new Triplet<>(replacingCard.ID, whichType + "_visible", position)
                                         )
                                 )
                         );
@@ -103,7 +122,6 @@ public class PlayerTurnDrawState extends GameState {
                 throw new RuntimeException(e);
             }
         }
-
 
         transition();
         //FIXME: controllare che non si possa giocare due carte nello stesso turno! in teoria rendendo atomica

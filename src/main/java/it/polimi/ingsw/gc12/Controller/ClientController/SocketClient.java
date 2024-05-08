@@ -28,7 +28,13 @@ public class SocketClient implements VirtualServer {
             connectionExecutorsPool.submit(
                     () -> {
                         while(true) {
-                            serverHandler.completed();
+                            try {
+                                serverHandler.read();
+                            } catch (IOException e) {
+                                close();
+                                e.printStackTrace();
+                                break;
+                            }
                         }
                     }
             );

@@ -30,14 +30,12 @@ public abstract class SocketHandler{
 
     protected abstract void executeReceivedCommand(Command receivedCommand);
 
-    public void completed() {
+    public void read() throws IOException {
         Command receivedCommand = null;
         try {
             //FIXME: add instanceof casting
             receivedCommand = (Command) objectInputStream.readObject();
             //System.out.println("[SOCKET-HANDLER]: Received command " + receivedCommand.getClass() + " from {" + channel.getRemoteAddress() + "}");
-        } catch (IOException e) {
-            printError(e);
         } catch (ClassNotFoundException e) {
             printError(e);
         }

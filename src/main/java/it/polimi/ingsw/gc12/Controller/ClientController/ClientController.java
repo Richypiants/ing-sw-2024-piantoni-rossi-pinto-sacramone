@@ -197,12 +197,14 @@ public class ClientController implements ClientControllerInterface {
     public synchronized void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {
         for(var cardPlacement : cardPlacements) {
             ClientCard card = cardsList.get(cardPlacement.getX());
-            switch (cardPlacement.getY().trim()) {
-                case "RESOURCE_DECK" -> ((ClientGame) currentLobbyOrGame).setTopDeckResourceCard(card);
-                case "GOLD_DECK" -> ((ClientGame) currentLobbyOrGame).setTopDeckGoldCard(cardsList.get(cardPlacement.getX()));
-                case "RESOURCE_VISIBLE" -> ((ClientGame) currentLobbyOrGame).setPlacedResources(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
-                case "GOLD_VISIBLE" -> ((ClientGame) currentLobbyOrGame).setPlacedGold(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
-                case "OBJECTIVE_VISIBLE" -> ((ClientGame) currentLobbyOrGame).setCommonObjectives(cardsList.get(cardPlacement.getX()), cardPlacement.getZ());
+            switch (cardPlacement.getY().trim().toLowerCase()) {
+                case "resource_deck" -> ((ClientGame) currentLobbyOrGame).setTopDeckResourceCard(card);
+                case "gold_deck" -> ((ClientGame) currentLobbyOrGame).setTopDeckGoldCard(card);
+                case "resource_visible" ->
+                        ((ClientGame) currentLobbyOrGame).setPlacedResources(card, cardPlacement.getZ());
+                case "gold_visible" -> ((ClientGame) currentLobbyOrGame).setPlacedGold(card, cardPlacement.getZ());
+                case "objective_visible" ->
+                        ((ClientGame) currentLobbyOrGame).setCommonObjectives(card, cardPlacement.getZ());
             }
         }
 

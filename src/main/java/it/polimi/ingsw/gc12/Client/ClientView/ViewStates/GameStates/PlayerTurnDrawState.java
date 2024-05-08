@@ -20,8 +20,7 @@ public class PlayerTurnDrawState extends GameScreenState {
     @Override
     public void executeState() {
         super.executeState();
-        ClientController.getInstance().view.showField();
-        ClientController.getInstance().view.showCommonPlacedCards();
+        ClientController.getInstance().view.gameScreen();
     }
 
     @Override

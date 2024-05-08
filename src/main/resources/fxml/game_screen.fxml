@@ -14,9 +14,10 @@
                 <Font name="Bell MT" size="14.0"/>
             </font>
         </Button>
-        <ImageView fx:id="score" fitHeight="413.0" fitWidth="202.0" layoutX="35.0" layoutY="14.0" pickOnBounds="true"
+        <ImageView fx:id="score" fitHeight="450.0" fitWidth="225.0" layoutX="35.0" layoutY="14.0" pickOnBounds="true"
                    preserveRatio="true" style="-fx-image:url(file:///C:/Users/jacop/Desktop/Score.png);"/>
-        <ImageView fx:id="objective" fitHeight="55.0" fitWidth="88.0" layoutX="27.0" layoutY="450.0" pickOnBounds="true"
+        <ImageView fx:id="objective" fitHeight="75.0" fitWidth="100.0" layoutX="27.0" layoutY="450.0"
+                   pickOnBounds="true"
                    preserveRatio="true" style="-fx-image:url(file:///C:/Users/jacop/Desktop/Objective.jpg);"/>
         <ImageView fx:id="resource" fitHeight="49.0" fitWidth="78.0" layoutX="27.0" layoutY="528.0" pickOnBounds="true"
                    preserveRatio="true" style="-fx-image:url(file:///C:/Users/jacop/Desktop/Resource.jpg);"/>

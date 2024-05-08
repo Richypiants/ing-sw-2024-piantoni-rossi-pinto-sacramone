@@ -106,7 +106,7 @@ public class ChooseInitialCardsState extends GameState {
 
         ArrayList<Triplet<Integer, String, Integer>> objectiveCardPlacements = new ArrayList<>();
         for (int i = 0; i < GAME.getCommonObjectives().length; i++)
-            objectiveCardPlacements.add(new Triplet<>(GAME.getCommonObjectives()[i].ID, "OBJECTIVE_VISIBLE", i));
+            objectiveCardPlacements.add(new Triplet<>(GAME.getCommonObjectives()[i].ID, "objective_visible", i));
 
         System.out.println("[SERVER]: Sending Common and Personal Objectives, GameTransitionCommand to clients in "+ GAME.toString());
         for (var targetPlayer : GAME.getPlayers()) {

@@ -255,7 +255,7 @@ public class GUIView extends View {
         Platform.runLater(() -> {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/lobby_menu.fxml"));
             fxmlLoader.setController(ClientController.getInstance().view);
-            Parent root = null; // Carica il file FXML e ottiene il root
+            Parent root = null;
             try {
                 root = fxmlLoader.load();
             } catch (IOException e) {
@@ -377,24 +377,24 @@ public class GUIView extends View {
         // Dimensione Schermo
         double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
 
-        // Posizionamento usando AnchorPane
-        AnchorPane.setRightAnchor(leaveGame, 20.0); // Distanza 10 pixel dal bordo destro
-        AnchorPane.setBottomAnchor(leaveGame, 20.0); // Distanza 10 pixel dal bordo superiore
+        // Posizionamento
+        AnchorPane.setRightAnchor(leaveGame, 20.0);
+        AnchorPane.setBottomAnchor(leaveGame, 20.0);
 
-        AnchorPane.setRightAnchor(chat, 20.0); // Distanza 10 pixel dal bordo destro
-        AnchorPane.setTopAnchor(chat, screenHeight * 0.5); // 50 pixel sotto il leaveGame
+        AnchorPane.setRightAnchor(chat, 20.0);
+        AnchorPane.setTopAnchor(chat, screenHeight * 0.5);
 
-        AnchorPane.setTopAnchor(score, 20.0); // Distanza 10 pixel dal bordo superiore
-        AnchorPane.setLeftAnchor(score, 20.0); // Distanza 10 pixel dal bordo sinistro
+        AnchorPane.setTopAnchor(score, 20.0);
+        AnchorPane.setLeftAnchor(score, 20.0);
 
-        AnchorPane.setTopAnchor(objective, screenHeight * 0.6); // Distanza pari al 10% dell'altezza dello schermo dal bordo superiore
-        AnchorPane.setLeftAnchor(objective, 20.0); // Distanza 10 pixel dal bordo sinistro
+        AnchorPane.setTopAnchor(objective, screenHeight * 0.6);
+        AnchorPane.setLeftAnchor(objective, 20.0);
 
-        AnchorPane.setTopAnchor(resource, screenHeight * 0.7); // Distanza pari al 20% dell'altezza dello schermo dal bordo superiore
-        AnchorPane.setLeftAnchor(resource, 20.0); // Distanza 10 pixel dal bordo sinistro
+        AnchorPane.setTopAnchor(resource, screenHeight * 0.7);
+        AnchorPane.setLeftAnchor(resource, 20.0);
 
-        AnchorPane.setTopAnchor(gold, screenHeight * 0.8); // Distanza pari al 30% dell'altezza dello schermo dal bordo superiore
-        AnchorPane.setLeftAnchor(gold, 20.0); // Distanza 10 pixel dal bordo sinistro
+        AnchorPane.setTopAnchor(gold, screenHeight * 0.8);
+        AnchorPane.setLeftAnchor(gold, 20.0);
     }
 
     @Override
@@ -454,7 +454,7 @@ public class GUIView extends View {
         String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
 
         // Box
-        HBox lobbyBox = new HBox(10);
+        HBox lobbyBox = new HBox(250);
         lobbyBox.setPadding(new Insets(15, 12, 15, 12));
 
         // Label giocatori

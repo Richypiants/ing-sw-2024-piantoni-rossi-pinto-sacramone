@@ -305,8 +305,8 @@ public class TUIView extends View {
 
             for (var entry : field.sequencedEntrySet()) {
                 printToPosition(ansi().cursor(
-                                (playerIndex * FIELD_SPACING) + CENTER_REDUCED_FIELD.getX() - entry.getKey().getX(),
-                                CENTER_REDUCED_FIELD.getY() + entry.getKey().getY())
+                                (playerIndex * FIELD_SPACING) + CENTER_REDUCED_FIELD.getX() - entry.getKey().getY(),
+                                CENTER_REDUCED_FIELD.getY() + entry.getKey().getX())
                         .bg(entry.getValue().getX().TUI_SPRITES.get(Side.BACK).get(2).getFirst().getY()[1]).a(" ")
                 );
             }
@@ -453,8 +453,8 @@ public class TUIView extends View {
         ((ClientGame) ClientController.getInstance().currentLobbyOrGame)
                 .getThisPlayer().getPlacedCards().sequencedEntrySet()
                 .forEach((entry) -> printToPosition(ansi().cursor(
-                        initialCardPosition.getX() - entry.getKey().getX() * CURSOR_OFFSET.getX(),
-                        initialCardPosition.getY() + entry.getKey().getY() * CURSOR_OFFSET.getY()
+                                initialCardPosition.getX() - entry.getKey().getY() * CURSOR_OFFSET.getX(),
+                                initialCardPosition.getY() + entry.getKey().getX() * CURSOR_OFFSET.getY()
                                 ).a(standardAnsi(entry.getValue().getX(), entry.getValue().getY()))
                         )
                 );

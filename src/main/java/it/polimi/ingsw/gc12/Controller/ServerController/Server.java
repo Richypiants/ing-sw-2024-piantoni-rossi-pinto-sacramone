@@ -67,7 +67,13 @@ public class Server implements Runnable {
                             }
 
                             while(true) {
-                                clientHandler.completed();
+                                try {
+                                    clientHandler.read();
+                                } catch (IOException e) {
+                                    clientHandler.close();
+                                    e.printStackTrace();
+                                    break;
+                                }
                             }
                         }
                 );
