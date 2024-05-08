@@ -17,15 +17,19 @@ public class Server implements Runnable {
     private final static Server SINGLETON_SERVER = new Server();
     public final ExecutorService connectionExecutorsPool;
     public final ExecutorService commandExecutorsPool;
+    private String serverIPAddress = "localhost";
 
     private Server() {
         //TODO: check the correct types of queues
         connectionExecutorsPool = new ThreadPoolExecutor(100, 120, Integer.MAX_VALUE, TimeUnit.MINUTES, new SynchronousQueue<>());
         commandExecutorsPool = new ThreadPoolExecutor(100, 120, Integer.MAX_VALUE, TimeUnit.MINUTES, new SynchronousQueue<>());
+        System.out.println("Inserisci l'indirizzo IP del server (leave empty for 'localhost'): ");
+        serverIPAddress = System.console().readLine();
     }
 
     public void run() {
         //RMI server setup
+        System.setProperty("java.rmi.server.hostname", serverIPAddress);
         Registry registry = null;
         try {
             registry = LocateRegistry.createRegistry(5001);
@@ -43,7 +47,7 @@ public class Server implements Runnable {
                 //keepAlive timeout and set maximum number of Threads*/)
                 //FIXME: how about the ip?
         ) {
-            serverSocket.bind(new InetSocketAddress("localhost"/*"codexnaturalis.polimi.it"*/, 5000));
+            serverSocket.bind(new InetSocketAddress(serverIPAddress/*"codexnaturalis.polimi.it"*/, 5000));
             System.out.println("[SOCKET]: Server listening on {" + serverSocket.getInetAddress() + "}");
 
             //TODO: choose behaviour (direct handoff vs unbounded vs bounded): currently chosen bounded
