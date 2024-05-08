@@ -7,14 +7,13 @@ import it.polimi.ingsw.gc12.Controller.SocketHandler;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousSocketChannel;
+import java.net.Socket;
 import java.util.concurrent.RejectedExecutionException;
 
-public class SocketClientHandler<A> extends SocketHandler<A> implements VirtualClient {
+public class SocketClientHandler extends SocketHandler implements VirtualClient {
 
-    public SocketClientHandler(AsynchronousSocketChannel channel, ByteBuffer buffer) throws IOException {
-        super(channel, buffer);
+    public SocketClientHandler(Socket socket) throws IOException {
+        super(socket);
     }
 
     @Override

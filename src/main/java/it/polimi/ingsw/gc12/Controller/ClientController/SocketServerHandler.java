@@ -8,13 +8,12 @@ import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.VirtualServer;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousSocketChannel;
+import java.net.Socket;
 
-public class SocketServerHandler<A> extends SocketHandler<A> implements VirtualServer {
+public class SocketServerHandler extends SocketHandler implements VirtualServer {
 
-    public SocketServerHandler(AsynchronousSocketChannel channel, ByteBuffer buffer) throws IOException {
-        super(channel, buffer);
+    public SocketServerHandler(Socket socket) throws IOException {
+        super(socket);
     }
 
     @Override
