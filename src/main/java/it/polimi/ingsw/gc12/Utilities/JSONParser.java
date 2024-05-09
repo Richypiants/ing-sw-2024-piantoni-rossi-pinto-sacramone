@@ -194,7 +194,7 @@ public class JSONParser {
 
     private static ArrayList<ArrayList<Triplet<String, Integer[], Integer>>> generatePlayableCardTUISprite(PlayableCard card, Side side) {
         //TODO: mappare nel colore giusto di FG e BG
-        int cardColor = (card instanceof InitialCard) ? 228/*222-255? - 231?*/ : card.getCenterBackResources().keySet().stream().findAny().orElseThrow().ANSI_COLOR;
+        int cardColor = (card instanceof InitialCard) ? 214/*222-255? - 231?*/ : card.getCenterBackResources().keySet().stream().findAny().orElseThrow().ANSI_COLOR;
         Resource cornerResource;
 
         ArrayList<ArrayList<Triplet<String, Integer[], Integer>>> sequence = new ArrayList<>();

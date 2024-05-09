@@ -1,0 +1,1 @@
+start /max java -jar out/artifacts/GC12_jar/GC12.jar

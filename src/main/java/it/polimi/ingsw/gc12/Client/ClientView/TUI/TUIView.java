@@ -10,9 +10,13 @@ import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
+import it.polimi.ingsw.gc12.Utilities.Triplet;
 import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.AnsiConsole;
 
 import java.io.Console;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,18 +32,24 @@ public class TUIView extends View {
     private final TUIListener listener;
     private static /*(?)*/ final Console console = System.console();
 
-    private final GenericPair<Integer, Integer> FIELD_SIZE = new GenericPair<>(40, 160); //x: height, y: width
-    private final GenericPair<Integer, Integer> FIELD_TOP_LEFT = new GenericPair<>(10, 95); //x: startingRow, y: startingColumn
+    private final GenericPair<Integer, Integer> FIELD_SIZE = new GenericPair<>(40, 105); //x: height, y: width
+    private final GenericPair<Integer, Integer> FIELD_TOP_LEFT = new GenericPair<>(8, 105); //x: startingRow, y: startingColumn
     private final GenericPair<Integer, Integer> FIELD_CENTER = new GenericPair<>(
-            FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() / 2,
-            FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() / 2
+            FIELD_TOP_LEFT.getX() + (FIELD_SIZE.getX() / 2),
+            FIELD_TOP_LEFT.getY() + (FIELD_SIZE.getY() / 2)
     );
     private final GenericPair<Integer, Integer> CARD_SIZE = new GenericPair<>(13, 5);
     //Manually computed over examples
     private final GenericPair<Integer, Integer> CURSOR_OFFSET = new GenericPair<>(3, 11);
 
     private TUIView() {
+        AnsiConsole.systemInstall();
         listener = TUIListener.getInstance();
+        try {
+            new ProcessBuilder("cmd", "/c", "mode con:cols=211 lines=49").inheritIO().start().waitFor();
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static TUIView getInstance() {
@@ -47,6 +57,8 @@ public class TUIView extends View {
             SINGLETON_TUI_INSTANCE = new TUIView();
         return SINGLETON_TUI_INSTANCE;
     }
+
+
 
     public static void clearTerminal() {
         System.out.print(ansi().cursor(1, 1)
@@ -287,14 +299,14 @@ public class TUIView extends View {
 
     public void printOpponentsFieldsMiniaturized() {
         GenericPair<Integer, Integer> REDUCED_FIELD_SIZE = new GenericPair<>(11, 9);
-        GenericPair<Integer, Integer> TOP_LEFT_REDUCED_FIELD = new GenericPair<>(10, 89);
+        GenericPair<Integer, Integer> TOP_LEFT_REDUCED_FIELD = new GenericPair<>(10, 85);
         GenericPair<Integer, Integer> CENTER_REDUCED_FIELD =
                 new GenericPair<>(
                         TOP_LEFT_REDUCED_FIELD.getX() + REDUCED_FIELD_SIZE.getY() / 2,
                         TOP_LEFT_REDUCED_FIELD.getY() + REDUCED_FIELD_SIZE.getX() / 2
                 );
         int FIELD_SPACING = REDUCED_FIELD_SIZE.getY() + 1;
-        printToPosition(ansi().cursor(8, 84).bold().a("Opponents' Fields: "));
+        printToPosition(ansi().cursor(8, 82).bold().a("Opponents' Fields: "));
 
         int playerIndex = 0;
         var players = ClientController.getInstance().currentLobbyOrGame.getPlayers();
@@ -388,10 +400,10 @@ public class TUIView extends View {
             printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Erase.FORWARD));
 
         ClientCard card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().getFirst();
-        printToPosition(ansi().cursor(15, 120).bold().eraseLine(Erase.FORWARD)
+        printToPosition(ansi().cursor(15, 110).bold().eraseLine(Erase.FORWARD)
                 .a("Choose which side you want to play your assigned initial card on: ").reset());
-        printToPosition(ansi().cursor(20, 120).a(upscaledAnsi(card, Side.FRONT)));
-        printToPosition(ansi().cursor(20, 180).a(upscaledAnsi(card, Side.BACK)));
+        printToPosition(ansi().cursor(20, 110).a(upscaledAnsi(card, Side.FRONT)));
+        printToPosition(ansi().cursor(20, 170).a(upscaledAnsi(card, Side.BACK)));
     }
 
     @Override
@@ -401,13 +413,13 @@ public class TUIView extends View {
         for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
             printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Erase.FORWARD));
 
-        printToPosition(ansi().cursor(15, 120).bold().eraseLine(Erase.FORWARD)
+        printToPosition(ansi().cursor(15, 110).bold().eraseLine(Erase.FORWARD)
                 .a("Choose which card you want to keep as your secret objective: ").reset());
         if (!((ChooseObjectiveCardsState) ClientController.getInstance().viewState).objectivesSelection.isEmpty()) {
             ClientCard card = ((ChooseObjectiveCardsState) ClientController.getInstance().viewState).objectivesSelection.getFirst();
-            printToPosition(ansi().cursor(20, 120).a(upscaledAnsi(card, Side.FRONT)));
+            printToPosition(ansi().cursor(20, 110).a(upscaledAnsi(card, Side.FRONT)));
             card = ((ChooseObjectiveCardsState) ClientController.getInstance().viewState).objectivesSelection.get(1);
-            printToPosition(ansi().cursor(20, 180).a(upscaledAnsi(card, Side.FRONT)));
+            printToPosition(ansi().cursor(20, 170).a(upscaledAnsi(card, Side.FRONT)));
         }
     }
 
@@ -441,23 +453,61 @@ public class TUIView extends View {
                 );
 
         final GenericPair<Integer, Integer> initialCardCenter = new GenericPair<>(
-                FIELD_CENTER.getX() + (int) -fieldCenterOfGravity.getX() * CURSOR_OFFSET.getX(),
-                FIELD_CENTER.getY() + (int) -fieldCenterOfGravity.getY() * CURSOR_OFFSET.getY()
+                FIELD_CENTER.getX() + (int) (fieldCenterOfGravity.getX() * CURSOR_OFFSET.getX()),
+                FIELD_CENTER.getY() + (int) (fieldCenterOfGravity.getY() * CURSOR_OFFSET.getY())
         );
 
         final GenericPair<Integer, Integer> initialCardPosition = new GenericPair<>(
-                initialCardCenter.getX() - CARD_SIZE.getX()/2,
-                initialCardCenter.getY() - CARD_SIZE.getY()/2
+                initialCardCenter.getX() - CARD_SIZE.getY()/2,
+                initialCardCenter.getY() - CARD_SIZE.getX()/2
         );
 
         ((ClientGame) ClientController.getInstance().currentLobbyOrGame)
                 .getThisPlayer().getPlacedCards().sequencedEntrySet()
                 .forEach((entry) -> printToPosition(ansi().cursor(
-                                initialCardPosition.getX() - entry.getKey().getY() * CURSOR_OFFSET.getX(),
-                                initialCardPosition.getY() + entry.getKey().getX() * CURSOR_OFFSET.getY()
+                                initialCardPosition.getX() - (entry.getKey().getY() * CURSOR_OFFSET.getX()),
+                                initialCardPosition.getY() + (entry.getKey().getX() * CURSOR_OFFSET.getY())
                                 ).a(standardAnsi(entry.getValue().getX(), entry.getValue().getY()))
                         )
                 );
+    }
+
+    public void showLeaderboard(ArrayList<Triplet<String, Integer, Integer>> leaderboard){
+        int FIRST_ROW = 15;
+        int ROW_OFFSET = 2;
+        int index = 1;
+
+        clearTerminal();
+
+        //LENGTH: 70
+
+        System.out.println(ansi().cursor(5,72).fg(Resource.QUILL.ANSI_COLOR).a(" _      _____  ___ ______ _________________  _____  ___  ____________").reset());
+        System.out.println(ansi().cursor(6,72).fg(Resource.FUNGI.ANSI_COLOR).a("| |    |  ___|/ _ \\|  _  \\  ___| ___ \\ ___ \\|  _  |/ _ \\ | ___ \\  _  \\").reset());
+        System.out.println(ansi().cursor(7,72).fg(Resource.ANIMAL.ANSI_COLOR).a("| |    | |__ / /_\\ \\ | | | |__ | |_/ / |_/ /| | | / /_\\ \\| |_/ / | | |").reset());
+        System.out.println(ansi().cursor(8,72).fg(Resource.PLANT.ANSI_COLOR).a("| |    |  __||  _  | | | |  __||    /| ___ \\| | | |  _  ||    /| | | |").reset());
+        System.out.println(ansi().cursor(9,72).fg(Resource.INSECT.ANSI_COLOR).a("| |____| |___| | | | |/ /| |___| |\\ \\| |_/ /\\.\\_/ / | | || |\\ \\| |/ /").reset());
+        System.out.println(ansi().cursor(10,72).fg(Resource.QUILL.ANSI_COLOR).a("\\_____/\\____/\\_| |_/___/ \\____/\\_| \\_\\____/  \\___/\\_| |_/\\_| \\_|___/").reset());
+
+
+        System.out.println(ansi()
+                .cursor(FIRST_ROW, 120).a("Nickname")
+                .cursor(FIRST_ROW, 140).a("Total Points")
+                .cursor(FIRST_ROW,160).a("Points from Secret Objective")
+        );
+
+        for(var row: leaderboard){
+
+            System.out.println(ansi()
+                    .cursor(FIRST_ROW+(index*ROW_OFFSET),110).a("[#" + index + "]")
+                    .cursor(FIRST_ROW+(index*ROW_OFFSET),120).a(row.getX())
+                    .cursor(FIRST_ROW+(index*ROW_OFFSET),143).a(row.getY() + " pt.")
+                    .cursor(FIRST_ROW+(index*ROW_OFFSET),172).a(row.getZ() + " pt.")
+            );
+
+            index++;
+        }
+
+
     }
 
     @Override

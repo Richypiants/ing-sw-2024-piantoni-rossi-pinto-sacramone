@@ -28,7 +28,7 @@ public class ConnectToServerScreenState extends ViewState {
                 ClientController.getInstance().errorLogger.log(e1);
 
                 try {
-                    sleep(10000);
+                    sleep(1000);
                 } catch (Exception e2) {
                     ClientController.getInstance().errorLogger.log(e2);
                 }

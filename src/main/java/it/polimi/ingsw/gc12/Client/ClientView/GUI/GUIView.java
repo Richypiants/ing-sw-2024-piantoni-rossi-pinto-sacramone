@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc12.Client.ClientView.GUI;
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Utilities.Triplet;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,6 +29,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class GUIView extends View {
@@ -429,6 +431,11 @@ public class GUIView extends View {
 
     @Override
     public void showHand() {
+
+    }
+
+    @Override
+    public void showLeaderboard(ArrayList<Triplet<String, Integer, Integer>> POINT_STATS) {
 
     }
 

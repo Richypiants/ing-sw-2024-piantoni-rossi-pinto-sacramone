@@ -10,8 +10,8 @@ public class PlayerTurnDrawState extends GameScreenState {
 
     public PlayerTurnDrawState() {
         TUICommands = List.of(
-                "'drawFromDeck <deck>' [resource][gold] per pescare una carta coperta dal deck di carte risorsa|oro",
-                "'drawFromVisibleCards <deck> <position>' [resource][gold] [1][2] per pescare una carta scoperta dal deck di carte risorsa|oro",
+                "'drawFromDeck <deck>' [resource][gold]",
+                "'drawFromVisibleCards <deck> <position>' [resource][gold] [1][2]",
                 "'broadcastMessage <message>' per inviare un messaggio in gioco",
                 "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco"
         );
