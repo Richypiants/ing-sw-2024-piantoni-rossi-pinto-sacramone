@@ -55,7 +55,7 @@ public class PlayerTurnDrawState extends GameState {
                 }
 
             try {
-                keyReverseLookup(ServerController.getInstance().players, target::equals)
+                keyReverseLookup(ServerController.getInstance().players, player::equals)
                         .requestToClient(
                                 new ReplaceCardCommand(
                                         List.of(
@@ -110,7 +110,7 @@ public class PlayerTurnDrawState extends GameState {
                 }
 
             try {
-                keyReverseLookup(ServerController.getInstance().players, target::equals)
+                keyReverseLookup(ServerController.getInstance().players, player::equals)
                         .requestToClient(
                                 new ReplaceCardCommand(
                                         List.of(
@@ -143,6 +143,7 @@ public class PlayerTurnDrawState extends GameState {
         if (counter == 0) {
             //TODO: send alert a tutti i giocatori che la partita è finita e si contano i punti? (vediamo)
             GAME.setState(new VictoryCalculationState(GAME, currentPlayer, counter));
+            GAME.getCurrentState().transition();
             return;
         }
         nextPlayer();

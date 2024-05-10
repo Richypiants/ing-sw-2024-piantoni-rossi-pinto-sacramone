@@ -29,7 +29,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class GUIView extends View {
@@ -435,7 +435,7 @@ public class GUIView extends View {
     }
 
     @Override
-    public void showLeaderboard(ArrayList<Triplet<String, Integer, Integer>> POINT_STATS) {
+    public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINT_STATS) {
 
     }
 

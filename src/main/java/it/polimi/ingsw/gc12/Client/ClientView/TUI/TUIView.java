@@ -16,7 +16,6 @@ import org.fusesource.jansi.AnsiConsole;
 
 import java.io.Console;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -454,8 +453,8 @@ public class TUIView extends View {
                 );
 
         final GenericPair<Integer, Integer> initialCardCenter = new GenericPair<>(
-                FIELD_CENTER.getX() + (int) (fieldCenterOfGravity.getX() * CURSOR_OFFSET.getX()),
-                FIELD_CENTER.getY() + (int) (fieldCenterOfGravity.getY() * CURSOR_OFFSET.getY())
+                FIELD_CENTER.getX() - (int) (fieldCenterOfGravity.getX() * CURSOR_OFFSET.getX()),
+                FIELD_CENTER.getY() - (int) (fieldCenterOfGravity.getY() * CURSOR_OFFSET.getY())
         );
 
         final GenericPair<Integer, Integer> initialCardPosition = new GenericPair<>(
@@ -473,7 +472,7 @@ public class TUIView extends View {
                 );
     }
 
-    public void showLeaderboard(ArrayList<Triplet<String, Integer, Integer>> leaderboard){
+    public void showLeaderboard(List<Triplet<String, Integer, Integer>> leaderboard) {
         int FIRST_ROW = 15;
         int ROW_OFFSET = 2;
         int index = 1;
@@ -482,11 +481,12 @@ public class TUIView extends View {
 
         //LENGTH: 70
 
+        //FIXME: rimettere il punto (tolto per fare test su Mac)
         System.out.println(ansi().cursor(5,72).fg(Resource.QUILL.ANSI_COLOR).a(" _      _____  ___ ______ _________________  _____  ___  ____________").reset());
         System.out.println(ansi().cursor(6,72).fg(Resource.FUNGI.ANSI_COLOR).a("| |    |  ___|/ _ \\|  _  \\  ___| ___ \\ ___ \\|  _  |/ _ \\ | ___ \\  _  \\").reset());
         System.out.println(ansi().cursor(7,72).fg(Resource.ANIMAL.ANSI_COLOR).a("| |    | |__ / /_\\ \\ | | | |__ | |_/ / |_/ /| | | / /_\\ \\| |_/ / | | |").reset());
         System.out.println(ansi().cursor(8,72).fg(Resource.PLANT.ANSI_COLOR).a("| |    |  __||  _  | | | |  __||    /| ___ \\| | | |  _  ||    /| | | |").reset());
-        System.out.println(ansi().cursor(9,72).fg(Resource.INSECT.ANSI_COLOR).a("| |____| |___| | | | |/ /| |___| |\\ \\| |_/ /\\.\\_/ / | | || |\\ \\| |/ /").reset());
+        System.out.println(ansi().cursor(9, 72).fg(Resource.INSECT.ANSI_COLOR).a("| |____| |___| | | | |/ /| |___| |\\ \\| |_/ /\\ \\_/ / | | || |\\ \\| |/ /").reset());
         System.out.println(ansi().cursor(10,72).fg(Resource.QUILL.ANSI_COLOR).a("\\_____/\\____/\\_| |_/___/ \\____/\\_| \\_\\____/  \\___/\\_| |_/\\_| \\_|___/").reset());
 
 
@@ -508,7 +508,9 @@ public class TUIView extends View {
             index++;
         }
 
-
+        printToPosition(ansi().cursor(40, 2).a("Premi Invio per tornare alla schermata delle lobby..."));
+        System.console();
+        ClientController.getInstance().viewState.keyPressed();
     }
 
     @Override

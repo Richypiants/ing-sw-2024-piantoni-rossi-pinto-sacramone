@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseInitialCardsState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.GameScreenState;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LeaderboardScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LobbyScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
@@ -226,6 +227,8 @@ public class ClientController implements ClientControllerInterface {
 
     public void endGame(List<Triplet<String, Integer, Integer>> pointsStats) {
         //TODO: stampare
+        viewState = new LeaderboardScreenState(pointsStats);
+        viewState.executeState();
     }
 
     public void addChatMessage(String senderNickname, String chatMessage, boolean isPrivate) {

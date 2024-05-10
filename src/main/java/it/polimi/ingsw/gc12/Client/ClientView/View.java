@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc12.Client.ClientView;
 
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public abstract class View { //FIXME: turn into interface maybe?
 
@@ -28,7 +28,7 @@ public abstract class View { //FIXME: turn into interface maybe?
 
     public abstract void showCommonPlacedCards();
 
-    public abstract void showLeaderboard(ArrayList<Triplet<String, Integer, Integer>> POINT_STATS);
+    public abstract void showLeaderboard(List<Triplet<String, Integer, Integer>> POINT_STATS);
 
     public abstract void showField();
 
