@@ -121,8 +121,6 @@ public class InGamePlayer extends Player {
                 throw new NotEnoughResourcesException();
 
         OWN_FIELD.addCard(coordinates, card, playedSide);
-        if (playedSide.equals(Side.FRONT))
-            increasePoints(card.awardPoints(this));
 
         //Foreach Corner of the given card that is valid and non-empty, increment the corresponding Resource by 1
         for (var res : card.getCorners(playedSide)
@@ -166,6 +164,9 @@ public class InGamePlayer extends Player {
                 .filter((coveredResource) ->
                         !(coveredResource.equals(Resource.NOT_A_CORNER) || coveredResource.equals(Resource.EMPTY))
                 ).forEach((coveredResource) -> incrementOwnedResource(coveredResource, -1));
+
+        if (playedSide.equals(Side.FRONT))
+            increasePoints(card.awardPoints(this));
 
         CARDS_IN_HAND.remove(card);
     }

@@ -46,6 +46,7 @@ public class TUIView extends View {
         AnsiConsole.systemInstall();
         listener = TUIListener.getInstance();
         try {
+            //FIXME: on Mac bash instead of cmd (on Linux too?)
             new ProcessBuilder("cmd", "/c", "mode con:cols=211 lines=49").inheritIO().start().waitFor();
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
@@ -328,9 +329,9 @@ public class TUIView extends View {
 
     public void updateChat() {
         List<String> chatLog = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getChatLog();
-        printToPosition(ansi().cursor(2, 130).bold().a("Last chat messages: ").reset());
+        printToPosition(ansi().cursor(2, 120).bold().a("Last chat messages: ").reset());
         for (int i = 0; i < 3; i++)
-            printToPosition(ansi().cursor(3 + i, 132).eraseLine(Erase.FORWARD)
+            printToPosition(ansi().cursor(3 + i, 122).eraseLine(Erase.FORWARD)
                     .a((chatLog.size() >= 3 - i) ? chatLog.get(chatLog.size() - 3 + i) : "")
             );
     }

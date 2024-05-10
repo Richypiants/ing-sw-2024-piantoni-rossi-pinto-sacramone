@@ -30,6 +30,8 @@ public class PlayerTurnPlayState extends GameState {
         if (!target.equals(GAME.getPlayers().get(currentPlayer)))
             throw new UnexpectedPlayerException();
 
+        target.placeCard(coordinates, card, playedSide);
+
         System.out.println("[SERVER]: Sending card placed by current player to clients in "+ GAME.toString());
         for (var player : GAME.getPlayers())
             try {
@@ -40,7 +42,6 @@ public class PlayerTurnPlayState extends GameState {
                 e.printStackTrace();
             }
 
-        target.placeCard(coordinates, card, playedSide);
         transition();
         //FIXME: controllare che non si possa giocare due carte nello stesso turno! in teoria rendendo atomica
         // questa intera funzione dovrebbe garantirlo
