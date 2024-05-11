@@ -6,7 +6,6 @@ import it.polimi.ingsw.gc12.Model.InGamePlayer;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ClientGame extends GameLobby implements Serializable {
@@ -28,6 +27,7 @@ public class ClientGame extends GameLobby implements Serializable {
      */
     private ClientCard ownObjective;
     private int currentRound;
+    private int currentPlayerIndex;
     private final List<String> chatLog;
     /**
      *
@@ -54,6 +54,7 @@ public class ClientGame extends GameLobby implements Serializable {
         this.topDeckGoldCard = clientCards.get(game.peekFrom(game.getGoldCardsDeck()) == null ? -1 : game.peekFrom(game.getGoldCardsDeck()).ID);
         this.ownObjective = myself.getSecretObjective() == null ? null : clientCards.get(myself.getSecretObjective().ID);
         this.currentRound = 0;
+        this.currentPlayerIndex = -1;
         this.chatLog = new ArrayList<>();
     }
 
@@ -165,9 +166,11 @@ public class ClientGame extends GameLobby implements Serializable {
         return currentRound;
     }
 
-    public void increaseRound(){
-        currentRound++;
-    }
+    public void setCurrentRound(int currentRound){ this.currentRound = currentRound; }
+
+    public int getCurrentPlayerIndex() {return currentPlayerIndex; }
+
+    public void setCurrentPlayerIndex(int currentPlayerIndex) { this. currentPlayerIndex = currentPlayerIndex; }
 
     public List<String> getChatLog() {
         return Collections.unmodifiableList(chatLog);

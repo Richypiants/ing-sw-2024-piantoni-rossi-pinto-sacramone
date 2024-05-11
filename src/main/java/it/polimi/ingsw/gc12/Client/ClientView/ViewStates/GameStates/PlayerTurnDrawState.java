@@ -9,12 +9,15 @@ import java.util.List;
 public class PlayerTurnDrawState extends GameScreenState {
 
     public PlayerTurnDrawState() {
-        TUICommands = List.of(
-                "'drawFromDeck <deck>' [resource][gold]",
-                "'drawFromVisibleCards <deck> <position>' [resource][gold] [1][2]",
-                "'broadcastMessage <message>' per inviare un messaggio in gioco",
-                "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco"
-        );
+        TUICommands = ClientController.getInstance().isThisClientTurn() ?
+                List.of(
+                        "'drawFromDeck <deck>' [resource][gold]",
+                        "'drawFromVisibleCards <deck> <position>' [resource][gold] [1][2]",
+                        "'broadcastMessage <message>' per inviare un messaggio in gioco",
+                        "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco") :
+                List.of(
+                        "'broadcastMessage <message>' per inviare un messaggio in gioco",
+                        "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco");
     }
 
     @Override

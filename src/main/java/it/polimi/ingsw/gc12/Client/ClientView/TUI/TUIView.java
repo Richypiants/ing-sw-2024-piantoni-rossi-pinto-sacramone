@@ -213,8 +213,15 @@ public class TUIView extends View {
         //FIXME: al momento comandi filtrati per stato di gioco, replicati in ogni viewState, orribile anche perchè alla GUI non servono...
         // però forse possiamo avere una lista di prompt e caricare quelli da mostrare a seconda di TUI o GUI?
         // (per esempio, trascina una carta per posizionarla)
+
         int i = 42;
-        printToPosition(ansi().cursor(i++, 2).bold().a("Available commands list:"));
+        ClientGame thisGame = ((ClientGame)ClientController.getInstance().currentLobbyOrGame);
+
+        Ansi printedMessage = thisGame.getCurrentPlayerIndex() != -1 ?
+                ansi().cursor(i++, 2).bold().a("It is ").fg(9).a(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname()).reset().bold().a("'s turn! Your available commands are: ") :
+                ansi().cursor(i++, 2).bold().a("[SETUP PHASE] Every player needs to do an action! Your available commands are: ");
+
+        printToPosition(printedMessage);
         for (var command : ClientController.getInstance().viewState.TUICommands)
             printToPosition(ansi().cursor(i++, 4).a(command));
     }
@@ -241,6 +248,7 @@ public class TUIView extends View {
 
         for (ClientPlayer player : ((ClientGame)ClientController.getInstance().currentLobbyOrGame).getPlayers()) {
             EnumMap<Resource, Integer> playerResources = player.getOwnedResources();
+
             printToPosition(ansi().cursor(i, 2).a("[#" + (i - 2) + "] ").a(player.getNickname())
                     .cursor(i, 26).a(player.getPoints()) //POINTS
                     .cursor(i, 36).a(playerResources.containsKey(Resource.FUNGI) ? playerResources.get(Resource.FUNGI) : "0") //FUNGI
@@ -307,6 +315,8 @@ public class TUIView extends View {
                 );
         int FIELD_SPACING = REDUCED_FIELD_SIZE.getY() + 1;
         printToPosition(ansi().cursor(8, 82).bold().a("Opponents' Fields: "));
+        /*TODO: Signal to players that the miniaturized fields are truncated and if you want to see them full-sized
+           you should call xxxCommand*/
 
         int playerIndex = 0;
         var players = ClientController.getInstance().currentLobbyOrGame.getPlayers();
@@ -315,7 +325,11 @@ public class TUIView extends View {
             LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> field =
                     ((ClientPlayer) player).getPlacedCards();
 
-            for (var entry : field.sequencedEntrySet()) {
+            for (var entry : field.sequencedEntrySet().stream()
+                    .filter( (entry) ->
+                            Math.abs(entry.getKey().getX()) <= REDUCED_FIELD_SIZE.getX()/2 &&
+                            Math.abs(entry.getKey().getY()) <= REDUCED_FIELD_SIZE.getY()/2)
+                    .toList()) {
                 printToPosition(ansi().cursor(
                                 (playerIndex * FIELD_SPACING) + CENTER_REDUCED_FIELD.getX() - entry.getKey().getY(),
                                 CENTER_REDUCED_FIELD.getY() + entry.getKey().getX())
@@ -453,7 +467,7 @@ public class TUIView extends View {
                 );
 
         final GenericPair<Integer, Integer> initialCardCenter = new GenericPair<>(
-                FIELD_CENTER.getX() - (int) (fieldCenterOfGravity.getX() * CURSOR_OFFSET.getX()),
+                FIELD_CENTER.getX() + (int) (fieldCenterOfGravity.getX() * CURSOR_OFFSET.getX()),
                 FIELD_CENTER.getY() - (int) (fieldCenterOfGravity.getY() * CURSOR_OFFSET.getY())
         );
 

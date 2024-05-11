@@ -130,7 +130,7 @@ public class Game extends GameLobby {
     /**
      * Returns the player that is currently playing
      */
-    public Player getCurrentPlayer() {
+    public InGamePlayer getCurrentPlayer() {
         return getCurrentState().getCurrentPlayer();
     }
 

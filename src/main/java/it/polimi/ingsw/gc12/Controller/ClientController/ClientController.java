@@ -179,11 +179,8 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public synchronized void receiveCard(List<Integer> cardIDs) {
-        for (var cardID : cardIDs) {
-            //TODO: cancellare
-            System.err.println(cardID);
+        for (var cardID : cardIDs)
             ((ClientGame) currentLobbyOrGame).addCardToHand(cardsList.get(cardID));
-        }
 
         viewState.executeState();
     }
@@ -208,11 +205,14 @@ public class ClientController implements ClientControllerInterface {
                         ((ClientGame) currentLobbyOrGame).setCommonObjectives(card, cardPlacement.getZ());
             }
         }
-
-        viewState.executeState();
     }
 
-    public synchronized void transition() {
+    public synchronized void transition(int round, int currentPlayerIndex) {
+        if(round != 0 )
+            ((ClientGame) currentLobbyOrGame).setCurrentRound(round);
+        if(currentPlayerIndex != -1 )
+            ((ClientGame) currentLobbyOrGame).setCurrentPlayerIndex(currentPlayerIndex);
+
         ((GameScreenState) viewState).transition();
         viewState.executeState();
     }
@@ -233,5 +233,10 @@ public class ClientController implements ClientControllerInterface {
 
     public void addChatMessage(String senderNickname, String chatMessage, boolean isPrivate) {
         viewState.addChatMessage(((isPrivate) ? "<Private> " : "") + "[" + senderNickname + "] " + chatMessage);
+    }
+
+    public boolean isThisClientTurn(){
+        ClientGame game = (ClientGame) currentLobbyOrGame;
+        return game.getPlayers().get(game.getCurrentPlayerIndex()).getNickname().equals(game.getThisPlayer().getNickname());
     }
 }

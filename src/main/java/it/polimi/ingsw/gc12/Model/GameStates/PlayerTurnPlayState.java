@@ -61,7 +61,12 @@ public class PlayerTurnPlayState extends GameState {
             //TODO: manage exceptions
             try {
                 VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
-                target.requestToClient(new GameTransitionCommand());
+                target.requestToClient(
+                        new GameTransitionCommand(
+                                GAME.getTurnNumber(),
+                                GAME.getPlayers().indexOf(GAME.getCurrentPlayer())
+                        )
+                );
             } catch (Exception e) {
                 e.printStackTrace();
             }

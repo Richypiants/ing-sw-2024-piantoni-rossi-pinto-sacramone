@@ -42,7 +42,7 @@ public interface ClientControllerInterface extends ControllerInterface {
 
     void toggleActive(String nickname);
 
-    void transition();
+    void transition(int round, int currentPlayerIndex);
 
     void endGame(List<Triplet<String, Integer, Integer>> pointsStats);
 

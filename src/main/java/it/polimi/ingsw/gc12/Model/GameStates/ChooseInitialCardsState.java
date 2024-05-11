@@ -79,6 +79,7 @@ public class ChooseInitialCardsState extends GameState {
             }
         }
 
+
         CardDeck<ObjectiveCard> objectivesDeck = new CardDeck<>(ServerController.getInstance().cardsList.values().stream()
                 .filter((card -> card instanceof ObjectiveCard))
                 .map((card) -> (ObjectiveCard) card)
@@ -104,17 +105,20 @@ public class ChooseInitialCardsState extends GameState {
             e.printStackTrace();
         }
 
-        ArrayList<Triplet<Integer, String, Integer>> objectiveCardPlacements = new ArrayList<>();
+        ArrayList<Triplet<Integer, String, Integer>> topDeckAndObjectiveCardPlacements = new ArrayList<>();
         for (int i = 0; i < GAME.getCommonObjectives().length; i++)
-            objectiveCardPlacements.add(new Triplet<>(GAME.getCommonObjectives()[i].ID, "objective_visible", i));
+            topDeckAndObjectiveCardPlacements.add(new Triplet<>(GAME.getCommonObjectives()[i].ID, "objective_visible", i));
 
-        System.out.println("[SERVER]: Sending Common and Personal Objectives, GameTransitionCommand to clients in "+ GAME.toString());
+        topDeckAndObjectiveCardPlacements.add(new Triplet<>(GAME.getResourceCardsDeck().peek().ID, "resource_deck", -1));
+        topDeckAndObjectiveCardPlacements.add(new Triplet<>(GAME.getGoldCardsDeck().peek().ID, "gold_deck", -1));
+
+        System.out.println("[SERVER]: Sending Top of the Deck, Common and Personal Objectives, GameTransitionCommand to clients in "+ GAME.toString());
         for (var targetPlayer : GAME.getPlayers()) {
             //TODO: manage exceptions
             try {
                 VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
-                //Sending the common objective cards
-                target.requestToClient(new ReplaceCardCommand(objectiveCardPlacements));
+                //Sending the common objective cards and the Top of the Deck
+                target.requestToClient(new ReplaceCardCommand(topDeckAndObjectiveCardPlacements));
                 //Request view state transition to client
                 target.requestToClient(new GameTransitionCommand());
                 //Sending the personal objective selection

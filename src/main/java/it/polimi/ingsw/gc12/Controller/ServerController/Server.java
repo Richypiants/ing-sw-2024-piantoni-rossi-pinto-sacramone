@@ -66,6 +66,7 @@ public class Server implements Runnable {
                                 throw new RuntimeException(e);
                             }
 
+
                             while(true) {
                                 try {
                                     clientHandler.read();

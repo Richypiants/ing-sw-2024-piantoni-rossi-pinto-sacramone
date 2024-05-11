@@ -54,12 +54,18 @@ public class ChooseObjectiveCardsState extends GameState {
         super.transition();
 
         System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
+        GAME.increaseTurn();
         for (var targetPlayer : GAME.getPlayers()) {
             //TODO: manage exceptions
             try {
                 VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
 
-                target.requestToClient(new GameTransitionCommand());
+                target.requestToClient(
+                        new GameTransitionCommand(
+                                GAME.getTurnNumber(),
+                                GAME.getPlayers().indexOf(GAME.getCurrentPlayer())
+                        )
+                );
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -4,7 +4,6 @@ import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -26,7 +25,7 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
     /**
     Returns the player who is currently playing
      */
-    public Player getCurrentPlayer() {
+    public InGamePlayer getCurrentPlayer() {
         return GAME.getPlayers().get(currentPlayer);
     }
 
@@ -35,9 +34,9 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
     has played in the current turn
      */
     public void nextPlayer() {
-        if (currentPlayer == GAME.getPlayers().size()) {
+        if (currentPlayer == GAME.getPlayers().size()-1)
             GAME.increaseTurn();
-        }
+
         do {
             currentPlayer = (currentPlayer + 1) % GAME.getPlayers().size();
         } while(!GAME.getPlayers().get(currentPlayer).isActive());

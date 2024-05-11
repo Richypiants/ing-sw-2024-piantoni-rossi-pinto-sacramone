@@ -9,12 +9,16 @@ import java.util.List;
 public class PlayerTurnPlayState extends GameScreenState {
 
     public PlayerTurnPlayState() {
-        TUICommands = List.of(
-                "'placeCard <x> <y> <inHandPosition> <side>' (x,y): coordinate di piazzamento,",
-                "    inHandPosition: [1]...[n], side: [front][back]",
-                "'broadcastMessage <message>' per inviare un messaggio in gioco",
-                "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco"
-        );
+        TUICommands =
+                ClientController.getInstance().isThisClientTurn() ?
+                List.of(
+                    "'placeCard <x> <y> <inHandPosition> <side>' (x,y): coordinate di piazzamento,",
+                    "    inHandPosition: [1]...[n], side: [front][back]",
+                    "'broadcastMessage <message>' per inviare un messaggio in gioco",
+                    "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco") :
+                List.of(
+                    "'broadcastMessage <message>' per inviare un messaggio in gioco",
+                    "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco");
     }
 
     @Override
