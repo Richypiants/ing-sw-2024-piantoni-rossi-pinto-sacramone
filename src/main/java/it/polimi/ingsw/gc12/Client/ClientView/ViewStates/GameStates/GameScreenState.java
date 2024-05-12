@@ -46,9 +46,12 @@ public abstract class GameScreenState extends ViewState {
 
     @Override
     public void addChatMessage(String message) {
-        ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message.substring(0, 100));
-        if (message.length() > 100)
-            ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message.substring(100, 200));
+        if (message.length() < 100)
+            ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message);
+        else {
+            ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message.substring(0, 100));
+            ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message.substring(100));
+        }
         ClientController.getInstance().view.updateChat();
     }
 

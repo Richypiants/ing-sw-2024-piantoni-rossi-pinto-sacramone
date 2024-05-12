@@ -53,7 +53,7 @@ public class ViewModel {
     }
 
     public boolean inLobbyOrGame() {
-        return currentLobbyOrGame != null;
+        return currentLobbyOrGame.getY() != null;
     }
 
     //FIXME: passare solo lo UUID?
