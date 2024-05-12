@@ -244,12 +244,20 @@ public class JSONParser {
             int numberOfResources = card.getCenterBackResources().values().stream().mapToInt((value) -> value).sum();
             sequence.get(2).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (13 - numberOfResources) / 2));
 
-            for (var entry : card.getCenterBackResources().entrySet())
+
+            boolean needsMiddleSpace = card.getCenterBackResources().size() == 2;
+
+            for (var entry : card.getCenterBackResources().entrySet()) {
                 sequence.get(2).add(new Triplet<>(entry.getKey().SYMBOL,
                         new Integer[]{entry.getKey().ANSI_COLOR,
                                 entry.getKey().equals(Resource.NOT_A_CORNER) ? cardColor : Resource.EMPTY.ANSI_COLOR
                         }, 1));
-            sequence.get(2).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (13 - numberOfResources + 1)/2));
+                if(needsMiddleSpace){
+                    sequence.get(2).add(new Triplet<>(" ", new Integer[]{-1, -1}, 1));
+                    needsMiddleSpace = false;
+                }
+            }
+            sequence.get(2).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (13 - numberOfResources)/2));
         } else {
             sequence.get(2).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 13));
         }
@@ -266,12 +274,18 @@ public class JSONParser {
             int numberOfResources = neededResources.values().stream().mapToInt((value) -> value).sum();
             sequence.get(4).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (11 - numberOfResources)/2));
 
+            boolean trailingSpace = (numberOfResources == 4);
+
             for (var entry : neededResources.entrySet())
                 sequence.get(4).add(new Triplet<>(entry.getKey().SYMBOL,
                         new Integer[]{entry.getKey().ANSI_COLOR,
                                 entry.getKey().equals(Resource.NOT_A_CORNER) ? cardColor : Resource.EMPTY.ANSI_COLOR
                         }, entry.getValue()));
-            sequence.get(4).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (11 - numberOfResources + 1)/2));
+
+            if(trailingSpace)
+                sequence.get(4).add(new Triplet<>(" ", new Integer[]{-1, -1}, 1));
+
+            sequence.get(4).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, (11 - numberOfResources)/2));
         } else {
             sequence.get(4).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 11));
         }

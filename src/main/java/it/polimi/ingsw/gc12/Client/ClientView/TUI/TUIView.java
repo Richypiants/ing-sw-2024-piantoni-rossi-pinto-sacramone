@@ -533,7 +533,7 @@ public class TUIView extends View {
         }
 
         printToPosition(ansi().cursor(40, 2).a("Premi Invio per tornare alla schermata delle lobby..."));
-        System.console();
+        System.console().readLine();
         ClientController.getInstance().viewState.keyPressed();
     }
 

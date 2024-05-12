@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc12.Model.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.EndGameCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.SetLobbiesCommand;
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.UpdateLobbyCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
@@ -53,6 +52,12 @@ public class VictoryCalculationState extends GameState {
 
         //TODO: here we should destroy the file with the saved serialized data
 
+
+        /**
+         * OLD CODE that transforms the game into a lobby.
+         * At the moment we're destroying the lobby.
+         *
+         *
         //Removing disconnected players (we were keeping them until end of game hoping they would reconnect)
         for (var player : players)
             if(!player.isActive())
@@ -97,6 +102,37 @@ public class VictoryCalculationState extends GameState {
         } //TODO: This will be deleted or well-handled.
         catch (Throwable e) {
             throw new RuntimeException(e);
+        }**/
+
+        //Clearing the mappings to the game
+        UUID lobbyUUID = keyReverseLookup(ServerController.getInstance().lobbiesAndGames, GAME::equals);
+        //FIXME: Using a GameLobby to convert the instances of InGamePlayer to Player and then discarding it. Better solutions?
+        GameLobby returnLobby = GAME.toLobby();
+
+        System.out.println("[SERVER]: Sending lobbies to clients previously in "+ GAME);
+        for(var player : returnLobby.getPlayers()) {
+            ServerController.getInstance().players.put(
+                    keyReverseLookup(ServerController.getInstance().players, player::equals),
+                    player
+            );
+            ServerController.getInstance().playersToLobbiesAndGames.remove(player);
+
+            // Sending lobbies list to players who were in this game (because they didn't have it updated)
+            try {
+                keyReverseLookup(ServerController.getInstance().players, player::equals)
+                        //TODO : Handle exceptions in the correct way and not like this
+                        .requestToClient(
+                                new SetLobbiesCommand(
+                                        ServerController.getInstance().lobbiesAndGames.entrySet().stream()
+                                                .filter((entry) -> !(entry.getValue() instanceof Game))
+                                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                                )
+                        );
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
+
+        ServerController.getInstance().lobbiesAndGames.remove(lobbyUUID);
     }
 }

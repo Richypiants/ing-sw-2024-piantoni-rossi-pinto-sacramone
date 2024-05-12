@@ -132,10 +132,11 @@ public class ClientController implements ClientControllerInterface {
         }
 
         //Ristampare tutte le lobby nella schermata in qualsiasi caso
-        viewState = new LobbyScreenState();
-        viewState.executeState();
+        if(!(viewState instanceof LeaderboardScreenState)) {
+            viewState = new LobbyScreenState();
+            viewState.executeState();
+        }
     }
-
     //FIXME: da qui in poi i synchronized servono davvero oppure risolvendo la writePending e facendo una coda di comandi si risolve?
     public synchronized void startGame(UUID lobbyUUID, ClientGame gameDTO) {
         updateLobby(lobbyUUID, gameDTO);
