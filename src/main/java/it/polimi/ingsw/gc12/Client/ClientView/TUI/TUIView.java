@@ -495,6 +495,18 @@ public class TUIView extends View {
                                 ).a(standardAnsi(entry.getValue().getX(), entry.getValue().getY()))
                         )
                 );
+
+        ClientController.getInstance().viewModel.getGame()
+                .getThisPlayer().getOpenCorners()
+                .forEach((corner) -> printToPosition(ansi().cursor(
+                                                initialCardPosition.getX() - (corner.getY() * CURSOR_OFFSET.getX()) + 2,
+                                                initialCardPosition.getY() + (corner.getX() * CURSOR_OFFSET.getY()) + 5
+                                        )
+                                        .cursorMove(-String.valueOf(corner.getX()).length(), 0)
+                                        //.a(AnsiRenderer.renderCodes("faint", "blink_slow")) FIXME: perchè non funziona?
+                                        .a("[" + corner.getX() + "," + corner.getY() + "]")
+                        )
+                );
     }
 
     public void showLeaderboard(List<Triplet<String, Integer, Integer>> leaderboard) {
