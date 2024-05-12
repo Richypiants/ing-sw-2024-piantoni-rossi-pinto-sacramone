@@ -76,13 +76,17 @@ public class TUIListener {
                 }
                 case "leaveLobby" -> currentState.leaveLobby();
                 case "broadcastMessage" -> {
+                    String message = tokens.stream().reduce("", (a, b) -> a + " " + b);
                     currentState.broadcastMessage(
-                            tokens.stream().reduce("", (a, b) -> a + " " + b).substring(0, 200)
+                            message.substring(0, Math.min(message.length(), 200))
                     );
                 }
-                case "directMessage" -> currentState.directMessage(
-                        tokens.removeFirst(), tokens.stream().reduce("", (a, b) -> a + " " + b).substring(0, 200)
-                );
+                case "directMessage" -> {
+                    String message = tokens.stream().reduce("", (a, b) -> a + " " + b);
+                    currentState.directMessage(
+                            tokens.removeFirst(), message.substring(0, Math.min(message.length(), 200))
+                    );
+                }
                 case "pickInitial" -> currentState.placeCard(new GenericPair<>(0, 0), 0, convertSide(tokens.removeFirst())) ;
                 case "placeCard" ->
                     currentState.placeCard(

@@ -486,8 +486,7 @@
     "CORNERS": {
       "FRONT": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "NOT_A_CORNER"], [{"X": 1, "Y": -1}, "NOT_A_CORNER"], [{"X": -1, "Y": -1}, "SCROLL"]],
       "BACK": [[{"X": -1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": 1}, "EMPTY"], [{"X": 1, "Y": -1}, "EMPTY"], [{"X": -1, "Y": -1}, "EMPTY"]]
-    },
-    "POINTS_CONDITION": {"CORNER":  null}
+    }
   },
   {
     "ID": "68",
