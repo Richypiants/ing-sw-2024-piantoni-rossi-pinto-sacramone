@@ -16,7 +16,7 @@ public class ViewModel {
     public ViewModel() {
         ownNickname = "";
         lobbies = new HashMap<>();
-        currentLobbyOrGame = null;
+        currentLobbyOrGame = new GenericPair<>(null, null);
     }
 
     public String getOwnNickname() {
@@ -62,7 +62,7 @@ public class ViewModel {
     }
 
     public void leaveLobbyOrGame() {
-        currentLobbyOrGame = null;
+        new GenericPair<>(null, null);
     }
 
     public ClientGame getGame() {

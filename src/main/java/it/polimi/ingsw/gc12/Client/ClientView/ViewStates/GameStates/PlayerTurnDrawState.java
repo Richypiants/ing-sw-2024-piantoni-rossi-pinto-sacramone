@@ -13,11 +13,11 @@ public class PlayerTurnDrawState extends GameScreenState {
                 List.of(
                         "'drawFromDeck <deck>' [resource][gold]",
                         "'drawFromVisibleCards <deck> <position>' [resource][gold] [1][2]",
-                        "'broadcastMessage <message>' per inviare un messaggio in gioco",
-                        "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco") :
+                        "'broadcastMessage <message>' per inviare un messaggio in gioco (max 200 chars)",
+                        "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco (max 200 chars)") :
                 List.of(
-                        "'broadcastMessage <message>' per inviare un messaggio in gioco",
-                        "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco");
+                        "'broadcastMessage <message>' per inviare un messaggio in gioco (max 200 chars)",
+                        "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco (max 200 chars)");
     }
 
     @Override

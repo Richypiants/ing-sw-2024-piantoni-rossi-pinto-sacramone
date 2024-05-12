@@ -69,11 +69,11 @@ public class TUIListener {
                 case "leaveLobby" -> currentState.leaveLobby();
                 case "broadcastMessage" -> {
                     currentState.broadcastMessage(
-                            tokens.stream().reduce("", (a, b) -> a + " " + b)
+                            tokens.stream().reduce("", (a, b) -> a + " " + b).substring(0, 200)
                     );
                 }
                 case "directMessage" -> currentState.directMessage(
-                        tokens.removeFirst(), tokens.stream().reduce("", (a, b) -> a + " " + b)
+                        tokens.removeFirst(), tokens.stream().reduce("", (a, b) -> a + " " + b).substring(0, 200)
                 );
                 case "pickInitial" -> currentState.placeCard(new GenericPair<>(0, 0), 0, convertSide(tokens.removeFirst())) ;
                 case "placeCard" ->

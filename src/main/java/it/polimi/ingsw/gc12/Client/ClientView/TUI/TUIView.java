@@ -46,7 +46,7 @@ public class TUIView extends View {
         listener = TUIListener.getInstance();
         try {
             //FIXME: on Mac bash instead of cmd (on Linux too?)
-            new ProcessBuilder("cmd", "/c", "mode con:cols=211 lines=69").inheritIO().start().waitFor();
+            new ProcessBuilder("cmd", "/c", "mode con:cols=211 lines=49").inheritIO().start().waitFor();
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -350,6 +350,7 @@ public class TUIView extends View {
         }
     }
 
+    //TODO: controllare che sia fixata la lunghezza massima del messaggio (200 caratteri vanno bene?)
     public void updateChat() {
         List<String> chatLog = ClientController.getInstance().viewModel.getGame().getChatLog();
         printToPosition(ansi().cursor(2, 120).bold().a("Last chat messages: ").reset());

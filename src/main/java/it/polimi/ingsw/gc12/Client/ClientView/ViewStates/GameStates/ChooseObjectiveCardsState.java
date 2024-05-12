@@ -13,8 +13,8 @@ public class ChooseObjectiveCardsState extends GameScreenState {
 
     public ChooseObjectiveCardsState() {
         TUICommands = List.of("'pickObjective <selection>' [1][2] per selezionare il proprio obiettivo segreto",
-                "'broadcastMessage <message>' per inviare un messaggio in gioco",
-                "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco"
+                "'broadcastMessage <message>' per inviare un messaggio in gioco (max 200 chars)",
+                "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco (max 200 chars)"
         );
     }
 

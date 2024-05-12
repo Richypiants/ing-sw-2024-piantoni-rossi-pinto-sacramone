@@ -14,11 +14,11 @@ public class PlayerTurnPlayState extends GameScreenState {
                 List.of(
                     "'placeCard <x> <y> <inHandPosition> <side>' (x,y): coordinate di piazzamento,",
                     "    inHandPosition: [1]...[n], side: [front][back]",
-                    "'broadcastMessage <message>' per inviare un messaggio in gioco",
-                    "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco") :
+                    "'broadcastMessage <message>' per inviare un messaggio in gioco (max 200 chars)",
+                    "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco (max 200 chars)") :
                 List.of(
-                    "'broadcastMessage <message>' per inviare un messaggio in gioco",
-                    "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco");
+                    "'broadcastMessage <message>' per inviare un messaggio in gioco (max 200 chars)",
+                    "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco (max 200 chars)");
     }
 
     @Override
