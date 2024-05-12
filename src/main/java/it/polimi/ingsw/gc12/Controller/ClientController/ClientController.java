@@ -30,11 +30,10 @@ public class ClientController implements ClientControllerInterface {
     public VirtualServer serverConnection;
     public VirtualClient thisClient;
     public Thread keepAlive;
-    /**
-     * This player's nickname
-     */
     public ViewModel viewModel;
     public ErrorLogger errorLogger;
+    //Should we use a Lock?
+    public final Object LOCK = new Object();
 
     private ClientController() {
         serverConnection = null;
@@ -99,6 +98,10 @@ public class ClientController implements ClientControllerInterface {
 
     public void setNickname(String nickname){
         viewModel.setOwnNickname(nickname);
+        //TODO: is it correct?
+        synchronized (LOCK) {
+            LOCK.notify();
+        }
         //FIXME: are we sure it goes here? (View and Controller not separated...?)
         viewState.updateNickname();
     }

@@ -52,11 +52,19 @@ public class TUIListener {
 
         ViewState currentState = ClientController.getInstance().viewState;
         String errorMessage = "";
+        String command;
 
         //TODO: Every case has to check type parameters before calling the State method or eventually die
 
         try {
-            switch (tokens.removeFirst().trim()) {
+            command = tokens.removeFirst().trim();
+        } catch (NoSuchElementException e) {
+            //The user simply pressed enter, nothing to print as error for readability.
+            return;
+        }
+
+        try {
+            switch (command) {
                 case "setNickname" -> currentState.setNickname(tokens.removeFirst());
                 case "createLobby" -> {
                     errorMessage = "expected numero di giocatori nella lobby as first argument";
@@ -96,8 +104,6 @@ public class TUIListener {
         } catch (NoSuchElementException e) {
             ClientController.getInstance().errorLogger.log(new NoSuchElementException("Formato del comando fornito non valido: parametri forniti insufficienti"));
         } catch (IllegalArgumentException e) {
-            //TODO: check this
-            // infatti è rotto
             if(!e.getMessage().isEmpty()) errorMessage = e.getMessage();
             ClientController.getInstance().errorLogger.log(new IllegalArgumentException("Parametri forniti invalidi: " + errorMessage));
         }

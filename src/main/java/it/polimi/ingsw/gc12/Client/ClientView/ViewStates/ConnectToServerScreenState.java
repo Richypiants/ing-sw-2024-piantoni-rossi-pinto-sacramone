@@ -28,7 +28,7 @@ public class ConnectToServerScreenState extends ViewState {
                 ClientController.getInstance().errorLogger.log(e1);
 
                 try {
-                    sleep(1000);
+                    sleep(10000);
                 } catch (Exception e2) {
                     ClientController.getInstance().errorLogger.log(e2);
                 }
@@ -42,12 +42,17 @@ public class ConnectToServerScreenState extends ViewState {
             ClientController.getInstance().errorLogger.log(e);
         }
 
-        //TODO: e se la rete è lenta e ci mette di più, errore di rete?
-        try {
-            sleep(10000);
-        } catch (Exception e2) {
-            ClientController.getInstance().errorLogger.log(e2);
+        //TODO: this state isn't notified when the server replies with an error related to the inability of creating a player.
+        synchronized (ClientController.getInstance().LOCK) {
+            try {
+                ClientController.getInstance().LOCK.wait(10000);
+            } catch (InterruptedException e) {
+                ClientController.getInstance().errorLogger.log(e);
+            }
         }
+
+        //TODO: Operations when a player couldn't be created ....
+
         //potenzialmente readUntil se anche la GUI ce l'avrà
 
         /*if(yes)){

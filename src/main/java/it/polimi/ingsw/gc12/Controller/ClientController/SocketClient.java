@@ -16,12 +16,11 @@ public class SocketClient implements VirtualServer {
     public final ExecutorService connectionExecutorsPool;
     public final ExecutorService commandExecutorsPool;
 
-    private SocketClient() {
+    private SocketClient() throws IOException {
         //FIXME: how about the ip?
         this.connectionExecutorsPool = Executors.newSingleThreadExecutor();
         this.commandExecutorsPool = Executors.newSingleThreadExecutor();
 
-        try{
             Socket socket = new Socket(ClientController.getInstance().serverIPAddress, 5000);
             serverHandler = new SocketServerHandler(socket);
 
@@ -38,17 +37,18 @@ public class SocketClient implements VirtualServer {
                         }
                     }
             );
-        } catch (IOException e) {
-            ClientController.getInstance().errorLogger.log(e);
-        }
-
-        //FIXME: ...reference escaping?
-        ClientController.getInstance().serverConnection = this;
+            //FIXME: reference escaping?
+            ClientController.getInstance().serverConnection = this;
     }
 
     public static SocketClient getInstance() { //TODO: sincronizzazione (serve?) ed eventualmente lazy
-        if (SINGLETON_SOCKET_CLIENT == null)
-            SINGLETON_SOCKET_CLIENT = new SocketClient();
+        if (SINGLETON_SOCKET_CLIENT == null) {
+            try {
+                SINGLETON_SOCKET_CLIENT = new SocketClient();
+            } catch (IOException e) {
+                ClientController.getInstance().errorLogger.log(e);
+            }
+        }
         return SINGLETON_SOCKET_CLIENT;
     }
 

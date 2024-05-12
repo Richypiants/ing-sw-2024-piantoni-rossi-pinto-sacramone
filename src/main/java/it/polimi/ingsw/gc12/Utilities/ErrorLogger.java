@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 public class ErrorLogger {
@@ -17,12 +18,14 @@ public class ErrorLogger {
      */
     Path filePath;
     SimpleDateFormat formatter;
+    PrintStream err;
 
     public ErrorLogger(String pathFile) {
         filePath = Paths.get(pathFile);
         formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         try {
-            System.setErr(new PrintStream(new FileOutputStream(pathFile)));
+            err = new PrintStream(new FileOutputStream(pathFile));
+            System.setErr(err);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -31,10 +34,10 @@ public class ErrorLogger {
 
     public void log(Throwable error) {
         String timestamp = formatter.format(new Date());
-        System.err.println("[" + timestamp + "] " + error.getMessage());
-        error.printStackTrace();
+        err.print("[" + timestamp + "] " + error.getMessage() + "\n" + Arrays.toString(error.getStackTrace()).replaceAll(" ", "\n") + "\n");
 
         ClientController.getInstance().view.printError(error);
     }
 }
+
 

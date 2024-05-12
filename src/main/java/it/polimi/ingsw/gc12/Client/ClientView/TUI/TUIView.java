@@ -42,7 +42,9 @@ public class TUIView extends View {
     private final GenericPair<Integer, Integer> CURSOR_OFFSET = new GenericPair<>(3, 11);
 
     private TUIView() {
-        AnsiConsole.systemInstall();
+        AnsiConsole.systemInstall(
+
+        );
         listener = TUIListener.getInstance();
         try {
             //FIXME: on Mac bash instead of cmd (on Linux too?)

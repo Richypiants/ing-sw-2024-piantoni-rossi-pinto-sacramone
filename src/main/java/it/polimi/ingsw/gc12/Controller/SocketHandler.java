@@ -49,37 +49,43 @@ public abstract class SocketHandler{
     }
 
     protected void sendRequest(Command command) {
-        try {
+        if (socket.isConnected() && !socket.isClosed()) {
             try {
-                writeQueue.put(command);
-                if(writeQueue.size() > 1)
-                    synchronized(command) {
-                        try {
-                            command.wait();
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
+                try {
+                    writeQueue.put(command);
+                    if (writeQueue.size() > 1)
+                        synchronized (command) {
+                            try {
+                                command.wait();
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
-                    }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            writeObject(command);
-
-            try {
-                writeQueue.take();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            if(!writeQueue.isEmpty()) {
-                Command notifiedCommand = writeQueue.peek();
-                synchronized(notifiedCommand) {
-                    notifiedCommand.notify();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
+
+                writeObject(command);
+
+                try {
+                    writeQueue.take();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                if (!writeQueue.isEmpty()) {
+                    Command notifiedCommand = writeQueue.peek();
+                    synchronized (notifiedCommand) {
+                        notifiedCommand.notify();
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+        else{
+            printError(new IOException("Socket is closed"));
+        }
+
     }
 
     public void close() {
