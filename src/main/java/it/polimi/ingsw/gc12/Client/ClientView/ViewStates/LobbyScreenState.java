@@ -50,7 +50,7 @@ public class LobbyScreenState extends ViewState {
 
     @Override
     public void quit() {
-        if (ClientController.getInstance().currentLobbyOrGame != null)
+        if (ClientController.getInstance().viewModel.inLobbyOrGame())
             ClientController.getInstance().requestToServer(new LeaveLobbyCommand());
         super.quit();
     }

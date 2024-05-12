@@ -16,7 +16,7 @@ public class Main {
         String graphics = "";
         do {
             System.out.println("Select the desired application graphics (TUI - GUI): ");
-            graphics = scanner.nextLine().toLowerCase();
+            graphics = scanner.nextLine().trim().toLowerCase();
             if (graphics.equals("tui")) {
                 ClientController.getInstance().view = TUIView.getInstance();
                 ClientController.getInstance().viewState = new TitleScreenState();

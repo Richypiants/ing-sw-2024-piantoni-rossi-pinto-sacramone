@@ -100,9 +100,8 @@ public abstract class ViewState {
         }
         ClientController.getInstance().serverConnection = null;
         ClientController.getInstance().keepAlive.interrupt();
-        ClientController.getInstance().ownNickname = "";
-        ClientController.getInstance().currentUUID = null;
-        ClientController.getInstance().currentLobbyOrGame = null;
+        ClientController.getInstance().viewModel.setOwnNickname("");
+        ClientController.getInstance().viewModel.leaveLobbyOrGame();
         ClientController.getInstance().viewState = new TitleScreenState();
         ClientController.getInstance().viewState.executeState();
     }

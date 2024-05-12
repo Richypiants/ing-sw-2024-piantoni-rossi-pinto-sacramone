@@ -264,7 +264,7 @@ public class GUIView extends View {
                 throw new RuntimeException(e);
             }
 
-            profile.setText("Profile: " + ClientController.getInstance().ownNickname);
+            profile.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
             profile.setTextAlignment(TextAlignment.CENTER);
             profile.setAlignment(Pos.TOP_LEFT);
 
@@ -277,7 +277,7 @@ public class GUIView extends View {
             lobbiesList.setAlignment(Pos.TOP_CENTER);
 
             //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
-            for (var lobby : ClientController.getInstance().lobbies.entrySet()) {
+            for (var lobby : ClientController.getInstance().viewModel.getLobbies().entrySet()) {
                 lobbiesList.getChildren().add(createLobbyListElement(lobby.getKey(), lobby.getValue()));
             }
 
@@ -477,7 +477,7 @@ public class GUIView extends View {
 
         lobbyBox.setStyle(style);
 
-        if (ClientController.getInstance().currentLobbyOrGame == null) {
+        if (ClientController.getInstance().viewModel.getCurrentLobby() == null) {
             Button joinButton = new Button("JOIN");
             joinButton.setOnAction(e ->
                     {
@@ -486,7 +486,7 @@ public class GUIView extends View {
             );
             lobbyBox.getChildren().add(joinButton);
         } else {
-            if (ClientController.getInstance().currentLobbyOrGame.equals(lobby)) {
+            if (ClientController.getInstance().viewModel.getCurrentLobby().equals(lobby)) {
                 Button leaveButton = new Button("LEAVE");
                 leaveButton.setOnAction(e ->
                         {

@@ -7,7 +7,6 @@ import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.DirectMessageComm
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.LeaveGameCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.PlaceCardCommand;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
-import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
@@ -21,7 +20,7 @@ public abstract class GameScreenState extends ViewState {
     protected void sendCardToPlace(GenericPair<Integer, Integer> coordinates, int inHandPosition, Side playedSide) {
         ClientCard card = null;
         try {
-            card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().get(inHandPosition);
+            card = ClientController.getInstance().viewModel.getGame().getCardsInHand().get(inHandPosition);
         } catch (IndexOutOfBoundsException e) {
             throw new IllegalArgumentException("nessuna carta presente alla posizione specificata della mano");
         }
@@ -47,7 +46,7 @@ public abstract class GameScreenState extends ViewState {
 
     @Override
     public void addChatMessage(String message) {
-        ((ClientGame) ClientController.getInstance().currentLobbyOrGame).addMessageToChatLog(message);
+        ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message);
         ClientController.getInstance().view.updateChat();
     }
 

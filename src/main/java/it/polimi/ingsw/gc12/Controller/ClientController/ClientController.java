@@ -12,6 +12,7 @@ import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
+import it.polimi.ingsw.gc12.Model.ClientModel.ViewModel;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Utilities.*;
 
@@ -32,21 +33,15 @@ public class ClientController implements ClientControllerInterface {
     /**
      * This player's nickname
      */
-    public String ownNickname;
-    public Map<UUID, GameLobby> lobbies;
-    public UUID currentUUID;
-    public GameLobby currentLobbyOrGame;
+    public ViewModel viewModel;
     public ErrorLogger errorLogger;
 
     private ClientController() {
         serverConnection = null;
         thisClient = null;
         keepAlive = null;
-        ownNickname = "";
         cardsList = loadCards();
-        lobbies = new HashMap<>();
-        currentUUID = null;
-        currentLobbyOrGame = null;
+        viewModel = new ViewModel();
         errorLogger = new ErrorLogger("src/main/java/it/polimi/ingsw/gc12/Utilities/errorLog" + this + ".txt");
     }
 
@@ -103,40 +98,38 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public void setNickname(String nickname){
-        ownNickname = nickname;
+        viewModel.setOwnNickname(nickname);
         //FIXME: are we sure it goes here? (View and Controller not separated...?)
         viewState.updateNickname();
     }
 
     public void restoreGame(ClientGame gameDTO){
-        currentLobbyOrGame = gameDTO;
+        viewModel.joinLobbyOrGame(viewModel.getCurrentLobbyUUID(), gameDTO);
         //TODO: decide which game state
         // viewState = new GameScreenState();
         viewState.executeState();
     }
 
     public void setLobbies(Map<UUID, GameLobby> lobbies){
-        this.lobbies = lobbies;
+        viewModel.setLobbies(lobbies);
         viewState = new LobbyScreenState();
         viewState.executeState();
     }
 
     public void updateLobby(UUID lobbyUUID, GameLobby lobby){
-        if (lobby.getPlayers().stream().anyMatch((player) -> player.getNickname().equals(ownNickname))) {
-            currentUUID = lobbyUUID;
-            currentLobbyOrGame = lobby;
-        }
-        //Se leaveLobby, cioè se noneMatch e c'ero dentro
-        else if (lobbyUUID.equals(currentUUID)) {
-            currentUUID = null;
-            currentLobbyOrGame = null;
-        }
-
         //The received lobbies with a playersNumber equal to zero or below are removed from the ClientModel
         if(lobby.getPlayersNumber() <= 0)
-            lobbies.remove(lobbyUUID);
+            viewModel.removeLobby(lobbyUUID);
         else
-            lobbies.put(lobbyUUID, lobby);
+            viewModel.putLobby(lobbyUUID, lobby);
+
+        if (lobby.getPlayers().stream().anyMatch((player) -> player.getNickname().equals(viewModel.getOwnNickname()))) {
+            viewModel.joinLobbyOrGame(lobbyUUID, lobby);
+        }
+        //Se leaveLobby, cioè se noneMatch e c'ero dentro
+        else if (lobbyUUID.equals(viewModel.getCurrentLobbyUUID())) {
+            viewModel.leaveLobbyOrGame();
+        }
 
         //Ristampare tutte le lobby nella schermata in qualsiasi caso
         viewState = new LobbyScreenState();
@@ -146,33 +139,33 @@ public class ClientController implements ClientControllerInterface {
     //FIXME: da qui in poi i synchronized servono davvero oppure risolvendo la writePending e facendo una coda di comandi si risolve?
     public synchronized void startGame(UUID lobbyUUID, ClientGame gameDTO) {
         updateLobby(lobbyUUID, gameDTO);
-        currentLobbyOrGame = gameDTO;
+        viewModel.joinLobbyOrGame(lobbyUUID, gameDTO);
         //FIXME: send clientGame directly?
 
         viewState = new ChooseInitialCardsState();
     }
 
     public void confirmObjectiveChoice(int cardID){
-        ((ClientGame) currentLobbyOrGame).setOwnObjective(cardsList.get(cardID));
+        viewModel.getGame().setOwnObjective(cardsList.get(cardID));
         view.gameScreen();
     }
 
     public synchronized void placeCard(String nickname, GenericPair<Integer, Integer> coordinates, int cardID,
                           Side playedSide, EnumMap<Resource, Integer> ownedResources,
                           List<GenericPair<Integer, Integer>> openCorners, int points) {
-        ClientPlayer thisPlayer = ((ClientGame) currentLobbyOrGame).getPlayers().stream()
+        ClientPlayer thisPlayer = viewModel.getGame().getPlayers().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
                 .findAny()
                 .orElseThrow();
 
         thisPlayer.placeCard(coordinates, cardsList.get(cardID), playedSide);
-        if (nickname.equals(ownNickname)) ((ClientGame) currentLobbyOrGame).removeCardFromHand(cardsList.get(cardID));
+        if (nickname.equals(viewModel.getOwnNickname())) viewModel.getGame().removeCardFromHand(cardsList.get(cardID));
         thisPlayer.setOwnedResources(ownedResources);
         thisPlayer.setOpenCorners(openCorners);
         thisPlayer.setPoints(points);
 
         if(viewState instanceof ChooseInitialCardsState){
-            if(nickname.equals(SINGLETON_INSTANCE.ownNickname)){
+            if (nickname.equals(viewModel.getOwnNickname())) {
                 view.gameScreen();
             }
         }
@@ -180,7 +173,7 @@ public class ClientController implements ClientControllerInterface {
 
     public synchronized void receiveCard(List<Integer> cardIDs) {
         for (var cardID : cardIDs)
-            ((ClientGame) currentLobbyOrGame).addCardToHand(cardsList.get(cardID));
+            viewModel.getGame().addCardToHand(cardsList.get(cardID));
 
         viewState.executeState();
     }
@@ -196,29 +189,27 @@ public class ClientController implements ClientControllerInterface {
         for(var cardPlacement : cardPlacements) {
             ClientCard card = cardsList.get(cardPlacement.getX());
             switch (cardPlacement.getY().trim().toLowerCase()) {
-                case "resource_deck" -> ((ClientGame) currentLobbyOrGame).setTopDeckResourceCard(card);
-                case "gold_deck" -> ((ClientGame) currentLobbyOrGame).setTopDeckGoldCard(card);
-                case "resource_visible" ->
-                        ((ClientGame) currentLobbyOrGame).setPlacedResources(card, cardPlacement.getZ());
-                case "gold_visible" -> ((ClientGame) currentLobbyOrGame).setPlacedGold(card, cardPlacement.getZ());
-                case "objective_visible" ->
-                        ((ClientGame) currentLobbyOrGame).setCommonObjectives(card, cardPlacement.getZ());
+                case "resource_deck" -> viewModel.getGame().setTopDeckResourceCard(card);
+                case "gold_deck" -> viewModel.getGame().setTopDeckGoldCard(card);
+                case "resource_visible" -> viewModel.getGame().setPlacedResources(card, cardPlacement.getZ());
+                case "gold_visible" -> viewModel.getGame().setPlacedGold(card, cardPlacement.getZ());
+                case "objective_visible" -> viewModel.getGame().setCommonObjectives(card, cardPlacement.getZ());
             }
         }
     }
 
     public synchronized void transition(int round, int currentPlayerIndex) {
         if(round != 0 )
-            ((ClientGame) currentLobbyOrGame).setCurrentRound(round);
+            viewModel.getGame().setCurrentRound(round);
         if(currentPlayerIndex != -1 )
-            ((ClientGame) currentLobbyOrGame).setCurrentPlayerIndex(currentPlayerIndex);
+            viewModel.getGame().setCurrentPlayerIndex(currentPlayerIndex);
 
         ((GameScreenState) viewState).transition();
         viewState.executeState();
     }
 
     public void toggleActive(String nickname){
-        ((ClientGame) currentLobbyOrGame).getPlayers().stream()
+        viewModel.getGame().getPlayers().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
                 .findAny()
                 .orElseThrow()
@@ -236,7 +227,7 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public boolean isThisClientTurn(){
-        ClientGame game = (ClientGame) currentLobbyOrGame;
+        ClientGame game = viewModel.getGame();
         return game.getPlayers().get(game.getCurrentPlayerIndex()).getNickname().equals(game.getThisPlayer().getNickname());
     }
 }

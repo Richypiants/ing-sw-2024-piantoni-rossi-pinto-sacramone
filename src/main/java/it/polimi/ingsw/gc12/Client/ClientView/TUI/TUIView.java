@@ -46,7 +46,7 @@ public class TUIView extends View {
         listener = TUIListener.getInstance();
         try {
             //FIXME: on Mac bash instead of cmd (on Linux too?)
-            new ProcessBuilder("cmd", "/c", "mode con:cols=211 lines=49").inheritIO().start().waitFor();
+            new ProcessBuilder("cmd", "/c", "mode con:cols=211 lines=69").inheritIO().start().waitFor();
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -58,34 +58,35 @@ public class TUIView extends View {
         return SINGLETON_TUI_INSTANCE;
     }
 
-
-
     public static void clearTerminal() {
-        System.out.print(ansi().cursor(1, 1)
-                .eraseScreen(Erase.FORWARD).eraseScreen(Erase.BACKWARD)
-                .cursor(TUIListener.COMMAND_INPUT_ROW - 1, 1).a("------------------------------------------------------------------")
-                .cursor(TUIListener.COMMAND_INPUT_ROW, 1)
-                .a("> [" + ClientController.getInstance().ownNickname + "] ")
+        System.out.print(ansi()
+                .saveCursorPosition()
+                .cursor(TUIListener.COMMAND_INPUT_ROW - 2, 1)
+                .eraseScreen(Erase.BACKWARD).eraseLine(Erase.FORWARD)
+                .cursorDownLine()
+                .a("------------------------------------------------------------------").eraseLine(Erase.FORWARD)
+                .cursorDownLine()
+                .a("> [" + ClientController.getInstance().viewModel.getOwnNickname() + "] ")
+                .restoreCursorPosition()
+                .eraseScreen(Erase.FORWARD)
         );
     }
 
-    //TODO: currently erasing already written input chars
     @Override
     public void printError(Throwable error) {
-        System.out.print(ansi().cursor(TUIListener.EXCEPTIONS_ROW, 1)
+        System.out.print(ansi().saveCursorPosition()
+                .cursor(TUIListener.EXCEPTIONS_ROW, 1)
                 .a(error.getMessage()).reset()
-                .cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseLine(Erase.FORWARD)
+                .restoreCursorPosition()
         );
         //FIXME: autoResetting... should keep it?
     }
 
-    //TODO: currently erasing already written input chars
     public void printToPosition(Ansi toPrint) {
-        //FIXME: save and restoreCursorPosition are better?
-        //System.out.print(ansi().saveCursorPosition());
-        System.out.print(toPrint);
-        System.out.print(ansi().reset()
-                .cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseLine(Erase.FORWARD)
+        System.out.print(ansi().saveCursorPosition()
+                .a(toPrint).reset()
+                .restoreCursorPosition()
+                .eraseScreen(Erase.FORWARD)
         );
         //FIXME: autoResetting... should keep it?
     }
@@ -102,7 +103,8 @@ public class TUIView extends View {
     }
 
     public void titleScreen() {
-        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().ownNickname.length();
+        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().viewModel.getOwnNickname().length();
+        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN));
         clearTerminal();
 
         printToPosition(ansi().cursor(1, 1).a("Starting Codex Naturalis..."));
@@ -121,6 +123,8 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(4, 1));
         printToPosition(ansi().cursor(5, 1).a("Premi Invio per iniziare..."));
         console.readLine();
+        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
+
         ClientController.getInstance().viewState.keyPressed();
     }
 
@@ -134,11 +138,13 @@ public class TUIView extends View {
          */
         printToPosition(ansi().cursor(1, 1).a("Inserisci l'indirizzo IP del server (leave empty for 'localhost'): "));
         ClientController.getInstance().serverIPAddress = console.readLine();
+        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
         clearTerminal();
         String communicationTechnology = readUntil(
                 ansi().cursor(1, 1).a("Scegli la tecnologia di comunicazione (RMI-Socket): "),
                 List.of("rmi", "socket")
         );
+        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
         clearTerminal();
         printToPosition(ansi().cursor(1,1).a("Scegli il tuo nickname: "));
         String nickname = console.readLine();
@@ -148,8 +154,9 @@ public class TUIView extends View {
     }
 
     public void connectedConfirmation() {
-        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().ownNickname.length();
+        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().viewModel.getOwnNickname().length();
         printToPosition(ansi().cursor(3, 1).a("Connessione al server riuscita: nickname confermato!"));
+        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
         listener.startReading();
         try {
             sleep(1000);
@@ -164,15 +171,16 @@ public class TUIView extends View {
         int i = 1;
         printToPosition(ansi().cursor(i++,1)
                 .fg(Ansi.Color.RED).bold()
-                .a("[PLAYER]: ").a(ClientController.getInstance().ownNickname));
+                .a("[PLAYER]: ").a(ClientController.getInstance().viewModel.getOwnNickname()));
         printToPosition(ansi().cursor(i++, 1).a("[CURRENT LOBBY]: " + (
-                ClientController.getInstance().currentLobbyOrGame == null ?
-                        "none" :
-                        ClientController.getInstance().currentLobbyOrGame) //TODO: stampare UUID?
+                                ClientController.getInstance().viewModel.inLobbyOrGame() ?
+                                        ClientController.getInstance().viewModel.getCurrentLobby() : //TODO: stampare UUID?
+                                        "none"
+                        )
                 )
         );
         printToPosition(ansi().cursor(i++, 1).a("[ACTIVE LOBBIES] "));
-        for (var entry : ClientController.getInstance().lobbies.entrySet()) {
+        for (var entry : ClientController.getInstance().viewModel.getLobbies().entrySet()) {
             printToPosition(ansi().cursor(i++, 1).a(entry.getKey() + ": " + entry.getValue()));
         }
         printToPosition(ansi().cursor(i++, 1));
@@ -190,11 +198,11 @@ public class TUIView extends View {
 
     public void updateNickname(){
         //FIXME: è così veloce che mi limiterei a richiamare lobbyScreen...
-        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().ownNickname.length();
+        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().viewModel.getOwnNickname().length();
         lobbyScreen();
         //printToPosition(ansi().cursor(1, 11).eraseLine(Erase.FORWARD).fg(Ansi.Color.RED).bold()
         //        .a(ClientController.getInstance().ownNickname).eraseLine().reset());
-        //TODO: altrimenti: erasare il nickname dalla inputLine
+        //TODO: altrimenti: erasare il nickname dalla inputLine (va fatto dopo aver implementato che non si erasa l'inputLine)
     }
 
     public void gameScreen() {
@@ -215,7 +223,7 @@ public class TUIView extends View {
         // (per esempio, trascina una carta per posizionarla)
 
         int i = 42;
-        ClientGame thisGame = ((ClientGame)ClientController.getInstance().currentLobbyOrGame);
+        ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
 
         Ansi printedMessage = thisGame.getCurrentPlayerIndex() != -1 ?
                 ansi().cursor(i++, 2).bold().a("It is ").fg(9).a(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname()).reset().bold().a("'s turn! Your available commands are: ") :
@@ -228,7 +236,7 @@ public class TUIView extends View {
 
     public void printRoundInfo() {
         printToPosition(ansi().cursor(2,2).bold().a("[TURN #" +
-                ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCurrentRound() + "]").reset());
+                ClientController.getInstance().viewModel.getGame().getCurrentRound() + "]").reset());
     }
 
     public void printStatsTable() {
@@ -246,7 +254,7 @@ public class TUIView extends View {
                 .fg(94).a(" | Scroll [S] | Ink [K] | Quill [Q]").reset()
         );
 
-        for (ClientPlayer player : ((ClientGame)ClientController.getInstance().currentLobbyOrGame).getPlayers()) {
+        for (ClientPlayer player : ClientController.getInstance().viewModel.getGame().getPlayers()) {
             EnumMap<Resource, Integer> playerResources = player.getOwnedResources();
 
             printToPosition(ansi().cursor(i, 2).a("[#" + (i - 2) + "] ").a(player.getNickname())
@@ -272,36 +280,38 @@ public class TUIView extends View {
         //FIXME: gestire i null delle carte non presenti
         printToPosition(ansi().cursor(12, 3).a("Resource:"));
         int column = 15;
-        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getPlacedResources()) {
+        for (var card : ClientController.getInstance().viewModel.getGame().getPlacedResources()) {
             printToPosition(ansi().cursor(10, column).a(standardAnsi(card, Side.FRONT)));
             column += 20;
         }
 
         column = 15;
         printToPosition(ansi().cursor(18, 3).a("Gold:"));
-        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getPlacedGold()){
+        for (var card : ClientController.getInstance().viewModel.getGame().getPlacedGold()) {
             printToPosition(ansi().cursor(16, column).a(standardAnsi(card, Side.FRONT)));
             column += 20;
         }
 
         column = 15;
         printToPosition(ansi().cursor(24, 3).a("Objective:"));
-        for(var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCommonObjectives()){
+        for (var card : ClientController.getInstance().viewModel.getGame().getCommonObjectives()) {
             printToPosition(ansi().cursor(22, column).a(standardAnsi(card, Side.FRONT)));
             column += 20;
         }
 
         printToPosition(ansi().cursor(24, 54).a("Secret:"));
-        printToPosition(ansi().cursor(22, 64).a(standardAnsi(((ClientGame) ClientController.getInstance().currentLobbyOrGame).getOwnObjective(), Side.FRONT)));
+        printToPosition(ansi().cursor(22, 64).a(standardAnsi(
+                ClientController.getInstance().viewModel.getGame().getOwnObjective(), Side.FRONT))
+        );
     }
 
     public void printDecks() {
         printToPosition(ansi().cursor(8, 68).bold().a("Decks: "));
 
         //FIXME: in realtà bisognerebbe farsi mandare solo i back delle carte e non tutto...
-        ClientCard card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getTopDeckResourceCard();
+        ClientCard card = ClientController.getInstance().viewModel.getGame().getTopDeckResourceCard();
         printToPosition(ansi().cursor(10, 64).a(standardAnsi(card, Side.BACK)));
-        card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getTopDeckGoldCard();
+        card = ClientController.getInstance().viewModel.getGame().getTopDeckGoldCard();
         printToPosition(ansi().cursor(16, 64).a(standardAnsi(card, Side.BACK)));
     }
 
@@ -319,8 +329,8 @@ public class TUIView extends View {
            you should call xxxCommand*/
 
         int playerIndex = 0;
-        var players = ClientController.getInstance().currentLobbyOrGame.getPlayers();
-        players.remove(((ClientGame) ClientController.getInstance().currentLobbyOrGame).getThisPlayer());
+        var players = ClientController.getInstance().viewModel.getCurrentLobby().getPlayers();
+        players.remove(ClientController.getInstance().viewModel.getGame().getThisPlayer());
         for (Player player : players) {
             LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> field =
                     ((ClientPlayer) player).getPlacedCards();
@@ -341,7 +351,7 @@ public class TUIView extends View {
     }
 
     public void updateChat() {
-        List<String> chatLog = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getChatLog();
+        List<String> chatLog = ClientController.getInstance().viewModel.getGame().getChatLog();
         printToPosition(ansi().cursor(2, 120).bold().a("Last chat messages: ").reset());
         for (int i = 0; i < 3; i++)
             printToPosition(ansi().cursor(3 + i, 122).eraseLine(Erase.FORWARD)
@@ -413,7 +423,7 @@ public class TUIView extends View {
         for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
             printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Erase.FORWARD));
 
-        ClientCard card = ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand().getFirst();
+        ClientCard card = ClientController.getInstance().viewModel.getGame().getCardsInHand().getFirst();
         printToPosition(ansi().cursor(15, 110).bold().eraseLine(Erase.FORWARD)
                 .a("Choose which side you want to play your assigned initial card on: ").reset());
         printToPosition(ansi().cursor(20, 110).a(upscaledAnsi(card, Side.FRONT)));
@@ -438,7 +448,7 @@ public class TUIView extends View {
     }
 
     private GenericPair<Integer, Integer> findExtremeCoordinates(ToIntBiFunction<Integer, Integer> criterion) {
-        return ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getThisPlayer()
+        return ClientController.getInstance().viewModel.getGame().getThisPlayer()
                 .getPlacedCards().keySet().stream()
                 .reduce(new GenericPair<>(0, 0),
                         (a, b) -> new GenericPair<>(
@@ -476,7 +486,7 @@ public class TUIView extends View {
                 initialCardCenter.getY() - CARD_SIZE.getX()/2
         );
 
-        ((ClientGame) ClientController.getInstance().currentLobbyOrGame)
+        ClientController.getInstance().viewModel.getGame()
                 .getThisPlayer().getPlacedCards().sequencedEntrySet()
                 .forEach((entry) -> printToPosition(ansi().cursor(
                                 initialCardPosition.getX() - (entry.getKey().getY() * CURSOR_OFFSET.getX()),
@@ -535,7 +545,7 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(28, 2).bold().a("Your hand: ").reset());
         printToPosition(ansi().cursor(32, 3).a("Front:"));
         printToPosition(ansi().cursor(38, 3).a("Back:"));
-        for (var card : ((ClientGame) ClientController.getInstance().currentLobbyOrGame).getCardsInHand()) {
+        for (var card : ClientController.getInstance().viewModel.getGame().getCardsInHand()) {
             printToPosition(ansi().cursor(30, column).a(standardAnsi(card, Side.FRONT)));
             printToPosition(ansi().cursor(36, column).a(standardAnsi(card, Side.BACK)));
             column += 20;
