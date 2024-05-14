@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-            minWidth="-Infinity"
-            prefHeight="720.0" prefWidth="1280.0"
-            xmlns="http://javafx.com/javafx/21">
-    <children>
-        <Button fx:id="leaveButton" layoutX="816.0" layoutY="647.0" mnemonicParsing="false" text="Leave Game">
-            <font>
-                <Font name="Bell MT" size="14.0"/>
-            </font>
-        </Button>
-        <ImageView fx:id="score" fitHeight="450.0" fitWidth="225.0" layoutX="35.0" layoutY="14.0" pickOnBounds="true"
-                   preserveRatio="true" style="-fx-image:url(file:///C:/Users/jacop/Desktop/Score.png);"/>
-        <ImageView fx:id="objective" fitHeight="75.0" fitWidth="100.0" layoutX="27.0" layoutY="450.0"
-                   pickOnBounds="true"
-                   preserveRatio="true" style="-fx-image:url(file:///C:/Users/jacop/Desktop/Objective.jpg);"/>
-        <ImageView fx:id="resource" fitHeight="49.0" fitWidth="78.0" layoutX="27.0" layoutY="528.0" pickOnBounds="true"
-                   preserveRatio="true" style="-fx-image:url(file:///C:/Users/jacop/Desktop/Resource.jpg);"/>
-        <ImageView fx:id="gold" fitHeight="49.0" fitWidth="78.0" layoutX="27.0" layoutY="605.0" pickOnBounds="true"
-                   preserveRatio="true" style="-fx-image:url(file:///C:/Users/jacop/Desktop/Gold.jpg);"/>
-        <Button fx:id="chatButton" layoutX="880.0" layoutY="332.0" mnemonicParsing="false" rotate="-90.0" text="Chat">
-            <font>
-                <Font name="Bell MT" size="14.0"/>
-            </font>
-        </Button>
-    </children>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21">
+    <Button layoutX="846.0" layoutY="360.0" mnemonicParsing="false" rotate="270.0" text="Chat"/>
+    <Button layoutX="1180.0" layoutY="680.0" mnemonicParsing="false" text="Leave Game"/>
+    <AnchorPane fx:id="scoreboardPane" prefHeight="460.0" prefWidth="270.0" style="-fx-background-color: blue;">
+
+    </AnchorPane>
+    <AnchorPane fx:id="deckAndVisiblePane" layoutY="460.0" prefHeight="260.0" prefWidth="270.0"
+                style="-fx-background-color: green;">
+
+    </AnchorPane>
+    <AnchorPane fx:id="opponentFieldsPane" layoutX="270.0" prefHeight="250.0" prefWidth="1010.0"
+                style="-fx-background-color: yellow;">
+
+    </AnchorPane>
+    <AnchorPane fx:id="ownFieldPane" layoutX="270.0" layoutY="250.0" prefHeight="350.0" prefWidth="1010.0"
+                style="-fx-background-color: red;">
+
+    </AnchorPane>
+    <AnchorPane fx:id="handPane" layoutX="430.0" layoutY="600.0" prefHeight="120.0" prefWidth="690.0"
+                style="-fx-background-color: purple;">
+
+    </AnchorPane>
+    <AnchorPane fx:id="chatPane" layoutX="880.0" prefHeight="720.0" prefWidth="400.0"
+                style="-fx-background-color: gray;">
+
+    </AnchorPane>
 </AnchorPane>

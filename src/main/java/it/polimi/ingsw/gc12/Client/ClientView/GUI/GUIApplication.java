@@ -11,6 +11,10 @@ public class GUIApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException, InterruptedException {
+        stage.setTitle("Codex Naturalis");
+        stage.setFullScreen(true);
+        stage.setResizable(false);
+        stage.centerOnScreen();
         ((GUIView) ClientController.getInstance().view).stage = stage;
         ClientController.getInstance().viewState = new TitleScreenState();
         ClientController.getInstance().viewState.executeState();

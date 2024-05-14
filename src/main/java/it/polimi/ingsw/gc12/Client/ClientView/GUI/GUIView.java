@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.Client.ClientView.GUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import javafx.application.Platform;
@@ -358,45 +359,35 @@ public class GUIView extends View {
 
     @Override
     public void gameScreen() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/game_screen.fxml"));
-        fxmlLoader.setController(ClientController.getInstance().view);
-        Parent root = null; // Carica il file FXML e ottiene il root
-        try {
-            root = fxmlLoader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Platform.runLater(() -> {
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/game_screen.fxml"));
+                    fxmlLoader.setController(ClientController.getInstance().view);
+                    Parent root = null; // Carica il file FXML e ottiene il root
+                    try {
+                        root = fxmlLoader.load();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
 
-        stage.getScene().setRoot(root);
+                    stage.getScene().setRoot(root);
 
-        Button leaveGame = (Button) fxmlLoader.getNamespace().get("leaveButton");
-        Button chat = (Button) fxmlLoader.getNamespace().get("chatButton");
-        ImageView score = (ImageView) fxmlLoader.getNamespace().get("score");
-        ImageView objective = (ImageView) fxmlLoader.getNamespace().get("objective");
-        ImageView resource = (ImageView) fxmlLoader.getNamespace().get("resource");
-        ImageView gold = (ImageView) fxmlLoader.getNamespace().get("gold");
+//            Button leaveGame = (Button) fxmlLoader.getNamespace().get("leaveButton");
+//            Button chat = (Button) fxmlLoader.getNamespace().get("chatButton");
+//            ImageView score = (ImageView) fxmlLoader.getNamespace().get("score");
+//            ImageView objective = (ImageView) fxmlLoader.getNamespace().get("objective");
+//            ImageView resource = (ImageView) fxmlLoader.getNamespace().get("resource");
+//            ImageView gold = (ImageView) fxmlLoader.getNamespace().get("gold");
+//
+//            // Dimensione Schermo
+//            double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
 
-        // Dimensione Schermo
-        double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+                    // Posizionamento
+//            AnchorPane.setRightAnchor(leaveGame, 20.0);
+//            AnchorPane.setBottomAnchor(leaveGame, 20.0);
 
-        // Posizionamento
-        AnchorPane.setRightAnchor(leaveGame, 20.0);
-        AnchorPane.setBottomAnchor(leaveGame, 20.0);
-
-        AnchorPane.setRightAnchor(chat, 20.0);
-        AnchorPane.setTopAnchor(chat, screenHeight * 0.5);
-
-        AnchorPane.setTopAnchor(score, 20.0);
-        AnchorPane.setLeftAnchor(score, 20.0);
-
-        AnchorPane.setTopAnchor(objective, screenHeight * 0.6);
-        AnchorPane.setLeftAnchor(objective, 20.0);
-
-        AnchorPane.setTopAnchor(resource, screenHeight * 0.7);
-        AnchorPane.setLeftAnchor(resource, 20.0);
-
-        AnchorPane.setTopAnchor(gold, screenHeight * 0.8);
-        AnchorPane.setLeftAnchor(gold, 20.0);
+                    showHand();
+                }
+        );
     }
 
     @Override
@@ -431,7 +422,66 @@ public class GUIView extends View {
 
     @Override
     public void showHand() {
+        Platform.runLater(() ->
+                {
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/game_screen.fxml"));
+                    fxmlLoader.setController(ClientController.getInstance().view);
 
+                    try {
+                        Parent root = fxmlLoader.load(); // Carica il file FXML e ottiene il root
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    AnchorPane handPane = (AnchorPane) fxmlLoader.getNamespace().get("handPane");
+                    double handPaneHeight = handPane.getHeight();
+                    double handPaneWidth = handPane.getWidth();
+                    List<ClientCard> cardsInHand = ClientController.getInstance().viewModel.getGame().getCardsInHand();
+
+                    handPane.getChildren().removeAll();
+
+                    for (var card : cardsInHand) {
+                        AnchorPane pane = new AnchorPane();
+
+                        pane.setPrefHeight(handPaneHeight);
+                        pane.setPrefWidth(handPaneWidth / cardsInHand.size());
+
+                        pane.setStyle("-fx-background-color: lightblue;");
+
+                        //FIXME: mappa anche per gli sprite GUI come sprite TUI? altrimenti card.XXX_SPRITE
+                        ImageView frontCardView = new ImageView("/images/Gold.jpg");
+                        ImageView backCardView = new ImageView("/images/Resource.jpg");
+
+                        pane.getChildren().addAll(backCardView, frontCardView);
+
+                        double paneChildrenHeight = pane.getHeight();
+                        double paneChildrenWidth = pane.getWidth();
+
+                        //FIXME: can't we use toFront() or toBack() or ...ViewOrder...()?
+                        frontCardView.setLayoutX(paneChildrenHeight * 0.6);
+                        frontCardView.setLayoutY(paneChildrenWidth * 0.4);
+                        backCardView.setLayoutX(paneChildrenHeight * 0.4);
+                        backCardView.setLayoutY(paneChildrenWidth * 0.6);
+
+                        backCardView.setOnMouseClicked((event)
+                                -> {
+                            frontCardView.setLayoutX(paneChildrenHeight * 0.4);
+                            frontCardView.setLayoutY(paneChildrenWidth * 0.6);
+                            backCardView.setLayoutX(paneChildrenHeight * 0.6);
+                            backCardView.setLayoutY(paneChildrenWidth * 0.4);
+                        });
+
+                        frontCardView.setOnMouseClicked((event) -> {
+                            backCardView.setLayoutX(paneChildrenHeight * 0.4);
+                            backCardView.setLayoutY(paneChildrenWidth * 0.6);
+                            frontCardView.setLayoutX(paneChildrenHeight * 0.6);
+                            frontCardView.setLayoutY(paneChildrenWidth * 0.4);
+                        });
+
+                        handPane.getChildren().add(pane);
+                    }
+                }
+        );
     }
 
     @Override
