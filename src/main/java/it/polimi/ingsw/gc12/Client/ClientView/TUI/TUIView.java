@@ -33,8 +33,8 @@ public class TUIView extends View {
 
     private final GenericPair<Integer, Integer> TERMINAL_SIZE = new GenericPair<>(49, 211); //x: rows, y:columns
 
-    private final GenericPair<Integer, Integer> FIELD_SIZE = new GenericPair<>(40, 105); //x: height, y: width
-    private final GenericPair<Integer, Integer> FIELD_TOP_LEFT = new GenericPair<>(8, 105); //x: startingRow, y: startingColumn
+    private final GenericPair<Integer, Integer> FIELD_SIZE = new GenericPair<>(38, 105); //x: height, y: width
+    private final GenericPair<Integer, Integer> FIELD_TOP_LEFT = new GenericPair<>(10, 105); //x: startingRow, y: startingColumn
     private final GenericPair<Integer, Integer> FIELD_CENTER = new GenericPair<>(
             FIELD_TOP_LEFT.getX() + (FIELD_SIZE.getX() / 2),
             FIELD_TOP_LEFT.getY() + (FIELD_SIZE.getY() / 2)
@@ -154,8 +154,25 @@ public class TUIView extends View {
         );
         System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
         clearTerminal();
-        printToPosition(ansi().cursor(1, 1).a("Scegli il tuo nickname (max 10 chars (((IMPLEMENTAREEEEEEE)))):"));
-        String nickname = console.readLine();
+
+        String nickname = "";
+        boolean lastInputWasInvalid = false;
+        final int MAX_NICK_LENGTH = 10;
+
+        do {
+            if(lastInputWasInvalid)
+                printToPosition(ansi().cursor(1, 1).a("Il nickname inserito possiede una lunghezza superiore a " + MAX_NICK_LENGTH + " caratteri!"));
+            printToPosition(ansi().cursor(2, 1).a("Inserisci il tuo nickname [Max " + MAX_NICK_LENGTH + " caratteri]: "));
+            lastInputWasInvalid = false;
+            nickname = console.readLine().trim();
+            if(nickname.length() > MAX_NICK_LENGTH)
+                lastInputWasInvalid = true;
+            clearTerminal();
+            System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN)
+                    .eraseLine(Ansi.Erase.FORWARD)
+                    .cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN));
+        }while(lastInputWasInvalid);
+
         printToPosition(ansi().cursor(2,1).a("Connessione al server in corso..."));
 
         ClientController.getInstance().viewState.connect(communicationTechnology, nickname);
@@ -221,7 +238,7 @@ public class TUIView extends View {
         showCommonPlacedCards();
         printDecks();
         printOpponentsFieldsMiniaturized();
-        showField();
+        showField(ClientController.getInstance().viewModel.getGame().getThisPlayer());
         showHand();
         updateChat();
 
@@ -468,13 +485,13 @@ public class TUIView extends View {
     }
 
     @Override
-    public void showField() {
+    public void showField(ClientPlayer player) {
         //erasing field area
         int fieldStartingColumn = FIELD_TOP_LEFT.getY();
         for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
             printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Erase.FORWARD));
 
-        //TODO: write the correct print function, that iterates all over the field (nota di piants: ????? che vuol dire?)
+        printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX(), FIELD_TOP_LEFT.getY()).a("Field of: ").bold().a(player.getNickname()).reset());
 
         GenericPair<Integer, Integer> maxCoordinates = findExtremeCoordinates(Math::max);
         GenericPair<Integer, Integer> minCoordinates = findExtremeCoordinates(Math::min);
@@ -495,8 +512,7 @@ public class TUIView extends View {
                 initialCardCenter.getY() - CARD_SIZE.getX()/2
         );
 
-        ClientController.getInstance().viewModel.getGame()
-                .getThisPlayer().getPlacedCards().sequencedEntrySet()
+        player.getPlacedCards().sequencedEntrySet()
                 .forEach((entry) -> printToPosition(ansi().cursor(
                                 initialCardPosition.getX() - (entry.getKey().getY() * CURSOR_OFFSET.getX()),
                                 initialCardPosition.getY() + (entry.getKey().getX() * CURSOR_OFFSET.getY())
@@ -525,31 +541,26 @@ public class TUIView extends View {
         clearTerminal();
 
         //LENGTH: 70
-
-        //FIXME: rimettere il punto (tolto per fare test su Mac)
         System.out.println(ansi().cursor(5,72).fg(Resource.QUILL.ANSI_COLOR).a(" _      _____  ___ ______ _________________  _____  ___  ____________").reset());
         System.out.println(ansi().cursor(6,72).fg(Resource.FUNGI.ANSI_COLOR).a("| |    |  ___|/ _ \\|  _  \\  ___| ___ \\ ___ \\|  _  |/ _ \\ | ___ \\  _  \\").reset());
         System.out.println(ansi().cursor(7,72).fg(Resource.ANIMAL.ANSI_COLOR).a("| |    | |__ / /_\\ \\ | | | |__ | |_/ / |_/ /| | | / /_\\ \\| |_/ / | | |").reset());
         System.out.println(ansi().cursor(8,72).fg(Resource.PLANT.ANSI_COLOR).a("| |    |  __||  _  | | | |  __||    /| ___ \\| | | |  _  ||    /| | | |").reset());
-        System.out.println(ansi().cursor(9, 72).fg(Resource.INSECT.ANSI_COLOR).a("| |____| |___| | | | |/ /| |___| |\\ \\| |_/ /\\ \\_/ / | | || |\\ \\| |/ /").reset());
+        System.out.println(ansi().cursor(9, 72).fg(Resource.INSECT.ANSI_COLOR).a("| |____| |___| | | | |/ /| |___| |\\ \\| |_/ /\\.\\_/ / | | || |\\ \\| |/ /").reset());
         System.out.println(ansi().cursor(10,72).fg(Resource.QUILL.ANSI_COLOR).a("\\_____/\\____/\\_| |_/___/ \\____/\\_| \\_\\____/  \\___/\\_| |_/\\_| \\_|___/").reset());
 
-
         System.out.println(ansi()
-                .cursor(FIRST_ROW, 120).a("Nickname")
-                .cursor(FIRST_ROW, 140).a("Total Points")
-                .cursor(FIRST_ROW,160).a("Points from Secret Objective")
+                .cursor(FIRST_ROW, 72).a("Nickname")
+                .cursor(FIRST_ROW, 92).a("Total Points")
+                .cursor(FIRST_ROW,112).a("Points from Secret Objective")
         );
 
         for(var row: leaderboard){
-
             System.out.println(ansi()
-                    .cursor(FIRST_ROW+(index*ROW_OFFSET),110).a("[#" + index + "]")
-                    .cursor(FIRST_ROW+(index*ROW_OFFSET),120).a(row.getX())
-                    .cursor(FIRST_ROW+(index*ROW_OFFSET),143).a(row.getY() + " pt.")
-                    .cursor(FIRST_ROW+(index*ROW_OFFSET),172).a(row.getZ() + " pt.")
+                    .cursor(FIRST_ROW+(index*ROW_OFFSET),62).a("[#" + index + "]")
+                    .cursor(FIRST_ROW+(index*ROW_OFFSET),110).a(row.getX())
+                    .cursor(FIRST_ROW+(index*ROW_OFFSET),95).a(row.getY() + " pt.")
+                    .cursor(FIRST_ROW+(index*ROW_OFFSET),124).a(row.getZ() + " pt.")
             );
-
             index++;
         }
 

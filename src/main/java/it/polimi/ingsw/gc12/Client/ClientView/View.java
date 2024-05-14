@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Client.ClientView;
 
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public abstract class View { //FIXME: turn into interface maybe?
 
     public abstract void showLeaderboard(List<Triplet<String, Integer, Integer>> POINT_STATS);
 
-    public abstract void showField();
+    public abstract void showField(ClientPlayer player);
 
     public abstract void showHand();
 }

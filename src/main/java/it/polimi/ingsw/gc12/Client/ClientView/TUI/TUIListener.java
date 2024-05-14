@@ -65,7 +65,7 @@ public class TUIListener {
 
         try {
             switch (command) {
-                case "setNickname" -> currentState.setNickname(tokens.removeFirst());
+                case "setNickname" -> currentState.setNickname(tokens.removeFirst().substring(0,10));
                 case "createLobby" -> {
                     errorMessage = "expected numero di giocatori nella lobby as first argument";
                     currentState.createLobby(Integer.parseInt(tokens.removeFirst()));
@@ -103,6 +103,7 @@ public class TUIListener {
                             tokens.removeFirst(), Integer.parseInt(tokens.removeFirst())
                     );
                 }
+                case "showField" -> currentState.showField(Integer.parseInt(tokens.removeFirst()));
                 case "quit" -> currentState.quit();
                 default -> throw new IllegalArgumentException("Unknown command");
             }

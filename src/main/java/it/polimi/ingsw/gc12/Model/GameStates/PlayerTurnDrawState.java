@@ -87,13 +87,16 @@ public class PlayerTurnDrawState extends GameState {
 
         PlayableCard drawnCard;
         PlayableCard replacingCard;
+        PlayableCard topDeck;
 
         if (whichType.trim().equalsIgnoreCase("RESOURCE")) {
             drawnCard = GAME.drawFrom(GAME.getPlacedResources(), position);
             replacingCard = GAME.getPlacedResources()[position];
+            topDeck = GAME.getResourceCardsDeck().peek();
         } else if (whichType.trim().equalsIgnoreCase("GOLD")) {
             drawnCard = GAME.drawFrom(GAME.getPlacedGolds(), position);
             replacingCard = GAME.getPlacedGolds()[position];
+            topDeck = GAME.getGoldCardsDeck().peek();
         } else
             throw new UnknownStringException();
 
@@ -110,14 +113,21 @@ public class PlayerTurnDrawState extends GameState {
                 }
 
             try {
-                keyReverseLookup(ServerController.getInstance().players, player::equals)
-                        .requestToClient(
-                                new ReplaceCardCommand(
-                                        List.of(
-                                                new Triplet<>(replacingCard.ID, whichType + "_visible", position)
-                                        )
-                                )
-                        );
+                VirtualClient receiver = keyReverseLookup(ServerController.getInstance().players, player::equals);
+                receiver.requestToClient(
+                        new ReplaceCardCommand(
+                            List.of(
+                                new Triplet<>(replacingCard.ID, whichType + "_visible", position)
+                            )
+                        )
+                );
+                receiver.requestToClient(
+                         new ReplaceCardCommand(
+                            List.of(
+                                new Triplet<>(topDeck.ID, whichType + "_deck", -1)
+                            )
+                         )
+                );
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

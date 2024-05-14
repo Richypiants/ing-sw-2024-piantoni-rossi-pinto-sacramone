@@ -71,6 +71,10 @@ public abstract class ViewState {
 
     }
 
+    public void showField(int opponentID){
+
+    }
+
     public void pickObjective(int cardID){
 
     }
