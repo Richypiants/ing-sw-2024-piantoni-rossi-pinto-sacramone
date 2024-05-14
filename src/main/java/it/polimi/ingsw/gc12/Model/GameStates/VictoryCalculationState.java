@@ -23,7 +23,7 @@ public class VictoryCalculationState extends GameState {
     @Override
     public void transition() {
         ArrayList<InGamePlayer> players = GAME.getPlayers();
-        ArrayList<Triplet<String, Integer, Integer>> pointsStats = new ArrayList<>();
+        List<Triplet<String, Integer, Integer>> pointsStats = new ArrayList<>();
         for (InGamePlayer target : players) {
             int playerObjectivePoints = target.getSecretObjective().awardPoints(target) +
                     Arrays.stream(GAME.getCommonObjectives())
@@ -36,7 +36,7 @@ public class VictoryCalculationState extends GameState {
         pointsStats.sort(Comparator.comparingInt(Triplet<String, Integer, Integer>::getY)
                 .thenComparingInt(Triplet::getZ)
         );
-        pointsStats.reversed();
+        pointsStats = pointsStats.reversed();
 
         System.out.println("[SERVER]: Sending leaderboard stats to clients in "+ GAME.toString());
         //TODO : Handle exceptions in the correct way and not like this

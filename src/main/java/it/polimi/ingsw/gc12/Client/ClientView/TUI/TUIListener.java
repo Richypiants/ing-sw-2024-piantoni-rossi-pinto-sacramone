@@ -78,13 +78,14 @@ public class TUIListener {
                 case "broadcastMessage" -> {
                     String message = tokens.stream().reduce("", (a, b) -> a + " " + b);
                     currentState.broadcastMessage(
-                            message.substring(0, Math.min(message.length(), 200))
+                            message.substring(0, Math.min(message.length(), 150))
                     );
                 }
                 case "directMessage" -> {
+                    String receiverNickname = tokens.removeFirst();
                     String message = tokens.stream().reduce("", (a, b) -> a + " " + b);
                     currentState.directMessage(
-                            tokens.removeFirst(), message.substring(0, Math.min(message.length(), 200))
+                            receiverNickname, message.substring(0, Math.min(message.length(), 150))
                     );
                 }
                 case "pickInitial" -> currentState.placeCard(new GenericPair<>(0, 0), 0, convertSide(tokens.removeFirst())) ;
@@ -103,7 +104,7 @@ public class TUIListener {
                     );
                 }
                 case "quit" -> currentState.quit();
-                default -> System.out.println("Unknown command");
+                default -> throw new IllegalArgumentException("Unknown command");
             }
         } catch (NoSuchElementException e) {
             ClientController.getInstance().errorLogger.log(new NoSuchElementException("Formato del comando fornito non valido: parametri forniti insufficienti"));

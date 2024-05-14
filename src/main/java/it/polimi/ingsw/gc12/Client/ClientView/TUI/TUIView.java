@@ -31,6 +31,8 @@ public class TUIView extends View {
     private final TUIListener listener;
     private static /*(?)*/ final Console console = System.console();
 
+    private final GenericPair<Integer, Integer> TERMINAL_SIZE = new GenericPair<>(49, 211); //x: rows, y:columns
+
     private final GenericPair<Integer, Integer> FIELD_SIZE = new GenericPair<>(40, 105); //x: height, y: width
     private final GenericPair<Integer, Integer> FIELD_TOP_LEFT = new GenericPair<>(8, 105); //x: startingRow, y: startingColumn
     private final GenericPair<Integer, Integer> FIELD_CENTER = new GenericPair<>(
@@ -48,7 +50,8 @@ public class TUIView extends View {
         listener = TUIListener.getInstance();
         try {
             //FIXME: on Mac bash instead of cmd (on Linux too?)
-            new ProcessBuilder("cmd", "/c", "mode con:cols=211 lines=49").inheritIO().start().waitFor();
+            new ProcessBuilder("cmd", "/c", "mode con:cols=" + TERMINAL_SIZE.getY() + " lines=" + TERMINAL_SIZE.getX())
+                    .inheritIO().start().waitFor();
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -97,6 +100,9 @@ public class TUIView extends View {
         String selection;
         do {
             clearTerminal();
+            System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN)
+                    .eraseLine(Erase.FORWARD)
+            );
             printToPosition(ansi().a(prompt));
             selection = console.readLine().trim().toLowerCase();
         } while (!validInput.contains(selection));
@@ -148,7 +154,7 @@ public class TUIView extends View {
         );
         System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
         clearTerminal();
-        printToPosition(ansi().cursor(1,1).a("Scegli il tuo nickname: "));
+        printToPosition(ansi().cursor(1, 1).a("Scegli il tuo nickname (max 10 chars (((IMPLEMENTAREEEEEEE)))):"));
         String nickname = console.readLine();
         printToPosition(ansi().cursor(2,1).a("Connessione al server in corso..."));
 
@@ -352,7 +358,7 @@ public class TUIView extends View {
         }
     }
 
-    //TODO: controllare che sia fixata la lunghezza massima del messaggio (200 caratteri vanno bene?)
+    //TODO: controllare che sia fixata la lunghezza massima del messaggio (70+80 = 150 caratteri vanno bene?)
     public void updateChat() {
         List<String> chatLog = ClientController.getInstance().viewModel.getGame().getChatLog();
         printToPosition(ansi().cursor(2, 120).bold().a("Last chat messages: ").reset());
@@ -548,8 +554,6 @@ public class TUIView extends View {
         }
 
         printToPosition(ansi().cursor(40, 2).a("Premi Invio per tornare alla schermata delle lobby..."));
-        System.console().readLine();
-        ClientController.getInstance().viewState.keyPressed();
     }
 
     @Override
