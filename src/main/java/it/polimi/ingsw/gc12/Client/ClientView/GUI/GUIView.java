@@ -508,15 +508,6 @@ public class GUIView extends View {
 
     @Override
     public void showObjectiveCardsChoice() {
-
-        backCardView.setOnMouseClicked((event) -> {
-            initialCardsChoicePopup.hide();
-        });
-
-        frontCardView.setOnMouseClicked((event) -> {
-            initialCardsChoicePopup.hide();
-        });
-    });
     }
 
     @Override
