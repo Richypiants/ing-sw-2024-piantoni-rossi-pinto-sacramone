@@ -2,8 +2,8 @@ package it.polimi.ingsw.gc12.Client.ClientView.GUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import javafx.application.Platform;
@@ -33,6 +33,80 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+
+    @Override
+    public void showHand() {
+        Platform.runLater(() ->
+                {
+                    HBox handPane = (HBox) stage.getScene().lookup("#handPane");
+                    handPane.setAlignment(Pos.CENTER);
+
+                    double handPaneHeight = handPane.getPrefHeight();
+                    double handPaneWidth = handPane.getPrefWidth();
+                    List<ClientCard> cardsInHand = ClientController.getInstance().viewModel.getGame().getCardsInHand();
+
+                    handPane.getChildren().removeAll();
+
+                    for (var card : cardsInHand) {
+                        AnchorPane pane = new AnchorPane();
+
+                        pane.setPrefHeight(handPaneHeight);
+                        pane.setPrefWidth(handPaneWidth / 3);  //FIXME: Diviso 3? (cardInHand.size()?)
+
+                        pane.setStyle("-fx-background-color: darkorange;");
+
+                        //FIXME: mappa anche per gli sprite GUI come sprite TUI? altrimenti card.XXX_SPRITE
+                        ImageView frontCardView = new ImageView("/images/Gold.jpg");
+                        ImageView backCardView = new ImageView("/images/Resource.jpg");
+
+                        pane.getChildren().addAll(backCardView, frontCardView);
+                        backCardView.toBack();
+
+                        double paneChildrenHeight = pane.getHeight();
+                        double paneChildrenWidth = pane.getWidth();
+
+                        frontCardView.setFitWidth(pane.getPrefWidth() * 0.7);
+                        frontCardView.setFitHeight(pane.getPrefHeight() * 0.7);
+                        frontCardView.setPreserveRatio(true);
+
+                        backCardView.setFitWidth(pane.getPrefWidth() * 0.5);
+                        backCardView.setFitHeight(pane.getPrefHeight() * 0.5);
+                        backCardView.setPreserveRatio(true);
+
+                        frontCardView.setX(pane.getPrefWidth() * 0.2);
+                        frontCardView.setY(pane.getPrefHeight() * 0.1);
+                        backCardView.setX(pane.getPrefWidth() * 0.2);
+                        backCardView.setY(pane.getPrefHeight() * 0.1);
+
+//                        frontCardView.setLayoutX((pane.getPrefWidth() - frontCardView.getFitWidth()) / 2);
+//                        frontCardView.setLayoutY((pane.getPrefHeight() - frontCardView.getFitHeight()) / 2);
+//                        backCardView.setLayoutX((pane.getPrefWidth() - backCardView.getFitWidth()) / 2);
+//                        backCardView.setLayoutY((pane.getPrefHeight() - backCardView.getFitHeight()) / 2);
+
+                        backCardView.setOnMouseClicked((event) -> {
+                            frontCardView.toFront();
+                            backCardView.toBack();
+                        });
+
+                        frontCardView.setOnMouseClicked((event) -> {
+                            backCardView.toFront();
+                            frontCardView.toBack();
+                        });
+
+                        handPane.getChildren().add(pane);
+                    }
+                }
+        );
+    }
+
+    @Override
+    public void showCommonPlacedCards() {
+    }
+
+    @Override
+    public void showField(ClientPlayer player) {
+
+    }
 
 public class GUIView extends View {
 
@@ -387,8 +461,7 @@ public class GUIView extends View {
 //            AnchorPane.setBottomAnchor(leaveGame, 20.0);
 
                     showHand();
-                }
-        );
+        });
     }
 
     @Override
@@ -403,86 +476,38 @@ public class GUIView extends View {
 
     @Override
     public void showInitialCardsChoice() {
+        Platform.runLater(() -> {
+                    AnchorPane currentPane = (AnchorPane) stage.getScene().getRoot();
 
+                    currentPane.setDisable(true);
+                    AnchorPane darkening = new AnchorPane();
+                    darkening.setId("#darkening");
+                    darkening.setStyle("-fx-background-color: black;");
+                    darkening.toFront();
+                    darkening.setOpacity(0.8);
+                    currentPane.getChildren().add(darkening);
+
+                    Popup initialCardsChoicePopup = new Popup();
+                    initialCardsChoicePopup.setWidth(280);
+                    initialCardsChoicePopup.setHeight(120);
+
+                    HBox initialChoiceHBox = new HBox(2);
+                    initialChoiceHBox.setAlignment(Pos.CENTER);
+
+                    ImageView frontCardView = new ImageView("/images/Gold.jpg");
+                    ImageView backCardView = new ImageView("/images/Resource.jpg");
+
+                    initialChoiceHBox.getChildren().addAll(frontCardView, backCardView);
+
+                    initialCardsChoicePopup.getContent().addAll(initialChoiceHBox);
+
+                    initialCardsChoicePopup.show(stage);
+                }
+        );
     }
 
     @Override
     public void showObjectiveCardsChoice() {
-
-    }
-
-    @Override
-    public void showCommonPlacedCards() {
-
-    }
-
-    @Override
-    public void showField(ClientPlayer player) {
-
-    }
-
-    @Override
-    public void showHand() {
-        Platform.runLater(() ->
-                {
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/game_screen.fxml"));
-                    fxmlLoader.setController(ClientController.getInstance().view);
-
-                    try {
-                        Parent root = fxmlLoader.load(); // Carica il file FXML e ottiene il root
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    AnchorPane handPane = (AnchorPane) fxmlLoader.getNamespace().get("handPane");
-                    double handPaneHeight = handPane.getHeight();
-                    double handPaneWidth = handPane.getWidth();
-                    List<ClientCard> cardsInHand = ClientController.getInstance().viewModel.getGame().getCardsInHand();
-
-                    handPane.getChildren().removeAll();
-
-                    for (var card : cardsInHand) {
-                        AnchorPane pane = new AnchorPane();
-
-                        pane.setPrefHeight(handPaneHeight);
-                        pane.setPrefWidth(handPaneWidth / cardsInHand.size());
-
-                        pane.setStyle("-fx-background-color: lightblue;");
-
-                        //FIXME: mappa anche per gli sprite GUI come sprite TUI? altrimenti card.XXX_SPRITE
-                        ImageView frontCardView = new ImageView("/images/Gold.jpg");
-                        ImageView backCardView = new ImageView("/images/Resource.jpg");
-
-                        pane.getChildren().addAll(backCardView, frontCardView);
-
-                        double paneChildrenHeight = pane.getHeight();
-                        double paneChildrenWidth = pane.getWidth();
-
-                        //FIXME: can't we use toFront() or toBack() or ...ViewOrder...()?
-                        frontCardView.setLayoutX(paneChildrenHeight * 0.6);
-                        frontCardView.setLayoutY(paneChildrenWidth * 0.4);
-                        backCardView.setLayoutX(paneChildrenHeight * 0.4);
-                        backCardView.setLayoutY(paneChildrenWidth * 0.6);
-
-                        backCardView.setOnMouseClicked((event)
-                                -> {
-                            frontCardView.setLayoutX(paneChildrenHeight * 0.4);
-                            frontCardView.setLayoutY(paneChildrenWidth * 0.6);
-                            backCardView.setLayoutX(paneChildrenHeight * 0.6);
-                            backCardView.setLayoutY(paneChildrenWidth * 0.4);
-                        });
-
-                        frontCardView.setOnMouseClicked((event) -> {
-                            backCardView.setLayoutX(paneChildrenHeight * 0.4);
-                            backCardView.setLayoutY(paneChildrenWidth * 0.6);
-                            frontCardView.setLayoutX(paneChildrenHeight * 0.6);
-                            frontCardView.setLayoutY(paneChildrenWidth * 0.4);
-                        });
-
-                        handPane.getChildren().add(pane);
-                    }
-                }
-        );
     }
 
     @Override

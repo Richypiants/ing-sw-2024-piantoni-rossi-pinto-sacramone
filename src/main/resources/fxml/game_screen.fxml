@@ -21,12 +21,14 @@
                 style="-fx-background-color: red;">
 
     </AnchorPane>
-    <AnchorPane fx:id="handPane" layoutX="430.0" layoutY="600.0" prefHeight="120.0" prefWidth="690.0"
+    <HBox fx:id="handPane" layoutX="430.0" layoutY="600.0" prefHeight="120.0" prefWidth="690.0"
                 style="-fx-background-color: purple;">
 
-    </AnchorPane>
+    </HBox>
+    <!--
     <AnchorPane fx:id="chatPane" layoutX="880.0" prefHeight="720.0" prefWidth="400.0"
                 style="-fx-background-color: gray;">
 
     </AnchorPane>
+    -->
 </AnchorPane>
