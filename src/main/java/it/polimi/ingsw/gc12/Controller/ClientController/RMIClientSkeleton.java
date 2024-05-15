@@ -16,7 +16,8 @@ public class RMIClientSkeleton implements RMIVirtualClient {
 
     private RMIClientSkeleton() {
         try {
-            // System.setProperty("java.rmi.server.hostname", "25.41.44.235");
+            //System.setProperty("java.rmi.server.hostname", ipClient);
+
             Registry registry = LocateRegistry.getRegistry(ClientController.getInstance().serverIPAddress, 5001);
             ClientController.getInstance().serverConnection =
                     ((RMIVirtualServer) registry.lookup("codex_naturalis_rmi"));

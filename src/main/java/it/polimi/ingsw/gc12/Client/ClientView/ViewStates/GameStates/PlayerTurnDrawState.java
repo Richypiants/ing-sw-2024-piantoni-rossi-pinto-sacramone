@@ -3,12 +3,15 @@ package it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.DrawFromDeckCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.DrawFromVisibleCardsCommand;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 
 import java.util.List;
 
 public class PlayerTurnDrawState extends GameScreenState {
 
     public PlayerTurnDrawState() {
+
+        //TODO: add showField <playerID>
         TUICommands = ClientController.getInstance().isThisClientTurn() ?
                 List.of(
                         "'drawFromDeck <deck>' [resource][gold]",
@@ -45,6 +48,14 @@ public class PlayerTurnDrawState extends GameScreenState {
         } catch (Exception e) {
             ClientController.getInstance().view.printError(e);
         }
+    }
+
+    public void showField(int playerID) {
+        ClientGame game = ClientController.getInstance().viewModel.getGame();
+        if(playerID < 0 || playerID > game.getMaxPlayers())
+            throw new IllegalArgumentException("The provided ID doesn't match to a player's ID in the game.");
+
+        ClientController.getInstance().view.showField(game.getPlayers().get(playerID-1));
     }
 
     private boolean invalidDeck(String deck) {

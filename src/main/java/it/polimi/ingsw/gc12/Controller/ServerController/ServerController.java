@@ -11,7 +11,10 @@ import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
-import it.polimi.ingsw.gc12.Utilities.*;
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.JSONParser;
+import it.polimi.ingsw.gc12.Utilities.Side;
+import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -628,6 +631,9 @@ public class ServerController implements ServerControllerInterface {
 
         InGamePlayer senderPlayer = (InGamePlayer) players.get(sender);
 
+        //Truncating max message length
+        message = message.substring(0, Math.min(message.length(), 150));
+
         System.out.println("[SERVER]: sending AddChatMessageCommand to clients");
         for (var inGamePlayer : ((Game) playersToLobbiesAndGames.get(players.get(sender))).getPlayers())
             if (inGamePlayer.isActive())
@@ -646,6 +652,9 @@ public class ServerController implements ServerControllerInterface {
         Optional<Player> selectedPlayer = players.values().stream()
                 .filter((player) -> player.getNickname().equals(receiverNickname))
                 .findAny();
+
+        //Truncating max message length
+        message = message.substring(0, Math.min(message.length(), 150));
 
         if(selectedPlayer.isPresent()) {
             Player receiverPlayer = selectedPlayer.get();

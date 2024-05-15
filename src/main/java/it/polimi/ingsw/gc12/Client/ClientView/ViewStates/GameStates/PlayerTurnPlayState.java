@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
@@ -9,6 +10,8 @@ import java.util.List;
 public class PlayerTurnPlayState extends GameScreenState {
 
     public PlayerTurnPlayState() {
+
+        //TODO: add showField <playerID>
         TUICommands =
                 ClientController.getInstance().isThisClientTurn() ?
                 List.of(
@@ -33,6 +36,14 @@ public class PlayerTurnPlayState extends GameScreenState {
     @Override
     public void placeCard(GenericPair<Integer, Integer> coordinates, int inHandPosition, Side playedSide) {
         sendCardToPlace(coordinates, inHandPosition, playedSide);
+    }
+
+    public void showField(int playerID) {
+        ClientGame game = ClientController.getInstance().viewModel.getGame();
+        if(playerID < 0 || playerID > game.getMaxPlayers())
+            throw new IllegalArgumentException("The provided ID doesn't match to a player's ID in the game.");
+
+        ClientController.getInstance().view.showField(game.getPlayers().get(playerID-1));
     }
 
     @Override

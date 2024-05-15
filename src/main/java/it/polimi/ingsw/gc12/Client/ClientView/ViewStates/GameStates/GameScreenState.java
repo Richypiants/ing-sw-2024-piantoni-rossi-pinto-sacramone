@@ -44,13 +44,14 @@ public abstract class GameScreenState extends ViewState {
         ClientController.getInstance().requestToServer(new DirectMessageCommand(receiverNickname, message));
     }
 
+    //FIXME: estrarre tra le costanti anche la dimensione della chat?
     @Override
     public void addChatMessage(String message) {
-        if (message.length() < 100)
+        if (message.length() < 90)
             ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message);
         else {
-            ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message.substring(0, 100));
-            ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message.substring(100));
+            ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message.substring(0, 90));
+            ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message.substring(90));
         }
         ClientController.getInstance().view.updateChat();
     }

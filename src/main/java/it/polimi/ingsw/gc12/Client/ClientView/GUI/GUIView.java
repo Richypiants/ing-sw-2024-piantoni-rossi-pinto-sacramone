@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.Client.ClientView.GUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
@@ -416,7 +417,7 @@ public class GUIView extends View {
     }
 
     @Override
-    public void showField() {
+    public void showField(ClientPlayer player) {
 
     }
 
