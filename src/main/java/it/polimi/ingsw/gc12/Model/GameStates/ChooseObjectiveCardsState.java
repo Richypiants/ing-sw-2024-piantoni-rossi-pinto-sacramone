@@ -8,6 +8,10 @@ import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.AlreadySetCardException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.util.ArrayList;
@@ -47,6 +51,21 @@ public class ChooseObjectiveCardsState extends GameState {
                 .map((player) -> player.getSecretObjective() != null)
                 .reduce(true, (a, b) -> a && b))
             transition();
+    }
+
+    @Override
+    public void playerDisconnected(InGamePlayer target){
+        //The first objectiveCard of the selection is chosen if the player hasn't done it before disconnecting
+        //In other case, this function does nothing.
+
+        if(target.getSecretObjective() != null) {
+            try {
+                pickObjective(target, objectivesMap.get(target).getFirst());
+            } catch (CardNotInHandException | AlreadySetCardException ignored) {
+                //The pickObjective for this player was already done, so the secretObjective is already set
+                //and the pickObjective throws AlreadySetCardException.
+            }
+        }
     }
 
     @Override

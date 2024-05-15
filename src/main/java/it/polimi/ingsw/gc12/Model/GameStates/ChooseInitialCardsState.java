@@ -50,6 +50,19 @@ public class ChooseInitialCardsState extends GameState {
     }
 
     @Override
+    public void playerDisconnected(InGamePlayer target){
+        //an arbitrary action of placing the initial card is done if the player hasn't done it before disconnecting
+        //In other case, this function does nothing.
+
+        try {
+            placeCard(target, new GenericPair<>(0,0), null, Side.FRONT);
+        } catch (CardNotInHandException | NotEnoughResourcesException | InvalidCardPositionException ignored){
+            //The placeCard for this player was already done, so the coordinates pair (0,0) is already occupied by
+            //a card and the placeCard throws InvalidCardPositionException.
+        }
+    }
+
+    @Override
     public void transition() {
         super.transition();
 

@@ -19,10 +19,69 @@ import java.util.function.Supplier;
 
 import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
+
+
 public class PlayerTurnDrawState extends GameState {
+
+    private enum Deck {
+
+        GOLD("gold"), RESOURCE("resource"), VISIBLE_GOLD("gold"), VISIBLE_RESOURCE("resource");
+
+        private final String STRING_MESSAGE;
+
+        Deck(String message){
+            this.STRING_MESSAGE = message;
+        }
+    }
+
+    /*
+    * LAMBDA for doing the stated drawing action
+    * Deck: where the method tried to draw from
+    * Integer: optionalIndex in case it tried to draw from visibleCards
+     */
+    List<Triplet<Supplier<PlayableCard>, Deck, Integer>> drawActionsRoutine = new ArrayList<>();
 
     public PlayerTurnDrawState(Game thisGame, int currentPlayer, int counter) {
         super(thisGame, currentPlayer, counter);
+
+        this.drawActionsRoutine.add(new Triplet<>(() -> tryDraw(() -> {
+            try {
+                return GAME.getResourceCardsDeck().draw();
+            } catch (EmptyDeckException ignored) {}
+            return null;
+        }), Deck.RESOURCE, 0));
+
+        this.drawActionsRoutine.add(new Triplet<>(() -> tryDraw(() -> {
+            try {
+                return GAME.getGoldCardsDeck().draw();
+            } catch (EmptyDeckException ignored) {
+                return null;
+            }
+        }), Deck.GOLD, 0));
+
+        // Add drawing actions for placed resources
+        for (int i = 0; i < GAME.getPlacedResources().length; i++) {
+            final int index = i;
+            this.drawActionsRoutine.add(new Triplet<>(() -> tryDraw(() -> {
+                try {
+                    return GAME.drawFrom(GAME.getPlacedResources(), index);
+                } catch (EmptyDeckException ignored) {
+                    return null;
+                }
+            }), Deck.VISIBLE_RESOURCE, index));
+        }
+
+        // Add drawing actions for placed golds
+        for (int i = 0; i < GAME.getPlacedGolds().length; i++) {
+            final int index = i;
+            this.drawActionsRoutine.add(new Triplet<>(() -> tryDraw(() -> {
+                try {
+                    return GAME.drawFrom(GAME.getPlacedGolds(), index);
+                } catch (EmptyDeckException ignored) {
+                    return null;
+                }
+            }), Deck.VISIBLE_GOLD, index));
+        }
     }
 
     @Override
@@ -135,60 +194,64 @@ public class PlayerTurnDrawState extends GameState {
         }
 
         transition();
-        //FIXME: controllare che non si possa giocare due carte nello stesso turno! in teoria rendendo atomica
-        // questa intera funzione dovrebbe garantirlo
+        //FIXME: controllare che non si possa giocare due carte nello stesso turno!
+        // Poiché il metodo è synchronized e successivamente chiama la transition, dovrebbe essere un'operazione atomica
         // N.B: in teoria quindi questi due metodi sono esclusivi
     }
 
     @Override
-    public void currentPlayerDisconnected() {
+    public void playerDisconnected(InGamePlayer target) {
         PlayableCard drawnCard = null;
+        PlayableCard replacingCard = null;
+        PlayableCard topDeck = null;
+        Triplet<Supplier<PlayableCard>, Deck, Integer> currentActionFormat = null;
 
-        List<Supplier<PlayableCard>> actions = new ArrayList<>();
-        actions.add(() -> tryDraw(() -> {
-            try {
-                return GAME.getResourceCardsDeck().draw();
-            } catch (EmptyDeckException ignored) {}
-            return null;
-        }));
-
-        actions.add(() -> tryDraw(() -> {
-            try {
-                return GAME.getGoldCardsDeck().draw();
-            } catch (EmptyDeckException ignored) {
-                return null;
-            }
-        }));
-
-        // Add drawing actions for placed resources
-        for (int i = 0; i < GAME.getPlacedResources().length; i++) {
-            final int index = i;
-            actions.add(() -> tryDraw(() -> {
-                try {
-                    return GAME.drawFrom(GAME.getPlacedResources(), index);
-                } catch (EmptyDeckException ignored) {
-                    return null;
-                }
-            }));
-        }
-
-        // Add drawing actions for placed golds
-        for (int i = 0; i < GAME.getPlacedGolds().length; i++) {
-            final int index = i;
-            actions.add(() -> tryDraw(() -> {
-                try {
-                    return GAME.drawFrom(GAME.getPlacedGolds(), index);
-                } catch (EmptyDeckException ignored) {
-                    return null;
-                }
-            }));
-        }
-
-        for (Supplier<PlayableCard> action : actions) {
-            drawnCard = action.get();
+        for (Triplet<Supplier<PlayableCard>, Deck, Integer> actionFormat : this.drawActionsRoutine) {
+            currentActionFormat = actionFormat;
+            drawnCard = actionFormat.getX().get();
             if (drawnCard != null) {
-                GAME.getCurrentPlayer().addCardToHand(drawnCard);
+                target.addCardToHand(drawnCard);
+                replacingCard = switch(actionFormat.getY()){
+                    case Deck.VISIBLE_RESOURCE -> GAME.getPlacedResources()[actionFormat.getZ()];
+                    case Deck.VISIBLE_GOLD -> GAME.getPlacedGolds()[actionFormat.getZ()];
+                    default -> null;
+                };
+                topDeck = switch(actionFormat.getY()){
+                    case Deck.RESOURCE -> GAME.getResourceCardsDeck().peek();
+                    case Deck.GOLD -> GAME.getGoldCardsDeck().peek();
+                    default -> null;
+                };
+
                 break;
+            }
+        }
+
+        //If one of the previous action tried succeeded, you will have a drawnCard and so updates have to be sent
+        if(drawnCard != null) {
+            //Sending the updated cards to clients and the new TopDeck Card if a drawnAction has been done
+            for (var player : GAME.getPlayers()) {
+
+                try {
+                    VirtualClient receiver = keyReverseLookup(ServerController.getInstance().players, player::equals);
+                    if (replacingCard != null)
+                        receiver.requestToClient(
+                                new ReplaceCardCommand(
+                                        List.of(
+                                                new Triplet<>(replacingCard.ID, currentActionFormat.getY().STRING_MESSAGE + "_visible", currentActionFormat.getZ())
+                                        )
+                                )
+                        );
+                    if (topDeck != null)
+                        receiver.requestToClient(
+                                new ReplaceCardCommand(
+                                        List.of(
+                                                new Triplet<>(topDeck.ID, currentActionFormat.getY().STRING_MESSAGE + "_deck", -1)
+                                        )
+                                )
+                        );
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
@@ -199,20 +262,22 @@ public class PlayerTurnDrawState extends GameState {
         return drawAction.get();
     }
 
-
     @Override
     public void transition() {
         super.transition();
 
+        //REMINDER: se è stato completato il turno di un giocatore disconnesso,
+        // il contatore dei turni rimanenti viene comunque inizializzato o decrementato qui.
         if (counter != -1)
             counter--;
         else if (GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty())
             counter = 2 * GAME.getPlayers().size() - currentPlayer - 1;
-        //RICORDA: se turno di un disconnesso skip turno MA comunque decrementato qui
-        //TODO: send alert a tutti i giocatori che si è entrati nella fase finale?
+
+        //TODO: segnalare ai giocatori connessi che si stanno giocando i turni finali,
+        // attraverso la GameTransitionCommand [Un campo Boolean, il # di Turno in cui finirà la partita,
+        // il contatore decrementato?
 
         if (counter == 0) {
-            //TODO: send alert a tutti i giocatori che la partita è finita e si contano i punti? (vediamo)
             GAME.setState(new VictoryCalculationState(GAME, currentPlayer, counter));
             GAME.getCurrentState().transition();
             return;

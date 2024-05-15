@@ -48,7 +48,7 @@ public class PlayerTurnPlayState extends GameState {
     }
 
     @Override
-    public void currentPlayerDisconnected(){
+    public void playerDisconnected(InGamePlayer target){
         transition();
     }
 
