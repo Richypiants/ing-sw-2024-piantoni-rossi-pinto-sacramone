@@ -599,6 +599,22 @@ public class ServerController implements ServerControllerInterface {
         targetPlayer.toggleActive();
         players.remove(sender);
 
+        /*Checking if the disconnection happened during the sender turn. If so:
+        * 1. If it was during PlayerTurnPlayState,
+        *   the game will transition() to the PlayerTurnDrawState
+        *   that will check if the player is inactive and then transition as well.
+        *
+        * 2. If it was during PlayerTurnDrawState,
+        *    a card has to be drawn following a standard routine, if no card can be drawn, transition()
+        *    without giving any card.
+        *
+        * If the player disconnected in another player's turn, there's no problem
+        * because the players' activity is managed by the GameStates.
+        * */
+
+        if(targetGame.getCurrentState().getCurrentPlayer().equals(targetPlayer))
+            targetGame.getCurrentState().currentPlayerDisconnected();
+
         long activePlayers = targetGame.getPlayers().stream()
                 .filter(InGamePlayer::isActive)
                 .count();

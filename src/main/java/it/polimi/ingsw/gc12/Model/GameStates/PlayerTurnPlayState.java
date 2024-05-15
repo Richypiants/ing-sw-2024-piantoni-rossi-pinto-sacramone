@@ -48,6 +48,11 @@ public class PlayerTurnPlayState extends GameState {
     }
 
     @Override
+    public void currentPlayerDisconnected(){
+        transition();
+    }
+
+    @Override
     public void transition() {
         super.transition();
 
@@ -73,5 +78,12 @@ public class PlayerTurnPlayState extends GameState {
         }
 
         GAME.setState(new PlayerTurnDrawState(GAME, currentPlayer, counter));
+
+        //Check if there's a card that can be drawn, if not, call transition to the just created state.
+        if(GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty()
+                && GAME.getPlacedResources().length == 0 && GAME.getPlacedGolds().length == 0) {
+
+            GAME.getCurrentState().transition();
+        }
     }
 }

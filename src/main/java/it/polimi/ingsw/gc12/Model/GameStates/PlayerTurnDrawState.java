@@ -14,7 +14,8 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.UnknownStringException;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
-import java.util.List;
+import java.util.*;
+import java.util.function.Supplier;
 
 import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
@@ -138,6 +139,66 @@ public class PlayerTurnDrawState extends GameState {
         // questa intera funzione dovrebbe garantirlo
         // N.B: in teoria quindi questi due metodi sono esclusivi
     }
+
+    @Override
+    public void currentPlayerDisconnected() {
+        PlayableCard drawnCard = null;
+
+        List<Supplier<PlayableCard>> actions = new ArrayList<>();
+        actions.add(() -> tryDraw(() -> {
+            try {
+                return GAME.getResourceCardsDeck().draw();
+            } catch (EmptyDeckException ignored) {}
+            return null;
+        }));
+
+        actions.add(() -> tryDraw(() -> {
+            try {
+                return GAME.getGoldCardsDeck().draw();
+            } catch (EmptyDeckException ignored) {
+                return null;
+            }
+        }));
+
+        // Add drawing actions for placed resources
+        for (int i = 0; i < GAME.getPlacedResources().length; i++) {
+            final int index = i;
+            actions.add(() -> tryDraw(() -> {
+                try {
+                    return GAME.drawFrom(GAME.getPlacedResources(), index);
+                } catch (EmptyDeckException ignored) {
+                    return null;
+                }
+            }));
+        }
+
+        // Add drawing actions for placed golds
+        for (int i = 0; i < GAME.getPlacedGolds().length; i++) {
+            final int index = i;
+            actions.add(() -> tryDraw(() -> {
+                try {
+                    return GAME.drawFrom(GAME.getPlacedGolds(), index);
+                } catch (EmptyDeckException ignored) {
+                    return null;
+                }
+            }));
+        }
+
+        for (Supplier<PlayableCard> action : actions) {
+            drawnCard = action.get();
+            if (drawnCard != null) {
+                GAME.getCurrentPlayer().addCardToHand(drawnCard);
+                break;
+            }
+        }
+
+        transition();
+    }
+
+    private PlayableCard tryDraw(Supplier<PlayableCard> drawAction) {
+        return drawAction.get();
+    }
+
 
     @Override
     public void transition() {

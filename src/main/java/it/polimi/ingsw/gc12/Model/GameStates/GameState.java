@@ -65,6 +65,10 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
         throw new ForbiddenActionException();
     }
 
+    public void currentPlayerDisconnected(){
+        //NOTHING TO DO?
+    }
+
     public void transition() {
         persistence();
     }
