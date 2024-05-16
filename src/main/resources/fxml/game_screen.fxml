@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21">
@@ -17,10 +18,10 @@
                 style="-fx-background-color: yellow;">
 
     </AnchorPane>
-    <AnchorPane fx:id="ownFieldPane" layoutX="270.0" layoutY="250.0" prefHeight="350.0" prefWidth="1010.0"
+    <ScrollPane fx:id="ownFieldPane" layoutX="270.0" layoutY="250.0" prefHeight="350.0" prefWidth="1010.0"
                 style="-fx-background-color: red;">
 
-    </AnchorPane>
+    </ScrollPane>
     <HBox fx:id="handPane" layoutX="430.0" layoutY="600.0" prefHeight="120.0" prefWidth="690.0"
                 style="-fx-background-color: purple;">
 

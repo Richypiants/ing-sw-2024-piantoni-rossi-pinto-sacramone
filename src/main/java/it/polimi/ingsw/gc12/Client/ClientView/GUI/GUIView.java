@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Client.ClientView.GUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
@@ -16,7 +17,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -27,12 +27,14 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -392,6 +394,8 @@ public class GUIView extends View {
 //            AnchorPane.setBottomAnchor(leaveGame, 20.0);
 
             showHand();
+            showCommonPlacedCards();
+            showField(ClientController.getInstance().viewModel.getGame().getThisPlayer());
         });
     }
 
@@ -424,7 +428,7 @@ public class GUIView extends View {
                     initialCardsChoicePopup.setWidth(720);
                     initialCardsChoicePopup.setHeight(480);
 
-                    String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
+            String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
 
                     VBox initialCardsChoiceVBox = new VBox(30);
                     initialCardsChoiceVBox.setAlignment(Pos.CENTER);
@@ -451,6 +455,7 @@ public class GUIView extends View {
                         currentPane.getChildren().remove(initialCardsChoicePopup);
                         currentPane.setDisable(false);
                     });
+
                     backCardView.setOnMouseClicked((event) -> {
                         ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 0, Side.BACK);
                         initialCardsChoicePopup.hide();
@@ -486,8 +491,9 @@ public class GUIView extends View {
                     Popup objectiveChoicePopup = new Popup();
                     objectiveChoicePopup.setWidth(720);
                     objectiveChoicePopup.setHeight(480);
+            //objectiveChoicePopup.setAutoHide(true);
 
-                    String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
+            String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
 
                     VBox objectiveChoiceVBox = new VBox(30);
                     objectiveChoiceVBox.setAlignment(Pos.CENTER);
@@ -499,30 +505,28 @@ public class GUIView extends View {
                     objectiveChoiceHBox.setAlignment(Pos.CENTER);
                     objectiveChoiceHBox.setPrefSize(objectiveChoiceVBox.getPrefWidth(), objectiveChoiceVBox.getPrefHeight() * 0.9);
 
-                    ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Objective.jpg")));
-                    ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Objective.jpg")));
+            ArrayList<ClientCard> objectivesSelection = ((ChooseObjectiveCardsState) ClientController.getInstance()
+                    .getCurrentState()).objectivesSelection;
 
-                    frontCardView.setFitWidth(objectiveChoiceHBox.getPrefWidth() * 0.3);
-                    frontCardView.setPreserveRatio(true);
-                    backCardView.setFitWidth(objectiveChoiceHBox.getPrefWidth() * 0.3);
-                    backCardView.setPreserveRatio(true);
+            for (int i = 0; i < objectivesSelection.size(); i++) {
+                ClientCard objectiveCard = objectivesSelection.get(i);
+                ImageView objectiveCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Objective.jpg")));
 
-                    frontCardView.setOnMouseClicked((event) -> {
-                        ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 0, Side.FRONT);
-                        objectiveChoicePopup.hide();
-                        currentPane.getChildren().remove(darkening);
-                        currentPane.getChildren().remove(objectiveChoicePopup);
-                        currentPane.setDisable(false);
-                    });
-                    backCardView.setOnMouseClicked((event) -> {
-                        ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 0, Side.BACK);
-                        objectiveChoicePopup.hide();
-                        currentPane.getChildren().remove(darkening);
-                        currentPane.getChildren().remove(objectiveChoicePopup);
-                        currentPane.setDisable(false);
-                    });
+                objectiveCardView.setFitWidth(objectiveChoiceHBox.getPrefWidth() * 0.3);
+                objectiveCardView.setPreserveRatio(true);
 
-                    objectiveChoiceHBox.getChildren().addAll(frontCardView, backCardView);
+                int cardPosition = i;
+                objectiveCardView.setOnMouseClicked((event) -> {
+                    ClientController.getInstance().viewState.pickObjective(cardPosition + 1);
+                    objectiveChoicePopup.hide();
+                    currentPane.getChildren().remove(darkening);
+                    currentPane.getChildren().remove(objectiveChoicePopup);
+                    currentPane.setDisable(false);
+                });
+
+                objectiveChoiceHBox.getChildren().add(objectiveCardView);
+            }
+
                     objectiveChoiceVBox.getChildren().addAll(cardLabel, objectiveChoiceHBox/*, aggiungere scritta "Scegli carta iniziale: "*/);
                     objectiveChoicePopup.getContent().addAll(objectiveChoiceVBox);
 
@@ -547,9 +551,7 @@ public class GUIView extends View {
                     for (var card : cardsInHand) {
                         AnchorPane pane = new AnchorPane();
 
-                        pane.setPrefHeight(handPaneHeight);
-                        pane.setPrefWidth(handPaneWidth / 3);  //FIXME: Diviso 3? (cardInHand.size()?)
-
+                        pane.setPrefSize(handPaneHeight, handPaneWidth / 3);  //FIXME: Diviso 3? (cardInHand.size()?)
                         pane.setStyle("-fx-background-color: darkorange;");
 
                         //FIXME: mappa anche per gli sprite GUI come sprite TUI? altrimenti card.XXX_SPRITE
@@ -601,7 +603,11 @@ public class GUIView extends View {
     public void showCommonPlacedCards() {
         Platform.runLater(() ->
         {
+            //TODO: maybe GridPane and padding?
             VBox deckVBox = (VBox) stage.getScene().lookup("#deckAndVisiblePane");
+
+            //TODO. make vbox and hbox static and clear and refresh only the content
+            deckVBox.getChildren().clear();
 
             // HBox for resource cards
             HBox resourceHBox = new HBox(10);
@@ -666,30 +672,72 @@ public class GUIView extends View {
 
     @Override
     public void showField(ClientPlayer player) {
+        Platform.runLater(() ->
+        {
+            ScrollPane ownFieldPane = (ScrollPane) stage.getScene().lookup("#ownFieldPane");
+            //ownFieldPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            //ownFieldPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            ownFieldPane.setPannable(true);
 
+            double clippedPaneWidth = 4000;
+            double clippedPaneHeight = 4000 * ownFieldPane.getPrefHeight() / ownFieldPane.getPrefWidth();
+            AnchorPane clippedPane = new AnchorPane();
+            clippedPane.setPrefSize(clippedPaneWidth, clippedPaneHeight);
+            clippedPane.setCenterShape(true);
+
+            GenericPair<Double, Double> cardSizes = null;
+            GenericPair<Double, Double> clippedPaneCenter = new GenericPair<>(clippedPaneWidth / 2, clippedPaneHeight / 2);
+            GenericPair<Double, Double> cornerScaleFactor = new GenericPair<>(2.0 / 9, 2.0 / 5);
+            for (var cardEntry : ClientController.getInstance().viewModel.getGame().getThisPlayer().getPlacedCards().sequencedEntrySet()) {
+                ImageView cardImage = new ImageView(String.valueOf(GUIView.class.getResource("images/Resource.jpg")));
+                cardImage.setFitWidth(100);
+                cardImage.setPreserveRatio(true);
+
+                //TODO: estrarre fuori
+                cardSizes = new GenericPair<>(cardImage.getFitWidth(), cardImage.getFitHeight());
+
+                clippedPane.getChildren().add(cardImage);
+
+                cardImage.relocate(
+                        clippedPaneCenter.getX() - cardImage.getFitWidth() / 2 + cardImage.getFitWidth() * (1 - cornerScaleFactor.getX()) * cardEntry.getKey().getX(),
+                        clippedPaneCenter.getY() - cardImage.getFitHeight() / 2 - cardImage.getFitHeight() * (1 - cornerScaleFactor.getY()) * cardEntry.getKey().getY()
+                );
+            }
+
+            for (var openCorner : ClientController.getInstance().viewModel.getGame().getThisPlayer().getOpenCorners()) {
+                Rectangle openCornerShape = new Rectangle(60, 24);
+                openCornerShape.setStyle("-fx-fill: lightgray; -fx-stroke: black; -fx-stroke-width: 1; -fx-stroke-dash-array: 2 2;");
+
+                clippedPane.getChildren().add(openCornerShape);
+
+                openCornerShape.relocate(
+                        clippedPaneCenter.getX() - cardSizes.getX() / 2 + cardSizes.getX() * cornerScaleFactor.getX() * openCorner.getX(),
+                        clippedPaneCenter.getY() - cardSizes.getY() / 2 - cardSizes.getY() * cornerScaleFactor.getY() * openCorner.getY()
+                );
+            }
+
+            for (int i = 0; i < 5; i++) {
+                Rectangle openCornerShape = new Rectangle(60, 24);
+                openCornerShape.setStyle("-fx-fill: lightgray; -fx-stroke: black; -fx-stroke-width: 1; -fx-stroke-dash-array: 2 2;");
+
+                clippedPane.getChildren().add(openCornerShape);
+
+                openCornerShape.relocate(
+                        i * 50,
+                        i * 10
+                );
+            }
+
+            ownFieldPane.setContent(clippedPane);
+        });
     }
 
     @Override
     public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINT_STATS) {
+        Platform.runLater(() ->
+        {
 
-    }
-
-    public void NewGame(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/game_screen.fxml"));
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root, 1800, 850);
-        stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
-    }
-
-    public void LeaveGame(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/lobby_menu.fxml"));
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root, 1800, 850);
-        stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
+        });
     }
 
     private HBox createLobbyListElement(UUID lobbyUUID, GameLobby lobby) {
