@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
+import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseInitialCardsState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
@@ -19,6 +20,8 @@ import it.polimi.ingsw.gc12.Utilities.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static org.fusesource.jansi.Ansi.ansi;
 
 public class ClientController implements ClientControllerInterface {
 
@@ -197,6 +200,8 @@ public class ClientController implements ClientControllerInterface {
     public synchronized void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {
         for(var cardPlacement : cardPlacements) {
             ClientCard card = cardsList.get(cardPlacement.getX());
+            if(cardPlacement.getX() == -1)
+                TUIView.getInstance().printToPosition(ansi().cursor(1,1).a("Template card Received")); //TODO:REMOVE
             switch (cardPlacement.getY().trim().toLowerCase()) {
                 case "resource_deck" -> viewModel.getGame().setTopDeckResourceCard(card);
                 case "gold_deck" -> viewModel.getGame().setTopDeckGoldCard(card);

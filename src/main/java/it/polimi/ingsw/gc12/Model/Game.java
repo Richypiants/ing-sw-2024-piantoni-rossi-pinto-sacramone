@@ -194,7 +194,6 @@ public class Game extends GameLobby {
      * Given a pattern matching string {gold, resource} and a valid position {0, 1}, returns the selected card and
      * replaces it on the board
      */
-    //FIXME: change in UML
     public PlayableCard drawFrom(Card[] deck, int position) throws EmptyDeckException {
         PlayableCard returnedCard = null;
 

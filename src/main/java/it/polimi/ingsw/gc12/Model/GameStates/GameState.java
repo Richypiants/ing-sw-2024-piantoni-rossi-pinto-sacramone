@@ -39,6 +39,11 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
 
         do {
             currentPlayer = (currentPlayer + 1) % GAME.getPlayers().size();
+            if(counter != -1)
+                counter--;
+            if(counter == 0)
+                //There's no need to find another active player, since the game is ended.
+                break;
         } while(!GAME.getPlayers().get(currentPlayer).isActive());
     }
 

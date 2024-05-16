@@ -386,7 +386,8 @@ public class TUIView extends View {
     }
 
     public Ansi standardAnsi(ClientCard card, Side side) {
-        if(card == null) return Ansi.ansi();
+        if (card == null) return Ansi.ansi();
+        if (card.ID == -1) return Ansi.ansi();
 
         Ansi sprite = Ansi.ansi();
         for (var line : card.TUI_SPRITES.get(side)) {
@@ -491,7 +492,8 @@ public class TUIView extends View {
         for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
             printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Erase.FORWARD));
 
-        printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX() - 2, FIELD_TOP_LEFT.getY()).a("Field of: ").bold().a(player.getNickname()).reset());
+        printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX() - 2, FIELD_TOP_LEFT.getY()).a("Field of: ")
+                .bold().a(player.getNickname()).eraseLine(Erase.FORWARD));
 
         GenericPair<Integer, Integer> maxCoordinates = findExtremeCoordinates(Math::max);
         GenericPair<Integer, Integer> minCoordinates = findExtremeCoordinates(Math::min);
