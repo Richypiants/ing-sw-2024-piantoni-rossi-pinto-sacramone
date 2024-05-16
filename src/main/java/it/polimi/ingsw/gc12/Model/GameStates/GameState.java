@@ -14,12 +14,12 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
     The index which points to the player which is playing right now (starting from 0 when the game starts)
      */
     protected int currentPlayer;
-    protected int counter;
+    protected int finalPhaseCounter;
 
-    public GameState(Game thisGame, int currentPlayer, int counter) {
+    public GameState(Game thisGame, int currentPlayer, int finalPhaseCounter) {
         this.GAME = thisGame;
         this.currentPlayer = currentPlayer;
-        this.counter = counter;
+        this.finalPhaseCounter = finalPhaseCounter;
     }
 
     /**
@@ -39,9 +39,9 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
 
         do {
             currentPlayer = (currentPlayer + 1) % GAME.getPlayers().size();
-            if(counter != -1)
-                counter--;
-            if(counter == 0)
+            if(finalPhaseCounter != -1)
+                finalPhaseCounter--;
+            if(finalPhaseCounter == 0)
                 //There's no need to find another active player, since the game is ended.
                 break;
         } while(!GAME.getPlayers().get(currentPlayer).isActive());

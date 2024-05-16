@@ -56,9 +56,9 @@ public class PlayerTurnPlayState extends GameState {
     public void transition() {
         super.transition();
 
-        if (counter == -1)
+        if (finalPhaseCounter == -1)
             if (GAME.getPlayers().get(currentPlayer).getPoints() >= 20)
-                counter = 2 * GAME.getPlayers().size() - currentPlayer;
+                finalPhaseCounter = 2 * GAME.getPlayers().size() - currentPlayer;
         //TODO: send alert a tutti i giocatori che si è entrati nella fase finale?
 
         System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
@@ -77,7 +77,7 @@ public class PlayerTurnPlayState extends GameState {
             }
         }
 
-        GAME.setState(new PlayerTurnDrawState(GAME, currentPlayer, counter));
+        GAME.setState(new PlayerTurnDrawState(GAME, currentPlayer, finalPhaseCounter));
 
         //Check if there's a card that can be drawn, if not, call transition to the just created state.
         if(GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty()

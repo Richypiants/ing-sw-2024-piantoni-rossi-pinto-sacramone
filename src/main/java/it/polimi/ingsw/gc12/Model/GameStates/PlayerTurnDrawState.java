@@ -299,15 +299,15 @@ public class PlayerTurnDrawState extends GameState {
         nextPlayer();
 
         //Is final condition satisfied check
-        if (GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty())
-            counter = 2 * GAME.getPlayers().size() - currentPlayer - 1;
+        if (finalPhaseCounter == -1 && GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty())
+            finalPhaseCounter = 2 * GAME.getPlayers().size() - currentPlayer - 1;
 
         //TODO: segnalare ai giocatori connessi che si stanno giocando i turni finali,
         // attraverso la GameTransitionCommand [Un campo Boolean, il # di Turno in cui finirà la partita,
         // il contatore decrementato?
 
-        if (counter == 0) {
-            GAME.setState(new VictoryCalculationState(GAME, currentPlayer, counter));
+        if (finalPhaseCounter == 0) {
+            GAME.setState(new VictoryCalculationState(GAME, currentPlayer, finalPhaseCounter));
             GAME.getCurrentState().transition();
             return;
         }
@@ -328,6 +328,6 @@ public class PlayerTurnDrawState extends GameState {
             }
         }
 
-        GAME.setState(new PlayerTurnPlayState(GAME, currentPlayer, counter));
+        GAME.setState(new PlayerTurnPlayState(GAME, currentPlayer, finalPhaseCounter));
     }
 }
