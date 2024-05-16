@@ -17,6 +17,7 @@ import it.polimi.ingsw.gc12.Utilities.Triplet;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -100,13 +101,13 @@ public class PlayerTurnDrawState extends GameState {
             drawnCard = GAME.drawFrom(GAME.getResourceCardsDeck());
             topDeck = GAME.getResourceCardsDeck().peek();
             if (topDeck == null) {
-                topDeck = new ResourceCard(-1, 0, null, null);
+                topDeck = new ResourceCard(-1,0, new HashMap<>(), new HashMap<>());
             }
         } else if (deck.trim().equalsIgnoreCase("GOLD")) {
             drawnCard = GAME.drawFrom(GAME.getGoldCardsDeck());
             topDeck = GAME.getGoldCardsDeck().peek();
             if (topDeck == null) {
-                topDeck = new GoldCard(-1, 0, null, null, null, null);
+                topDeck = new GoldCard(-1, 0, new HashMap<>(), new HashMap<>(), null, null);
             }
         } else
             throw new UnknownStringException();
@@ -162,21 +163,21 @@ public class PlayerTurnDrawState extends GameState {
             drawnCard = GAME.drawFrom(GAME.getPlacedResources(), position);
             replacingCard = GAME.getPlacedResources()[position];
             if (replacingCard == null) {
-                replacingCard = new ResourceCard(-1, 0, null, null);
+                replacingCard = new ResourceCard(-1,0, new HashMap<>(), new HashMap<>());
             }
             topDeck = GAME.getResourceCardsDeck().peek();
             if (topDeck == null) {
-                topDeck = new ResourceCard(-1, 0, null, null);
+                topDeck = new ResourceCard(-1,0, new HashMap<>(), new HashMap<>());
             }
         } else if (whichType.trim().equalsIgnoreCase("GOLD")) {
             drawnCard = GAME.drawFrom(GAME.getPlacedGolds(), position);
             replacingCard = GAME.getPlacedGolds()[position];
             if (replacingCard == null) {
-                replacingCard = new GoldCard(-1, 0, null, null, null, null);
+                replacingCard = new GoldCard(-1, 0, new HashMap<>(), new HashMap<>(), null, null);
             }
             topDeck = GAME.getGoldCardsDeck().peek();
             if (topDeck == null) {
-                topDeck = new GoldCard(-1, 0, null, null, null, null);
+                topDeck = new GoldCard(-1, 0, new HashMap<>(), new HashMap<>(), null, null);
             }
         } else
             throw new UnknownStringException();
@@ -265,8 +266,8 @@ public class PlayerTurnDrawState extends GameState {
                         );
                     if (topDeck == null)
                         topDeck = switch (currentActionFormat.getY()) {
-                            case Deck.RESOURCE, Deck.VISIBLE_RESOURCE -> new ResourceCard(-1, 0, null, null);
-                            case Deck.GOLD, Deck.VISIBLE_GOLD -> new GoldCard(-1, 0, null, null, null, null);
+                            case Deck.RESOURCE, Deck.VISIBLE_RESOURCE -> new ResourceCard(-1,0, new HashMap<>(), new HashMap<>());
+                            case Deck.GOLD, Deck.VISIBLE_GOLD -> new GoldCard(-1, 0, new HashMap<>(), new HashMap<>(), null, null);
                         };
                     receiver.requestToClient(
                             new ReplaceCardCommand(
@@ -293,22 +294,23 @@ public class PlayerTurnDrawState extends GameState {
         super.transition();
 
         //REMINDER: se è stato completato il turno di un giocatore disconnesso,
-        // il contatore dei turni rimanenti viene comunque inizializzato o decrementato qui.
-        if (counter != -1)
-            counter--;
-        else if (GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty())
-            counter = 2 * GAME.getPlayers().size() - currentPlayer - 1;
+        // il contatore dei turni rimanenti nel caso di finalPhase viene decrementato dalla nextPlayer().
+
+        nextPlayer();
+
+        //Is final condition satisfied check
+        if (finalPhaseCounter == -1 && GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty())
+            finalPhaseCounter = 2 * GAME.getPlayers().size() - currentPlayer - 1;
 
         //TODO: segnalare ai giocatori connessi che si stanno giocando i turni finali,
         // attraverso la GameTransitionCommand [Un campo Boolean, il # di Turno in cui finirà la partita,
         // il contatore decrementato?
 
-        if (counter == 0) {
-            GAME.setState(new VictoryCalculationState(GAME, currentPlayer, counter));
+        if (finalPhaseCounter == 0) {
+            GAME.setState(new VictoryCalculationState(GAME, currentPlayer, finalPhaseCounter));
             GAME.getCurrentState().transition();
             return;
         }
-        nextPlayer();
 
         System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
         for (var targetPlayer : GAME.getPlayers()) {
@@ -326,7 +328,6 @@ public class PlayerTurnDrawState extends GameState {
             }
         }
 
-        //TODO: send alert a tutti i giocatori tipo "è il turno di"?
-        GAME.setState(new PlayerTurnPlayState(GAME, currentPlayer, counter));
+        GAME.setState(new PlayerTurnPlayState(GAME, currentPlayer, finalPhaseCounter));
     }
 }
