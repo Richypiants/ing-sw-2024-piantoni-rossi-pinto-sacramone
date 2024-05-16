@@ -36,7 +36,7 @@ public class VictoryCalculationState extends GameState {
         pointsStats.sort(Comparator.comparingInt(Triplet<String, Integer, Integer>::getY)
                 .thenComparingInt(Triplet::getZ)
         );
-        pointsStats = pointsStats.reversed();
+        pointsStats = new ArrayList<>(pointsStats.reversed());
 
         System.out.println("[SERVER]: Sending leaderboard stats to clients in "+ GAME.toString());
         //TODO : Handle exceptions in the correct way and not like this

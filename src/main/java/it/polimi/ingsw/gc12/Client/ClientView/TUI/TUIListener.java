@@ -65,7 +65,11 @@ public class TUIListener {
 
         try {
             switch (command) {
-                case "setNickname" -> currentState.setNickname(tokens.removeFirst().substring(0,10));
+                case "setNickname" -> {
+                    String nickname = tokens.removeFirst();
+                    //TODO: invece di troncare, printare errore e reimmissione nickname?
+                    currentState.setNickname(nickname.substring(0, Math.min(nickname.length(), 10)));
+                }
                 case "createLobby" -> {
                     errorMessage = "expected numero di giocatori nella lobby as first argument";
                     currentState.createLobby(Integer.parseInt(tokens.removeFirst()));
@@ -88,7 +92,8 @@ public class TUIListener {
                             receiverNickname, message.substring(0, Math.min(message.length(), 150))
                     );
                 }
-                case "pickInitial" -> currentState.placeCard(new GenericPair<>(0, 0), 0, convertSide(tokens.removeFirst())) ;
+                case "pickInitial" ->
+                        currentState.placeCard(new GenericPair<>(0, 0), 0, convertSide(tokens.removeFirst()));
                 case "placeCard" ->
                     currentState.placeCard(
                             new GenericPair<>(Integer.parseInt(tokens.removeFirst()), Integer.parseInt(tokens.removeFirst())),

@@ -17,6 +17,8 @@ import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Utilities.*;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ClientController implements ClientControllerInterface {
 
@@ -34,6 +36,7 @@ public class ClientController implements ClientControllerInterface {
     public ErrorLogger errorLogger;
     //Should we use a Lock?
     public final Object LOCK = new Object();
+    public final ExecutorService commandExecutorsPool;
 
     private ClientController() {
         serverConnection = null;
@@ -42,6 +45,7 @@ public class ClientController implements ClientControllerInterface {
         cardsList = loadCards();
         viewModel = new ViewModel();
         errorLogger = new ErrorLogger("src/main/java/it/polimi/ingsw/gc12/Utilities/errorLog" + this + ".txt");
+        this.commandExecutorsPool = Executors.newSingleThreadExecutor();
     }
 
     public static ClientController getInstance() {
@@ -85,6 +89,7 @@ public class ClientController implements ClientControllerInterface {
         Map<Integer, ClientCard> tmp = new HashMap<>();
         Objects.requireNonNull(JSONParser.clientCardsFromJSON("client_cards.json"))
                 .forEach((card) -> tmp.put(card.ID, card));
+        tmp.put(-1, new ClientCard(-1, null, null, null));
         return Collections.unmodifiableMap(tmp);
     }
 

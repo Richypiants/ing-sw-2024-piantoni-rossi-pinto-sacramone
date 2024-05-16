@@ -613,7 +613,7 @@ public class ServerController implements ServerControllerInterface {
         * */
 
         if(targetGame.getCurrentState().getCurrentPlayer().equals(targetPlayer))
-            targetGame.getCurrentState().currentPlayerDisconnected();
+            targetGame.getCurrentState().playerDisconnected(targetPlayer);
 
         long activePlayers = targetGame.getPlayers().stream()
                 .filter(InGamePlayer::isActive)

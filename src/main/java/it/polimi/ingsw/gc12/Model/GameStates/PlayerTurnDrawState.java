@@ -4,7 +4,9 @@ import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.GameTransitionCom
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveCardCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReplaceCardCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
+import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
+import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
@@ -14,7 +16,8 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.UnknownStringException;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
@@ -91,14 +94,20 @@ public class PlayerTurnDrawState extends GameState {
             throw new UnexpectedPlayerException();
 
         PlayableCard drawnCard = null;
-        PlayableCard replacingCard = null;
+        PlayableCard topDeck = null;
 
         if (deck.trim().equalsIgnoreCase("RESOURCE")) {
             drawnCard = GAME.drawFrom(GAME.getResourceCardsDeck());
-            replacingCard = GAME.getResourceCardsDeck().peek();
+            topDeck = GAME.getResourceCardsDeck().peek();
+            if (topDeck == null) {
+                topDeck = new ResourceCard(-1, 0, null, null);
+            }
         } else if (deck.trim().equalsIgnoreCase("GOLD")) {
             drawnCard = GAME.drawFrom(GAME.getGoldCardsDeck());
-            replacingCard = GAME.getGoldCardsDeck().peek();
+            topDeck = GAME.getGoldCardsDeck().peek();
+            if (topDeck == null) {
+                topDeck = new GoldCard(-1, 0, null, null, null, null);
+            }
         } else
             throw new UnknownStringException();
 
@@ -119,7 +128,7 @@ public class PlayerTurnDrawState extends GameState {
                         .requestToClient(
                                 new ReplaceCardCommand(
                                         List.of(
-                                                new Triplet<>(replacingCard.ID, deck + "_deck", -1)
+                                                new Triplet<>(topDeck.ID, deck + "_deck", -1)
                                         )
                                 )
                         );
@@ -152,11 +161,23 @@ public class PlayerTurnDrawState extends GameState {
         if (whichType.trim().equalsIgnoreCase("RESOURCE")) {
             drawnCard = GAME.drawFrom(GAME.getPlacedResources(), position);
             replacingCard = GAME.getPlacedResources()[position];
+            if (replacingCard == null) {
+                replacingCard = new ResourceCard(-1, 0, null, null);
+            }
             topDeck = GAME.getResourceCardsDeck().peek();
+            if (topDeck == null) {
+                topDeck = new ResourceCard(-1, 0, null, null);
+            }
         } else if (whichType.trim().equalsIgnoreCase("GOLD")) {
             drawnCard = GAME.drawFrom(GAME.getPlacedGolds(), position);
             replacingCard = GAME.getPlacedGolds()[position];
+            if (replacingCard == null) {
+                replacingCard = new GoldCard(-1, 0, null, null, null, null);
+            }
             topDeck = GAME.getGoldCardsDeck().peek();
+            if (topDeck == null) {
+                topDeck = new GoldCard(-1, 0, null, null, null, null);
+            }
         } else
             throw new UnknownStringException();
 
@@ -219,7 +240,8 @@ public class PlayerTurnDrawState extends GameState {
                 topDeck = switch(actionFormat.getY()){
                     case Deck.RESOURCE -> GAME.getResourceCardsDeck().peek();
                     case Deck.GOLD -> GAME.getGoldCardsDeck().peek();
-                    default -> null;
+                    case Deck.VISIBLE_RESOURCE -> GAME.getPlacedResources()[actionFormat.getZ()];
+                    case Deck.VISIBLE_GOLD -> GAME.getPlacedGolds()[actionFormat.getZ()];
                 };
 
                 break;
@@ -241,14 +263,18 @@ public class PlayerTurnDrawState extends GameState {
                                         )
                                 )
                         );
-                    if (topDeck != null)
-                        receiver.requestToClient(
-                                new ReplaceCardCommand(
-                                        List.of(
-                                                new Triplet<>(topDeck.ID, currentActionFormat.getY().STRING_MESSAGE + "_deck", -1)
-                                        )
-                                )
-                        );
+                    if (topDeck == null)
+                        topDeck = switch (currentActionFormat.getY()) {
+                            case Deck.RESOURCE, Deck.VISIBLE_RESOURCE -> new ResourceCard(-1, 0, null, null);
+                            case Deck.GOLD, Deck.VISIBLE_GOLD -> new GoldCard(-1, 0, null, null, null, null);
+                        };
+                    receiver.requestToClient(
+                            new ReplaceCardCommand(
+                                    List.of(
+                                            new Triplet<>(topDeck.ID, currentActionFormat.getY().STRING_MESSAGE + "_deck", -1)
+                                    )
+                            )
+                    );
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

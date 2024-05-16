@@ -408,7 +408,7 @@ public class TUIView extends View {
     }
 
     public Ansi upscaledAnsi(ClientCard card, Side side) {
-        if(card == null) return Ansi.ansi();
+        if (card.ID == -1) return Ansi.ansi();
 
         Ansi sprite = Ansi.ansi();
         Ansi[] tmp = new Ansi[3];
@@ -491,14 +491,14 @@ public class TUIView extends View {
         for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
             printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Erase.FORWARD));
 
-        printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX(), FIELD_TOP_LEFT.getY()).a("Field of: ").bold().a(player.getNickname()).reset());
+        printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX() - 2, FIELD_TOP_LEFT.getY()).a("Field of: ").bold().a(player.getNickname()).reset());
 
         GenericPair<Integer, Integer> maxCoordinates = findExtremeCoordinates(Math::max);
         GenericPair<Integer, Integer> minCoordinates = findExtremeCoordinates(Math::min);
 
         final GenericPair<Float, Float> fieldCenterOfGravity =
                 new GenericPair<>(
-                        ((float) minCoordinates.getX() + maxCoordinates.getX()) / 2,
+                        ((float) minCoordinates.getY() + maxCoordinates.getY()) / 2,
                         ((float) minCoordinates.getX() + maxCoordinates.getX()) / 2
                 );
 
@@ -520,8 +520,7 @@ public class TUIView extends View {
                         )
                 );
 
-        ClientController.getInstance().viewModel.getGame()
-                .getThisPlayer().getOpenCorners()
+        player.getOpenCorners()
                 .forEach((corner) -> printToPosition(ansi().cursor(
                                                 initialCardPosition.getX() - (corner.getY() * CURSOR_OFFSET.getX()) + 2,
                                                 initialCardPosition.getY() + (corner.getX() * CURSOR_OFFSET.getY()) + 5

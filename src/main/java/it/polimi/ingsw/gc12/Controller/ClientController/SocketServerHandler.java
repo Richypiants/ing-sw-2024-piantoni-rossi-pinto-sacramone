@@ -23,7 +23,7 @@ public class SocketServerHandler extends SocketHandler implements VirtualServer 
 
     @Override
     protected void executeReceivedCommand(Command receivedCommand) {
-        SocketClient.getInstance().commandExecutorsPool.submit(
+        ClientController.getInstance().commandExecutorsPool.submit(
                 () -> ((ClientCommand) receivedCommand).execute(ClientController.getInstance())
         );
     }

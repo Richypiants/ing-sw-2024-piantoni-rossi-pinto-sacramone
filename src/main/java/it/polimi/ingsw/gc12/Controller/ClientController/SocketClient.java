@@ -14,31 +14,29 @@ public class SocketClient implements VirtualServer {
     private static SocketClient SINGLETON_SOCKET_CLIENT = null;
     private static SocketServerHandler serverHandler = null;
     public final ExecutorService connectionExecutorsPool;
-    public final ExecutorService commandExecutorsPool;
 
     private SocketClient() throws IOException {
         //FIXME: how about the ip?
         this.connectionExecutorsPool = Executors.newSingleThreadExecutor();
-        this.commandExecutorsPool = Executors.newSingleThreadExecutor();
 
-            Socket socket = new Socket(ClientController.getInstance().serverIPAddress, 5000);
-            serverHandler = new SocketServerHandler(socket);
+        Socket socket = new Socket(ClientController.getInstance().serverIPAddress, 5000);
+        serverHandler = new SocketServerHandler(socket);
 
-            connectionExecutorsPool.submit(
-                    () -> {
-                        while(true) {
-                            try {
-                                serverHandler.read();
-                            } catch (IOException e) {
-                                close();
-                                e.printStackTrace();
-                                break;
-                            }
+        connectionExecutorsPool.submit(
+                () -> {
+                    while (true) {
+                        try {
+                            serverHandler.read();
+                        } catch (IOException e) {
+                            close();
+                            e.printStackTrace();
+                            break;
                         }
                     }
-            );
-            //FIXME: reference escaping?
-            ClientController.getInstance().serverConnection = this;
+                }
+        );
+        //FIXME: reference escaping?
+        ClientController.getInstance().serverConnection = this;
     }
 
     public static SocketClient getInstance() { //TODO: sincronizzazione (serve?) ed eventualmente lazy
