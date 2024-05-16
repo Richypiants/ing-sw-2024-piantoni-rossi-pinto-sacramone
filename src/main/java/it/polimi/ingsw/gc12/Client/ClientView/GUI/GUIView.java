@@ -21,8 +21,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -63,6 +62,13 @@ public class GUIView extends View {
 
     @FXML
     Label error;
+
+    GenericPair<Double, Double> cardSizes = null;
+    GenericPair<Double, Double> clippedPaneCenter = null;
+    GenericPair<Double, Double> cornerScaleFactor = new GenericPair<>(2.0 / 9, 2.0 / 5);
+
+    //FIXME: this is probably not the correct MIME type syntax for the data we want to pass...
+    DataFormat placeCardDataFormat = new DataFormat("text/genericpair<integer,side>");
 
     private GUIView() {
     }
@@ -548,7 +554,8 @@ public class GUIView extends View {
 
                     handPane.getChildren().clear();
 
-                    for (var card : cardsInHand) {
+                    for (int i = 0; i < cardsInHand.size(); i++) {
+                        ClientCard card = cardsInHand.get(i);
                         AnchorPane pane = new AnchorPane();
 
                         pane.setPrefSize(handPaneHeight, handPaneWidth / 3);  //FIXME: Diviso 3? (cardInHand.size()?)
@@ -581,7 +588,6 @@ public class GUIView extends View {
 //                        backCardView.setLayoutX((pane.getPrefWidth() - backCardView.getFitWidth()) / 2);
 //                        backCardView.setLayoutY((pane.getPrefHeight() - backCardView.getFitHeight()) / 2);
 
-                        //TODO: Implement drag-and-drop of cards
                         backCardView.setOnMouseClicked((event) -> {
                             frontCardView.toBack();
                             backCardView.toFront();
@@ -591,6 +597,23 @@ public class GUIView extends View {
                         frontCardView.setOnMouseClicked((event) -> {
                             backCardView.toBack();
                             frontCardView.toFront();
+                        });
+
+                        //TODO: Complete implementation of drag-and-drop of cards with all DragEvents specified, and this is horrible...
+                        int inHandPosition = i + 1;
+
+                        frontCardView.setOnDragDetected((event) -> {
+                            Dragboard cardDragboard = frontCardView.startDragAndDrop(TransferMode.MOVE);
+                            cardDragboard.setDragView(frontCardView.getImage(), cardSizes.getX() / 2, cardSizes.getY() / 2);
+                            ClipboardContent cardClipboard = new ClipboardContent();
+                            cardClipboard.put(placeCardDataFormat, new GenericPair<>(inHandPosition, Side.FRONT));
+                            cardDragboard.setContent(cardClipboard);
+                        });
+
+                        frontCardView.setOnDragDone((event) -> {
+                            if (event.getTransferMode() == TransferMode.MOVE && event.isDropCompleted()) {
+                            }
+                            //TODO: visually clear card from hand?
                         });
 
                         handPane.getChildren().add(pane);
@@ -675,22 +698,23 @@ public class GUIView extends View {
         Platform.runLater(() ->
         {
             ScrollPane ownFieldPane = (ScrollPane) stage.getScene().lookup("#ownFieldPane");
-            //ownFieldPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-            //ownFieldPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            ownFieldPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            ownFieldPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             ownFieldPane.setPannable(true);
 
+            //TODO: add background color or texture or image?
+            //TODO: resize this pane based on how many cards have been played and center the field on it? or not?
             double clippedPaneWidth = 4000;
             double clippedPaneHeight = 4000 * ownFieldPane.getPrefHeight() / ownFieldPane.getPrefWidth();
             AnchorPane clippedPane = new AnchorPane();
             clippedPane.setPrefSize(clippedPaneWidth, clippedPaneHeight);
             clippedPane.setCenterShape(true);
 
-            GenericPair<Double, Double> cardSizes = null;
-            GenericPair<Double, Double> clippedPaneCenter = new GenericPair<>(clippedPaneWidth / 2, clippedPaneHeight / 2);
-            GenericPair<Double, Double> cornerScaleFactor = new GenericPair<>(2.0 / 9, 2.0 / 5);
+            clippedPaneCenter = new GenericPair<>(clippedPaneWidth / 2, clippedPaneHeight / 2);
             for (var cardEntry : ClientController.getInstance().viewModel.getGame().getThisPlayer().getPlacedCards().sequencedEntrySet()) {
-                ImageView cardImage = new ImageView(String.valueOf(GUIView.class.getResource("images/Resource.jpg")));
+                ImageView cardImage = new ImageView(String.valueOf(GUIView.class.getResource("/images/Resource.jpg")));
                 cardImage.setFitWidth(100);
+                cardImage.setFitWidth(40); //FIXME: correct this: it is needed, but which size?
                 cardImage.setPreserveRatio(true);
 
                 //TODO: estrarre fuori
@@ -705,18 +729,39 @@ public class GUIView extends View {
             }
 
             for (var openCorner : ClientController.getInstance().viewModel.getGame().getThisPlayer().getOpenCorners()) {
-                Rectangle openCornerShape = new Rectangle(60, 24);
+                var openCornerShape = new Rectangle(100, 40) {
+                    public final GenericPair<Integer, Integer> COORDINATES = openCorner;
+                };
                 openCornerShape.setStyle("-fx-fill: lightgray; -fx-stroke: black; -fx-stroke-width: 1; -fx-stroke-dash-array: 2 2;");
+
+                openCornerShape.setOnDragOver((event) -> {
+                    //TODO: implement visual effects
+                    if (event.getGestureSource() != openCornerShape && event.getDragboard().hasContent(placeCardDataFormat)) {
+                        event.acceptTransferModes(TransferMode.MOVE);
+                    }
+                });
+
+                openCornerShape.setOnDragDropped((event) -> {
+                    if (event.getTransferMode() == TransferMode.MOVE) {
+                        GenericPair<Integer, Side> placeCardData = (GenericPair<Integer, Side>) event.getDragboard().getContent(placeCardDataFormat);
+                        ClientController.getInstance().viewState.placeCard(
+                                openCornerShape.COORDINATES,
+                                placeCardData.getX(),
+                                placeCardData.getY()
+                        );
+                        event.setDropCompleted(event.getDragboard().hasContent(placeCardDataFormat));
+                    }
+                });
 
                 clippedPane.getChildren().add(openCornerShape);
 
                 openCornerShape.relocate(
-                        clippedPaneCenter.getX() - cardSizes.getX() / 2 + cardSizes.getX() * cornerScaleFactor.getX() * openCorner.getX(),
-                        clippedPaneCenter.getY() - cardSizes.getY() / 2 - cardSizes.getY() * cornerScaleFactor.getY() * openCorner.getY()
+                        clippedPaneCenter.getX() - cardSizes.getX() / 2 + cardSizes.getX() * (1 - cornerScaleFactor.getX()) * openCorner.getX(),
+                        clippedPaneCenter.getY() - cardSizes.getY() / 2 - cardSizes.getY() * (1 - cornerScaleFactor.getY()) * openCorner.getY()
                 );
             }
 
-            for (int i = 0; i < 5; i++) {
+            /*for (int i = 0; i < 5; i++) {
                 Rectangle openCornerShape = new Rectangle(60, 24);
                 openCornerShape.setStyle("-fx-fill: lightgray; -fx-stroke: black; -fx-stroke-width: 1; -fx-stroke-dash-array: 2 2;");
 
@@ -726,7 +771,7 @@ public class GUIView extends View {
                         i * 50,
                         i * 10
                 );
-            }
+            }*/
 
             ownFieldPane.setContent(clippedPane);
         });
