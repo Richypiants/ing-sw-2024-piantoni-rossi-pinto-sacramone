@@ -40,6 +40,8 @@ public class GUIView extends View {
 
     private static GUIView SINGLETON_GUI_INSTANCE = null;
 
+    String resourcesPath = System.getProperty("user.dir") + "/src/main/resources/";
+
     Stage stage;
     ObservableList<String> languageList = FXCollections.observableArrayList("Italiano", "English");
     ObservableList<String> connectionList = FXCollections.observableArrayList("Socket", "RMI");
@@ -106,7 +108,8 @@ public class GUIView extends View {
 
     @Override
     public void titleScreen() {
-        FXMLLoader fxmlLoader = new FXMLLoader(GUIApplication.class.getResource("/fxml/title_screen.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(GUIView.class.getResource("/fxml/title_screen.fxml"));
+        ImageView image = new ImageView();
         fxmlLoader.setController(ClientController.getInstance().view);
         Parent root = null;
         try {
@@ -418,19 +421,23 @@ public class GUIView extends View {
 
                     //TODO: aggiungere per quanto possibile gli elementi del popup all'fxml?
                     Popup initialCardsChoicePopup = new Popup();
-                    initialCardsChoicePopup.setWidth(280);
-                    initialCardsChoicePopup.setHeight(120);
+                    initialCardsChoicePopup.setWidth(720);
+                    initialCardsChoicePopup.setHeight(480);
+
+                    String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
 
                     VBox initialCardsChoiceVBox = new VBox(30);
                     initialCardsChoiceVBox.setAlignment(Pos.CENTER);
                     initialCardsChoiceVBox.setPrefSize(initialCardsChoicePopup.getWidth(), initialCardsChoicePopup.getHeight());
+                    initialCardsChoiceVBox.setStyle(style);
+                    Label cardLabel = new Label("Seleziona la carta iniziale: ");
 
-                    HBox initialChoiceHBox = new HBox(50);
+                    HBox initialChoiceHBox = new HBox(30);
                     initialChoiceHBox.setAlignment(Pos.CENTER);
-                    initialChoiceHBox.setPrefSize(initialCardsChoiceVBox.getWidth(), initialCardsChoiceVBox.getHeight() * 0.9);
+                    initialChoiceHBox.setPrefSize(initialCardsChoiceVBox.getPrefWidth(), initialCardsChoiceVBox.getPrefHeight() * 0.9);
 
-                    ImageView frontCardView = new ImageView("/images/Gold.jpg");
-                    ImageView backCardView = new ImageView("/images/Resource.jpg");
+                    ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Gold.jpg")));
+                    ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Resource.jpg")));
 
                     frontCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
                     frontCardView.setPreserveRatio(true);
@@ -442,18 +449,18 @@ public class GUIView extends View {
                         initialCardsChoicePopup.hide();
                         currentPane.getChildren().remove(darkening);
                         currentPane.getChildren().remove(initialCardsChoicePopup);
+                        currentPane.setDisable(false);
                     });
                     backCardView.setOnMouseClicked((event) -> {
                         ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 0, Side.BACK);
                         initialCardsChoicePopup.hide();
                         currentPane.getChildren().remove(darkening);
                         currentPane.getChildren().remove(initialCardsChoicePopup);
+                        currentPane.setDisable(false);
                     });
 
                     initialChoiceHBox.getChildren().addAll(frontCardView, backCardView);
-
-                    initialCardsChoiceVBox.getChildren().addAll(initialChoiceHBox/*, aggiungere scritta "Scegli carta iniziale: "*/);
-
+                    initialCardsChoiceVBox.getChildren().addAll(cardLabel, initialChoiceHBox/*, aggiungere scritta "Scegli carta iniziale: "*/);
                     initialCardsChoicePopup.getContent().addAll(initialCardsChoiceVBox);
 
                     initialCardsChoicePopup.show(stage);
@@ -463,6 +470,65 @@ public class GUIView extends View {
 
     @Override
     public void showObjectiveCardsChoice() {
+        Platform.runLater(() -> {
+                    AnchorPane currentPane = (AnchorPane) stage.getScene().getRoot();
+
+                    currentPane.setDisable(true);
+                    AnchorPane darkening = new AnchorPane();
+                    darkening.setPrefSize(currentPane.getWidth(), currentPane.getHeight());
+                    darkening.setId("#darkening");
+                    darkening.setStyle("-fx-background-color: black;");
+                    darkening.setOpacity(0.8);
+                    currentPane.getChildren().add(darkening);
+                    darkening.toFront(); //FIXME: there has to be a better way...
+
+                    //TODO: aggiungere per quanto possibile gli elementi del popup all'fxml?
+                    Popup objectiveChoicePopup = new Popup();
+                    objectiveChoicePopup.setWidth(720);
+                    objectiveChoicePopup.setHeight(480);
+
+                    String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
+
+                    VBox objectiveChoiceVBox = new VBox(30);
+                    objectiveChoiceVBox.setAlignment(Pos.CENTER);
+                    objectiveChoiceVBox.setPrefSize(objectiveChoicePopup.getWidth(), objectiveChoicePopup.getHeight());
+                    objectiveChoiceVBox.setStyle(style);
+                    Label cardLabel = new Label("Seleziona la carta obiettivo segreto: ");
+
+                    HBox objectiveChoiceHBox = new HBox(30);
+                    objectiveChoiceHBox.setAlignment(Pos.CENTER);
+                    objectiveChoiceHBox.setPrefSize(objectiveChoiceVBox.getPrefWidth(), objectiveChoiceVBox.getPrefHeight() * 0.9);
+
+                    ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Objective.jpg")));
+                    ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Objective.jpg")));
+
+                    frontCardView.setFitWidth(objectiveChoiceHBox.getPrefWidth() * 0.3);
+                    frontCardView.setPreserveRatio(true);
+                    backCardView.setFitWidth(objectiveChoiceHBox.getPrefWidth() * 0.3);
+                    backCardView.setPreserveRatio(true);
+
+                    frontCardView.setOnMouseClicked((event) -> {
+                        ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 0, Side.FRONT);
+                        objectiveChoicePopup.hide();
+                        currentPane.getChildren().remove(darkening);
+                        currentPane.getChildren().remove(objectiveChoicePopup);
+                        currentPane.setDisable(false);
+                    });
+                    backCardView.setOnMouseClicked((event) -> {
+                        ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 0, Side.BACK);
+                        objectiveChoicePopup.hide();
+                        currentPane.getChildren().remove(darkening);
+                        currentPane.getChildren().remove(objectiveChoicePopup);
+                        currentPane.setDisable(false);
+                    });
+
+                    objectiveChoiceHBox.getChildren().addAll(frontCardView, backCardView);
+                    objectiveChoiceVBox.getChildren().addAll(cardLabel, objectiveChoiceHBox/*, aggiungere scritta "Scegli carta iniziale: "*/);
+                    objectiveChoicePopup.getContent().addAll(objectiveChoiceVBox);
+
+                    objectiveChoicePopup.show(stage);
+                }
+        );
     }
 
     @Override
@@ -476,7 +542,7 @@ public class GUIView extends View {
                     double handPaneWidth = handPane.getPrefWidth();
                     List<ClientCard> cardsInHand = ClientController.getInstance().viewModel.getGame().getCardsInHand();
 
-                    handPane.getChildren().removeAll();
+                    handPane.getChildren().clear();
 
                     for (var card : cardsInHand) {
                         AnchorPane pane = new AnchorPane();
@@ -487,8 +553,8 @@ public class GUIView extends View {
                         pane.setStyle("-fx-background-color: darkorange;");
 
                         //FIXME: mappa anche per gli sprite GUI come sprite TUI? altrimenti card.XXX_SPRITE
-                        ImageView frontCardView = new ImageView("/images/Gold.jpg");
-                        ImageView backCardView = new ImageView("/images/Resource.jpg");
+                        ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Gold.jpg")));
+                        ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Resource.jpg")));
 
                         pane.getChildren().addAll(backCardView, frontCardView);
                         backCardView.toBack();
@@ -513,14 +579,16 @@ public class GUIView extends View {
 //                        backCardView.setLayoutX((pane.getPrefWidth() - backCardView.getFitWidth()) / 2);
 //                        backCardView.setLayoutY((pane.getPrefHeight() - backCardView.getFitHeight()) / 2);
 
+                        //TODO: Implement drag-and-drop of cards
                         backCardView.setOnMouseClicked((event) -> {
-                            frontCardView.toFront();
-                            backCardView.toBack();
+                            frontCardView.toBack();
+                            backCardView.toFront();
                         });
 
+
                         frontCardView.setOnMouseClicked((event) -> {
-                            backCardView.toFront();
-                            frontCardView.toBack();
+                            backCardView.toBack();
+                            frontCardView.toFront();
                         });
 
                         handPane.getChildren().add(pane);
@@ -531,6 +599,69 @@ public class GUIView extends View {
 
     @Override
     public void showCommonPlacedCards() {
+        Platform.runLater(() ->
+        {
+            VBox deckVBox = (VBox) stage.getScene().lookup("#deckAndVisiblePane");
+
+            // HBox for resource cards
+            HBox resourceHBox = new HBox(10);
+            resourceHBox.setAlignment(Pos.CENTER);
+            resourceHBox.setPrefSize(deckVBox.getPrefWidth(), deckVBox.getPrefHeight() / 3);
+
+            ImageView resourceDeck = new ImageView(String.valueOf(GUIView.class.getResource("/images/Resource.jpg")));
+            ImageView resource1 = new ImageView(String.valueOf(GUIView.class.getResource("/images/Resource.jpg")));
+            ImageView resource2 = new ImageView(String.valueOf(GUIView.class.getResource("/images/Resource.jpg")));
+
+            resourceDeck.setFitWidth(resourceHBox.getPrefWidth() / 3);
+            resourceDeck.setPreserveRatio(true);
+            resourceDeck.toFront();
+            resource1.setFitWidth(resourceHBox.getPrefWidth() / 3);
+            resource1.setPreserveRatio(true);
+            resource1.toFront();
+            resource2.setFitWidth(resourceHBox.getPrefWidth() / 3);
+            resource2.setPreserveRatio(true);
+            resource2.toFront();
+
+            resourceHBox.getChildren().addAll(resourceDeck, resource1, resource2);
+
+            // HBox for gold cards
+            HBox goldHBox = new HBox(20);
+            goldHBox.setAlignment(Pos.CENTER);
+            goldHBox.setPrefSize(deckVBox.getPrefWidth(), deckVBox.getPrefHeight() / 3);
+
+            ImageView goldDeck = new ImageView(String.valueOf(GUIView.class.getResource("/images/Gold.jpg")));
+            ImageView gold1 = new ImageView(String.valueOf(GUIView.class.getResource("/images/Gold.jpg")));
+            ImageView gold2 = new ImageView(String.valueOf(GUIView.class.getResource("/images/Gold.jpg")));
+
+            goldDeck.setFitWidth(goldHBox.getPrefWidth() / 3);
+            goldDeck.setPreserveRatio(true);
+            gold1.setFitWidth(goldHBox.getPrefWidth() / 3);
+            gold1.setPreserveRatio(true);
+            gold2.setFitWidth(goldHBox.getPrefWidth() / 3);
+            gold2.setPreserveRatio(true);
+
+            goldHBox.getChildren().addAll(goldDeck, gold1, gold2);
+
+            // HBox for objective cards
+            HBox objectiveHBox = new HBox(20);
+            objectiveHBox.setAlignment(Pos.CENTER);
+            objectiveHBox.setPrefSize(deckVBox.getPrefWidth(), deckVBox.getPrefHeight() / 3);
+
+            ImageView commonObjective1 = new ImageView(String.valueOf(GUIView.class.getResource("/images/Objective.jpg")));
+            ImageView commonObjective2 = new ImageView(String.valueOf(GUIView.class.getResource("/images/Objective.jpg")));
+            ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource("/images/Objective.jpg")));
+
+            commonObjective1.setFitWidth(objectiveHBox.getPrefWidth() / 3);
+            commonObjective1.setPreserveRatio(true);
+            commonObjective2.setFitWidth(objectiveHBox.getPrefWidth() / 3);
+            commonObjective2.setPreserveRatio(true);
+            secretObjective.setFitWidth(objectiveHBox.getPrefWidth() / 3);
+            secretObjective.setPreserveRatio(true);
+
+            objectiveHBox.getChildren().addAll(commonObjective1, commonObjective2, secretObjective);
+
+            deckVBox.getChildren().addAll(resourceHBox, goldHBox, objectiveHBox);
+        });
     }
 
     @Override

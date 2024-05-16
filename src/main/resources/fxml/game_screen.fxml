@@ -9,10 +9,10 @@
     <AnchorPane fx:id="scoreboardPane" prefHeight="460.0" prefWidth="270.0" style="-fx-background-color: blue;">
 
     </AnchorPane>
-    <AnchorPane fx:id="deckAndVisiblePane" layoutY="460.0" prefHeight="260.0" prefWidth="270.0"
+    <VBox fx:id="deckAndVisiblePane" layoutY="460.0" prefHeight="260.0" prefWidth="270.0"
                 style="-fx-background-color: green;">
 
-    </AnchorPane>
+    </VBox>
     <AnchorPane fx:id="opponentFieldsPane" layoutX="270.0" prefHeight="250.0" prefWidth="1010.0"
                 style="-fx-background-color: yellow;">
 
