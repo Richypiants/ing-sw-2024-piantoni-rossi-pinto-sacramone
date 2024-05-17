@@ -25,7 +25,7 @@ public class ChooseInitialCardsState extends GameScreenState{
 
     @Override
     public void placeCard(GenericPair<Integer, Integer> coordinates, int inHandPosition, Side playedSide) {
-        sendCardToPlace(coordinates, inHandPosition, playedSide);
+        sendCardToPlace(coordinates, inHandPosition - 1, playedSide);
     }
 
     @Override

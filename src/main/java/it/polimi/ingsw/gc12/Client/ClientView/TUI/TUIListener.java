@@ -93,11 +93,11 @@ public class TUIListener {
                     );
                 }
                 case "pickInitial" ->
-                        currentState.placeCard(new GenericPair<>(0, 0), 0, convertSide(tokens.removeFirst()));
+                        currentState.placeCard(new GenericPair<>(0, 0), 1, convertSide(tokens.removeFirst()));
                 case "placeCard" ->
                     currentState.placeCard(
                             new GenericPair<>(Integer.parseInt(tokens.removeFirst()), Integer.parseInt(tokens.removeFirst())),
-                            Integer.parseInt(tokens.removeFirst()) - 1,
+                            Integer.parseInt(tokens.removeFirst()),
                             convertSide(tokens.removeFirst())
                     );
                 case "pickObjective" -> currentState.pickObjective(Integer.parseInt(tokens.removeFirst()));

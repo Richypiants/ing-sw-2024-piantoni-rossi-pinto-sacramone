@@ -32,13 +32,13 @@
             </font>
         </TextField>
         <Label fx:id="addressLabel" alignment="CENTER" layoutX="198.0" layoutY="115.0" prefHeight="10.0"
-               prefWidth="100.0" text="Inserisci un indirzzo IP (Lascia vuoto per localhost)"
+               prefWidth="100.0" text="Inserisci un indirizzo IP (Lascia vuoto per localhost)"
                textFill="#000000">
             <font>
                 <Font name="Bell MT" size="20.0"/>
             </font>
         </Label>
-        <TextField fx:id="addressField" prefHeight="10.0" prefWidth="100.0">
+        <TextField fx:id="addressField" prefHeight="10.0" prefWidth="100.0" promptText="localhost">
             <font>
                 <Font name="Bell MT" size="20.0"/>
             </font>

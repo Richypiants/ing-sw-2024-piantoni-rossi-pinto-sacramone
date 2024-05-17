@@ -240,7 +240,7 @@ public class TUIView extends View {
         printOpponentsFieldsMiniaturized();
         showField(ClientController.getInstance().viewModel.getGame().getThisPlayer());
         showHand();
-        updateChat();
+        showChat();
 
         //FIXME: eventuale showOpponentField <opponentName>???
         //FIXME: al momento comandi filtrati per stato di gioco, replicati in ogni viewState, orribile anche perchè alla GUI non servono...
@@ -376,7 +376,7 @@ public class TUIView extends View {
     }
 
     //TODO: controllare che sia fixata la lunghezza massima del messaggio (70+80 = 150 caratteri vanno bene?)
-    public void updateChat() {
+    public void showChat() {
         List<String> chatLog = ClientController.getInstance().viewModel.getGame().getChatLog();
         printToPosition(ansi().cursor(2, 120).bold().a("Last chat messages: ").reset());
         for (int i = 0; i < 3; i++)

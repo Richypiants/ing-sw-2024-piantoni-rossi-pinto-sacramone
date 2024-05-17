@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
@@ -27,6 +28,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
@@ -38,11 +40,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+//FIXME: consider removing some Platform.runLater() and restricting some of them to necessary actions only
 public class GUIView extends View {
 
     private static GUIView SINGLETON_GUI_INSTANCE = null;
-
-    String resourcesPath = System.getProperty("user.dir") + "/src/main/resources/";
 
     Stage stage;
     ObservableList<String> connectionList = FXCollections.observableArrayList("Socket", "RMI");
@@ -178,7 +179,6 @@ public class GUIView extends View {
 
         //TODO: al posto della lingua, far inserire indirizzo IP del server!
         TextField addressField = (TextField) fxmlLoader.getNamespace().get("addressField");
-        addressField.setText("localhost");
 
         ComboBox<String> connection = (ComboBox<String>) fxmlLoader.getNamespace().get("connection");
         connection.setValue("Select communication technology");
@@ -233,8 +233,7 @@ public class GUIView extends View {
         }
 
         if (addressField.getText().isEmpty()) {
-            error.setText("Selezionare un indirizzo IP per il server prima di proseguire");
-            return;
+            addressField.setText("localhost");
         }
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/waiting_for_connection.fxml"));
@@ -267,7 +266,7 @@ public class GUIView extends View {
 
     @Override
     public void connectedConfirmation() {
-
+        //TODO: maybe consider deleting this for TUI also?
     }
 
     @Override
@@ -386,7 +385,6 @@ public class GUIView extends View {
                 throw new RuntimeException(e);
             }
 
-
 //            double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
 //            double screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
 //
@@ -397,8 +395,12 @@ public class GUIView extends View {
 
             stage.getScene().setRoot(root);
 
-//            Button leaveGame = (Button) fxmlLoader.getNamespace().get("leaveButton");
-//            Button chat = (Button) fxmlLoader.getNamespace().get("chatButton");
+            Button leaveButton = (Button) fxmlLoader.getNamespace().get("leaveButton");
+            leaveButton.setOnMouseClicked((event) -> ClientController.getInstance().viewState.quit());
+
+            Button chatButton = (Button) fxmlLoader.getNamespace().get("chatButton");
+            chatButton.setOnMouseClicked((event) -> showChat());
+
 //            ImageView score = (ImageView) fxmlLoader.getNamespace().get("score");
 //            ImageView objective = (ImageView) fxmlLoader.getNamespace().get("objective");
 //            ImageView resource = (ImageView) fxmlLoader.getNamespace().get("resource");
@@ -423,7 +425,48 @@ public class GUIView extends View {
     }
 
     @Override
-    public void updateChat() {
+    public void showChat() {
+        Platform.runLater(() -> {
+            //TODO: maybe perform chatPane initialization only at the start of a game instead of everytime?
+            AnchorPane chatPane = (AnchorPane) stage.getScene().lookup("#chatPane");
+            VBox messagesBox = (VBox) chatPane.lookup("#messagesBox");
+            ComboBox<String> receiverNicknameSelector = (ComboBox<String>) chatPane.lookup("#receiverSelector");
+            TextField messageText = (TextField) chatPane.lookup("#messageText");
+            Button hideButton = (Button) chatPane.lookup("#hideButton");
+            Button sendButton = (Button) chatPane.lookup("#sendButton");
+
+            ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
+
+
+            //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
+            for (var message : thisGame.getChatLog()) {
+                messagesBox.getChildren().add(createMessageElement(message));
+            }
+
+            List<String> nicknames = thisGame.getPlayers().stream().map(Player::getNickname).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+            nicknames.addFirst("everyone");
+            nicknames.remove(ClientController.getInstance().viewModel.getOwnNickname());
+            ObservableList<String> receiverNicknames = FXCollections.observableList(nicknames);
+            receiverNicknameSelector.setItems(receiverNicknames);
+
+            hideButton.setOnMouseClicked((event) -> chatPane.setVisible(false));
+
+            sendButton.setOnMouseClicked((event) -> {
+                String receiver = receiverNicknameSelector.getValue();
+                String message = messageText.getText().trim();
+                //FIXME: aggiungere lunghezza massima e substring anche qui? Magari aggiungerle ma più di 150 chars?
+                if (receiver.equals("everyone"))
+                    ClientController.getInstance().viewState.broadcastMessage(message);
+                else
+                    ClientController.getInstance().viewState.directMessage(receiver, message);
+            });
+
+            chatPane.setVisible(true);
+            chatPane.toFront();
+        });
+    }
+
+    public void showOpponentsFieldMiniaturized() {
 
     }
 
@@ -469,7 +512,7 @@ public class GUIView extends View {
                     backCardView.setPreserveRatio(true);
 
                     frontCardView.setOnMouseClicked((event) -> {
-                        ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 0, Side.FRONT);
+                        ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 1, Side.FRONT);
                         initialCardsChoicePopup.hide();
                         currentPane.getChildren().remove(darkening);
                         currentPane.getChildren().remove(initialCardsChoicePopup);
@@ -477,7 +520,7 @@ public class GUIView extends View {
                     });
 
                     backCardView.setOnMouseClicked((event) -> {
-                        ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 0, Side.BACK);
+                        ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 1, Side.BACK);
                         initialCardsChoicePopup.hide();
                         currentPane.getChildren().remove(darkening);
                         currentPane.getChildren().remove(initialCardsChoicePopup);
@@ -572,7 +615,7 @@ public class GUIView extends View {
                         ClientCard card = cardsInHand.get(i);
                         AnchorPane pane = new AnchorPane();
 
-                        pane.setPrefSize(handPaneHeight, handPaneWidth / 3);  //FIXME: Diviso 3? (cardInHand.size()?)
+                        pane.setPrefSize(handPaneWidth / 3, handPaneHeight);  //FIXME: Diviso 3? (cardInHand.size()?)
                         pane.setStyle("-fx-background-color: darkorange;");
 
                         //FIXME: mappa anche per gli sprite GUI come sprite TUI? altrimenti card.XXX_SPRITE
@@ -764,7 +807,8 @@ public class GUIView extends View {
                 var openCornerShape = new Rectangle(100, 66) {
                     public final GenericPair<Integer, Integer> COORDINATES = openCorner;
                 };
-                openCornerShape.setStyle("-fx-background-color: transparent; -fx-stroke: black; -fx-stroke-width: 2; -fx-stroke-dash-array: 4 4;");
+                openCornerShape.setFill(Color.TRANSPARENT);
+                openCornerShape.setStyle("-fx-stroke: black; -fx-stroke-width: 2; -fx-stroke-dash-array: 4 4;");
 
                 openCornerShape.setOnDragOver((event) -> {
                     //TODO: implement visual effects
@@ -781,7 +825,6 @@ public class GUIView extends View {
                                 placeCardData.getX(),
                                 placeCardData.getY()
                         );
-                        System.out.println("Card in hand position " + placeCardData.getX() + " placed in position " + openCornerShape.COORDINATES + " on side " + placeCardData.getY());
                         event.setDropCompleted(event.getDragboard().hasContent(placeCardDataFormat));
                     }
                 });
@@ -794,19 +837,9 @@ public class GUIView extends View {
                 );
             }
 
-            /*for (int i = 0; i < 5; i++) {
-                Rectangle openCornerShape = new Rectangle(60, 24);
-                openCornerShape.setStyle("-fx-fill: lightgray; -fx-stroke: black; -fx-stroke-width: 1; -fx-stroke-dash-array: 2 2;");
-
-                clippedPane.getChildren().add(openCornerShape);
-
-                openCornerShape.relocate(
-                        i * 50,
-                        i * 10
-                );
-            }*/
-
             ownFieldPane.setContent(clippedPane);
+            ownFieldPane.setHvalue((ownFieldPane.getHmax() + ownFieldPane.getHmin()) / 2);
+            ownFieldPane.setVvalue((ownFieldPane.getVmax() + ownFieldPane.getVmin()) / 2);
         });
     }
 
@@ -861,5 +894,53 @@ public class GUIView extends View {
         lobbyBox.getChildren().add(playerCount);
 
         return lobbyBox;
+    }
+
+    //FIXME: separate parameter receiver from message both in signature here, in TUI and in viewModel?
+    private HBox createMessageElement(String message) {
+        String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
+
+        // Box
+        HBox messageBox = new HBox(250);
+        messageBox.setPadding(new Insets(15, 12, 15, 12));
+
+        /*
+        // Label messaggio
+        Label playerCount = new Label(String.valueOf(message.));
+        playerCount.setStyle("-fx-font-size: 16px;");
+
+        // Label nomi
+        for (var player : lobby.getPlayers()) {
+            Label playerName = new Label(player.getNickname());
+            playerName.setStyle("-fx-font-size: 14px;");
+            lobbyBox.getChildren().add(playerName);
+        }
+
+        lobbyBox.setStyle(style);
+
+        if (ClientController.getInstance().viewModel.getCurrentLobby() == null) {
+            Button joinButton = new Button("JOIN");
+            joinButton.setOnAction(e ->
+                    {
+                        ClientController.getInstance().viewState.joinLobby(lobbyUUID);
+                    }
+            );
+            lobbyBox.getChildren().add(joinButton);
+        } else {
+            if (ClientController.getInstance().viewModel.getCurrentLobby().equals(lobby)) {
+                Button leaveButton = new Button("LEAVE");
+                leaveButton.setOnAction(e ->
+                        {
+                            ClientController.getInstance().viewState.leaveLobby();
+                        }
+                );
+                lobbyBox.getChildren().add(leaveButton);
+            }
+        }
+
+        lobbyBox.getChildren().add(playerCount);
+         */
+
+        return messageBox;
     }
 }

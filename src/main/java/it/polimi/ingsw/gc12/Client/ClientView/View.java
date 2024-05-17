@@ -21,7 +21,7 @@ public abstract class View { //FIXME: turn into interface maybe?
 
     public abstract void updateNickname();
 
-    public abstract void updateChat();
+    public abstract void showChat();
 
     public abstract void showInitialCardsChoice();
 
