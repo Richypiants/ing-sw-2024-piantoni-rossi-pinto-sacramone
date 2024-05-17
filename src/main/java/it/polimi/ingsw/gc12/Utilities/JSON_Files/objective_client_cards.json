@@ -1,8 +1,10 @@
 [
     {
         "ID": 86,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/086_back.png",
+            "FRONT": "/images/cards/front/086.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -208,8 +210,10 @@
     },
     {
         "ID": 87,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/087.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -503,8 +507,10 @@
     },
     {
         "ID": 88,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/088.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -798,8 +804,10 @@
     },
     {
         "ID": 89,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/089.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -1093,8 +1101,10 @@
     },
     {
         "ID": 90,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/090.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -1388,8 +1398,10 @@
     },
     {
         "ID": 91,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/091.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -1715,8 +1727,10 @@
     },
     {
         "ID": 92,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/092.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -2042,8 +2056,10 @@
     },
     {
         "ID": 93,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/093.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -2369,8 +2385,10 @@
     },
     {
         "ID": 94,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/094.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -2696,8 +2714,10 @@
     },
     {
         "ID": 95,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/095.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -2959,8 +2979,10 @@
     },
     {
         "ID": 96,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/096.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -3222,8 +3244,10 @@
     },
     {
         "ID": 97,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/097.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -3485,8 +3509,10 @@
     },
     {
         "ID": 98,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/098.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -3748,8 +3774,10 @@
     },
     {
         "ID": 99,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/099.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -4027,8 +4055,10 @@
     },
     {
         "ID": 100,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/100.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -4306,8 +4336,10 @@
     },
     {
         "ID": 101,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective.png",
+            "FRONT": "/images/cards/front/101.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [
@@ -4585,8 +4617,10 @@
     },
     {
         "ID": 102,
-        "FRONT_SPRITE": "front",
-        "BACK_SPRITE": "back",
+        "GUI_SPRITES": {
+            "BACK": "/images/cards/back/objective2.png",
+            "FRONT": "/images/cards/front/102.png"
+        },
         "TUI_SPRITES": {
             "FRONT": [
                 [

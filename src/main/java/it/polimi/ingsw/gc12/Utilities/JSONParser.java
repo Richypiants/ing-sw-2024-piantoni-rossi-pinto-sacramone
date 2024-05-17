@@ -144,7 +144,7 @@ public class JSONParser {
         }
     }
 
-    public static void generatePlayableCardsForTUI(){
+    public static void generateClientCardsJSONPlayableOnly() {
         ArrayList<ResourceCard> rc = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>(){});
         ArrayList<GoldCard> gc = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>(){});
         ArrayList<InitialCard> ic = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>(){});
@@ -156,7 +156,11 @@ public class JSONParser {
         assert gc != null;
         assert ic != null;
         for(var card : rc) {
-            clientCards.add(new ClientCard(card.ID, "front", "back",
+            clientCards.add(new ClientCard(card.ID,
+                    Map.of(
+                            Side.FRONT, "/images/cards/front/0" + card.ID + ".png",
+                            Side.BACK, "/images/cards/back/" + card.getCenterBackResources().keySet().stream().findAny().orElseThrow().SYMBOL + "_resource.png"
+                    ),
                             Map.of(
                                     Side.FRONT, generatePlayableCardTUISprite(card, Side.FRONT),
                                     Side.BACK, generatePlayableCardTUISprite(card, Side.BACK)
@@ -164,21 +168,31 @@ public class JSONParser {
                     )
             );
         }
+
+        //FIXME: first ten cards return "01" instead of "001" and so on...
         for(var card : gc) {
-            clientCards.add(new ClientCard(card.ID, "front", "back",
-                            Map.of(
-                                    Side.FRONT, generatePlayableCardTUISprite(card, Side.FRONT),
-                                    Side.BACK, generatePlayableCardTUISprite(card, Side.BACK)
-                            )
+            clientCards.add(new ClientCard(card.ID,
+                    Map.of(
+                            Side.FRONT, "/images/cards/front/0" + card.ID + ".png",
+                            Side.BACK, "/images/cards/back/" + card.getCenterBackResources().keySet().stream().findAny().orElseThrow().SYMBOL + "_gold.png"
+                    ),
+                    Map.of(
+                            Side.FRONT, generatePlayableCardTUISprite(card, Side.FRONT),
+                            Side.BACK, generatePlayableCardTUISprite(card, Side.BACK)
+                    )
                     )
             );
         }
         for(var card : ic) {
-            clientCards.add(new ClientCard(card.ID, "front", "back",
-                            Map.of(
-                                    Side.FRONT, generatePlayableCardTUISprite(card, Side.FRONT),
-                                    Side.BACK, generatePlayableCardTUISprite(card, Side.BACK)
-                            )
+            clientCards.add(new ClientCard(card.ID,
+                    Map.of(
+                            Side.FRONT, "/images/cards/front/0" + card.ID + ".png",
+                            Side.BACK, "/images/cards/back/0" + card.ID + "_back.png"
+                    ),
+                    Map.of(
+                            Side.FRONT, generatePlayableCardTUISprite(card, Side.FRONT),
+                            Side.BACK, generatePlayableCardTUISprite(card, Side.BACK)
+                    )
                     )
             );
         }
@@ -299,7 +313,7 @@ public class JSONParser {
     }
 
     public static void main(String[] args) {
-        generatePlayableCardsForTUI();
+        generateClientCardsJSONPlayableOnly();
 
         /*AnsiConsole.systemInstall();
         TUIView instance = TUIView.getInstance();

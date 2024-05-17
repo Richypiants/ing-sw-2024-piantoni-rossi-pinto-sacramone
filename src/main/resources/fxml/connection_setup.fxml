@@ -2,13 +2,13 @@
 
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.text.Font?>
-<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="languagePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-           minWidth="-Infinity" xmlns="http://javafx.com/javafx/21">
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="connectionPane" maxHeight="-Infinity" maxWidth="-Infinity"
+            minHeight="-Infinity"
+            minWidth="-Infinity" xmlns="http://javafx.com/javafx/21">
     <children>
-        <ComboBox fx:id="language" prefWidth="150.0" promptText="Select a language"/>
-        <Label fx:id="error" prefWidth="800.0" style="-fx-alignment: Center"
+        <Label fx:id="error" prefHeight="10.0" prefWidth="800.0" style="-fx-alignment: Center"
                textAlignment="CENTER" textFill="#000000">
             <font>
                 <Font name="Bell MT" size="14.0"/>
@@ -19,17 +19,29 @@
                 textAlignment="JUSTIFY" wrapText="true">
         </Button>
         <ComboBox fx:id="connection" layoutX="225.0" layoutY="188.0" prefWidth="150.0" promptText="Select a language"/>
-
-        <Label fx:id="nicknameLabel" alignment="CENTER" layoutX="198.0" layoutY="115.0" text="Nickname"
+        <Label fx:id="nicknameLabel" alignment="CENTER" layoutX="198.0" layoutY="115.0" prefHeight="10.0"
+               prefWidth="100.0" text="Nickname"
                textFill="#000000">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>
         </Label>
-        <TextField fx:id="nicknameField" prefHeight="10.0" prefWidth="50.0">
+        <TextField fx:id="nicknameField" prefHeight="10.0" prefWidth="100.0">
+            <font>
+                <Font name="Bell MT" size="20.0"/>
+            </font>
+        </TextField>
+        <Label fx:id="addressLabel" alignment="CENTER" layoutX="198.0" layoutY="115.0" prefHeight="10.0"
+               prefWidth="100.0" text="Inserisci un indirzzo IP (Lascia vuoto per localhost)"
+               textFill="#000000">
+            <font>
+                <Font name="Bell MT" size="20.0"/>
+            </font>
+        </Label>
+        <TextField fx:id="addressField" prefHeight="10.0" prefWidth="100.0">
             <font>
                 <Font name="Bell MT" size="20.0"/>
             </font>
         </TextField>
     </children>
-</StackPane>
+</AnchorPane>

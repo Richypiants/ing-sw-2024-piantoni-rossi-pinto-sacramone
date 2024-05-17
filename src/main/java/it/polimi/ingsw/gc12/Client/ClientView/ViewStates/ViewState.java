@@ -39,7 +39,7 @@ public abstract class ViewState {
         //"throw Exception"
     }
 
-    public void connect(String communicationTechnology, String nickname) {
+    public void connect(String serverIPAddress, String communicationTechnology, String nickname) {
 
     }
 

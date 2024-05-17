@@ -145,7 +145,7 @@ public class TUIView extends View {
         clearTerminal();
          */
         printToPosition(ansi().cursor(1, 1).a("Inserisci l'indirizzo IP del server (leave empty for 'localhost'): "));
-        ClientController.getInstance().serverIPAddress = console.readLine();
+        String serverIPAddress = console.readLine();
         System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
         clearTerminal();
         String communicationTechnology = readUntil(
@@ -175,7 +175,7 @@ public class TUIView extends View {
 
         printToPosition(ansi().cursor(2,1).a("Connessione al server in corso..."));
 
-        ClientController.getInstance().viewState.connect(communicationTechnology, nickname);
+        ClientController.getInstance().viewState.connect(serverIPAddress, communicationTechnology, nickname);
     }
 
     public void connectedConfirmation() {

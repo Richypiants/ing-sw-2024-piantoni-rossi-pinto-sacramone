@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
@@ -44,7 +45,6 @@ public class GUIView extends View {
     String resourcesPath = System.getProperty("user.dir") + "/src/main/resources/";
 
     Stage stage;
-    ObservableList<String> languageList = FXCollections.observableArrayList("Italiano", "English");
     ObservableList<String> connectionList = FXCollections.observableArrayList("Socket", "RMI");
     ObservableList<Integer> maxPlayersSelector = FXCollections.observableArrayList(2, 3, 4);
 
@@ -52,10 +52,10 @@ public class GUIView extends View {
     TextField nicknameField;
 
     @FXML
-    Label profile;
+    TextField addressField;
 
     @FXML
-    ComboBox<String> language;
+    Label profile;
 
     @FXML
     ComboBox<String> connection;
@@ -117,7 +117,6 @@ public class GUIView extends View {
     @Override
     public void titleScreen() {
         FXMLLoader fxmlLoader = new FXMLLoader(GUIView.class.getResource("/fxml/title_screen.fxml"));
-        ImageView image = new ImageView();
         fxmlLoader.setController(ClientController.getInstance().view);
         Parent root = null;
         try {
@@ -178,9 +177,8 @@ public class GUIView extends View {
         stage.getScene().setRoot(root);
 
         //TODO: al posto della lingua, far inserire indirizzo IP del server!
-        ComboBox<String> language = (ComboBox<String>) fxmlLoader.getNamespace().get("language");
-        language.setPromptText("Select language");
-        language.setItems(languageList);
+        TextField addressField = (TextField) fxmlLoader.getNamespace().get("addressField");
+        addressField.setText("localhost");
 
         ComboBox<String> connection = (ComboBox<String>) fxmlLoader.getNamespace().get("connection");
         connection.setValue("Select communication technology");
@@ -195,26 +193,31 @@ public class GUIView extends View {
             }
         });
 
+        TextField nicknameField = (TextField) fxmlLoader.getNamespace().get("nicknameField");
         Label error = (Label) fxmlLoader.getNamespace().get("error");
         Label nicknameLabel = (Label) fxmlLoader.getNamespace().get("nicknameLabel");
-        TextField nicknameField = (TextField) fxmlLoader.getNamespace().get("nicknameField");
+        Label addressLabel = (Label) fxmlLoader.getNamespace().get("addressLabel");
 
         // Dimensione Schermo
         double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+        double screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
 
-        StackPane.setAlignment(language, Pos.CENTER);
-        StackPane.setMargin(language, new Insets(-screenHeight * 0.2, 0, 0, -screenHeight * 0.8));
-        StackPane.setAlignment(connection, Pos.CENTER);
-        StackPane.setMargin(connection, new Insets(-screenHeight * 0.2, 0, 0, screenHeight * 0.8));
-        StackPane.setAlignment(button, Pos.CENTER);
-        StackPane.setMargin(button, new Insets(screenHeight * 0.1, 0, 0, 0));
-        StackPane.setAlignment(error, Pos.CENTER);
-        StackPane.setMargin(error, new Insets(0, 0, 0, 0));
+        //StackPane.setAlignment(connection, Pos.CENTER);
+        connection.relocate(screenWidth * 0.5, screenHeight * 0.4);
+        //StackPane.setAlignment(button, Pos.CENTER);
+        button.relocate(screenWidth * 0.5, screenHeight * 0.6);
+        //StackPane.setAlignment(error, Pos.CENTER);
+        error.relocate(screenWidth * 0.5, screenHeight * 0.5);
 
-        StackPane.setAlignment(nicknameLabel, Pos.CENTER);
-        StackPane.setMargin(nicknameLabel, new Insets(-screenHeight * 0.3, 0, 0, 0));
-        StackPane.setAlignment(nicknameField, Pos.CENTER);
-        StackPane.setMargin(nicknameField, new Insets(-screenHeight * 0.2, screenHeight * 0.75, 0, screenHeight * 0.75));
+        //StackPane.setAlignment(addressField, Pos.CENTER);
+        addressField.relocate(screenWidth * 0.7, screenHeight * 0.4);
+        //StackPane.setAlignment(addressLabel, Pos.CENTER);
+        addressLabel.relocate(screenWidth * 0.7, screenHeight * 0.3);
+
+        //StackPane.setAlignment(nicknameLabel, Pos.CENTER);
+        nicknameLabel.relocate(screenWidth * 0.3, screenHeight * 0.3);
+        //StackPane.setAlignment(nicknameField, Pos.CENTER);
+        nicknameField.relocate(screenWidth * 0.3, screenHeight * 0.4);
     }
 
     @FXML
@@ -229,8 +232,8 @@ public class GUIView extends View {
             return;
         }
 
-        if (language.valueProperty().get() == null) {
-            error.setText("Selezionare una lingua prima di proseguire");
+        if (addressField.getText().isEmpty()) {
+            error.setText("Selezionare un indirizzo IP per il server prima di proseguire");
             return;
         }
 
@@ -259,7 +262,7 @@ public class GUIView extends View {
         }
 
         // Before changing scene, we notify the chosen comm technology to the controller so that it initializes it
-        new Thread(() -> ClientController.getInstance().viewState.connect(connection.valueProperty().get(), nicknameField.getText())).start();
+        new Thread(() -> ClientController.getInstance().viewState.connect(addressField.getText(), connection.valueProperty().get(), nicknameField.getText())).start();
     }
 
     @Override
@@ -383,6 +386,15 @@ public class GUIView extends View {
                 throw new RuntimeException(e);
             }
 
+
+//            double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+//            double screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
+//
+//            HBox handPane = (HBox) stage.getScene().lookup("#handPane");
+//            handPane.setAlignment(Pos.BOTTOM_CENTER);
+//            handPane.setPrefHeight(screenHeight * 0.15);
+//            handPane.setPrefWidth(screenWidth * 0.55);
+
             stage.getScene().setRoot(root);
 
 //            Button leaveGame = (Button) fxmlLoader.getNamespace().get("leaveButton");
@@ -395,7 +407,7 @@ public class GUIView extends View {
 //            // Dimensione Schermo
 //            double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
 
-                    // Posizionamento
+            // Posizionamento
 //            AnchorPane.setRightAnchor(leaveGame, 20.0);
 //            AnchorPane.setBottomAnchor(leaveGame, 20.0);
 
@@ -446,8 +458,10 @@ public class GUIView extends View {
                     initialChoiceHBox.setAlignment(Pos.CENTER);
                     initialChoiceHBox.setPrefSize(initialCardsChoiceVBox.getPrefWidth(), initialCardsChoiceVBox.getPrefHeight() * 0.9);
 
-                    ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Gold.jpg")));
-                    ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Resource.jpg")));
+            ClientCard initialCard = ClientController.getInstance().viewModel.getGame().getCardsInHand().getFirst();
+
+            ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.FRONT))));
+            ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.BACK))));
 
                     frontCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
                     frontCardView.setPreserveRatio(true);
@@ -516,7 +530,7 @@ public class GUIView extends View {
 
             for (int i = 0; i < objectivesSelection.size(); i++) {
                 ClientCard objectiveCard = objectivesSelection.get(i);
-                ImageView objectiveCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Objective.jpg")));
+                ImageView objectiveCardView = new ImageView(String.valueOf(objectiveCard.GUI_SPRITES.get(Side.FRONT)));
 
                 objectiveCardView.setFitWidth(objectiveChoiceHBox.getPrefWidth() * 0.3);
                 objectiveCardView.setPreserveRatio(true);
@@ -562,8 +576,8 @@ public class GUIView extends View {
                         pane.setStyle("-fx-background-color: darkorange;");
 
                         //FIXME: mappa anche per gli sprite GUI come sprite TUI? altrimenti card.XXX_SPRITE
-                        ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Gold.jpg")));
-                        ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource("/images/Resource.jpg")));
+                        ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.FRONT))));
+                        ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.BACK))));
 
                         pane.getChildren().addAll(backCardView, frontCardView);
                         backCardView.toBack();
@@ -632,62 +646,80 @@ public class GUIView extends View {
             //TODO. make vbox and hbox static and clear and refresh only the content
             deckVBox.getChildren().clear();
 
+            ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
+
             // HBox for resource cards
             HBox resourceHBox = new HBox(10);
             resourceHBox.setAlignment(Pos.CENTER);
             resourceHBox.setPrefSize(deckVBox.getPrefWidth(), deckVBox.getPrefHeight() / 3);
 
-            ImageView resourceDeck = new ImageView(String.valueOf(GUIView.class.getResource("/images/Resource.jpg")));
-            ImageView resource1 = new ImageView(String.valueOf(GUIView.class.getResource("/images/Resource.jpg")));
-            ImageView resource2 = new ImageView(String.valueOf(GUIView.class.getResource("/images/Resource.jpg")));
+            ImageView resourceDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckResourceCard().GUI_SPRITES.get(Side.BACK))));
 
             resourceDeck.setFitWidth(resourceHBox.getPrefWidth() / 3);
             resourceDeck.setPreserveRatio(true);
-            resourceDeck.toFront();
-            resource1.setFitWidth(resourceHBox.getPrefWidth() / 3);
-            resource1.setPreserveRatio(true);
-            resource1.toFront();
-            resource2.setFitWidth(resourceHBox.getPrefWidth() / 3);
-            resource2.setPreserveRatio(true);
-            resource2.toFront();
+            resourceDeck.setOnMouseClicked((event) ->
+                    ClientController.getInstance().viewState.drawFromDeck("Resource")
+            );
+            resourceHBox.getChildren().add(resourceDeck);
 
-            resourceHBox.getChildren().addAll(resourceDeck, resource1, resource2);
+            for (int i = 0; i < thisGame.getPlacedResources().length; i++) {
+                ImageView resource = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedResources()[i].GUI_SPRITES.get(Side.FRONT))));
+                resource.setFitWidth(resourceHBox.getPrefWidth() / 3);
+                resource.setPreserveRatio(true);
+
+                int finalI = i + 1;
+                resource.setOnMouseClicked((event) ->
+                        ClientController.getInstance().viewState.drawFromVisibleCards("Resource", finalI)
+                );
+
+                resourceHBox.getChildren().add(resource);
+            }
 
             // HBox for gold cards
             HBox goldHBox = new HBox(20);
             goldHBox.setAlignment(Pos.CENTER);
             goldHBox.setPrefSize(deckVBox.getPrefWidth(), deckVBox.getPrefHeight() / 3);
 
-            ImageView goldDeck = new ImageView(String.valueOf(GUIView.class.getResource("/images/Gold.jpg")));
-            ImageView gold1 = new ImageView(String.valueOf(GUIView.class.getResource("/images/Gold.jpg")));
-            ImageView gold2 = new ImageView(String.valueOf(GUIView.class.getResource("/images/Gold.jpg")));
+            ImageView goldDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckGoldCard().GUI_SPRITES.get(Side.BACK))));
 
             goldDeck.setFitWidth(goldHBox.getPrefWidth() / 3);
             goldDeck.setPreserveRatio(true);
-            gold1.setFitWidth(goldHBox.getPrefWidth() / 3);
-            gold1.setPreserveRatio(true);
-            gold2.setFitWidth(goldHBox.getPrefWidth() / 3);
-            gold2.setPreserveRatio(true);
+            goldDeck.setOnMouseClicked((event) ->
+                    ClientController.getInstance().viewState.drawFromDeck("Gold")
+            );
+            goldHBox.getChildren().add(goldDeck);
 
-            goldHBox.getChildren().addAll(goldDeck, gold1, gold2);
+            for (int i = 0; i < thisGame.getPlacedGold().length; i++) {
+                ImageView gold = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedGold()[i].GUI_SPRITES.get(Side.FRONT))));
+                gold.setFitWidth(goldHBox.getPrefWidth() / 3);
+                gold.setPreserveRatio(true);
+
+                int finalI = i + 1;
+                gold.setOnMouseClicked((event) ->
+                        ClientController.getInstance().viewState.drawFromVisibleCards("Gold", finalI)
+                );
+
+                goldHBox.getChildren().add(gold);
+            }
 
             // HBox for objective cards
             HBox objectiveHBox = new HBox(20);
             objectiveHBox.setAlignment(Pos.CENTER);
             objectiveHBox.setPrefSize(deckVBox.getPrefWidth(), deckVBox.getPrefHeight() / 3);
 
-            ImageView commonObjective1 = new ImageView(String.valueOf(GUIView.class.getResource("/images/Objective.jpg")));
-            ImageView commonObjective2 = new ImageView(String.valueOf(GUIView.class.getResource("/images/Objective.jpg")));
-            ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource("/images/Objective.jpg")));
+            for (int i = 0; i < thisGame.getCommonObjectives().length; i++) {
+                ImageView commonObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getCommonObjectives()[i].GUI_SPRITES.get(Side.FRONT))));
+                commonObjective.setFitWidth(objectiveHBox.getPrefWidth() / 3);
+                commonObjective.setPreserveRatio(true);
 
-            commonObjective1.setFitWidth(objectiveHBox.getPrefWidth() / 3);
-            commonObjective1.setPreserveRatio(true);
-            commonObjective2.setFitWidth(objectiveHBox.getPrefWidth() / 3);
-            commonObjective2.setPreserveRatio(true);
+                objectiveHBox.getChildren().add(commonObjective);
+            }
+
+            ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getOwnObjective().GUI_SPRITES.get(Side.FRONT))));
             secretObjective.setFitWidth(objectiveHBox.getPrefWidth() / 3);
             secretObjective.setPreserveRatio(true);
 
-            objectiveHBox.getChildren().addAll(commonObjective1, commonObjective2, secretObjective);
+            objectiveHBox.getChildren().add(secretObjective);
 
             deckVBox.getChildren().addAll(resourceHBox, goldHBox, objectiveHBox);
         });
@@ -698,8 +730,8 @@ public class GUIView extends View {
         Platform.runLater(() ->
         {
             ScrollPane ownFieldPane = (ScrollPane) stage.getScene().lookup("#ownFieldPane");
-            ownFieldPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-            ownFieldPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            ownFieldPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+            ownFieldPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
             ownFieldPane.setPannable(true);
 
             //TODO: add background color or texture or image?
@@ -712,9 +744,9 @@ public class GUIView extends View {
 
             clippedPaneCenter = new GenericPair<>(clippedPaneWidth / 2, clippedPaneHeight / 2);
             for (var cardEntry : ClientController.getInstance().viewModel.getGame().getThisPlayer().getPlacedCards().sequencedEntrySet()) {
-                ImageView cardImage = new ImageView(String.valueOf(GUIView.class.getResource("/images/Resource.jpg")));
+                ImageView cardImage = new ImageView(String.valueOf(GUIView.class.getResource(cardEntry.getValue().getX().GUI_SPRITES.get(cardEntry.getValue().getY()))));
+                cardImage.setFitHeight(66); //FIXME: correct this: it is needed, but which size?
                 cardImage.setFitWidth(100);
-                cardImage.setFitWidth(40); //FIXME: correct this: it is needed, but which size?
                 cardImage.setPreserveRatio(true);
 
                 //TODO: estrarre fuori
@@ -729,10 +761,10 @@ public class GUIView extends View {
             }
 
             for (var openCorner : ClientController.getInstance().viewModel.getGame().getThisPlayer().getOpenCorners()) {
-                var openCornerShape = new Rectangle(100, 40) {
+                var openCornerShape = new Rectangle(100, 66) {
                     public final GenericPair<Integer, Integer> COORDINATES = openCorner;
                 };
-                openCornerShape.setStyle("-fx-fill: lightgray; -fx-stroke: black; -fx-stroke-width: 1; -fx-stroke-dash-array: 2 2;");
+                openCornerShape.setStyle("-fx-background-color: transparent; -fx-stroke: black; -fx-stroke-width: 2; -fx-stroke-dash-array: 4 4;");
 
                 openCornerShape.setOnDragOver((event) -> {
                     //TODO: implement visual effects
@@ -749,6 +781,7 @@ public class GUIView extends View {
                                 placeCardData.getX(),
                                 placeCardData.getY()
                         );
+                        System.out.println("Card in hand position " + placeCardData.getX() + " placed in position " + openCornerShape.COORDINATES + " on side " + placeCardData.getY());
                         event.setDropCompleted(event.getDragboard().hasContent(placeCardDataFormat));
                     }
                 });
@@ -778,7 +811,7 @@ public class GUIView extends View {
     }
 
     @Override
-    public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINT_STATS) {
+    public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS) {
         Platform.runLater(() ->
         {
 

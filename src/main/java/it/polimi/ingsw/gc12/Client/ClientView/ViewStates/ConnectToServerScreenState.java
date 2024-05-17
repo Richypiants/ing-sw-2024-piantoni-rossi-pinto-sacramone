@@ -17,8 +17,9 @@ public class ConnectToServerScreenState extends ViewState {
     }
 
     @Override
-    public void connect(String communicationTechnology, String nickname) {
+    public void connect(String serverIPAddress, String communicationTechnology, String nickname) {
         //TODO: print "would you like to retry?"
+        ClientController.getInstance().serverIPAddress = serverIPAddress;
         do {
             try {
                 ClientController.getInstance().setCommunicationTechnology(communicationTechnology);
