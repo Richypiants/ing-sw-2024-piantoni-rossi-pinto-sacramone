@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc12.Model.ClientModel;
 
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
-import org.fusesource.jansi.Ansi;
 
 import java.io.Serializable;
 import java.util.ArrayList;
