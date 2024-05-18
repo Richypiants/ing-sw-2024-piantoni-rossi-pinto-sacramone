@@ -429,6 +429,7 @@ public class GUIView extends View {
         Platform.runLater(() -> {
             //TODO: maybe perform chatPane initialization only at the start of a game instead of everytime?
             AnchorPane chatPane = (AnchorPane) stage.getScene().lookup("#chatPane");
+            ScrollPane chatScrollPane = (ScrollPane) stage.getScene().lookup("#chatScrollPane");
             VBox messagesBox = (VBox) chatPane.lookup("#messagesBox");
             ComboBox<String> receiverNicknameSelector = (ComboBox<String>) chatPane.lookup("#receiverSelector");
             TextField messageText = (TextField) chatPane.lookup("#messageText");
@@ -437,11 +438,14 @@ public class GUIView extends View {
 
             ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
 
+            messagesBox.getChildren().clear();
 
             //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
             for (var message : thisGame.getChatLog()) {
                 messagesBox.getChildren().add(createMessageElement(message));
             }
+
+            chatScrollPane.setVvalue(chatScrollPane.getVmax());
 
             List<String> nicknames = thisGame.getPlayers().stream().map(Player::getNickname).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
             nicknames.addFirst("everyone");
@@ -808,7 +812,9 @@ public class GUIView extends View {
                     public final GenericPair<Integer, Integer> COORDINATES = openCorner;
                 };
                 openCornerShape.setFill(Color.TRANSPARENT);
-                openCornerShape.setStyle("-fx-stroke: black; -fx-stroke-width: 2; -fx-stroke-dash-array: 4 4;");
+                openCornerShape.setStyle("-fx-stroke: gray; -fx-stroke-width: 1; -fx-stroke-dash-array: 4 8;");
+                openCornerShape.setArcWidth(10);
+                openCornerShape.setArcHeight(10);
 
                 openCornerShape.setOnDragOver((event) -> {
                     //TODO: implement visual effects
@@ -904,42 +910,13 @@ public class GUIView extends View {
         HBox messageBox = new HBox(250);
         messageBox.setPadding(new Insets(15, 12, 15, 12));
 
-        /*
         // Label messaggio
-        Label playerCount = new Label(String.valueOf(message.));
-        playerCount.setStyle("-fx-font-size: 16px;");
+        Label messageLabel = new Label(String.valueOf(message));
+        messageLabel.setStyle("-fx-font-size: 16px;");
 
-        // Label nomi
-        for (var player : lobby.getPlayers()) {
-            Label playerName = new Label(player.getNickname());
-            playerName.setStyle("-fx-font-size: 14px;");
-            lobbyBox.getChildren().add(playerName);
-        }
+        messageBox.setStyle(style);
 
-        lobbyBox.setStyle(style);
-
-        if (ClientController.getInstance().viewModel.getCurrentLobby() == null) {
-            Button joinButton = new Button("JOIN");
-            joinButton.setOnAction(e ->
-                    {
-                        ClientController.getInstance().viewState.joinLobby(lobbyUUID);
-                    }
-            );
-            lobbyBox.getChildren().add(joinButton);
-        } else {
-            if (ClientController.getInstance().viewModel.getCurrentLobby().equals(lobby)) {
-                Button leaveButton = new Button("LEAVE");
-                leaveButton.setOnAction(e ->
-                        {
-                            ClientController.getInstance().viewState.leaveLobby();
-                        }
-                );
-                lobbyBox.getChildren().add(leaveButton);
-            }
-        }
-
-        lobbyBox.getChildren().add(playerCount);
-         */
+        messageBox.getChildren().add(messageLabel);
 
         return messageBox;
     }
