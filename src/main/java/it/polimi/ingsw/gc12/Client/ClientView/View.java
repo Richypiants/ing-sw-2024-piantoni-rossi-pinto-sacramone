@@ -21,7 +21,7 @@ public abstract class View { //FIXME: turn into interface maybe?
 
     public abstract void updateNickname();
 
-    public abstract void updateChat();
+    public abstract void showChat();
 
     public abstract void showInitialCardsChoice();
 
@@ -29,7 +29,7 @@ public abstract class View { //FIXME: turn into interface maybe?
 
     public abstract void showCommonPlacedCards();
 
-    public abstract void showLeaderboard(List<Triplet<String, Integer, Integer>> POINT_STATS);
+    public abstract void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS);
 
     public abstract void showField(ClientPlayer player);
 

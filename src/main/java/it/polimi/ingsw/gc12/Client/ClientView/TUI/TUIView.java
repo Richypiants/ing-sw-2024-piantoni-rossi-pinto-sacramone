@@ -145,7 +145,7 @@ public class TUIView extends View {
         clearTerminal();
          */
         printToPosition(ansi().cursor(1, 1).a("Inserisci l'indirizzo IP del server (leave empty for 'localhost'): "));
-        ClientController.getInstance().serverIPAddress = console.readLine();
+        String serverIPAddress = console.readLine();
         System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
         clearTerminal();
         String communicationTechnology = readUntil(
@@ -175,7 +175,7 @@ public class TUIView extends View {
 
         printToPosition(ansi().cursor(2,1).a("Connessione al server in corso..."));
 
-        ClientController.getInstance().viewState.connect(communicationTechnology, nickname);
+        ClientController.getInstance().viewState.connect(serverIPAddress, communicationTechnology, nickname);
     }
 
     public void connectedConfirmation() {
@@ -240,7 +240,7 @@ public class TUIView extends View {
         printOpponentsFieldsMiniaturized();
         showField(ClientController.getInstance().viewModel.getGame().getThisPlayer());
         showHand();
-        updateChat();
+        showChat();
 
         //FIXME: eventuale showOpponentField <opponentName>???
         //FIXME: al momento comandi filtrati per stato di gioco, replicati in ogni viewState, orribile anche perchè alla GUI non servono...
@@ -376,7 +376,7 @@ public class TUIView extends View {
     }
 
     //TODO: controllare che sia fixata la lunghezza massima del messaggio (70+80 = 150 caratteri vanno bene?)
-    public void updateChat() {
+    public void showChat() {
         List<String> chatLog = ClientController.getInstance().viewModel.getGame().getChatLog();
         printToPosition(ansi().cursor(2, 120).bold().a("Last chat messages: ").reset());
         for (int i = 0; i < 3; i++)
@@ -542,30 +542,34 @@ public class TUIView extends View {
         clearTerminal();
 
         //LENGTH: 70
-        System.out.println(ansi().cursor(5,72).fg(Resource.QUILL.ANSI_COLOR).a(" _      _____  ___ ______ _________________  _____  ___  ____________").reset());
-        System.out.println(ansi().cursor(6,72).fg(Resource.FUNGI.ANSI_COLOR).a("| |    |  ___|/ _ \\|  _  \\  ___| ___ \\ ___ \\|  _  |/ _ \\ | ___ \\  _  \\").reset());
-        System.out.println(ansi().cursor(7,72).fg(Resource.ANIMAL.ANSI_COLOR).a("| |    | |__ / /_\\ \\ | | | |__ | |_/ / |_/ /| | | / /_\\ \\| |_/ / | | |").reset());
-        System.out.println(ansi().cursor(8,72).fg(Resource.PLANT.ANSI_COLOR).a("| |    |  __||  _  | | | |  __||    /| ___ \\| | | |  _  ||    /| | | |").reset());
-        System.out.println(ansi().cursor(9, 72).fg(Resource.INSECT.ANSI_COLOR).a("| |____| |___| | | | |/ /| |___| |\\ \\| |_/ /\\.\\_/ / | | || |\\ \\| |/ /").reset());
-        System.out.println(ansi().cursor(10,72).fg(Resource.QUILL.ANSI_COLOR).a("\\_____/\\____/\\_| |_/___/ \\____/\\_| \\_\\____/  \\___/\\_| |_/\\_| \\_|___/").reset());
+        printToPosition(ansi().cursor(5,72).fg(Resource.QUILL.ANSI_COLOR).a(" _      _____  ___ ______ _________________  _____  ___  ____________").reset());
+        printToPosition(ansi().cursor(6,72).fg(Resource.FUNGI.ANSI_COLOR).a("| |    |  ___|/ _ \\|  _  \\  ___| ___ \\ ___ \\|  _  |/ _ \\ | ___ \\  _  \\").reset());
+        printToPosition(ansi().cursor(7,72).fg(Resource.ANIMAL.ANSI_COLOR).a("| |    | |__ / /_\\ \\ | | | |__ | |_/ / |_/ /| | | / /_\\ \\| |_/ / | | |").reset());
+        printToPosition(ansi().cursor(8,72).fg(Resource.PLANT.ANSI_COLOR).a("| |    |  __||  _  | | | |  __||    /| ___ \\| | | |  _  ||    /| | | |").reset());
+        printToPosition(ansi().cursor(9, 72).fg(Resource.INSECT.ANSI_COLOR).a("| |____| |___| | | | |/ /| |___| |\\ \\| |_/ /\\.\\_/ / | | || |\\ \\| |/ /").reset());
+        printToPosition(ansi().cursor(10,72).fg(Resource.QUILL.ANSI_COLOR).a("\\_____/\\____/\\_| |_/___/ \\____/\\_| \\_\\____/  \\___/\\_| |_/\\_| \\_|___/").reset());
 
-        System.out.println(ansi()
+        printToPosition(ansi()
                 .cursor(FIRST_ROW, 72).a("Nickname")
                 .cursor(FIRST_ROW, 92).a("Total Points")
-                .cursor(FIRST_ROW,112).a("Points from Secret Objective")
+                .cursor(FIRST_ROW,112).a("Points from Objective Cards")
         );
 
         for(var row: leaderboard){
-            System.out.println(ansi()
+            printToPosition(ansi()
                     .cursor(FIRST_ROW+(index*ROW_OFFSET),62).a("[#" + index + "]")
-                    .cursor(FIRST_ROW+(index*ROW_OFFSET),110).a(row.getX())
+                    .cursor(FIRST_ROW+(index*ROW_OFFSET),72).a(row.getX())
                     .cursor(FIRST_ROW+(index*ROW_OFFSET),95).a(row.getY() + " pt.")
                     .cursor(FIRST_ROW+(index*ROW_OFFSET),124).a(row.getZ() + " pt.")
             );
             index++;
         }
 
-        printToPosition(ansi().cursor(40, 2).a("Premi Invio per tornare alla schermata delle lobby..."));
+        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW - 2, 1).a("Scrivi 'quit' per ritornare alla schermata delle lobby")
+                .cursorDownLine()
+                .a("------------------------------------------------------------------").eraseLine(Erase.FORWARD)
+                .cursorDownLine()
+                .a("> [" + ClientController.getInstance().viewModel.getOwnNickname() + "] "));
     }
 
     @Override
