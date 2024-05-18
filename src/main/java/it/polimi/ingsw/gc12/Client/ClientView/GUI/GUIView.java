@@ -24,10 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
@@ -64,7 +61,7 @@ public class GUIView extends View {
     @FXML
     Label error;
 
-    GenericPair<Double, Double> cardSizes = null;
+    GenericPair<Double, Double> cardSizes = new GenericPair<>(100.0, 66.0);
     GenericPair<Double, Double> clippedPaneCenter = null;
     GenericPair<Double, Double> cornerScaleFactor = new GenericPair<>(2.0 / 9, 2.0 / 5);
 
@@ -414,14 +411,106 @@ public class GUIView extends View {
 //            AnchorPane.setBottomAnchor(leaveGame, 20.0);
 
             showHand();
+
             showCommonPlacedCards();
-            showField(ClientController.getInstance().viewModel.getGame().getThisPlayer());
+
+            ScrollPane ownFieldPane = (ScrollPane) stage.getScene().lookup("#ownFieldPane");
+            drawField(ownFieldPane, ClientController.getInstance().viewModel.getGame().getThisPlayer(), true);
         });
     }
 
     @Override
     public void updateNickname() {
 
+    }
+
+    public OverlayPopup drawOverlayPopup(double width, double height, Pane popupContent, boolean isCloseable) {
+        OverlayPopup overlayPopup = new OverlayPopup();
+        overlayPopup.setWidth(width);
+        overlayPopup.setHeight(height);
+        //TODO: aggiungere per quanto possibile gli elementi dei popup all'fxml?
+
+        if (isCloseable) {
+        }//TODO: aggiungere X in alto a destra oppure Close button
+
+        overlayPopup.getContent().add(popupContent);
+        return overlayPopup;
+    }
+
+    //TODO: eventually remove boolean from signature?
+    private void drawField(ScrollPane fieldPane, ClientPlayer player, boolean isInteractive) {
+        fieldPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        fieldPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        fieldPane.setPannable(true);
+
+        //TODO: add background color or texture or image?
+        //TODO: resize this pane based on how many cards have been played and center the field on it? or not?
+        double clippedPaneWidth = 4000;
+        double clippedPaneHeight = 4000 * cardSizes.getY() / cardSizes.getX();
+        AnchorPane clippedPane = new AnchorPane();
+        clippedPane.setPrefSize(clippedPaneWidth, clippedPaneHeight);
+        clippedPane.setCenterShape(true);
+
+        clippedPaneCenter = new GenericPair<>(clippedPaneWidth / 2, clippedPaneHeight / 2);
+        for (var cardEntry : player.getPlacedCards().sequencedEntrySet()) {
+            //TODO: maybe zoom cards here in this popup?
+            ImageView cardImage = new ImageView(String.valueOf(GUIView.class.getResource(cardEntry.getValue().getX().GUI_SPRITES.get(cardEntry.getValue().getY()))));
+
+            //FIXME: correct this: it is needed to get this later, but which size?
+            // or maybe later when needed use cardSizes like this, after having decided if values are correct
+            cardImage.setFitHeight(cardSizes.getY());
+            cardImage.setFitWidth(cardSizes.getX());
+            cardImage.setPreserveRatio(true);
+
+            clippedPane.getChildren().add(cardImage);
+
+            cardImage.relocate(
+                    clippedPaneCenter.getX() - cardImage.getFitWidth() / 2 + cardImage.getFitWidth() * (1 - cornerScaleFactor.getX()) * cardEntry.getKey().getX(),
+                    clippedPaneCenter.getY() - cardImage.getFitHeight() / 2 - cardImage.getFitHeight() * (1 - cornerScaleFactor.getY()) * cardEntry.getKey().getY()
+            );
+        }
+
+        for (var openCorner : player.getOpenCorners()) {
+            var openCornerShape = new Rectangle(100, 66) {
+                public final GenericPair<Integer, Integer> COORDINATES = openCorner;
+            };
+            openCornerShape.setFill(Color.TRANSPARENT);
+            openCornerShape.setStyle("-fx-stroke: gray; -fx-stroke-width: 1; -fx-stroke-dash-array: 4 8;");
+            openCornerShape.setArcWidth(10);
+            openCornerShape.setArcHeight(10);
+
+            if (isInteractive) {
+                openCornerShape.setOnDragOver((event) -> {
+                    //TODO: implement visual effects
+                    if (event.getGestureSource() != openCornerShape && event.getDragboard().hasContent(placeCardDataFormat)) {
+                        event.acceptTransferModes(TransferMode.MOVE);
+                    }
+                });
+
+                openCornerShape.setOnDragDropped((event) -> {
+                    if (event.getTransferMode() == TransferMode.MOVE) {
+                        GenericPair<Integer, Side> placeCardData = (GenericPair<Integer, Side>) event.getDragboard().getContent(placeCardDataFormat);
+                        ClientController.getInstance().viewState.placeCard(
+                                openCornerShape.COORDINATES,
+                                placeCardData.getX(),
+                                placeCardData.getY()
+                        );
+                        event.setDropCompleted(event.getDragboard().hasContent(placeCardDataFormat));
+                    }
+                });
+            }
+
+            clippedPane.getChildren().add(openCornerShape);
+
+            openCornerShape.relocate(
+                    clippedPaneCenter.getX() - cardSizes.getX() / 2 + cardSizes.getX() * (1 - cornerScaleFactor.getX()) * openCorner.getX(),
+                    clippedPaneCenter.getY() - cardSizes.getY() / 2 - cardSizes.getY() * (1 - cornerScaleFactor.getY()) * openCorner.getY()
+            );
+        }
+
+        fieldPane.setContent(clippedPane);
+        fieldPane.setHvalue((fieldPane.getHmax() + fieldPane.getHmin()) / 2);
+        fieldPane.setVvalue((fieldPane.getVmax() + fieldPane.getVmin()) / 2);
     }
 
     @Override
@@ -452,12 +541,14 @@ public class GUIView extends View {
             nicknames.remove(ClientController.getInstance().viewModel.getOwnNickname());
             ObservableList<String> receiverNicknames = FXCollections.observableList(nicknames);
             receiverNicknameSelector.setItems(receiverNicknames);
+            receiverNicknameSelector.getSelectionModel().selectFirst();
 
             hideButton.setOnMouseClicked((event) -> chatPane.setVisible(false));
 
             sendButton.setOnMouseClicked((event) -> {
                 String receiver = receiverNicknameSelector.getValue();
                 String message = messageText.getText().trim();
+
                 //FIXME: aggiungere lunghezza massima e substring anche qui? Magari aggiungerle ma più di 150 chars?
                 if (receiver.equals("everyone"))
                     ClientController.getInstance().viewState.broadcastMessage(message);
@@ -470,110 +561,94 @@ public class GUIView extends View {
         });
     }
 
-    public void showOpponentsFieldMiniaturized() {
+    public void showOpponentsFieldsMiniaturized() {
+        HBox opponentsFieldsPane = (HBox) stage.getScene().lookup("opponentsFieldsPane");
 
+        ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
+
+        for (var player : thisGame.getPlayers()) {
+            VBox opponentInfo = new VBox(10);
+
+            /*Pane opponentStats = new Pane();
+            Pane opponentField = new Pane();...
+
+            opponentField.setClip();
+
+            //FIXME: divergenza con la TUI che chiama un metodo del viewState...
+            opponentField.setOnMouseClicked((event) -> {
+                showField(player);
+            });
+
+            opponentInfo.getChildren().addAll(opponentStats, opponentField);*/
+            opponentsFieldsPane.getChildren().add(opponentInfo);
+        }
     }
 
     @Override
     public void showInitialCardsChoice() {
         Platform.runLater(() -> {
-                    AnchorPane currentPane = (AnchorPane) stage.getScene().getRoot();
-
-                    currentPane.setDisable(true);
-                    AnchorPane darkening = new AnchorPane();
-                    darkening.setPrefSize(currentPane.getWidth(), currentPane.getHeight());
-                    darkening.setId("#darkening");
-                    darkening.setStyle("-fx-background-color: black;");
-                    darkening.setOpacity(0.8);
-                    currentPane.getChildren().add(darkening);
-                    darkening.toFront(); //FIXME: there has to be a better way...
-
-                    //TODO: aggiungere per quanto possibile gli elementi del popup all'fxml?
-                    Popup initialCardsChoicePopup = new Popup();
-                    initialCardsChoicePopup.setWidth(720);
-                    initialCardsChoicePopup.setHeight(480);
-
+            double popupWidth = 720, popupHeight = 480;
             String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
 
-                    VBox initialCardsChoiceVBox = new VBox(30);
-                    initialCardsChoiceVBox.setAlignment(Pos.CENTER);
-                    initialCardsChoiceVBox.setPrefSize(initialCardsChoicePopup.getWidth(), initialCardsChoicePopup.getHeight());
-                    initialCardsChoiceVBox.setStyle(style);
-                    Label cardLabel = new Label("Seleziona la carta iniziale: ");
+            VBox initialCardsChoiceVBox = new VBox(30);
+            initialCardsChoiceVBox.setAlignment(Pos.CENTER);
+            initialCardsChoiceVBox.setPrefSize(popupWidth, popupHeight);
+            initialCardsChoiceVBox.setStyle(style);
+            Label cardLabel = new Label("Seleziona la carta iniziale: ");
 
-                    HBox initialChoiceHBox = new HBox(30);
-                    initialChoiceHBox.setAlignment(Pos.CENTER);
-                    initialChoiceHBox.setPrefSize(initialCardsChoiceVBox.getPrefWidth(), initialCardsChoiceVBox.getPrefHeight() * 0.9);
+            HBox initialChoiceHBox = new HBox(30);
+            initialChoiceHBox.setAlignment(Pos.CENTER);
+            initialChoiceHBox.setPrefSize(initialCardsChoiceVBox.getPrefWidth(), initialCardsChoiceVBox.getPrefHeight() * 0.9);
 
             ClientCard initialCard = ClientController.getInstance().viewModel.getGame().getCardsInHand().getFirst();
 
             ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.FRONT))));
             ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.BACK))));
 
-                    frontCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
-                    frontCardView.setPreserveRatio(true);
-                    backCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
-                    backCardView.setPreserveRatio(true);
+            frontCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
+            frontCardView.setPreserveRatio(true);
+            backCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
+            backCardView.setPreserveRatio(true);
 
-                    frontCardView.setOnMouseClicked((event) -> {
-                        ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 1, Side.FRONT);
-                        initialCardsChoicePopup.hide();
-                        currentPane.getChildren().remove(darkening);
-                        currentPane.getChildren().remove(initialCardsChoicePopup);
-                        currentPane.setDisable(false);
-                    });
+            initialChoiceHBox.getChildren().addAll(frontCardView, backCardView);
+            initialCardsChoiceVBox.getChildren().addAll(cardLabel, initialChoiceHBox/*, aggiungere scritta "Scegli carta iniziale: "*/);
 
-                    backCardView.setOnMouseClicked((event) -> {
-                        ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 1, Side.BACK);
-                        initialCardsChoicePopup.hide();
-                        currentPane.getChildren().remove(darkening);
-                        currentPane.getChildren().remove(initialCardsChoicePopup);
-                        currentPane.setDisable(false);
-                    });
+            OverlayPopup createdPopup = drawOverlayPopup(popupWidth, popupHeight, initialCardsChoiceVBox, false);
 
-                    initialChoiceHBox.getChildren().addAll(frontCardView, backCardView);
-                    initialCardsChoiceVBox.getChildren().addAll(cardLabel, initialChoiceHBox/*, aggiungere scritta "Scegli carta iniziale: "*/);
-                    initialCardsChoicePopup.getContent().addAll(initialCardsChoiceVBox);
+            frontCardView.setOnMouseClicked((event) -> {
+                ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 1, Side.FRONT);
+                createdPopup.hide();
+            });
 
-                    initialCardsChoicePopup.show(stage);
-                }
-        );
+            backCardView.setOnMouseClicked((event) -> {
+                ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 1, Side.BACK);
+                createdPopup.hide();
+            });
+
+            createdPopup.show(stage);
+        });
     }
 
     @Override
     public void showObjectiveCardsChoice() {
         Platform.runLater(() -> {
-                    AnchorPane currentPane = (AnchorPane) stage.getScene().getRoot();
-
-                    currentPane.setDisable(true);
-                    AnchorPane darkening = new AnchorPane();
-                    darkening.setPrefSize(currentPane.getWidth(), currentPane.getHeight());
-                    darkening.setId("#darkening");
-                    darkening.setStyle("-fx-background-color: black;");
-                    darkening.setOpacity(0.8);
-                    currentPane.getChildren().add(darkening);
-                    darkening.toFront(); //FIXME: there has to be a better way...
-
-                    //TODO: aggiungere per quanto possibile gli elementi del popup all'fxml?
-                    Popup objectiveChoicePopup = new Popup();
-                    objectiveChoicePopup.setWidth(720);
-                    objectiveChoicePopup.setHeight(480);
-            //objectiveChoicePopup.setAutoHide(true);
-
+            double popupWidth = 720, popupHeight = 480;
             String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
 
-                    VBox objectiveChoiceVBox = new VBox(30);
-                    objectiveChoiceVBox.setAlignment(Pos.CENTER);
-                    objectiveChoiceVBox.setPrefSize(objectiveChoicePopup.getWidth(), objectiveChoicePopup.getHeight());
-                    objectiveChoiceVBox.setStyle(style);
-                    Label cardLabel = new Label("Seleziona la carta obiettivo segreto: ");
+            VBox objectiveChoiceVBox = new VBox(30);
+            objectiveChoiceVBox.setAlignment(Pos.CENTER);
+            objectiveChoiceVBox.setPrefSize(popupWidth, popupHeight);
+            objectiveChoiceVBox.setStyle(style);
+            Label cardLabel = new Label("Seleziona la carta obiettivo segreto: ");
 
-                    HBox objectiveChoiceHBox = new HBox(30);
-                    objectiveChoiceHBox.setAlignment(Pos.CENTER);
-                    objectiveChoiceHBox.setPrefSize(objectiveChoiceVBox.getPrefWidth(), objectiveChoiceVBox.getPrefHeight() * 0.9);
+            HBox objectiveChoiceHBox = new HBox(30);
+            objectiveChoiceHBox.setAlignment(Pos.CENTER);
+            objectiveChoiceHBox.setPrefSize(objectiveChoiceVBox.getPrefWidth(), objectiveChoiceVBox.getPrefHeight() * 0.9);
 
             ArrayList<ClientCard> objectivesSelection = ((ChooseObjectiveCardsState) ClientController.getInstance()
                     .getCurrentState()).objectivesSelection;
+
+            OverlayPopup createdPopup = drawOverlayPopup(popupWidth, popupHeight, objectiveChoiceVBox, false);
 
             for (int i = 0; i < objectivesSelection.size(); i++) {
                 ClientCard objectiveCard = objectivesSelection.get(i);
@@ -585,21 +660,16 @@ public class GUIView extends View {
                 int cardPosition = i;
                 objectiveCardView.setOnMouseClicked((event) -> {
                     ClientController.getInstance().viewState.pickObjective(cardPosition + 1);
-                    objectiveChoicePopup.hide();
-                    currentPane.getChildren().remove(darkening);
-                    currentPane.getChildren().remove(objectiveChoicePopup);
-                    currentPane.setDisable(false);
+                    createdPopup.hide();
                 });
 
                 objectiveChoiceHBox.getChildren().add(objectiveCardView);
             }
 
-                    objectiveChoiceVBox.getChildren().addAll(cardLabel, objectiveChoiceHBox/*, aggiungere scritta "Scegli carta iniziale: "*/);
-                    objectiveChoicePopup.getContent().addAll(objectiveChoiceVBox);
+            objectiveChoiceVBox.getChildren().addAll(cardLabel, objectiveChoiceHBox/*, aggiungere scritta "Scegli carta iniziale: "*/);
 
-                    objectiveChoicePopup.show(stage);
-                }
-        );
+            createdPopup.show(stage);
+        });
     }
 
     @Override
@@ -772,80 +842,27 @@ public class GUIView extends View {
         });
     }
 
+    //TODO: 1) where do you show your own current resource amount?
+    //TODO: 2) add possibility do zoom in/out (hard) or add a zoom button that calls drawField, just as opponentsFields
+    // do when clicking on it?
     @Override
     public void showField(ClientPlayer player) {
         Platform.runLater(() ->
         {
-            ScrollPane ownFieldPane = (ScrollPane) stage.getScene().lookup("#ownFieldPane");
-            ownFieldPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-            ownFieldPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-            ownFieldPane.setPannable(true);
+            VBox popupContent = new VBox();
+            popupContent.setPrefSize(960, 660);
 
-            //TODO: add background color or texture or image?
-            //TODO: resize this pane based on how many cards have been played and center the field on it? or not?
-            double clippedPaneWidth = 4000;
-            double clippedPaneHeight = 4000 * ownFieldPane.getPrefHeight() / ownFieldPane.getPrefWidth();
-            AnchorPane clippedPane = new AnchorPane();
-            clippedPane.setPrefSize(clippedPaneWidth, clippedPaneHeight);
-            clippedPane.setCenterShape(true);
+            //TODO: add label with name
+            // Label playerNameLabel = new Label();
 
-            clippedPaneCenter = new GenericPair<>(clippedPaneWidth / 2, clippedPaneHeight / 2);
-            for (var cardEntry : ClientController.getInstance().viewModel.getGame().getThisPlayer().getPlacedCards().sequencedEntrySet()) {
-                ImageView cardImage = new ImageView(String.valueOf(GUIView.class.getResource(cardEntry.getValue().getX().GUI_SPRITES.get(cardEntry.getValue().getY()))));
-                cardImage.setFitHeight(66); //FIXME: correct this: it is needed, but which size?
-                cardImage.setFitWidth(100);
-                cardImage.setPreserveRatio(true);
+            ScrollPane fieldPane = new ScrollPane();
+            fieldPane.setPrefSize(840, 600);
+            //TODO: ??? fieldPane.setFitToHeight();
+            drawField(fieldPane, player, false);
+            popupContent.getChildren().add(/*playerNameLabel,*/ fieldPane);
 
-                //TODO: estrarre fuori
-                cardSizes = new GenericPair<>(cardImage.getFitWidth(), cardImage.getFitHeight());
-
-                clippedPane.getChildren().add(cardImage);
-
-                cardImage.relocate(
-                        clippedPaneCenter.getX() - cardImage.getFitWidth() / 2 + cardImage.getFitWidth() * (1 - cornerScaleFactor.getX()) * cardEntry.getKey().getX(),
-                        clippedPaneCenter.getY() - cardImage.getFitHeight() / 2 - cardImage.getFitHeight() * (1 - cornerScaleFactor.getY()) * cardEntry.getKey().getY()
-                );
-            }
-
-            for (var openCorner : ClientController.getInstance().viewModel.getGame().getThisPlayer().getOpenCorners()) {
-                var openCornerShape = new Rectangle(100, 66) {
-                    public final GenericPair<Integer, Integer> COORDINATES = openCorner;
-                };
-                openCornerShape.setFill(Color.TRANSPARENT);
-                openCornerShape.setStyle("-fx-stroke: gray; -fx-stroke-width: 1; -fx-stroke-dash-array: 4 8;");
-                openCornerShape.setArcWidth(10);
-                openCornerShape.setArcHeight(10);
-
-                openCornerShape.setOnDragOver((event) -> {
-                    //TODO: implement visual effects
-                    if (event.getGestureSource() != openCornerShape && event.getDragboard().hasContent(placeCardDataFormat)) {
-                        event.acceptTransferModes(TransferMode.MOVE);
-                    }
-                });
-
-                openCornerShape.setOnDragDropped((event) -> {
-                    if (event.getTransferMode() == TransferMode.MOVE) {
-                        GenericPair<Integer, Side> placeCardData = (GenericPair<Integer, Side>) event.getDragboard().getContent(placeCardDataFormat);
-                        ClientController.getInstance().viewState.placeCard(
-                                openCornerShape.COORDINATES,
-                                placeCardData.getX(),
-                                placeCardData.getY()
-                        );
-                        event.setDropCompleted(event.getDragboard().hasContent(placeCardDataFormat));
-                    }
-                });
-
-                clippedPane.getChildren().add(openCornerShape);
-
-                openCornerShape.relocate(
-                        clippedPaneCenter.getX() - cardSizes.getX() / 2 + cardSizes.getX() * (1 - cornerScaleFactor.getX()) * openCorner.getX(),
-                        clippedPaneCenter.getY() - cardSizes.getY() / 2 - cardSizes.getY() * (1 - cornerScaleFactor.getY()) * openCorner.getY()
-                );
-            }
-
-            ownFieldPane.setContent(clippedPane);
-            ownFieldPane.setHvalue((ownFieldPane.getHmax() + ownFieldPane.getHmin()) / 2);
-            ownFieldPane.setVvalue((ownFieldPane.getVmax() + ownFieldPane.getVmin()) / 2);
+            OverlayPopup overlayPopup = drawOverlayPopup(960, 660, popupContent, true);
+            overlayPopup.show(stage);
         });
     }
 
