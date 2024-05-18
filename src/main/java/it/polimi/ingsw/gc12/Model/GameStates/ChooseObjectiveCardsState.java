@@ -8,10 +8,6 @@ import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.AlreadySetCardException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.util.ArrayList;
@@ -24,8 +20,12 @@ public class ChooseObjectiveCardsState extends GameState {
     private final Map<InGamePlayer, ArrayList<ObjectiveCard>> objectivesMap;
 
     public ChooseObjectiveCardsState(Game thisGame, Map<InGamePlayer, ArrayList<ObjectiveCard>> map) {
-        super(thisGame, 0, -1);
+        super(thisGame, 0, -1, "objectiveState");
         this.objectivesMap = map;
+
+        //Executing a Random Action for the players disconnected in the Initial State
+        for(InGamePlayer player : thisGame.getPlayers().stream().filter( player -> !(player.isActive())).toList())
+            playerDisconnected(player);
     }
 
     @Override
@@ -39,14 +39,16 @@ public class ChooseObjectiveCardsState extends GameState {
         else
             throw new AlreadySetCardException();
 
-        try {
-            keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals)
-                    .requestToClient(new ConfirmSelectionCommand(objective.ID));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if(targetPlayer.isActive()) {
+            try {
+                ServerController.getInstance().requestToClient(
+                        keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals),
+                        new ConfirmSelectionCommand(objective.ID));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
-        //FIXME: dopo timeout e disconnessione: eseguo un'azione random per i player disconnessi
         if(GAME.getPlayers().stream()
                 .map((player) -> player.getSecretObjective() != null)
                 .reduce(true, (a, b) -> a && b))
@@ -58,7 +60,7 @@ public class ChooseObjectiveCardsState extends GameState {
         //The first objectiveCard of the selection is chosen if the player hasn't done it before disconnecting
         //In other case, this function does nothing.
 
-        if(target.getSecretObjective() != null) {
+        if(target.getSecretObjective() == null) {
             try {
                 pickObjective(target, objectivesMap.get(target).getFirst());
             } catch (CardNotInHandException | AlreadySetCardException ignored) {
@@ -72,14 +74,18 @@ public class ChooseObjectiveCardsState extends GameState {
     public void transition() {
         super.transition();
 
-        System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
+        System.out.println("[SERVER]: Sending GameTransitionCommand to active clients in "+ GAME.toString());
         GAME.increaseTurn();
-        for (var targetPlayer : GAME.getPlayers()) {
+        this.currentPlayer = 0;
+        for (var targetPlayer : GAME.getActivePlayers()) {
             //TODO: manage exceptions
             try {
                 VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
 
-                target.requestToClient(
+
+                //TODO: change in ServerController.getInstance().requestToClient( target, ...)
+                ServerController.getInstance().requestToClient(
+                        target,
                         new GameTransitionCommand(
                                 GAME.getTurnNumber(),
                                 GAME.getPlayers().indexOf(GAME.getCurrentPlayer())

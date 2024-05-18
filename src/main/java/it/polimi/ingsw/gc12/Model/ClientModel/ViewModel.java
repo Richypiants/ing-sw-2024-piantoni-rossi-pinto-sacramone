@@ -62,7 +62,7 @@ public class ViewModel {
     }
 
     public void leaveLobbyOrGame() {
-        new GenericPair<>(null, null);
+        currentLobbyOrGame = new GenericPair<>(null, null);
     }
 
     public ClientGame getGame() {

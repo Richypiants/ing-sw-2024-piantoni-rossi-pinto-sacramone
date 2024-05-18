@@ -15,18 +15,28 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
      */
     protected int currentPlayer;
     protected int finalPhaseCounter;
+    protected String state;
 
-    public GameState(Game thisGame, int currentPlayer, int finalPhaseCounter) {
+
+    public GameState(Game thisGame, int currentPlayer, int finalPhaseCounter, String state) {
         this.GAME = thisGame;
         this.currentPlayer = currentPlayer;
         this.finalPhaseCounter = finalPhaseCounter;
+        this.state = state;
     }
 
     /**
     Returns the player who is currently playing
      */
     public InGamePlayer getCurrentPlayer() {
-        return GAME.getPlayers().get(currentPlayer);
+        if( currentPlayer != -1)
+            return GAME.getPlayers().get(currentPlayer);
+        //FIXME: Maybe not a null but something else?
+        return null;
+    }
+
+    public String getStringEquivalent(){
+        return state;
     }
 
     /**

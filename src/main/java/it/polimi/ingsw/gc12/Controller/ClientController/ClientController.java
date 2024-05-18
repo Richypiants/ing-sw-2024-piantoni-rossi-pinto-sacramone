@@ -2,9 +2,7 @@ package it.polimi.ingsw.gc12.Controller.ClientController;
 
 import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.View;
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseInitialCardsState;
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.GameScreenState;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.*;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LeaderboardScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LobbyScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
@@ -114,9 +112,15 @@ public class ClientController implements ClientControllerInterface {
         viewState.updateNickname();
     }
 
-    public void restoreGame(ClientGame gameDTO){
+    public void restoreGame(ClientGame gameDTO, String currentState){
         viewModel.joinLobbyOrGame(viewModel.getCurrentLobbyUUID(), gameDTO);
         //TODO: decide which game state
+        switch(currentState){
+            case "initialState" -> viewState = new ChooseInitialCardsState();
+            case "objectiveState" -> viewState = new ChooseObjectiveCardsState();
+            case "playState" -> viewState = new PlayerTurnPlayState();
+            case "drawState" -> viewState = new PlayerTurnDrawState();
+        }
         // viewState = new GameScreenState();
         viewState.executeState();
     }

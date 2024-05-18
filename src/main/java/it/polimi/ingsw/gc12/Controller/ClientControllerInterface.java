@@ -20,7 +20,7 @@ public interface ClientControllerInterface extends ControllerInterface {
 
     void setNickname(String nickname);
 
-    void restoreGame(ClientGame gameDTO);
+    void restoreGame(ClientGame gameDTO, String currentState);
 
     void setLobbies(Map<UUID, GameLobby> lobbies);
 

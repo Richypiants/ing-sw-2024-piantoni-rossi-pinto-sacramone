@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
  * A structure for a player which is currently playing a game
  */
 public class InGamePlayer extends Player {
-
     /**
      * The cards in this player's hand
      */
@@ -33,7 +32,7 @@ public class InGamePlayer extends Player {
     /**
      *
      */
-    private boolean isActive = true; //TODO: implement activity management
+    private boolean active;
     /**
      * The points currently gained by this player
      */
@@ -58,8 +57,10 @@ public class InGamePlayer extends Player {
         ) {
             OWNED_RESOURCES.put(r, 0);
         }
-        secretObjective = null;
         OWN_FIELD = new Field();
+        active = true;
+        secretObjective = null;
+
     }
 
     public Player toPlayer(){
@@ -81,17 +82,17 @@ public class InGamePlayer extends Player {
     }
 
     /**
-     * Returns this player's current points
+     * Returns the activity status of this player
      */
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
     /**
-     * Returns this player's current points
+     * Switch the activity status of a player
      */
     public void toggleActive() {
-        isActive = !isActive;
+        active = !active;
     }
 
     /**

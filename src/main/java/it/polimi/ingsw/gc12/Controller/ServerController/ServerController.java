@@ -2,10 +2,10 @@ package it.polimi.ingsw.gc12.Controller.ServerController;
 
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.*;
-import it.polimi.ingsw.gc12.Controller.Commands.KeepAliveCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.SetNicknameCommand;
 import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
 import it.polimi.ingsw.gc12.Model.Cards.*;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
@@ -16,6 +16,7 @@ import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,22 +32,27 @@ public class ServerController implements ServerControllerInterface {
     private static final ServerController SINGLETON_INSTANCE = new ServerController();
 
     public final Map<Integer, Card> cardsList;
+    public final Map<Integer, ClientCard> clientCardsList;
     public final Map<VirtualClient, Player> players;
     public final Map<UUID, GameLobby> lobbiesAndGames;
     public final Map<Player, GameLobby> playersToLobbiesAndGames;
+    public final Map<VirtualClient, TimerTask> timeoutTasks;
+    public final long TIMEOUT_TASK_EXECUTION_AFTER = 30000;
 
     private ServerController() {
-        cardsList = loadCards();
+        cardsList = loadModelCards();
+        clientCardsList = loadClientCards();
         players = new HashMap<>();
         lobbiesAndGames = new HashMap<>();
         playersToLobbiesAndGames = new HashMap<>();
+        timeoutTasks = new HashMap<>();
     }
 
     public static ServerController getInstance() {
         return SINGLETON_INSTANCE;
     }
 
-    private Map<Integer, Card> loadCards() {
+    private Map<Integer, Card> loadModelCards() {
         //TODO: map of maps?
         Map<Integer, Card> tmp = new HashMap<>();
         Objects.requireNonNull(JSONParser.deckFromJSONConstructor("resource_cards.json",
@@ -63,6 +69,11 @@ public class ServerController implements ServerControllerInterface {
                 .forEach((card) -> tmp.put(card.ID, card));
 
         return Collections.unmodifiableMap(tmp);
+    }
+
+    private Map<Integer, ClientCard> loadClientCards(){
+        return JSONParser.clientCardsFromJSON("client_cards.json")
+                .stream().collect(Collectors.toMap((card) -> card.ID, (card) -> card));
     }
 
     private boolean hasNoPlayer(VirtualClient client) {
@@ -121,17 +132,48 @@ public class ServerController implements ServerControllerInterface {
     }
 
     //Helper method to catch RemoteException (and eventually other ones) only one time
-    private void requestToClient(VirtualClient client, ClientCommand command) {
+    public void requestToClient(VirtualClient client, ClientCommand command) {
         try {
             client.requestToClient(command);
+        } catch (IOException e) {
+            //If communication is closed, the target has lost an update, so in case he reconnects, its game is inconsistent, we must send the update,
+            //so the TimeoutTask routine has to be instantly executed.
+            timeoutTasks.remove(client);
+            disconnectionRoutine(client);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    private void renewTimeoutTimerTask(VirtualClient target){
+        Timer timer = new Timer(true);
+        TimerTask timeoutTask = new TimerTask() {
+            @Override
+            public void run() {
+                disconnectionRoutine(target);
+            }
+        };
+        timer.schedule(timeoutTask, TIMEOUT_TASK_EXECUTION_AFTER);
+
+        timeoutTasks.put(target, timeoutTask);
+    }
+
+    private void disconnectionRoutine(VirtualClient target){
+        System.out.println("[SERVER] Removing the entry of " + target + " since it didn't send any keepAlive in " + TIMEOUT_TASK_EXECUTION_AFTER/1000 + " seconds.");
+        Player thisPlayer = players.get(target);
+        if(playersToLobbiesAndGames.containsKey(thisPlayer)){
+            GameLobby thisGame = playersToLobbiesAndGames.get(thisPlayer);
+            if(thisGame instanceof Game)
+                leaveGame(target);
+            else
+                leaveLobby(target, true);
+        }
+    }
+
+
     public void createPlayer(VirtualClient sender, String nickname) {
         System.out.println("[CLIENT]: CreatePlayerCommand received and being executed");
-        if(players.containsKey(sender)) {
+        if (players.containsKey(sender)) {
             requestToClient(
                     sender,
                     new ThrowExceptionCommand(
@@ -145,7 +187,7 @@ public class ServerController implements ServerControllerInterface {
                 .filter((player) -> player.getNickname().equals(nickname))
                 .findAny();
 
-        if(selectedPlayer.isPresent()){
+        if (selectedPlayer.isPresent()) {
             System.out.println("[SERVER]: sending an Exception while trying to log in to " + sender);
             requestToClient(
                     sender,
@@ -158,16 +200,16 @@ public class ServerController implements ServerControllerInterface {
                     .filter((player) -> player.getNickname().equals(nickname))
                     .findAny();
 
-            if(selectedGamePlayer.isPresent()) {
+            if (selectedGamePlayer.isPresent()) {
                 Player target = selectedGamePlayer.get();
                 Game targetGame = (Game) playersToLobbiesAndGames.get(target);
                 players.put(sender, target);
 
                 System.out.println("[SERVER]: sending SetNicknameCommand and RestoreGameCommand to client " + sender);
                 requestToClient(sender, new SetNicknameCommand(nickname)); //setNickname();
-                requestToClient(sender, new RestoreGameCommand(targetGame.generateDTO((InGamePlayer) target))); //restoreGame();
+                requestToClient(sender, new RestoreGameCommand(targetGame.generateDTO((InGamePlayer) target), targetGame.getCurrentState().getStringEquivalent())); //restoreGame();
 
-                for (var player : targetGame.getPlayers())
+                for (var player : targetGame.getActivePlayers())
                     if (player.isActive()) {
                         VirtualClient targetClient = keyReverseLookup(players, player::equals);
                         requestToClient(targetClient, new ToggleActiveCommand(nickname)); //toggleActive()
@@ -192,6 +234,9 @@ public class ServerController implements ServerControllerInterface {
                 ); //setLobbies();
             }
         }
+
+        //Creating the timeoutRoutine that will be started in case the client doesn't send a keepAliveCommand in the 60 seconds span.
+        renewTimeoutTimerTask(sender);
     }
 
     public void setNickname(VirtualClient sender, String nickname) {
@@ -220,10 +265,13 @@ public class ServerController implements ServerControllerInterface {
 
     public void keepAlive(VirtualClient sender) {
         if(hasNoPlayer(sender)) return;
-        System.out.println("[CLIENT]: keepAlive command received from " + sender);
 
-        //TODO: update Timer on VirtualClient Timr (add attributes or methods for management)
-        requestToClient(sender, new KeepAliveCommand());
+        if(timeoutTasks.containsKey(sender)) {
+            timeoutTasks.get(sender).cancel();
+            timeoutTasks.remove(sender);
+            renewTimeoutTimerTask(sender);
+        }
+        System.out.println("[CLIENT]: keepAlive command received from " + sender + ". Resetting timeout");
     }
 
     public void createLobby(VirtualClient sender, int maxPlayers) {
@@ -339,7 +387,7 @@ public class ServerController implements ServerControllerInterface {
                 requestToClient(client, new UpdateLobbyCommand(lobbyUUID, lobby)); //updateLobby();
     }
 
-    public void leaveLobby(VirtualClient sender) {
+    public void leaveLobby(VirtualClient sender, boolean isInactive) {
         System.out.println("[CLIENT]: LeaveLobbyCommand received and being executed");
         if (hasNoPlayer(sender) || inGame(sender, true) || inLobbyOrGame(sender, false)) return;
 
@@ -357,10 +405,14 @@ public class ServerController implements ServerControllerInterface {
             lobbiesAndGames.remove(lobbyUUID);
         }
 
+        if(isInactive)
+            players.remove(sender);
+
         System.out.println("[SERVER]: sending UpdateLobbiesCommand to clients");
+
         for(var client : players.keySet())
             if (!(players.get(client) instanceof InGamePlayer))
-                requestToClient(client, new UpdateLobbyCommand(lobbyUUID, lobby)); //updateLobby();
+                requestToClient(client, new UpdateLobbyCommand(lobbyUUID, lobby)); // updateLobby();
     }
 
     public void pickObjective(VirtualClient sender, int cardID) {
@@ -491,7 +543,7 @@ public class ServerController implements ServerControllerInterface {
         }
 
         System.out.println("[SERVER]: sending PlaceCardCommand to clients");
-        for(var player : targetGame.getPlayers()) {
+        for(var player : targetGame.getActivePlayers()) {
             VirtualClient targetClient = keyReverseLookup(players, player::equals);
             requestToClient(
                     targetClient,
@@ -612,21 +664,18 @@ public class ServerController implements ServerControllerInterface {
         * because the players' activity is managed by the GameStates.
         * */
 
-        if(targetGame.getCurrentState().getCurrentPlayer().equals(targetPlayer))
+        if(targetGame.getCurrentState().getCurrentPlayer() == null|| targetGame.getCurrentState().getCurrentPlayer().equals(targetPlayer))
             targetGame.getCurrentState().playerDisconnected(targetPlayer);
 
-        long activePlayers = targetGame.getPlayers().stream()
-                .filter(InGamePlayer::isActive)
-                .count();
+        //TODO: useful?
+        int activePlayers = targetGame.getActivePlayers().size();
 
         System.out.println("[SERVER]: sending ToggleActiveCommand to clients");
 
-        for(var player : targetGame.getPlayers())
-            if(player.isActive()) {
-                VirtualClient targetClient = keyReverseLookup(players, player::equals);
-                requestToClient(targetClient, new ToggleActiveCommand(player.getNickname()));
-                //toggleActive();
-            }
+        for(var player : targetGame.getActivePlayers()) {
+            VirtualClient targetClient = keyReverseLookup(players, player::equals);
+            requestToClient(targetClient, new ToggleActiveCommand(player.getNickname()));
+        }
 
         // TODO/FIXME: potremmo usare uno stato awaitingReconnectionsState (come timeout?) come per createPlayer()?
         if(activePlayers == 1){

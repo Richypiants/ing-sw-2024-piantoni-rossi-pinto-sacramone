@@ -46,7 +46,7 @@ public class PlayerTurnDrawState extends GameState {
     List<Triplet<Supplier<PlayableCard>, Deck, Integer>> drawActionsRoutine = new ArrayList<>();
 
     public PlayerTurnDrawState(Game thisGame, int currentPlayer, int counter) {
-        super(thisGame, currentPlayer, counter);
+        super(thisGame, currentPlayer, counter, "drawState");
 
         this.drawActionsRoutine.add(new Triplet<>(() -> tryDraw(() -> {
             try {
@@ -115,24 +115,26 @@ public class PlayerTurnDrawState extends GameState {
         target.addCardToHand(drawnCard);
 
         System.out.println("[SERVER]: Sending drawn card to current player and new top deck card to clients in "+ GAME.toString());
-        for (var player : GAME.getPlayers()) {
+        for (var player : GAME.getActivePlayers()) {
             if (player.equals(target))
                 try {
-                    keyReverseLookup(ServerController.getInstance().players, target::equals)
-                            .requestToClient(new ReceiveCardCommand(List.of(drawnCard.ID)));
+                    ServerController.getInstance().requestToClient(
+                        keyReverseLookup(ServerController.getInstance().players, target::equals),
+                            new ReceiveCardCommand(List.of(drawnCard.ID))
+                    );
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
 
             try {
-                keyReverseLookup(ServerController.getInstance().players, player::equals)
-                        .requestToClient(
-                                new ReplaceCardCommand(
-                                        List.of(
-                                                new Triplet<>(topDeck.ID, deck + "_deck", -1)
-                                        )
+                ServerController.getInstance().requestToClient(
+                    keyReverseLookup(ServerController.getInstance().players, player::equals),
+                        new ReplaceCardCommand(
+                                List.of(
+                                        new Triplet<>(topDeck.ID, deck + "_deck", -1)
                                 )
-                        );
+                        )
+                );
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -185,25 +187,29 @@ public class PlayerTurnDrawState extends GameState {
         target.addCardToHand(drawnCard);
 
         System.out.println("[SERVER]: Sending drawn card to current player and new visible card to clients in "+ GAME.toString());
-        for (var player : GAME.getPlayers()) {
+        for (var player : GAME.getActivePlayers()) {
             if (player.equals(target))
                 try {
-                    keyReverseLookup(ServerController.getInstance().players, target::equals)
-                            .requestToClient(new ReceiveCardCommand(List.of(drawnCard.ID)));
+                    ServerController.getInstance().requestToClient(
+                        keyReverseLookup(ServerController.getInstance().players, target::equals),
+                            new ReceiveCardCommand(List.of(drawnCard.ID))
+                    );
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
 
             try {
                 VirtualClient receiver = keyReverseLookup(ServerController.getInstance().players, player::equals);
-                receiver.requestToClient(
+                ServerController.getInstance().requestToClient(
+                        receiver,
                         new ReplaceCardCommand(
                             List.of(
                                 new Triplet<>(replacingCard.ID, whichType + "_visible", position)
                             )
                         )
                 );
-                receiver.requestToClient(
+                ServerController.getInstance().requestToClient(
+                        receiver,
                          new ReplaceCardCommand(
                             List.of(
                                 new Triplet<>(topDeck.ID, whichType + "_deck", -1)
@@ -252,12 +258,13 @@ public class PlayerTurnDrawState extends GameState {
         //If one of the previous action tried succeeded, you will have a drawnCard and so updates have to be sent
         if(drawnCard != null) {
             //Sending the updated cards to clients and the new TopDeck Card if a drawnAction has been done
-            for (var player : GAME.getPlayers()) {
+            for (var player : GAME.getActivePlayers()) {
 
                 try {
                     VirtualClient receiver = keyReverseLookup(ServerController.getInstance().players, player::equals);
                     if (replacingCard != null)
-                        receiver.requestToClient(
+                        ServerController.getInstance().requestToClient(
+                                receiver,
                                 new ReplaceCardCommand(
                                         List.of(
                                                 new Triplet<>(replacingCard.ID, currentActionFormat.getY().STRING_MESSAGE + "_visible", currentActionFormat.getZ())
@@ -269,7 +276,8 @@ public class PlayerTurnDrawState extends GameState {
                             case Deck.RESOURCE, Deck.VISIBLE_RESOURCE -> new ResourceCard(-1,0, new HashMap<>(), new HashMap<>());
                             case Deck.GOLD, Deck.VISIBLE_GOLD -> new GoldCard(-1, 0, new HashMap<>(), new HashMap<>(), null, null);
                         };
-                    receiver.requestToClient(
+                    ServerController.getInstance().requestToClient(
+                            receiver,
                             new ReplaceCardCommand(
                                     List.of(
                                             new Triplet<>(topDeck.ID, currentActionFormat.getY().STRING_MESSAGE + "_deck", -1)
@@ -313,11 +321,12 @@ public class PlayerTurnDrawState extends GameState {
         }
 
         System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
-        for (var targetPlayer : GAME.getPlayers()) {
+        for (var targetPlayer : GAME.getActivePlayers()) {
             //TODO: manage exceptions
             try {
                 VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
-                target.requestToClient(
+                ServerController.getInstance().requestToClient(
+                        target,
                         new GameTransitionCommand(
                                 GAME.getTurnNumber(),
                                 GAME.getPlayers().indexOf(GAME.getCurrentPlayer())

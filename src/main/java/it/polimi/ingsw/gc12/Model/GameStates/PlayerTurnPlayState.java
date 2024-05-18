@@ -19,7 +19,7 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 public class PlayerTurnPlayState extends GameState {
 
     public PlayerTurnPlayState(Game thisGame, int currentPlayer, int counter) {
-        super(thisGame, currentPlayer, counter);
+        super(thisGame, currentPlayer, counter, "playState");
     }
 
     @Override
@@ -33,10 +33,11 @@ public class PlayerTurnPlayState extends GameState {
         target.placeCard(coordinates, card, playedSide);
 
         System.out.println("[SERVER]: Sending card placed by current player to clients in "+ GAME.toString());
-        for (var player : GAME.getPlayers())
+        for (var player : GAME.getActivePlayers())
             try {
-                keyReverseLookup(ServerController.getInstance().players, player::equals)
-                        .requestToClient(new PlaceCardCommand(target.getNickname(), coordinates, card.ID, playedSide,
+                ServerController.getInstance().requestToClient(
+                    keyReverseLookup(ServerController.getInstance().players, player::equals),
+                        new PlaceCardCommand(target.getNickname(), coordinates, card.ID, playedSide,
                                 target.getOwnedResources(), target.getOpenCorners(), target.getPoints()));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -62,11 +63,12 @@ public class PlayerTurnPlayState extends GameState {
         //TODO: send alert a tutti i giocatori che si è entrati nella fase finale?
 
         System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
-        for (var targetPlayer : GAME.getPlayers()) {
+        for (var targetPlayer : GAME.getActivePlayers()) {
             //TODO: manage exceptions
             try {
                 VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
-                target.requestToClient(
+                ServerController.getInstance().requestToClient(
+                        target,
                         new GameTransitionCommand(
                                 GAME.getTurnNumber(),
                                 GAME.getPlayers().indexOf(GAME.getCurrentPlayer())

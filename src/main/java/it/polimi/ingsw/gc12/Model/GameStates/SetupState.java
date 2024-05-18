@@ -14,7 +14,7 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 public class SetupState extends GameState {
 
     public SetupState(Game thisGame) {
-        super(thisGame, 0, -1);
+        super(thisGame, 0, -1, "setupState");
     }
 
     @Override
@@ -30,14 +30,15 @@ public class SetupState extends GameState {
 
         System.out.println("[SERVER]: sending ReceiveCardCommand to clients");
         try {
-            for (var target : GAME.getPlayers()) {
+            for (var target : GAME.getActivePlayers()) {
                 InitialCard tmp = initialCardsDeck.draw();
                 target.addCardToHand(tmp);
 
                 //TODO: manage exceptions
                 try {
-                    keyReverseLookup(ServerController.getInstance().players, target::equals)
-                            .requestToClient(new ReceiveCardCommand(List.of(tmp.ID)));
+                    ServerController.getInstance().requestToClient(
+                        keyReverseLookup(ServerController.getInstance().players, target::equals),
+                            new ReceiveCardCommand(List.of(tmp.ID)));
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }

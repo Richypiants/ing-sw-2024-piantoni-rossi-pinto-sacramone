@@ -18,7 +18,11 @@ public class SocketServerHandler extends SocketHandler implements VirtualServer 
 
     @Override
     public void requestToServer(VirtualClient caller, ServerCommand command) {
-        sendRequest(command);
+        try {
+            sendRequest(command);
+        } catch (IOException e) {
+            printError(e);
+        }
     }
 
     @Override

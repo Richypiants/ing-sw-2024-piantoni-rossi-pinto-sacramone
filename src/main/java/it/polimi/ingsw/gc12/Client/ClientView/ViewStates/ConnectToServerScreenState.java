@@ -66,16 +66,15 @@ public class ConnectToServerScreenState extends ViewState {
     public void updateNickname() {
         ClientController.getInstance().view.connectedConfirmation();
 
-        //KeepAlive timer FIXME: needed? there is a KEEPALIVE option on AsynchronousSocketChannel
+
         ClientController.getInstance().keepAlive = new Thread(() -> {
             while (true) {
                 try {
-                    sleep(30000);
+                    sleep(10000);
                 } catch (Exception e) {
                     ClientController.getInstance().errorLogger.log(e);
                     break;
                 }
-                //TODO: update Timer on VirtualServer Timer (add attributes or methods for management)
                 ClientController.getInstance().requestToServer(new KeepAliveCommand());
             }
         }); //keepAlive() thread

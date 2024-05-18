@@ -25,24 +25,22 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 public class ChooseInitialCardsState extends GameState {
 
     public ChooseInitialCardsState(Game thisGame) {
-        super(thisGame, 0, -1);
+        super(thisGame, -1, -1, "initialState");
     }
 
     @Override
-    public void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
+    public synchronized void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
             throws CardNotInHandException, NotEnoughResourcesException, InvalidCardPositionException {
         target.placeCard(new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), playedSide);
 
-        for (var player : GAME.getPlayers())
+        for (var player : GAME.getActivePlayers())
             try {
-                keyReverseLookup(ServerController.getInstance().players, player::equals)
-                        .requestToClient(new PlaceCardCommand(target.getNickname(), coordinates, card.ID, playedSide,
+                ServerController.getInstance().requestToClient(keyReverseLookup(ServerController.getInstance().players, player::equals), new PlaceCardCommand(target.getNickname(), coordinates, card.ID, playedSide,
                                 target.getOwnedResources(), target.getOpenCorners(), target.getPoints()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-        //FIXME: dopo timeout e disconnessione: eseguo un'azione random per i player disconnessi
         if(GAME.getPlayers().stream()
                 .map((player) -> player.getPlacedCards().containsKey(new GenericPair<>(0, 0)))
                 .reduce(true, (a, b) -> a && b))
@@ -55,7 +53,7 @@ public class ChooseInitialCardsState extends GameState {
         //In other case, this function does nothing.
 
         try {
-            placeCard(target, new GenericPair<>(0,0), null, Side.FRONT);
+            placeCard(target, new GenericPair<>(0,0), target.getCardsInHand().getFirst(), Side.FRONT);
         } catch (CardNotInHandException | NotEnoughResourcesException | InvalidCardPositionException ignored){
             //The placeCard for this player was already done, so the coordinates pair (0,0) is already occupied by
             //a card and the placeCard throws InvalidCardPositionException.
@@ -66,7 +64,7 @@ public class ChooseInitialCardsState extends GameState {
     public void transition() {
         super.transition();
 
-        for (InGamePlayer target : super.GAME.getPlayers()) {
+        for (InGamePlayer target : GAME.getPlayers()) {
             try {
                 target.addCardToHand(GAME.drawFrom(GAME.getResourceCardsDeck()));
                 target.addCardToHand(GAME.drawFrom(GAME.getResourceCardsDeck()));
@@ -75,23 +73,24 @@ public class ChooseInitialCardsState extends GameState {
                 e.printStackTrace();
                 //This cannot happen as the deck is always full at the start of the game
             }
+        }
 
-            System.out.println("[SERVER]: Sending cards in hand to clients in "+ GAME.toString());
+        for (InGamePlayer target : GAME.getActivePlayers()) {
+            System.out.println("[SERVER]: Sending cards in hand to active clients in " + GAME.toString());
             //TODO: manage exceptions
             try {
-                keyReverseLookup(ServerController.getInstance().players, target::equals)
-                        .requestToClient(
-                                new ReceiveCardCommand(
-                                        target.getCardsInHand().stream()
-                                                .map((card) -> card.ID)
-                                                .toList()
-                                )
-                        );
+                ServerController.getInstance().requestToClient(
+                        keyReverseLookup(ServerController.getInstance().players, target::equals),
+                        new ReceiveCardCommand(
+                                target.getCardsInHand().stream()
+                                        .map((card) -> card.ID)
+                                        .toList()
+                        )
+                );
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
 
         CardDeck<ObjectiveCard> objectivesDeck = new CardDeck<>(ServerController.getInstance().cardsList.values().stream()
                 .filter((card -> card instanceof ObjectiveCard))
@@ -126,22 +125,23 @@ public class ChooseInitialCardsState extends GameState {
         topDeckAndObjectiveCardPlacements.add(new Triplet<>(GAME.getGoldCardsDeck().peek().ID, "gold_deck", -1));
 
         System.out.println("[SERVER]: Sending Top of the Deck, Common and Personal Objectives, GameTransitionCommand to clients in "+ GAME.toString());
-        for (var targetPlayer : GAME.getPlayers()) {
+        for (var targetPlayer : GAME.getActivePlayers()) {
             //TODO: manage exceptions
             try {
                 VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
                 //Sending the common objective cards and the Top of the Deck
-                target.requestToClient(new ReplaceCardCommand(topDeckAndObjectiveCardPlacements));
+                ServerController.getInstance().requestToClient(target, new ReplaceCardCommand(topDeckAndObjectiveCardPlacements));
                 //Request view state transition to client
-                target.requestToClient(new GameTransitionCommand());
+                ServerController.getInstance().requestToClient(target, new GameTransitionCommand());
                 //Sending the personal objective selection
-                target.requestToClient(
-                                new ReceiveObjectiveChoice(
-                                        objectivesSelection.get(targetPlayer).stream()
-                                                .map((card) -> card.ID)
-                                                .toList()
-                                )
-                        );
+                ServerController.getInstance().requestToClient(
+                        target,
+                        new ReceiveObjectiveChoice(
+                                objectivesSelection.get(targetPlayer).stream()
+                                        .map((card) -> card.ID)
+                                        .toList()
+                        )
+                );
             } catch (Exception e) {
                 e.printStackTrace();
             }

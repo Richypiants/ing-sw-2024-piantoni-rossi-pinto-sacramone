@@ -18,7 +18,7 @@ public interface ServerControllerInterface extends ControllerInterface {
 
     void joinLobby(VirtualClient sender, UUID lobbyUUID);
 
-    void leaveLobby(VirtualClient sender);
+    void leaveLobby(VirtualClient sender, boolean isInactive);
 
     void pickObjective(VirtualClient sender, int cardID);
 

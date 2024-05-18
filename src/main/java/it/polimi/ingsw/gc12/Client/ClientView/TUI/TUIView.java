@@ -161,11 +161,11 @@ public class TUIView extends View {
 
         do {
             if(lastInputWasInvalid)
-                printToPosition(ansi().cursor(1, 1).a("Il nickname inserito possiede una lunghezza superiore a " + MAX_NICK_LENGTH + " caratteri!"));
+                printToPosition(ansi().cursor(1, 1).a("Il nickname inserito possiede una lunghezza superiore a " + MAX_NICK_LENGTH + " caratteri oppure è vuoto!"));
             printToPosition(ansi().cursor(2, 1).a("Inserisci il tuo nickname [Max " + MAX_NICK_LENGTH + " caratteri]: "));
             lastInputWasInvalid = false;
             nickname = console.readLine().trim();
-            if(nickname.length() > MAX_NICK_LENGTH)
+            if(nickname.length() > MAX_NICK_LENGTH || nickname.isEmpty())
                 lastInputWasInvalid = true;
             clearTerminal();
             System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN)

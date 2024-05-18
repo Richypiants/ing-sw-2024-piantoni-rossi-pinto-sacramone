@@ -17,7 +17,7 @@ public class SocketClientHandler extends SocketHandler implements VirtualClient 
     }
 
     @Override
-    public void requestToClient(ClientCommand command) {
+    public void requestToClient(ClientCommand command) throws IOException {
         sendRequest(command);
     }
 
@@ -34,7 +34,7 @@ public class SocketClientHandler extends SocketHandler implements VirtualClient 
     }
 
     @Override
-    public void printError(Exception e){
+    public void printError(Exception e) {
         e.printStackTrace();
     }
 }

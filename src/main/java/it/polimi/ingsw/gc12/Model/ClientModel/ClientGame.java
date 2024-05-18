@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Model.ClientModel;
 
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
@@ -34,11 +35,14 @@ public class ClientGame extends GameLobby implements Serializable {
      */
 
     //TODO: costruire scoreboard
-    public ClientGame(Game game, InGamePlayer myself, Map<Integer, ClientCard> clientCards) {
+    public ClientGame(Game game, InGamePlayer myself) {
         super(game.getMaxPlayers(), game.getPlayers().stream()
                 //.filter(Predicate.not(myself::equals))
                 .map(ClientPlayer::new)
                 .toList());
+
+        Map<Integer, ClientCard> clientCards = ServerController.getInstance().clientCardsList;
+
         this.MYSELF = getPlayers().stream().filter((player) -> player.getNickname().equals(myself.getNickname())).findAny().orElseThrow();
         this.OWN_HAND = new ArrayList<>();
         this.PLACED_RESOURCE_CARDS = Arrays.stream(game.getPlacedResources())
@@ -179,4 +183,5 @@ public class ClientGame extends GameLobby implements Serializable {
     public void addMessageToChatLog(String message) {
         chatLog.add(message);
     }
+
 }

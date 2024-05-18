@@ -16,7 +16,7 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 public class VictoryCalculationState extends GameState {
 
     public VictoryCalculationState(Game thisGame, int currentPlayer, int counter) {
-        super(thisGame, currentPlayer, counter);
+        super(thisGame, currentPlayer, counter, "victoryCalculationState");
     }
 
     //TODO: send steps in points calculation process for flavour?
@@ -43,8 +43,9 @@ public class VictoryCalculationState extends GameState {
         try {
             // Sending leaderboard stats
             for (var target : players) {
-                keyReverseLookup(ServerController.getInstance().players, target::equals)
-                        .requestToClient(new EndGameCommand(pointsStats));
+                ServerController.getInstance().requestToClient(
+                    keyReverseLookup(ServerController.getInstance().players, target::equals),
+                        new EndGameCommand(pointsStats));
             }
         } catch (Throwable t) {
             t.printStackTrace();
@@ -106,6 +107,11 @@ public class VictoryCalculationState extends GameState {
 
         //Clearing the mappings to the game
         UUID lobbyUUID = keyReverseLookup(ServerController.getInstance().lobbiesAndGames, GAME::equals);
+
+        //Removing all active and inactive players from the Map containing all the mappings.
+        for(InGamePlayer player : GAME.getPlayers())
+            ServerController.getInstance().playersToLobbiesAndGames.remove(player);
+
         //FIXME: Using a GameLobby to convert the instances of InGamePlayer to Player and then discarding it. Better solutions?
         GameLobby returnLobby = GAME.toLobby();
 
@@ -115,7 +121,6 @@ public class VictoryCalculationState extends GameState {
                     keyReverseLookup(ServerController.getInstance().players, player::equals),
                     player
             );
-            ServerController.getInstance().playersToLobbiesAndGames.remove(player);
 
             // Sending lobbies list to players who were in this game (because they didn't have it updated)
             try {
