@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 class GoldCardTest {
 
@@ -57,5 +58,11 @@ class GoldCardTest {
         playerGame.placeCard(new GenericPair<>(-1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
 
         assertEquals(2, playerGame.getPlacedCards().get(new GenericPair<>(-1, 1)).getX().awardPoints(playerGame));
+    }
+
+    @Test
+    void toStringTest() {
+        assertInstanceOf(String.class, resourceCards.getFirst().toString());
+
     }
 }

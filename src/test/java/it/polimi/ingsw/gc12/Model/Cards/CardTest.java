@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 class CardTest {
 
@@ -70,5 +71,23 @@ class CardTest {
         game.getPlayers().get(0).placeCard(new GenericPair<>(4, 2), goldCards.get(0), Side.FRONT);
 
         assertEquals(2, goldCards.get(0).awardPoints(game.getPlayers().get(0)));
+    }
+
+    @Test
+    void toStringTest() {
+        ArrayList<ResourceCard> resourceCards;
+        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
+        });
+        assertInstanceOf(String.class, resourceCards.getFirst().toString());
+
+    }
+
+    @Test
+    void toStringTestForInitial() {
+        ArrayList<InitialCard> initialCards;
+        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
+        });
+        assertInstanceOf(String.class, initialCards.getFirst().toString());
+
     }
 }

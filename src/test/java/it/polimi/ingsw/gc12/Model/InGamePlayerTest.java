@@ -207,4 +207,12 @@ class InGamePlayerTest {
 
         assertEquals(6, playerGame.getPoints());
     }
+
+    @Test
+    void toggleActiveTest() {
+        player = new Player("Sacri");
+        playerGame = new InGamePlayer(player);
+        playerGame.toggleActive();
+        assert (!playerGame.isActive());
+    }
 }
