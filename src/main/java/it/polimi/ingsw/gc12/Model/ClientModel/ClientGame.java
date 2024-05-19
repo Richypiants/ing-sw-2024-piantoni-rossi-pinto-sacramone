@@ -91,6 +91,9 @@ public class ClientGame extends GameLobby implements Serializable {
     public ClientPlayer getThisPlayer(){
         return this.MYSELF;
     }
+
+    //TODO: make a method that returns all players except thisPlayer?
+
     public ArrayList<ClientCard> getCardsInHand(){
         return OWN_HAND; //TODO: copia?
     }
