@@ -8,6 +8,7 @@ import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.GameStates.AwaitingReconnectionState;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
@@ -138,8 +139,9 @@ public class ServerController implements ServerControllerInterface {
         } catch (IOException e) {
             //If communication is closed, the target has lost an update, so in case he reconnects, its game is inconsistent, we must send the update,
             //so the TimeoutTask routine has to be instantly executed.
+            timeoutTasks.get(client).run();
+            timeoutTasks.get(client).cancel();
             timeoutTasks.remove(client);
-            disconnectionRoutine(client);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -159,7 +161,8 @@ public class ServerController implements ServerControllerInterface {
     }
 
     private void disconnectionRoutine(VirtualClient target){
-        System.out.println("[SERVER] Removing the entry of " + target + " since it didn't send any keepAlive in " + TIMEOUT_TASK_EXECUTION_AFTER/1000 + " seconds.");
+        System.out.println("[SERVER] Removing the entry of " + target + " since it didn't send any keepAlive in " + TIMEOUT_TASK_EXECUTION_AFTER/1000
+                + " seconds or the game has sent an update and its state is inconsistent.");
         Player thisPlayer = players.get(target);
         if(playersToLobbiesAndGames.containsKey(thisPlayer)){
             GameLobby thisGame = playersToLobbiesAndGames.get(thisPlayer);
@@ -169,7 +172,6 @@ public class ServerController implements ServerControllerInterface {
                 leaveLobby(target, true);
         }
     }
-
 
     public void createPlayer(VirtualClient sender, String nickname) {
         System.out.println("[CLIENT]: CreatePlayerCommand received and being executed");
@@ -207,6 +209,11 @@ public class ServerController implements ServerControllerInterface {
 
                 System.out.println("[SERVER]: sending SetNicknameCommand and RestoreGameCommand to client " + sender);
                 requestToClient(sender, new SetNicknameCommand(nickname)); //setNickname();
+
+                if(targetGame.getCurrentState() instanceof AwaitingReconnectionState)
+                    //If game was in AwaitingReconnectingState, you need to resume it before sending the DTO
+                    ((AwaitingReconnectionState) targetGame.getCurrentState()).recoverGame();
+
                 requestToClient(sender, new RestoreGameCommand(targetGame.generateDTO((InGamePlayer) target), targetGame.getCurrentState().getStringEquivalent())); //restoreGame();
 
                 for (var player : targetGame.getActivePlayers())
@@ -216,9 +223,7 @@ public class ServerController implements ServerControllerInterface {
                     }
 
                 ((InGamePlayer) target).toggleActive();
-                //FIXME: restoreGame va chiamata anche quando non c'è il gioco ma il file salvato perchè il server
-                // era crashato
-                // inoltre serve uno stato awaitingReconnectionsState (potremmo usarlo come timeout?)
+                //FIXME: restoreGame va chiamata anche quando non c'è il gioco ma il file salvato perchè il server era crashato
             } else {
                 Player target = new Player(nickname);
                 players.put(sender, target);
@@ -444,7 +449,6 @@ public class ServerController implements ServerControllerInterface {
                                 new ForbiddenActionException("Cannot pick an objective card in this state")
                         )
                 ); //throwException();
-                return;
             } catch (CardNotInHandException e){
                 requestToClient(
                         sender,
@@ -499,7 +503,6 @@ public class ServerController implements ServerControllerInterface {
                                 new ForbiddenActionException("Cannot place a card in this state")
                         )
                 ); //throwException();
-                return;
             } catch(UnexpectedPlayerException e){
                 requestToClient(
                         sender,
@@ -507,7 +510,6 @@ public class ServerController implements ServerControllerInterface {
                                 new UnexpectedPlayerException("Not this player's turn")
                         )
                 ); //throwException();
-                return;
             } catch (CardNotInHandException e){
                 requestToClient(sender,
                         new ThrowExceptionCommand(
@@ -522,7 +524,6 @@ public class ServerController implements ServerControllerInterface {
                                 )
                         )
                 ); //throwException();
-                return;
             } catch (InvalidCardPositionException e){
                 requestToClient(
                         sender,
@@ -530,7 +531,6 @@ public class ServerController implements ServerControllerInterface {
                                 new InvalidCardPositionException("Provided coordinates are not valid for placing a card")
                         )
                 ); //throwException();
-                return;
             }
         else {
             requestToClient(
@@ -539,18 +539,6 @@ public class ServerController implements ServerControllerInterface {
                             new InvalidCardTypeException("Provided card is not of a playable type")
                     )
             ); //throwException();
-            return;
-        }
-
-        System.out.println("[SERVER]: sending PlaceCardCommand to clients");
-        for(var player : targetGame.getActivePlayers()) {
-            VirtualClient targetClient = keyReverseLookup(players, player::equals);
-            requestToClient(
-                    targetClient,
-                    new PlaceCardCommand(targetPlayer.getNickname(), coordinates, targetCard.ID, playedSide,
-                            targetPlayer.getOwnedResources(), targetPlayer.getOpenCorners(), targetPlayer.getPoints()
-                    )
-            ); //placeCard();
         }
     }
 
@@ -664,7 +652,7 @@ public class ServerController implements ServerControllerInterface {
         * because the players' activity is managed by the GameStates.
         * */
 
-        if(targetGame.getCurrentState().getCurrentPlayer() == null|| targetGame.getCurrentState().getCurrentPlayer().equals(targetPlayer))
+        if(targetGame.getCurrentState().getCurrentPlayer() == null || targetGame.getCurrentState().getCurrentPlayer().equals(targetPlayer))
             targetGame.getCurrentState().playerDisconnected(targetPlayer);
 
         //TODO: useful?
@@ -677,12 +665,11 @@ public class ServerController implements ServerControllerInterface {
             requestToClient(targetClient, new ToggleActiveCommand(player.getNickname()));
         }
 
-        // TODO/FIXME: potremmo usare uno stato awaitingReconnectionsState (come timeout?) come per createPlayer()?
         if(activePlayers == 1){
-            //TODO: sospensione gioco (+ notificare)
-            //TODO: timeout per aspettare altre riconnessioni, se scade vince l'unico rimasto
-            // if timeout scaduto:
-
+            for(var player : targetGame.getActivePlayers()) {
+                requestToClient(keyReverseLookup(players, player::equals), new PauseGameCommand());
+            }
+            targetGame.setState(new AwaitingReconnectionState(targetGame));
         } else if(activePlayers == 0){
             for(var player: targetGame.getPlayers())
                 playersToLobbiesAndGames.remove(player);

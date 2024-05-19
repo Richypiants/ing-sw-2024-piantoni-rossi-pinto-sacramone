@@ -867,7 +867,7 @@ public class GUIView extends View {
     }
 
     @Override
-    public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS) {
+    public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
         Platform.runLater(() ->
         {
 

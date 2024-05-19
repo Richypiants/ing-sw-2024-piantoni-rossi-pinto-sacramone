@@ -69,13 +69,14 @@ public class ConnectToServerScreenState extends ViewState {
 
         ClientController.getInstance().keepAlive = new Thread(() -> {
             while (true) {
+                ClientController.getInstance().requestToServer(new KeepAliveCommand());
                 try {
                     sleep(10000);
                 } catch (Exception e) {
                     ClientController.getInstance().errorLogger.log(e);
                     break;
                 }
-                ClientController.getInstance().requestToServer(new KeepAliveCommand());
+
             }
         }); //keepAlive() thread
         ClientController.getInstance().keepAlive.setDaemon(true);

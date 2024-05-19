@@ -44,7 +44,9 @@ public interface ClientControllerInterface extends ControllerInterface {
 
     void transition(int round, int currentPlayerIndex);
 
-    void endGame(List<Triplet<String, Integer, Integer>> pointsStats);
+    void pauseGame();
+
+    void endGame(List<Triplet<String, Integer, Integer>> pointsStats, boolean gameEndedDueToDisconnections);
 
     void addChatMessage(String senderNickname, String chatMessage, boolean isPrivate);
 }

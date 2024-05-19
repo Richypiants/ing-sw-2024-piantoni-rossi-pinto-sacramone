@@ -130,7 +130,6 @@ public class Field {
         // look in leaveLobbby() in Controller for a solution to a similar problem to this get()
         return keyReverseLookup(PLACED_CARDS, (value) -> value.getX().equals(placedCard));
     }
-
 }
 
 // addCard() -> Si test

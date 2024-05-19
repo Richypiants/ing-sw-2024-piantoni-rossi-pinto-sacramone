@@ -232,6 +232,7 @@ public class Game extends GameLobby {
     /**
      * Changes the currentState of this game to newState
      */
+    //TODO:ADDED Sync keyword
     public void setState(GameState newState) {
         currentState = newState;
     }

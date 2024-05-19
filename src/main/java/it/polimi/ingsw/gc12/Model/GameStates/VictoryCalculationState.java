@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
+import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.util.*;
@@ -25,12 +26,15 @@ public class VictoryCalculationState extends GameState {
         ArrayList<InGamePlayer> players = GAME.getPlayers();
         List<Triplet<String, Integer, Integer>> pointsStats = new ArrayList<>();
         for (InGamePlayer target : players) {
-            int playerObjectivePoints = target.getSecretObjective().awardPoints(target) +
-                    Arrays.stream(GAME.getCommonObjectives())
-                            .mapToInt((objective) -> objective.awardPoints(target))
-                            .sum();
-            target.increasePoints(playerObjectivePoints);
-            pointsStats.add(new Triplet<>(target.getNickname(), target.getPoints(), playerObjectivePoints));
+            if(target.getSecretObjective() != null){
+                int playerObjectivePoints = target.getSecretObjective().awardPoints(target) +
+                        Arrays.stream(GAME.getCommonObjectives())
+                                .mapToInt((objective) -> objective.awardPoints(target))
+                                .sum();
+                target.increasePoints(playerObjectivePoints);
+                pointsStats.add(new Triplet<>(target.getNickname(), target.getPoints(), playerObjectivePoints));
+                }
+            else pointsStats.add(new Triplet<>(target.getNickname(), -1, -1));
         }
 
         pointsStats.sort(Comparator.comparingInt(Triplet<String, Integer, Integer>::getY)
@@ -38,14 +42,28 @@ public class VictoryCalculationState extends GameState {
         );
         pointsStats = new ArrayList<>(pointsStats.reversed());
 
+        //If there's only one player connected to the game, he's the winner and placed #1 in the leaderboard.
+        boolean gameEndedDueToDisconnections = GAME.getActivePlayers().size() == 1;
+        if(gameEndedDueToDisconnections){
+            String winnerNickname = GAME.getActivePlayers().getFirst().getNickname();
+            Triplet<String, Integer, Integer> foundEntry = null;
+            for(Triplet<String, Integer, Integer> entry : pointsStats) {
+                if (entry.getX().equals(winnerNickname)) {
+                    foundEntry = entry;
+                }
+            }
+            pointsStats.remove(foundEntry);
+            pointsStats.addFirst(foundEntry);
+        }
+
         System.out.println("[SERVER]: Sending leaderboard stats to clients in "+ GAME.toString());
         //TODO : Handle exceptions in the correct way and not like this
         try {
             // Sending leaderboard stats
-            for (var target : players) {
+            for (var target : GAME.getActivePlayers()) {
                 ServerController.getInstance().requestToClient(
                     keyReverseLookup(ServerController.getInstance().players, target::equals),
-                        new EndGameCommand(pointsStats));
+                        new EndGameCommand(pointsStats, gameEndedDueToDisconnections));
             }
         } catch (Throwable t) {
             t.printStackTrace();
@@ -116,26 +134,28 @@ public class VictoryCalculationState extends GameState {
         GameLobby returnLobby = GAME.toLobby();
 
         System.out.println("[SERVER]: Sending lobbies to clients previously in "+ GAME);
-        for(var player : returnLobby.getPlayers()) {
+        int currentIndex = 0;
+        for(var inGamePlayer : GAME.getActivePlayers()) {
+            Player thisPlayer = returnLobby.getPlayers().get(currentIndex);
             ServerController.getInstance().players.put(
-                    keyReverseLookup(ServerController.getInstance().players, player::equals),
-                    player
+                    keyReverseLookup(ServerController.getInstance().players, inGamePlayer::equals),
+                    thisPlayer
             );
 
             // Sending lobbies list to players who were in this game (because they didn't have it updated)
             try {
-                keyReverseLookup(ServerController.getInstance().players, player::equals)
+                ServerController.getInstance().requestToClient(
+                keyReverseLookup(ServerController.getInstance().players, thisPlayer::equals),
                         //TODO : Handle exceptions in the correct way and not like this
-                        .requestToClient(
-                                new SetLobbiesCommand(
-                                        ServerController.getInstance().lobbiesAndGames.entrySet().stream()
-                                                .filter((entry) -> !(entry.getValue() instanceof Game))
-                                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                                )
-                        );
+                new SetLobbiesCommand(
+                    ServerController.getInstance().lobbiesAndGames.entrySet().stream()
+                        .filter((entry) -> !(entry.getValue() instanceof Game))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                ));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+            currentIndex++;
         }
 
         ServerController.getInstance().lobbiesAndGames.remove(lobbyUUID);

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.GameTransitionCommand;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
@@ -7,6 +9,11 @@ import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
+import it.polimi.ingsw.gc12.Utilities.VirtualClient;
+
+import java.util.ArrayList;
+
+import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public abstract class GameState { //TODO: make all exceptions extends RuntimeException so that you can cancel them from here
     protected final Game GAME;
@@ -86,6 +93,25 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
 
     public void transition() {
         persistence();
+    }
+
+    protected static void notifyTransition(ArrayList<InGamePlayer> activePlayers, int turnNumber, ArrayList<InGamePlayer> players, InGamePlayer currentPlayer) {
+        for (var targetPlayer : activePlayers) {
+            //TODO: manage exceptions
+            try {
+                VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
+
+                ServerController.getInstance().requestToClient(
+                        target,
+                        new GameTransitionCommand(
+                                turnNumber,
+                                players.indexOf(currentPlayer)
+                        )
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void persistence() {

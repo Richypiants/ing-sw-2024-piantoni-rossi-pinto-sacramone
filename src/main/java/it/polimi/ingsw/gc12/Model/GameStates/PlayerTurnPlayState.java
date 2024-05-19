@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.GameTransitionCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.PlaceCardCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
@@ -12,7 +11,6 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
-import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
@@ -63,21 +61,7 @@ public class PlayerTurnPlayState extends GameState {
         //TODO: send alert a tutti i giocatori che si è entrati nella fase finale?
 
         System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
-        for (var targetPlayer : GAME.getActivePlayers()) {
-            //TODO: manage exceptions
-            try {
-                VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
-                ServerController.getInstance().requestToClient(
-                        target,
-                        new GameTransitionCommand(
-                                GAME.getTurnNumber(),
-                                GAME.getPlayers().indexOf(GAME.getCurrentPlayer())
-                        )
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers(), GAME.getCurrentPlayer());
 
         GAME.setState(new PlayerTurnDrawState(GAME, currentPlayer, finalPhaseCounter));
 

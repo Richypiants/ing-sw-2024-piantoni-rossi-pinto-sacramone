@@ -226,6 +226,12 @@ public class ClientController implements ClientControllerInterface {
         viewState.executeState();
     }
 
+    public void pauseGame(){
+        viewState = new AwaitingReconnectionState(viewState);
+
+        viewState.executeState();
+    }
+
     public void toggleActive(String nickname){
         viewModel.getGame().getPlayers().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
@@ -234,9 +240,8 @@ public class ClientController implements ClientControllerInterface {
                 .toggleActive();
     }
 
-    public void endGame(List<Triplet<String, Integer, Integer>> pointsStats) {
-        //TODO: stampare
-        viewState = new LeaderboardScreenState(pointsStats);
+    public void endGame(List<Triplet<String, Integer, Integer>> pointsStats, boolean gameEndedDueToDisconnections) {
+        viewState = new LeaderboardScreenState(pointsStats, gameEndedDueToDisconnections);
         viewState.executeState();
     }
 

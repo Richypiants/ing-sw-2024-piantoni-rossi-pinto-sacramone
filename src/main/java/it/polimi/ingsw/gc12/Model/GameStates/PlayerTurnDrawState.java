@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.GameTransitionCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveCardCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReplaceCardCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
@@ -321,21 +320,7 @@ public class PlayerTurnDrawState extends GameState {
         }
 
         System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
-        for (var targetPlayer : GAME.getActivePlayers()) {
-            //TODO: manage exceptions
-            try {
-                VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
-                ServerController.getInstance().requestToClient(
-                        target,
-                        new GameTransitionCommand(
-                                GAME.getTurnNumber(),
-                                GAME.getPlayers().indexOf(GAME.getCurrentPlayer())
-                        )
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers(), GAME.getCurrentPlayer());
 
         GAME.setState(new PlayerTurnPlayState(GAME, currentPlayer, finalPhaseCounter));
     }

@@ -31,6 +31,7 @@ public class ChooseInitialCardsState extends GameState {
     @Override
     public synchronized void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
             throws CardNotInHandException, NotEnoughResourcesException, InvalidCardPositionException {
+
         target.placeCard(new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), playedSide);
 
         for (var player : GAME.getActivePlayers())
@@ -43,18 +44,18 @@ public class ChooseInitialCardsState extends GameState {
 
         if(GAME.getPlayers().stream()
                 .map((player) -> player.getPlacedCards().containsKey(new GenericPair<>(0, 0)))
-                .reduce(true, (a, b) -> a && b))
+                .reduce(true, (a, b) -> a && b)) {
             transition();
+        }
     }
 
     @Override
     public void playerDisconnected(InGamePlayer target){
         //an arbitrary action of placing the initial card is done if the player hasn't done it before disconnecting
         //In other case, this function does nothing.
-
         try {
-            placeCard(target, new GenericPair<>(0,0), target.getCardsInHand().getFirst(), Side.FRONT);
-        } catch (CardNotInHandException | NotEnoughResourcesException | InvalidCardPositionException ignored){
+            placeCard(target, new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
+        } catch (CardNotInHandException | NotEnoughResourcesException | InvalidCardPositionException ignored) {
             //The placeCard for this player was already done, so the coordinates pair (0,0) is already occupied by
             //a card and the placeCard throws InvalidCardPositionException.
         }

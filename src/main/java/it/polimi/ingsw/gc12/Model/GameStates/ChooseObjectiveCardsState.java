@@ -1,14 +1,12 @@
 package it.polimi.ingsw.gc12.Model.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ConfirmSelectionCommand;
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.GameTransitionCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.AlreadySetCardException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
-import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -29,7 +27,7 @@ public class ChooseObjectiveCardsState extends GameState {
     }
 
     @Override
-    public void pickObjective(InGamePlayer targetPlayer, ObjectiveCard objective)
+    public synchronized void pickObjective(InGamePlayer targetPlayer, ObjectiveCard objective)
             throws CardNotInHandException, AlreadySetCardException {
         if(!objectivesMap.get(targetPlayer).contains(objective))
             throw new CardNotInHandException();
@@ -51,8 +49,9 @@ public class ChooseObjectiveCardsState extends GameState {
 
         if(GAME.getPlayers().stream()
                 .map((player) -> player.getSecretObjective() != null)
-                .reduce(true, (a, b) -> a && b))
+                .reduce(true, (a, b) -> a && b)){
             transition();
+        }
     }
 
     @Override
@@ -76,26 +75,9 @@ public class ChooseObjectiveCardsState extends GameState {
 
         System.out.println("[SERVER]: Sending GameTransitionCommand to active clients in "+ GAME.toString());
         GAME.increaseTurn();
-        this.currentPlayer = 0;
-        for (var targetPlayer : GAME.getActivePlayers()) {
-            //TODO: manage exceptions
-            try {
-                VirtualClient target = keyReverseLookup(ServerController.getInstance().players, targetPlayer::equals);
+        nextPlayer();
+        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers(), GAME.getCurrentPlayer());
 
-
-                //TODO: change in ServerController.getInstance().requestToClient( target, ...)
-                ServerController.getInstance().requestToClient(
-                        target,
-                        new GameTransitionCommand(
-                                GAME.getTurnNumber(),
-                                GAME.getPlayers().indexOf(GAME.getCurrentPlayer())
-                        )
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        GAME.setState(new PlayerTurnPlayState(GAME, 0, -1));
+        GAME.setState(new PlayerTurnPlayState(GAME, currentPlayer, -1));
     }
 }

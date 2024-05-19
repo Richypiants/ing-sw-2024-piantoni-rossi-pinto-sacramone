@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Client.ClientView.TUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.AwaitingReconnectionState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
@@ -161,7 +162,7 @@ public class TUIView extends View {
 
         do {
             if(lastInputWasInvalid)
-                printToPosition(ansi().cursor(1, 1).a("Il nickname inserito possiede una lunghezza superiore a " + MAX_NICK_LENGTH + " caratteri oppure è vuoto!"));
+                printToPosition(ansi().cursor(1, 1).a("Il nickname inserito possiede una lunghezza superiore a " + MAX_NICK_LENGTH + " caratteri oppure e' vuoto!"));
             printToPosition(ansi().cursor(2, 1).a("Inserisci il tuo nickname [Max " + MAX_NICK_LENGTH + " caratteri]: "));
             lastInputWasInvalid = false;
             nickname = console.readLine().trim();
@@ -242,7 +243,6 @@ public class TUIView extends View {
         showHand();
         showChat();
 
-        //FIXME: eventuale showOpponentField <opponentName>???
         //FIXME: al momento comandi filtrati per stato di gioco, replicati in ogni viewState, orribile anche perchè alla GUI non servono...
         // però forse possiamo avere una lista di prompt e caricare quelli da mostrare a seconda di TUI o GUI?
         // (per esempio, trascina una carta per posizionarla)
@@ -252,7 +252,9 @@ public class TUIView extends View {
 
         Ansi printedMessage = thisGame.getCurrentPlayerIndex() != -1 ?
                 ansi().cursor(i++, 2).bold().a("It is ").fg(9).a(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname()).reset().bold().a("'s turn! Your available commands are: ") :
-                ansi().cursor(i++, 2).bold().a("[SETUP PHASE] Every player needs to do an action! Your available commands are: ");
+                ClientController.getInstance().viewState instanceof AwaitingReconnectionState ?
+                    ansi().cursor(i++, 2).bold().a("[GAME PAUSED] Awaiting for Reconnection ...") :
+                    ansi().cursor(i++, 2).bold().a("[SETUP PHASE] Every player needs to do an action! Your available commands are: ");
 
         printToPosition(printedMessage);
         for (var command : ClientController.getInstance().viewState.TUICommands)
@@ -534,7 +536,7 @@ public class TUIView extends View {
                 );
     }
 
-    public void showLeaderboard(List<Triplet<String, Integer, Integer>> leaderboard) {
+    public void showLeaderboard(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
         int FIRST_ROW = 15;
         int ROW_OFFSET = 2;
         int index = 1;
@@ -559,11 +561,17 @@ public class TUIView extends View {
             printToPosition(ansi()
                     .cursor(FIRST_ROW+(index*ROW_OFFSET),62).a("[#" + index + "]")
                     .cursor(FIRST_ROW+(index*ROW_OFFSET),72).a(row.getX())
-                    .cursor(FIRST_ROW+(index*ROW_OFFSET),95).a(row.getY() + " pt.")
-                    .cursor(FIRST_ROW+(index*ROW_OFFSET),124).a(row.getZ() + " pt.")
+                    .cursor(FIRST_ROW+(index*ROW_OFFSET),95).a(row.getY() != -1 ? row.getY() + " pt." : "NaN")
+                    .cursor(FIRST_ROW+(index*ROW_OFFSET),124).a(row.getZ() != -1 ? row.getZ() + " pt.": "NaN")
             );
             index++;
         }
+
+        if(gameEndedDueToDisconnections)
+            printToPosition(ansi()
+                    .cursor(30,72).a("Since the game ended due to disconnections of all the other players, ")
+                    .bold().fg(9).a(leaderboard.getFirst().getX()).reset().a(" is the WINNER!")
+            );
 
         System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW - 2, 1).a("Scrivi 'quit' per ritornare alla schermata delle lobby")
                 .cursorDownLine()
