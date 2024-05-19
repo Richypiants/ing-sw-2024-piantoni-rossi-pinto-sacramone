@@ -17,10 +17,10 @@
     <HBox fx:id="opponentsFieldsPane" layoutX="270.0" prefHeight="250.0" prefWidth="1010.0"
                 style="-fx-background-color: yellow;">
     </HBox>
-    <ScrollPane fx:id="ownFieldPane" layoutX="270.0" layoutY="250.0" prefHeight="350.0" prefWidth="1010.0"
+    <AnchorPane fx:id="ownFieldPane" layoutX="270.0" layoutY="250.0" prefHeight="350.0" prefWidth="1010.0"
                 style="-fx-background-color: red;">
 
-    </ScrollPane>
+    </AnchorPane>
     <HBox fx:id="handPane" layoutX="430.0" layoutY="600.0" prefHeight="120.0" prefWidth="690.0"
                 style="-fx-background-color: purple;">
 

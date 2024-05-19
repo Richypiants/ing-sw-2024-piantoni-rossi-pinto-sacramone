@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 //FIXME: consider removing some Platform.runLater() and restricting some of them to necessary actions only
 public class GUIView extends View {
@@ -392,30 +393,48 @@ public class GUIView extends View {
 
             stage.getScene().setRoot(root);
 
+            ClientPlayer thisPlayer = ClientController.getInstance().viewModel.getGame().getThisPlayer();
+
             Button leaveButton = (Button) fxmlLoader.getNamespace().get("leaveButton");
             leaveButton.setOnMouseClicked((event) -> ClientController.getInstance().viewState.quit());
 
             Button chatButton = (Button) fxmlLoader.getNamespace().get("chatButton");
             chatButton.setOnMouseClicked((event) -> showChat());
 
-//            ImageView score = (ImageView) fxmlLoader.getNamespace().get("score");
-//            ImageView objective = (ImageView) fxmlLoader.getNamespace().get("objective");
-//            ImageView resource = (ImageView) fxmlLoader.getNamespace().get("resource");
-//            ImageView gold = (ImageView) fxmlLoader.getNamespace().get("gold");
-//
-//            // Dimensione Schermo
-//            double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
-
-            // Posizionamento
-//            AnchorPane.setRightAnchor(leaveGame, 20.0);
-//            AnchorPane.setBottomAnchor(leaveGame, 20.0);
-
             showHand();
 
             showCommonPlacedCards();
 
-            ScrollPane ownFieldPane = (ScrollPane) stage.getScene().lookup("#ownFieldPane");
-            drawField(ownFieldPane, ClientController.getInstance().viewModel.getGame().getThisPlayer(), true);
+            //TODO: estrarre in una funzione
+            AnchorPane ownFieldPane = (AnchorPane) stage.getScene().lookup("#ownFieldPane");
+
+            ScrollPane ownFieldScrollPane = new ScrollPane();
+            ownFieldScrollPane.setPannable(true);
+            ownFieldScrollPane.setPrefSize(ownFieldPane.getPrefWidth() * 9 / 10, ownFieldPane.getPrefHeight());
+            drawField(ownFieldScrollPane, thisPlayer, true);
+
+            Button zoomedOwnFieldButton = new Button("[]");
+            zoomedOwnFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            zoomedOwnFieldButton.setOnMouseClicked((event) -> showField(thisPlayer));
+
+            VBox statsBox = new VBox(0);
+            statsBox.setAlignment(Pos.CENTER);
+            statsBox.setPrefSize(ownFieldPane.getPrefWidth() / 10, ownFieldPane.getPrefHeight());
+            for (var resourceEntry : thisPlayer.getOwnedResources().entrySet()) {
+                //TODO: dopo aggiungeremo le immaginette o le icone o le emoji che al momento non abbiamo
+                Label resourceInfo = new Label(resourceEntry.getKey().SYMBOL + " x " + resourceEntry.getValue());
+                resourceInfo.setAlignment(Pos.CENTER);
+                resourceInfo.setPrefSize(statsBox.getPrefWidth(), statsBox.getPrefHeight());
+                resourceInfo.setStyle("-fx-font-size: 15px; -fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+                statsBox.getChildren().add(resourceInfo);
+            }
+
+            ownFieldPane.getChildren().addAll(statsBox, ownFieldScrollPane, zoomedOwnFieldButton);
+            ownFieldScrollPane.relocate(ownFieldPane.getPrefWidth() / 5, 0);
+            zoomedOwnFieldButton.relocate(ownFieldPane.getPrefWidth() - 50, 20);
+
+
+            showOpponentsFieldsMiniaturized();
         });
     }
 
@@ -430,18 +449,27 @@ public class GUIView extends View {
         overlayPopup.setHeight(height);
         //TODO: aggiungere per quanto possibile gli elementi dei popup all'fxml?
 
-        if (isCloseable) {
-        }//TODO: aggiungere X in alto a destra oppure Close button
+        AnchorPane content = new AnchorPane();
+        content.setPrefSize(width, height);
+        content.getChildren().add(popupContent);
 
-        overlayPopup.getContent().add(popupContent);
+        if (isCloseable) {
+            Button XButton = new Button("X");
+            XButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            XButton.setOnMouseClicked((event) -> overlayPopup.hide());
+
+            content.getChildren().add(XButton);
+            XButton.relocate(content.getPrefWidth() - 50, 20);
+        }
+
+        overlayPopup.getContent().add(content);
         return overlayPopup;
     }
 
     //TODO: eventually remove boolean from signature?
     private void drawField(ScrollPane fieldPane, ClientPlayer player, boolean isInteractive) {
-        fieldPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        fieldPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        fieldPane.setPannable(true);
+        fieldPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        fieldPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         //TODO: add background color or texture or image?
         //TODO: resize this pane based on how many cards have been played and center the field on it? or not?
@@ -471,7 +499,7 @@ public class GUIView extends View {
         }
 
         for (var openCorner : player.getOpenCorners()) {
-            var openCornerShape = new Rectangle(100, 66) {
+            var openCornerShape = new Rectangle(cardSizes.getX(), cardSizes.getY()) {
                 public final GenericPair<Integer, Integer> COORDINATES = openCorner;
             };
             openCornerShape.setFill(Color.TRANSPARENT);
@@ -536,7 +564,7 @@ public class GUIView extends View {
 
             chatScrollPane.setVvalue(chatScrollPane.getVmax());
 
-            List<String> nicknames = thisGame.getPlayers().stream().map(Player::getNickname).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+            List<String> nicknames = thisGame.getPlayers().stream().map(Player::getNickname).collect(Collectors.toCollection(ArrayList::new));
             nicknames.addFirst("everyone");
             nicknames.remove(ClientController.getInstance().viewModel.getOwnNickname());
             ObservableList<String> receiverNicknames = FXCollections.observableList(nicknames);
@@ -561,25 +589,51 @@ public class GUIView extends View {
         });
     }
 
+    //TODO: centrare l'opponentField sulla carta nuova appena piazzata?
     public void showOpponentsFieldsMiniaturized() {
-        HBox opponentsFieldsPane = (HBox) stage.getScene().lookup("opponentsFieldsPane");
+        HBox opponentsFieldsPane = (HBox) stage.getScene().lookup("#opponentsFieldsPane");
 
         ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
 
-        for (var player : thisGame.getPlayers()) {
-            VBox opponentInfo = new VBox(10);
+        String style = "-fx-font-size: 15px; -fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;";
 
-            /*Pane opponentStats = new Pane();
-            Pane opponentField = new Pane();...
+        for (var player : thisGame.getPlayers().stream()
+                .filter((player) -> !(player.getNickname().equals(ClientController.getInstance().viewModel.getOwnNickname()))).toList()) {
+            VBox opponentInfo = new VBox(5);
+            opponentInfo.setAlignment(Pos.CENTER);
+            opponentInfo.setPrefSize(opponentsFieldsPane.getPrefWidth() / (thisGame.getPlayersNumber() - 1), opponentsFieldsPane.getPrefHeight());
 
-            opponentField.setClip();
+            Label opponentName = new Label(player.getNickname());
+            opponentName.setAlignment(Pos.CENTER);
+            opponentName.setPrefSize(opponentInfo.getPrefWidth(), opponentInfo.getPrefHeight() / 10);
+            opponentName.setStyle(style);
+
+            HBox opponentData = new HBox(0);
+            opponentData.setAlignment(Pos.CENTER);
+            opponentData.setPrefSize(opponentInfo.getPrefWidth(), opponentInfo.getPrefHeight() * 9 / 10);
+
+            ScrollPane opponentField = new ScrollPane();
+            opponentField.setPrefSize(opponentData.getPrefWidth() * 9 / 10, opponentData.getPrefHeight());
+            opponentField.setPannable(false);
+            drawField(opponentField, player, false);
+
+            VBox opponentStats = new VBox(0);
+            opponentStats.setAlignment(Pos.CENTER);
+            opponentStats.setPrefSize(opponentData.getPrefWidth() / 10, opponentData.getPrefHeight());
+            for (var resourceEntry : player.getOwnedResources().entrySet()) {
+                //TODO: dopo aggiungeremo le immaginette o le icone o le emoji che al momento non abbiamo
+                Label resourceInfo = new Label(resourceEntry.getKey().SYMBOL + " x " + resourceEntry.getValue());
+                resourceInfo.setAlignment(Pos.CENTER);
+                resourceInfo.setPrefSize(opponentStats.getPrefWidth(), opponentStats.getPrefHeight());
+                resourceInfo.setStyle(style);
+                opponentStats.getChildren().add(resourceInfo);
+            }
 
             //FIXME: divergenza con la TUI che chiama un metodo del viewState...
-            opponentField.setOnMouseClicked((event) -> {
-                showField(player);
-            });
+            opponentField.setOnMouseClicked((event) -> showField(player));
 
-            opponentInfo.getChildren().addAll(opponentStats, opponentField);*/
+            opponentData.getChildren().addAll(opponentStats, opponentField);
+            opponentInfo.getChildren().addAll(opponentName, opponentData);
             opponentsFieldsPane.getChildren().add(opponentInfo);
         }
     }
@@ -759,6 +813,7 @@ public class GUIView extends View {
         {
             //TODO: maybe GridPane and padding?
             VBox deckVBox = (VBox) stage.getScene().lookup("#deckAndVisiblePane");
+            // deckVBox.setSpacing(10);
 
             //TODO. make vbox and hbox static and clear and refresh only the content
             deckVBox.getChildren().clear();
@@ -793,7 +848,7 @@ public class GUIView extends View {
             }
 
             // HBox for gold cards
-            HBox goldHBox = new HBox(20);
+            HBox goldHBox = new HBox(10);
             goldHBox.setAlignment(Pos.CENTER);
             goldHBox.setPrefSize(deckVBox.getPrefWidth(), deckVBox.getPrefHeight() / 3);
 
@@ -820,7 +875,7 @@ public class GUIView extends View {
             }
 
             // HBox for objective cards
-            HBox objectiveHBox = new HBox(20);
+            HBox objectiveHBox = new HBox(10);
             objectiveHBox.setAlignment(Pos.CENTER);
             objectiveHBox.setPrefSize(deckVBox.getPrefWidth(), deckVBox.getPrefHeight() / 3);
 
@@ -856,6 +911,7 @@ public class GUIView extends View {
             // Label playerNameLabel = new Label();
 
             ScrollPane fieldPane = new ScrollPane();
+            fieldPane.setPannable(true);
             fieldPane.setPrefSize(840, 600);
             //TODO: ??? fieldPane.setFitToHeight();
             drawField(fieldPane, player, false);
