@@ -17,7 +17,7 @@ public class ClientPlayer extends Player implements Serializable {
     /**
      * The field of this player
      */
-    private final LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> PLACED_CARDS;
+    private LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> placedCards;
     /**
      * The positions where this player can currently place new cards
      */
@@ -34,7 +34,7 @@ public class ClientPlayer extends Player implements Serializable {
     public ClientPlayer(Player player){
         super(player);
         this.ownedResources = new EnumMap<>(Resource.class);
-        this.PLACED_CARDS = new LinkedHashMap<>();
+        this.placedCards = new LinkedHashMap<>();
         this.openCorners = new ArrayList<>();
         this.points = 0;
     }
@@ -48,11 +48,11 @@ public class ClientPlayer extends Player implements Serializable {
     }
 
     public LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> getPlacedCards(){
-        return PLACED_CARDS; //TODO: copia?
+        return placedCards; //TODO: copia?
     }
 
     public void placeCard(GenericPair<Integer, Integer> coordinates, ClientCard card, Side playedSide){
-        PLACED_CARDS.put(coordinates, new GenericPair<>(card, playedSide));
+        placedCards.put(coordinates, new GenericPair<>(card, playedSide));
     }
 
     public List<GenericPair<Integer, Integer>> getOpenCorners() {

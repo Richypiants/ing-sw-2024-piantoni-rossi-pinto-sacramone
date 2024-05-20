@@ -246,10 +246,6 @@ public class Game extends GameLobby {
 
     public ClientGame generateDTO(InGamePlayer receiver){
         return new ClientGame(this, receiver);
-        //TODO: create the DTO from the current class, we also need DTOs for creating ClientPlayer and ClientCard.
-        /*    public ClientGame(int maxPlayers, List<ClientPlayer > players, ArrayList< ClientCard > ownHand,
-                ClientCard[] placedResourceCards, ClientCard[] placedGoldCards,
-                ClientCard[] commonObjectives, ClientCard ownObjective, int currentRound){*/
     }
 }
 

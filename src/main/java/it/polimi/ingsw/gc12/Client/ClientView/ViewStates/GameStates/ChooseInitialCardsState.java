@@ -20,7 +20,11 @@ public class ChooseInitialCardsState extends GameScreenState{
     @Override
     public void executeState() {
         super.executeState();
-        ClientController.getInstance().view.showInitialCardsChoice();
+
+        if(ClientController.getInstance().viewModel.getGame().getThisPlayer().getPlacedCards().containsKey(new GenericPair<>(0,0)))
+            ClientController.getInstance().view.gameScreen();
+        else
+            ClientController.getInstance().view.showInitialCardsChoice();
     }
 
     @Override

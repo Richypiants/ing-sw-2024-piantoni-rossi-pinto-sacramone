@@ -4,6 +4,8 @@ import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.io.Serializable;
 import java.util.*;
@@ -30,9 +32,8 @@ public class ClientGame extends GameLobby implements Serializable {
     private int currentRound;
     private int currentPlayerIndex;
     private final List<String> chatLog;
-    /**
-     *
-     */
+
+    private LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>> temporaryReceiverField;
 
     //TODO: costruire scoreboard
     public ClientGame(Game game, InGamePlayer myself) {
@@ -44,6 +45,12 @@ public class ClientGame extends GameLobby implements Serializable {
         Map<Integer, ClientCard> clientCards = ServerController.getInstance().clientCardsList;
 
         this.MYSELF = getPlayers().stream().filter((player) -> player.getNickname().equals(myself.getNickname())).findAny().orElseThrow();
+
+        LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>> receiverField = new LinkedHashMap<>();
+        for(var thisPlayerFieldEntry : myself.getPlacedCards().sequencedEntrySet())
+            receiverField.put(thisPlayerFieldEntry.getKey(), new GenericPair<>(thisPlayerFieldEntry.getValue().getX().ID, thisPlayerFieldEntry.getValue().getY()));
+
+        this.temporaryReceiverField = receiverField;
         this.OWN_HAND = new ArrayList<>();
         this.PLACED_RESOURCE_CARDS = Arrays.stream(game.getPlacedResources())
                 .map((card) -> clientCards.get(card.ID))
@@ -61,21 +68,6 @@ public class ClientGame extends GameLobby implements Serializable {
         this.currentPlayerIndex = -1;
         this.chatLog = new ArrayList<>();
     }
-
-    //FIXME: useless??? remove...
-    /*public ClientGame(int maxPlayers, List<ClientPlayer> players, ArrayList<ClientCard> ownHand,
-                      ClientCard[] placedResourceCards, ClientCard[] placedGoldCards,
-                      ClientCard[] commonObjectives, ClientCard ownObjective, int currentRound){
-        super(maxPlayers, players);
-        this.OWN_HAND = ownHand;
-        this.PLACED_RESOURCE_CARDS = placedResourceCards;
-        this.PLACED_GOLD_CARDS = placedGoldCards;
-        this.COMMON_OBJECTIVES = commonObjectives;
-        this.ownObjective = ownObjective;
-        this.currentRound = currentRound;
-        this.chatLog = new ArrayList<>();
-    }
-    */
 
     /**
      * Returns the player who is currently playing
@@ -106,6 +98,10 @@ public class ClientGame extends GameLobby implements Serializable {
         OWN_HAND.remove(card);
     }
 
+    //TODO: Maybe move as an attribute of RestoreGameCommand
+    public LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>> getTemporaryReceiverField(){
+        return this.temporaryReceiverField;
+    }
     /**
      * Returns the ResourceCards placed on the table
      */

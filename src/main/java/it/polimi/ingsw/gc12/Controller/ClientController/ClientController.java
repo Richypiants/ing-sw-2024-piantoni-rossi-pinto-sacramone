@@ -113,8 +113,11 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public void restoreGame(ClientGame gameDTO, String currentState){
+        for(var fieldEntry: gameDTO.getTemporaryReceiverField().sequencedEntrySet())
+            gameDTO.getThisPlayer().placeCard( fieldEntry.getKey(), cardsList.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
+
         viewModel.joinLobbyOrGame(viewModel.getCurrentLobbyUUID(), gameDTO);
-        //TODO: decide which game state
+
         switch(currentState){
             case "initialState" -> viewState = new ChooseInitialCardsState();
             case "objectiveState" -> viewState = new ChooseObjectiveCardsState();
