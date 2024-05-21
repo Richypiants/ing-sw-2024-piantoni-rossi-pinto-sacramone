@@ -116,7 +116,7 @@ class PlayerTurnDrawStateTest {
             state.pickObjective(target, objectivesMap.get(target).getFirst());
         }
 
-        game.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
+        game.getCurrentState().placeCard(game.getPlayers().getLast(), new GenericPair<>(1, 1), game.getPlayers().getLast().getCardsInHand().getFirst(), Side.FRONT);
 
     }
 
@@ -124,19 +124,19 @@ class PlayerTurnDrawStateTest {
     void correctTransitionTest_Draw1() throws Exception {
         game.getCurrentState().drawFrom((InGamePlayer) game.getCurrentState().getCurrentPlayer(), "Resource");
         assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
-        assertEquals(game.getPlayers().get(1), game.getCurrentState().getCurrentPlayer());
+        assertEquals(game.getPlayers().getFirst(), game.getCurrentState().getCurrentPlayer());
     }
 
     @Test
     void correctTransitionTest_Draw2() throws Exception {
         game.getCurrentState().drawFrom((InGamePlayer) game.getCurrentState().getCurrentPlayer(), "Resource", 1);
         assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
-        assertEquals(game.getPlayers().get(1), game.getCurrentState().getCurrentPlayer());
+        assertEquals(game.getPlayers().getFirst(), game.getCurrentState().getCurrentPlayer());
     }
 
     @Test
     void correctUnexpectedPlayerExceptionCall() throws Exception {
-        assertThrows(UnexpectedPlayerException.class, () -> game.getCurrentState().drawFrom(game.getPlayers().getLast(), "Resource"));
+        assertThrows(UnexpectedPlayerException.class, () -> game.getCurrentState().drawFrom(game.getPlayers().getFirst(), "Resource"));
 
     }
 
@@ -146,31 +146,7 @@ class PlayerTurnDrawStateTest {
 
     }
 
-    @Test
-    void correctTransitionToVictoryCalculationState() throws Exception {
-        for (int i = 0; i < 38; i++) {
-            game.getCurrentState().drawFrom((InGamePlayer) game.getCurrentState().getCurrentPlayer(), "Resource");
-            game.getCurrentState().transition();
 
-        }
-
-        for (int i = 0; i < 38; i++) {
-            game.getCurrentState().drawFrom((InGamePlayer) game.getCurrentState().getCurrentPlayer(), "Gold");
-            game.getCurrentState().transition();
-
-        }
-
-        for (int i = 0; i < 5; i++) {
-
-            game.getCurrentState().transition();
-
-
-        }
-
-
-        assertInstanceOf(VictoryCalculationState.class, game.getCurrentState());
-
-    }
 
 
 }

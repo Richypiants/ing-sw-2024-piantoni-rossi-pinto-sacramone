@@ -1,0 +1,29 @@
+#scoreboardPane {
+    -fx-pref-width: 21.09; /* 270 / 1280 * 100 = 21.09% */
+    -fx-pref-height: 75; /* 540 / 720 * 100 = 75% */
+}
+
+#deckAndVisiblePane {
+    -fx-pref-width: 21.09; /* 270 / 1280 * 100 = 21.09% */
+    -fx-pref-height: 36.11; /* 260 / 720 * 100 = 36.11% */
+}
+
+#opponentsFieldsPane {
+    -fx-pref-width: 78.91; /* 1010 / 1280 * 100 = 78.91% */
+    -fx-pref-height: 34.72; /* 250 / 720 = 34.72% */
+}
+
+#ownFieldPane {
+    -fx-pref-width: 78.91; /* 1010 / 1280 * 100 = 78.91% */
+    -fx-pref-height: 48.61; /* 350 / 720 = 48.61% */
+}
+
+#handPane {
+    -fx-pref-width: 53.91; /* 690 / 1280 * 100 = 53.91% */
+    -fx-pref-height: 16.67; /* 120 / 720 = 16.67% */
+}
+
+#chatPane {
+    -fx-pref-width: 31.25; /* 400 / 1280 = 31.25% */
+    -fx-pref-height: 100; /* 720 / 720 = 100% */
+}

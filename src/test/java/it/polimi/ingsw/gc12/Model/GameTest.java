@@ -1,7 +1,10 @@
 package it.polimi.ingsw.gc12.Model;
 
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
+import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
+import it.polimi.ingsw.gc12.Model.GameStates.PlayerTurnPlayState;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,4 +75,22 @@ class GameTest {
         assertThrows(EmptyDeckException.class, () -> game.drawFrom(game.getPlacedGolds(), 0));
         assertThrows(EmptyDeckException.class, () -> game.drawFrom(game.getPlacedGolds(), 1));
     }
+
+    @Test
+    void peekFromTest() throws Throwable {
+        assertInstanceOf(PlayableCard.class, game.peekFrom(game.getResourceCardsDeck()));
+    }
+
+    @Test
+    void setStateTest() throws Throwable {
+        game.setState(new PlayerTurnPlayState(game, 1, 0));
+        assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
+    }
+
+    @Test
+    void generateDTOTest() throws Throwable {
+
+        assertInstanceOf(ClientGame.class, game.generateDTO(game.getPlayers().getFirst()));
+    }
+
 }

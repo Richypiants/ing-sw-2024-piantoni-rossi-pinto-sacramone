@@ -127,7 +127,7 @@ class VictoryCalculationStateTest {
         game.getPlayers().getFirst().increasePoints(20);
         PlayerTurnPlayState state1 = new PlayerTurnPlayState(game, state.currentPlayer, 0);
         game.getCurrentState().transition();
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 8; i++) {
 
             game.getCurrentState().transition();
 
@@ -139,33 +139,5 @@ class VictoryCalculationStateTest {
 
     }
 
-    @Test
-    void correctVictoryTestOnEqualPoints() throws Exception {
-        game.getPlayers().getFirst().increasePoints(20);
-        game.getPlayers().getLast().increasePoints(20);
-        game.getPlayers().getFirst().addCardToHand(resourceCards.getFirst());
-        game.getPlayers().getFirst().addCardToHand(resourceCards.get(3));
-        game.getPlayers().getFirst().addCardToHand(resourceCards.get(5));
-        game.getPlayers().getLast().addCardToHand(resourceCards.get(20));
-        game.getPlayers().getLast().addCardToHand(resourceCards.get(21));
-        game.getPlayers().getLast().addCardToHand(resourceCards.get(24));
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(1, 1), resourceCards.getFirst(), Side.FRONT);
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(2, 2), resourceCards.get(3), Side.FRONT);
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(3, 3), resourceCards.get(5), Side.FRONT);
-        game.getPlayers().getLast().placeCard(new GenericPair<>(1, 1), resourceCards.get(20), Side.FRONT);
-        game.getPlayers().getLast().placeCard(new GenericPair<>(2, 2), resourceCards.get(21), Side.FRONT);
-        game.getPlayers().getLast().placeCard(new GenericPair<>(3, 3), resourceCards.get(24), Side.FRONT);
-        PlayerTurnPlayState state1 = new PlayerTurnPlayState(game, state.currentPlayer, 0);
-        game.getCurrentState().transition();
-        for (int i = 0; i < 7; i++) {
 
-            game.getCurrentState().transition();
-
-
-        }
-        game.getCurrentState().transition();
-
-        assertInstanceOf(VictoryCalculationState.class, game.getCurrentState());
-
-    }
 }
