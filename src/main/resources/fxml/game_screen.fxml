@@ -1,32 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--> stylesheets="/style.css" <-->
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21">
-    <Button fx:id="chatButton" layoutX="1280.0" layoutY="360.0" mnemonicParsing="false" rotate="270.0" text="Chat"/>
-    <Button fx:id="leaveButton" layoutX="1180.0" layoutY="680.0" mnemonicParsing="false" text="Leave Game"/>
-    <AnchorPane fx:id="scoreboardPane" prefHeight="540.0" prefWidth="270.0" style="-fx-background-color: blue;">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1"
+            maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            xmlns="http://javafx.com/javafx/21">
 
+    <Button fx:id="chatButton" mnemonicParsing="false" rotate="270.0" text="Chat"/>
+    <Button fx:id="leaveButton" mnemonicParsing="false" text="Leave Game"/>
+    <AnchorPane fx:id="scoreboardPane" style="-fx-background-color: blue;">
     </AnchorPane>
-    <VBox fx:id="deckAndVisiblePane" layoutY="540.0" prefHeight="260.0" prefWidth="270.0"
-                style="-fx-background-color: green;">
+    <VBox fx:id="deckAndVisiblePane" style="-fx-background-color: green;">
 
     </VBox>
-    <HBox fx:id="opponentsFieldsPane" layoutX="270.0" prefHeight="250.0" prefWidth="1010.0"
-                style="-fx-background-color: yellow;">
+    <HBox fx:id="opponentsFieldsPane" style="-fx-background-color: yellow;">
     </HBox>
-    <AnchorPane fx:id="ownFieldPane" layoutX="270.0" layoutY="250.0" prefHeight="350.0" prefWidth="1010.0"
-                style="-fx-background-color: red;">
+    <AnchorPane fx:id="ownFieldPane" style="-fx-background-color: red;">
 
     </AnchorPane>
-    <HBox fx:id="handPane" layoutX="430.0" layoutY="600.0" prefHeight="120.0" prefWidth="690.0"
-                style="-fx-background-color: purple;">
+    <HBox fx:id="handPane" style="-fx-background-color: purple;">
 
     </HBox>
-    <AnchorPane fx:id="chatPane" layoutX="880.0" prefHeight="720.0" prefWidth="400.0"
-                style="-fx-background-color: gray;" visible="false">
+    <AnchorPane fx:id="chatPane" style="-fx-background-color: gray;" visible="false">
         <HBox>
             <Button fx:id="hideButton" layoutX="846.0" layoutY="360.0" mnemonicParsing="false" rotate="270.0"
                     text="Hide"/>

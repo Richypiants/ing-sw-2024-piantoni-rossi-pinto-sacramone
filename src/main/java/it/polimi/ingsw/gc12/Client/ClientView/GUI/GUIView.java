@@ -63,6 +63,8 @@ public class GUIView extends View {
     @FXML
     Label error;
 
+    GenericPair<Double, Double> screenSizes;
+
     GenericPair<Double, Double> cardSizes = new GenericPair<>(100.0, 66.0);
     GenericPair<Double, Double> clippedPaneCenter = null;
     GenericPair<Double, Double> cornerScaleFactor = new GenericPair<>(2.0 / 9, 2.0 / 5);
@@ -77,6 +79,12 @@ public class GUIView extends View {
         if (SINGLETON_GUI_INSTANCE == null)
             SINGLETON_GUI_INSTANCE = new GUIView();
         return SINGLETON_GUI_INSTANCE;
+    }
+
+    private void setScreenSizes() {
+        Screen screen = Screen.getPrimary();
+        //FIXME: getVisualBounds() per quando non è in fullscreen?
+        this.screenSizes = new GenericPair<>(screen.getBounds().getWidth(), screen.getBounds().getHeight());
     }
 
     @Override
@@ -124,6 +132,8 @@ public class GUIView extends View {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        //FIXME: repeat this everywhere????
+        setScreenSizes();
 
         Scene scene = new Scene(root, 1280, 720);
         stage.setScene(scene);
@@ -384,23 +394,10 @@ public class GUIView extends View {
                 throw new RuntimeException(e);
             }
 
-//            double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
-//            double screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
-//
-//            HBox handPane = (HBox) stage.getScene().lookup("#handPane");
-//            handPane.setAlignment(Pos.BOTTOM_CENTER);
-//            handPane.setPrefHeight(screenHeight * 0.15);
-//            handPane.setPrefWidth(screenWidth * 0.55);
-
             stage.getScene().setRoot(root);
+            ((Pane) root).setPrefSize(screenSizes.getX(), screenSizes.getY());
 
             ClientPlayer thisPlayer = ClientController.getInstance().viewModel.getGame().getThisPlayer();
-
-            Button leaveButton = (Button) fxmlLoader.getNamespace().get("leaveButton");
-            leaveButton.setOnMouseClicked((event) -> ClientController.getInstance().viewState.quit());
-
-            Button chatButton = (Button) fxmlLoader.getNamespace().get("chatButton");
-            chatButton.setOnMouseClicked((event) -> showChat());
 
             showHand();
 
@@ -408,6 +405,8 @@ public class GUIView extends View {
 
             //TODO: estrarre in una funzione
             AnchorPane ownFieldPane = (AnchorPane) stage.getScene().lookup("#ownFieldPane");
+            ownFieldPane.setPrefSize(screenSizes.getX() * 75 / 100, screenSizes.getY() * 50 / 100);
+            ownFieldPane.relocate(screenSizes.getX() * 25 / 100, screenSizes.getY() * 35 / 100);
 
             ScrollPane ownFieldScrollPane = new ScrollPane();
             ownFieldScrollPane.setPannable(true);
@@ -417,6 +416,13 @@ public class GUIView extends View {
             Button zoomedOwnFieldButton = new Button("[]");
             zoomedOwnFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
             zoomedOwnFieldButton.setOnMouseClicked((event) -> showField(thisPlayer));
+
+            Button centerFieldButton = new Button("+");
+            centerFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            centerFieldButton.setOnMouseClicked((event) -> {
+                ownFieldScrollPane.setHvalue((ownFieldScrollPane.getHmax() + ownFieldScrollPane.getHmin()) / 2);
+                ownFieldScrollPane.setVvalue((ownFieldScrollPane.getVmax() + ownFieldScrollPane.getVmin()) / 2);
+            });
 
             VBox statsBox = new VBox(0);
             statsBox.setAlignment(Pos.CENTER);
@@ -430,19 +436,30 @@ public class GUIView extends View {
                 statsBox.getChildren().add(resourceInfo);
             }
 
-            ownFieldPane.getChildren().addAll(statsBox, ownFieldScrollPane, zoomedOwnFieldButton);
-            ownFieldScrollPane.relocate(ownFieldPane.getPrefWidth() / 5, 0);
+            ownFieldPane.getChildren().addAll(statsBox, ownFieldScrollPane, zoomedOwnFieldButton, centerFieldButton);
+            ownFieldScrollPane.relocate(ownFieldPane.getPrefWidth() / 10, 0);
             zoomedOwnFieldButton.relocate(ownFieldPane.getPrefWidth() - 50, 20);
-
+            centerFieldButton.relocate(ownFieldPane.getPrefWidth() - 50, 60);
             showOpponentsFieldsMiniaturized();
 
             showScoreboard();
+
+            Button leaveButton = (Button) fxmlLoader.getNamespace().get("leaveButton");
+            leaveButton.setOnMouseClicked((event) -> ClientController.getInstance().viewState.quit());
+            leaveButton.relocate(screenSizes.getX() * 90 / 100, screenSizes.getY() * 90 / 100);
+            leaveButton.toFront();
+
+            Button chatButton = (Button) fxmlLoader.getNamespace().get("chatButton");
+            chatButton.setOnMouseClicked((event) -> showChat());
+            chatButton.relocate(screenSizes.getX() * 95 / 100, screenSizes.getY() * 95 / 100);
+            chatButton.toFront();
         });
     }
 
     private void showScoreboard() {
         Platform.runLater(() -> {
             AnchorPane scoreboardPane = (AnchorPane) stage.getScene().lookup("#scoreboardPane");
+            scoreboardPane.setPrefSize(screenSizes.getX() * 25 / 100, screenSizes.getY() * 75 / 100);
             scoreboardPane.setStyle("-fx-background-image: url('/images/scoreboard.png'); -fx-background-size: stretch;");
 
             // Try with a circle
@@ -626,6 +643,9 @@ public class GUIView extends View {
         Platform.runLater(() -> {
             //TODO: maybe perform chatPane initialization only at the start of a game instead of everytime?
             AnchorPane chatPane = (AnchorPane) stage.getScene().lookup("#chatPane");
+            chatPane.setPrefSize(screenSizes.getX() * 30 / 100, screenSizes.getY());
+            chatPane.relocate(screenSizes.getX() * 70 / 100, 0);
+
             ScrollPane chatScrollPane = (ScrollPane) stage.getScene().lookup("#chatScrollPane");
             VBox messagesBox = (VBox) chatPane.lookup("#messagesBox");
             ComboBox<String> receiverNicknameSelector = (ComboBox<String>) chatPane.lookup("#receiverSelector");
@@ -672,6 +692,8 @@ public class GUIView extends View {
     //TODO: centrare l'opponentField sulla carta nuova appena piazzata?
     public void showOpponentsFieldsMiniaturized() {
         HBox opponentsFieldsPane = (HBox) stage.getScene().lookup("#opponentsFieldsPane");
+        opponentsFieldsPane.setPrefSize(screenSizes.getX() * 75 / 100, screenSizes.getY() * 35 / 100);
+        opponentsFieldsPane.relocate(screenSizes.getX() * 25 / 100, 0);
 
         ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
 
@@ -692,6 +714,7 @@ public class GUIView extends View {
             opponentData.setAlignment(Pos.CENTER);
             opponentData.setPrefSize(opponentInfo.getPrefWidth(), opponentInfo.getPrefHeight() * 9 / 10);
 
+            //TODO: also add zoom button and center button here?
             ScrollPane opponentField = new ScrollPane();
             opponentField.setPrefSize(opponentData.getPrefWidth() * 9 / 10, opponentData.getPrefHeight());
             opponentField.setPannable(false);
@@ -811,6 +834,8 @@ public class GUIView extends View {
         Platform.runLater(() ->
                 {
                     HBox handPane = (HBox) stage.getScene().lookup("#handPane");
+                    handPane.setPrefSize(screenSizes.getX() * 50 / 100, screenSizes.getY() * 15 / 100);
+                    handPane.relocate(screenSizes.getX() * 40 / 100, screenSizes.getY() * 85 / 100);
                     handPane.setAlignment(Pos.CENTER);
 
                     double handPaneHeight = handPane.getPrefHeight();
@@ -897,6 +922,8 @@ public class GUIView extends View {
         {
             //TODO: maybe GridPane and padding?
             VBox deckVBox = (VBox) stage.getScene().lookup("#deckAndVisiblePane");
+            deckVBox.setPrefSize(screenSizes.getX() * 25 / 100, screenSizes.getY() * 25 / 100);
+            deckVBox.relocate(0, screenSizes.getY() * 75 / 100);
             // deckVBox.setSpacing(10);
 
             //TODO. make vbox and hbox static and clear and refresh only the content
@@ -911,7 +938,7 @@ public class GUIView extends View {
 
             ImageView resourceDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckResourceCard().GUI_SPRITES.get(Side.BACK))));
 
-            resourceDeck.setFitWidth(resourceHBox.getPrefWidth() / 3);
+            resourceDeck.setFitWidth(cardSizes.getX());
             resourceDeck.setPreserveRatio(true);
             resourceDeck.setOnMouseClicked((event) ->
                     ClientController.getInstance().viewState.drawFromDeck("Resource")
@@ -920,7 +947,7 @@ public class GUIView extends View {
 
             for (int i = 0; i < thisGame.getPlacedResources().length; i++) {
                 ImageView resource = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedResources()[i].GUI_SPRITES.get(Side.FRONT))));
-                resource.setFitWidth(resourceHBox.getPrefWidth() / 3);
+                resource.setFitWidth(cardSizes.getX());
                 resource.setPreserveRatio(true);
 
                 int finalI = i + 1;
@@ -938,7 +965,7 @@ public class GUIView extends View {
 
             ImageView goldDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckGoldCard().GUI_SPRITES.get(Side.BACK))));
 
-            goldDeck.setFitWidth(goldHBox.getPrefWidth() / 3);
+            goldDeck.setFitWidth(cardSizes.getX());
             goldDeck.setPreserveRatio(true);
             goldDeck.setOnMouseClicked((event) ->
                     ClientController.getInstance().viewState.drawFromDeck("Gold")
@@ -947,7 +974,7 @@ public class GUIView extends View {
 
             for (int i = 0; i < thisGame.getPlacedGold().length; i++) {
                 ImageView gold = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedGold()[i].GUI_SPRITES.get(Side.FRONT))));
-                gold.setFitWidth(goldHBox.getPrefWidth() / 3);
+                gold.setFitWidth(cardSizes.getX());
                 gold.setPreserveRatio(true);
 
                 int finalI = i + 1;
@@ -965,14 +992,14 @@ public class GUIView extends View {
 
             for (int i = 0; i < thisGame.getCommonObjectives().length; i++) {
                 ImageView commonObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getCommonObjectives()[i].GUI_SPRITES.get(Side.FRONT))));
-                commonObjective.setFitWidth(objectiveHBox.getPrefWidth() / 3);
+                commonObjective.setFitWidth(cardSizes.getX());
                 commonObjective.setPreserveRatio(true);
 
                 objectiveHBox.getChildren().add(commonObjective);
             }
 
             ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getOwnObjective().GUI_SPRITES.get(Side.FRONT))));
-            secretObjective.setFitWidth(objectiveHBox.getPrefWidth() / 3);
+            secretObjective.setFitWidth(cardSizes.getX());
             secretObjective.setPreserveRatio(true);
 
             objectiveHBox.getChildren().add(secretObjective);
@@ -988,7 +1015,7 @@ public class GUIView extends View {
     public void showField(ClientPlayer player) {
         Platform.runLater(() ->
         {
-            VBox popupContent = new VBox();
+            AnchorPane popupContent = new AnchorPane();
             popupContent.setPrefSize(960, 660);
 
             //TODO: add label with name
@@ -1000,6 +1027,16 @@ public class GUIView extends View {
             //TODO: ??? fieldPane.setFitToHeight();
             drawField(fieldPane, player, false);
             popupContent.getChildren().add(/*playerNameLabel,*/ fieldPane);
+
+            Button centerFieldButton = new Button("+");
+            centerFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            centerFieldButton.setOnMouseClicked((event) -> {
+                fieldPane.setHvalue((fieldPane.getHmax() + fieldPane.getHmin()) / 2);
+                fieldPane.setVvalue((fieldPane.getVmax() + fieldPane.getVmin()) / 2);
+            });
+
+            popupContent.getChildren().add(centerFieldButton);
+            centerFieldButton.relocate(popupContent.getPrefWidth() - 50, 60);
 
             OverlayPopup overlayPopup = drawOverlayPopup(960, 660, popupContent, true);
             overlayPopup.show(stage);
