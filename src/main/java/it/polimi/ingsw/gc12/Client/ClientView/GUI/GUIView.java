@@ -135,7 +135,8 @@ public class GUIView extends View {
         //FIXME: repeat this everywhere????
         setScreenSizes();
 
-        Scene scene = new Scene(root, 1280, 720);
+        Screen screen = Screen.getPrimary();
+        Scene scene = new Scene(root, screen.getVisualBounds().getWidth(), screen.getVisualBounds().getHeight());
         stage.setScene(scene);
 
         stage.addEventHandler(KeyEvent.KEY_PRESSED, (event) -> {
@@ -395,7 +396,7 @@ public class GUIView extends View {
             }
 
             stage.getScene().setRoot(root);
-            ((Pane) root).setPrefSize(screenSizes.getX(), screenSizes.getY());
+            ((Pane) root).setPrefSize(screenSizes.getX() * 0.98, screenSizes.getY() * 0.98);
 
             ClientPlayer thisPlayer = ClientController.getInstance().viewModel.getGame().getThisPlayer();
 
@@ -540,14 +541,12 @@ public class GUIView extends View {
 
     }
 
-    public OverlayPopup drawOverlayPopup(double width, double height, Pane popupContent, boolean isCloseable) {
+    public OverlayPopup drawOverlayPopup(Pane popupContent, boolean isCloseable) {
         OverlayPopup overlayPopup = new OverlayPopup();
-        overlayPopup.setWidth(width);
-        overlayPopup.setHeight(height);
         //TODO: aggiungere per quanto possibile gli elementi dei popup all'fxml?
 
         AnchorPane content = new AnchorPane();
-        content.setPrefSize(width, height);
+        content.setPrefSize(popupContent.getPrefWidth(), popupContent.getPrefHeight());
         content.getChildren().add(popupContent);
 
         if (isCloseable) {
@@ -560,6 +559,7 @@ public class GUIView extends View {
         }
 
         overlayPopup.getContent().add(content);
+        overlayPopup.setWidth(7);
         return overlayPopup;
     }
 
@@ -714,12 +714,6 @@ public class GUIView extends View {
             opponentData.setAlignment(Pos.CENTER);
             opponentData.setPrefSize(opponentInfo.getPrefWidth(), opponentInfo.getPrefHeight() * 9 / 10);
 
-            //TODO: also add zoom button and center button here?
-            ScrollPane opponentField = new ScrollPane();
-            opponentField.setPrefSize(opponentData.getPrefWidth() * 9 / 10, opponentData.getPrefHeight());
-            opponentField.setPannable(false);
-            drawField(opponentField, player, false);
-
             VBox opponentStats = new VBox(0);
             opponentStats.setAlignment(Pos.CENTER);
             opponentStats.setPrefSize(opponentData.getPrefWidth() / 10, opponentData.getPrefHeight());
@@ -732,8 +726,28 @@ public class GUIView extends View {
                 opponentStats.getChildren().add(resourceInfo);
             }
 
-            //FIXME: divergenza con la TUI che chiama un metodo del viewState...
-            opponentField.setOnMouseClicked((event) -> showField(player));
+            AnchorPane opponentField = new AnchorPane();
+            opponentField.setPrefSize(opponentData.getPrefWidth() * 9 / 10, opponentData.getPrefHeight());
+
+            ScrollPane opponentScrollField = new ScrollPane();
+            opponentScrollField.setPrefSize(opponentField.getPrefWidth(), opponentField.getPrefHeight());
+            opponentScrollField.setPannable(true);
+            drawField(opponentScrollField, player, false);
+
+            Button zoomedOwnFieldButton = new Button("[]");
+            zoomedOwnFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            zoomedOwnFieldButton.setOnMouseClicked((event) -> showField(player));
+
+            Button centerFieldButton = new Button("+");
+            centerFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            centerFieldButton.setOnMouseClicked((event) -> {
+                opponentScrollField.setHvalue((opponentScrollField.getHmax() + opponentScrollField.getHmin()) / 2);
+                opponentScrollField.setVvalue((opponentScrollField.getVmax() + opponentScrollField.getVmin()) / 2);
+            });
+
+            opponentField.getChildren().addAll(opponentScrollField, zoomedOwnFieldButton, centerFieldButton);
+            zoomedOwnFieldButton.relocate(opponentField.getPrefWidth() - 50, 20);
+            centerFieldButton.relocate(opponentField.getPrefWidth() - 50, 60);
 
             opponentData.getChildren().addAll(opponentStats, opponentField);
             opponentInfo.getChildren().addAll(opponentName, opponentData);
@@ -770,7 +784,7 @@ public class GUIView extends View {
             initialChoiceHBox.getChildren().addAll(frontCardView, backCardView);
             initialCardsChoiceVBox.getChildren().addAll(cardLabel, initialChoiceHBox/*, aggiungere scritta "Scegli carta iniziale: "*/);
 
-            OverlayPopup createdPopup = drawOverlayPopup(popupWidth, popupHeight, initialCardsChoiceVBox, false);
+            OverlayPopup createdPopup = drawOverlayPopup(initialCardsChoiceVBox, false);
 
             frontCardView.setOnMouseClicked((event) -> {
                 ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 1, Side.FRONT);
@@ -805,7 +819,7 @@ public class GUIView extends View {
             ArrayList<ClientCard> objectivesSelection = ((ChooseObjectiveCardsState) ClientController.getInstance()
                     .getCurrentState()).objectivesSelection;
 
-            OverlayPopup createdPopup = drawOverlayPopup(popupWidth, popupHeight, objectiveChoiceVBox, false);
+            OverlayPopup createdPopup = drawOverlayPopup(objectiveChoiceVBox, false);
 
             for (int i = 0; i < objectivesSelection.size(); i++) {
                 ClientCard objectiveCard = objectivesSelection.get(i);
@@ -868,8 +882,8 @@ public class GUIView extends View {
                         backCardView.setPreserveRatio(true);
 
                         //TODO: vs setLayoutX/Y ?
-                        frontCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.2);
-                        backCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.2);
+                        frontCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.05);
+                        backCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.05);
 
 //                        frontCardView.setLayoutX((pane.getPrefWidth() - frontCardView.getFitWidth()) / 2);
 //                        frontCardView.setLayoutY((pane.getPrefHeight() - frontCardView.getFitHeight()) / 2);
@@ -1016,14 +1030,14 @@ public class GUIView extends View {
         Platform.runLater(() ->
         {
             AnchorPane popupContent = new AnchorPane();
-            popupContent.setPrefSize(960, 660);
+            popupContent.setPrefSize(screenSizes.getX() * 70 / 100, screenSizes.getY() * 80 / 100);
 
             //TODO: add label with name
             // Label playerNameLabel = new Label();
 
             ScrollPane fieldPane = new ScrollPane();
             fieldPane.setPannable(true);
-            fieldPane.setPrefSize(840, 600);
+            fieldPane.setPrefSize(popupContent.getPrefWidth() * 80 / 100, popupContent.getPrefHeight() * 80 / 100);
             //TODO: ??? fieldPane.setFitToHeight();
             drawField(fieldPane, player, false);
             popupContent.getChildren().add(/*playerNameLabel,*/ fieldPane);
@@ -1038,7 +1052,9 @@ public class GUIView extends View {
             popupContent.getChildren().add(centerFieldButton);
             centerFieldButton.relocate(popupContent.getPrefWidth() - 50, 60);
 
-            OverlayPopup overlayPopup = drawOverlayPopup(960, 660, popupContent, true);
+            OverlayPopup overlayPopup = drawOverlayPopup(popupContent, true);
+            overlayPopup.setX(screenSizes.getX() * 15 / 100);
+            overlayPopup.setY(screenSizes.getY() * 10 / 100);
             overlayPopup.show(stage);
         });
     }

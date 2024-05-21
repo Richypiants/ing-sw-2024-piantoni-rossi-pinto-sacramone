@@ -19,8 +19,7 @@ public class OverlayPopup extends Popup {
         darkening.setOpacity(0.8);
     }
 
-    @Override
-    public void show(Window window) {
+    private void darken(Window window) {
         Node root = window.getScene().getRoot();
 
         if (root instanceof Pane pane) {
@@ -28,6 +27,11 @@ public class OverlayPopup extends Popup {
             darkening.setPrefSize(window.getWidth(), window.getHeight());
             pane.getChildren().add(darkening);
         }
+    }
+
+    @Override
+    public void show(Window window) {
+        darken(window);
         super.show(window);
     }
 
