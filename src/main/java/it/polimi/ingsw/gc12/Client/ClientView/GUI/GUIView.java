@@ -26,6 +26,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
@@ -433,8 +434,87 @@ public class GUIView extends View {
             ownFieldScrollPane.relocate(ownFieldPane.getPrefWidth() / 5, 0);
             zoomedOwnFieldButton.relocate(ownFieldPane.getPrefWidth() - 50, 20);
 
-
             showOpponentsFieldsMiniaturized();
+
+            showScoreboard();
+        });
+    }
+
+    private void showScoreboard() {
+        Platform.runLater(() -> {
+            AnchorPane scoreboardPane = (AnchorPane) stage.getScene().lookup("#scoreboardPane");
+            scoreboardPane.setStyle("-fx-background-image: url('/images/scoreboard.png'); -fx-background-size: stretch;");
+
+            // Try with a circle
+            Circle redCircle = new Circle();
+
+            //TODO: Find correct coordinates of each point cell
+            ArrayList<GenericPair<Double, Double>> relativeOffsetScaleFactors = new ArrayList<>();
+
+            // relative coordinates
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.187, 0.8918)); // 0
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.8915)); // 1
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.658, 0.8915)); // 2
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.783)); // 3
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.783)); // 4
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.305, 0.783)); // 5
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.783)); // 6
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.6755)); // 7
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.303, 0.6755)); // 8
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.6755)); // 9
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.6755)); // 10
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.568)); // 11
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.568)); // 12
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.303, 0.568)); // 13
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.568)); // 14
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.4605)); // 15
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.303, 0.4605)); // 16
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.4605)); // 17
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.4605)); // 18
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.353)); // 19
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.30)); // 20
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.353)); // 21
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.245)); // 22
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.1375)); // 23
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.205, 0.05)); // 24
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.03)); // 25
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.639, 0.05)); // 26
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.1375)); // 27
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.245)); // 28
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.1623)); // 29
+
+            ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
+
+            /*for(var player : thisGame.getPlayers().stream().sorted(Comparator.comparingInt(ClientPlayer::getPoints)).toList().reversed()) {
+                GenericPair<Double, Double> scaleFactor = relativeOffsetScaleFactors.get(player.getPoints());
+                ImageView token = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/" + player.getColor().name().toLowerCase())));
+                token.setFitHeight(240);
+                token.setPreserveRatio(true);
+
+                scoreboardPane.getChildren().add(token);
+                token.relocate(scoreboardPane.getPrefWidth() * scaleFactor.getX(),
+                         scoreboardPane.getPrefHeight() * scaleFactor.getY() + stackOffset * token.getFitHeight() / stdHeight);
+            }*/
+
+            GenericPair<Double, Double> scaleFactorCircle = relativeOffsetScaleFactors.get(0);
+            Circle circle = new Circle();
+            circle.setRadius((230 * scoreboardPane.getPrefWidth() / 1575) / 2);
+            circle.setFill(Color.RED);
+
+            scoreboardPane.getChildren().add(circle);
+            circle.relocate(scoreboardPane.getPrefWidth() * scaleFactorCircle.getX(),
+                    scoreboardPane.getPrefHeight() * scaleFactorCircle.getY());
+
+            for (int i = 1; i < 30; i++) {
+                GenericPair<Double, Double> scaleFactor = relativeOffsetScaleFactors.get(i);
+                ImageView token = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/red.png")));
+                token.setFitWidth(248 * scoreboardPane.getPrefWidth() / 1575);
+                token.setPreserveRatio(true);
+
+                scoreboardPane.getChildren().add(token);
+                token.relocate(scoreboardPane.getPrefWidth() * scaleFactor.getX(),
+                        scoreboardPane.getPrefHeight() * scaleFactor.getY());
+            }
         });
     }
 
@@ -759,30 +839,20 @@ public class GUIView extends View {
                         frontCardView.setFitWidth(pane.getPrefWidth() * 0.7);
                         frontCardView.setPreserveRatio(true);
 
-                        backCardView.setFitWidth(pane.getPrefWidth() * 0.5);
+                        backCardView.setFitWidth(pane.getPrefWidth() * 0.7);
                         backCardView.setPreserveRatio(true);
 
                         //TODO: vs setLayoutX/Y ?
-                        frontCardView.setX(pane.getPrefWidth() * 0.2);
-                        frontCardView.setY(pane.getPrefHeight() * 0.2);
-                        backCardView.setX(pane.getPrefWidth() * 0.4);
-                        backCardView.setY(pane.getPrefHeight() * 0.1);
+                        frontCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.2);
+                        backCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.2);
 
 //                        frontCardView.setLayoutX((pane.getPrefWidth() - frontCardView.getFitWidth()) / 2);
 //                        frontCardView.setLayoutY((pane.getPrefHeight() - frontCardView.getFitHeight()) / 2);
 //                        backCardView.setLayoutX((pane.getPrefWidth() - backCardView.getFitWidth()) / 2);
 //                        backCardView.setLayoutY((pane.getPrefHeight() - backCardView.getFitHeight()) / 2);
 
-                        backCardView.setOnMouseClicked((event) -> {
-                            frontCardView.toBack();
-                            backCardView.toFront();
-                        });
-
-
-                        frontCardView.setOnMouseClicked((event) -> {
-                            backCardView.toBack();
-                            frontCardView.toFront();
-                        });
+                        backCardView.setOnMouseClicked((event) -> frontCardView.toFront());
+                        frontCardView.setOnMouseClicked((event) -> backCardView.toFront());
 
                         //TODO: Complete implementation of drag-and-drop of cards with all DragEvents specified, and this is horrible...
                         int inHandPosition = i + 1;
@@ -796,6 +866,20 @@ public class GUIView extends View {
                         });
 
                         frontCardView.setOnDragDone((event) -> {
+                            if (event.getTransferMode() == TransferMode.MOVE && event.isDropCompleted()) {
+                            }
+                            //TODO: visually clear card from hand?
+                        });
+
+                        backCardView.setOnDragDetected((event) -> {
+                            Dragboard cardDragboard = backCardView.startDragAndDrop(TransferMode.MOVE);
+                            cardDragboard.setDragView(backCardView.getImage(), cardSizes.getX() / 2, cardSizes.getY() / 2);
+                            ClipboardContent cardClipboard = new ClipboardContent();
+                            cardClipboard.put(placeCardDataFormat, new GenericPair<>(inHandPosition, Side.BACK));
+                            cardDragboard.setContent(cardClipboard);
+                        });
+
+                        backCardView.setOnDragDone((event) -> {
                             if (event.getTransferMode() == TransferMode.MOVE && event.isDropCompleted()) {
                             }
                             //TODO: visually clear card from hand?
@@ -926,7 +1010,6 @@ public class GUIView extends View {
     public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
         Platform.runLater(() ->
         {
-
         });
     }
 

@@ -7,10 +7,10 @@
             prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21">
     <Button fx:id="chatButton" layoutX="1280.0" layoutY="360.0" mnemonicParsing="false" rotate="270.0" text="Chat"/>
     <Button fx:id="leaveButton" layoutX="1180.0" layoutY="680.0" mnemonicParsing="false" text="Leave Game"/>
-    <AnchorPane fx:id="scoreboardPane" prefHeight="460.0" prefWidth="270.0" style="-fx-background-color: blue;">
+    <AnchorPane fx:id="scoreboardPane" prefHeight="540.0" prefWidth="270.0" style="-fx-background-color: blue;">
 
     </AnchorPane>
-    <VBox fx:id="deckAndVisiblePane" layoutY="460.0" prefHeight="260.0" prefWidth="270.0"
+    <VBox fx:id="deckAndVisiblePane" layoutY="540.0" prefHeight="260.0" prefWidth="270.0"
                 style="-fx-background-color: green;">
 
     </VBox>
