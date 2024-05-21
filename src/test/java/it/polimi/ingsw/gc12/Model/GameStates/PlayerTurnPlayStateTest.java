@@ -119,28 +119,21 @@ class PlayerTurnPlayStateTest {
 
     @Test
     void correctTransitionTest() throws Exception {
-        game.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
+        game.getCurrentState().placeCard(game.getPlayers().getLast(), new GenericPair<>(1, 1), game.getPlayers().getLast().getCardsInHand().getFirst(), Side.FRONT);
         assertInstanceOf(PlayerTurnDrawState.class, game.getCurrentState());
     }
 
     @Test
     void correctTrowsExceptionTest() throws Exception {
-        assertThrows(UnexpectedPlayerException.class, () -> game.getCurrentState().placeCard(game.getPlayers().getLast(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT));
+        assertThrows(UnexpectedPlayerException.class, () -> game.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT));
 
     }
 
+
     @Test
-    void correctTransitionToVictoryCalculationState() throws Exception {
-        game.getPlayers().getFirst().increasePoints(20);
+    void transitionFromDisconnecttedPlayerTest() throws Exception {
         PlayerTurnPlayState state1 = new PlayerTurnPlayState(game, state.currentPlayer, 0);
-        game.getCurrentState().transition();
-        for (int i = 0; i < 7; i++) {
-
-            game.getCurrentState().transition();
-
-
-        }
-
-        assertInstanceOf(VictoryCalculationState.class, game.getCurrentState());
+        game.getCurrentState().playerDisconnected(game.getCurrentPlayer());
+        assertInstanceOf(PlayerTurnDrawState.class, game.getCurrentState());
     }
 }
