@@ -19,7 +19,6 @@ public class AwaitingReconnectionState extends GameScreenState{
 
     @Override
     public void executeState() {
-        super.executeState();
         //TODO: Maybe print only the messages that notifies this particular situation?
         ClientController.getInstance().view.gameScreen();
     }

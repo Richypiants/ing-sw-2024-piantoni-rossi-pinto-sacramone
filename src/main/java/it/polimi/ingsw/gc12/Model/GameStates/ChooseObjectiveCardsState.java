@@ -76,7 +76,7 @@ public class ChooseObjectiveCardsState extends GameState {
         System.out.println("[SERVER]: Sending GameTransitionCommand to active clients in "+ GAME.toString());
         GAME.increaseTurn();
         nextPlayer();
-        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers(), GAME.getCurrentPlayer());
+        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
 
         GAME.setState(new PlayerTurnPlayState(GAME, currentPlayer, -1));
     }

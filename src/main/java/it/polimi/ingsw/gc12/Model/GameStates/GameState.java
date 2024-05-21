@@ -18,10 +18,11 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 public abstract class GameState { //TODO: make all exceptions extends RuntimeException so that you can cancel them from here
     protected final Game GAME;
     /**
-    The index which points to the player which is playing right now (starting from 0 when the game starts)
+    The index which points to the player which is playing right now (-1 when the game is in the setup phase)
      */
     protected int currentPlayer;
     protected int finalPhaseCounter;
+
     protected String state;
 
 
@@ -88,14 +89,14 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
     }
 
     public void playerDisconnected(InGamePlayer target){
-        //NOTHING TO DO?
+        //NOTHING TO DO? Can become abstract! (What to do in AwaitingReconnectionState... empty method)
     }
 
     public void transition() {
         persistence();
     }
 
-    protected static void notifyTransition(ArrayList<InGamePlayer> activePlayers, int turnNumber, ArrayList<InGamePlayer> players, InGamePlayer currentPlayer) {
+    protected static void notifyTransition(ArrayList<InGamePlayer> activePlayers, int turnNumber, int indexOfCurrentPlayer) {
         for (var targetPlayer : activePlayers) {
             //TODO: manage exceptions
             try {
@@ -105,7 +106,7 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
                         target,
                         new GameTransitionCommand(
                                 turnNumber,
-                                players.indexOf(currentPlayer)
+                                indexOfCurrentPlayer
                         )
                 );
             } catch (Exception e) {

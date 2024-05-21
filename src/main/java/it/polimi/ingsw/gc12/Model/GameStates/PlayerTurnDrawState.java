@@ -320,7 +320,7 @@ public class PlayerTurnDrawState extends GameState {
         }
 
         System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
-        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers(), GAME.getCurrentPlayer());
+        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
 
         GAME.setState(new PlayerTurnPlayState(GAME, currentPlayer, finalPhaseCounter));
     }

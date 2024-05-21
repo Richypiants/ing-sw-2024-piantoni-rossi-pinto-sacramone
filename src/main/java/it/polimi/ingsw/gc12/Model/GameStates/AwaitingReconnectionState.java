@@ -38,15 +38,11 @@ public class AwaitingReconnectionState extends GameState {
     }
 
     public void recoverGame(){
+        timer.cancel();
         terminateGame.cancel();
         GAME.setState(previousState);
 
-        for(InGamePlayer player : GAME.getActivePlayers()){
-            ServerController.getInstance().requestToClient(
-                    keyReverseLookup(ServerController.getInstance().players, player::equals),
-                    new GameTransitionCommand(GAME.getCurrentState().currentPlayer, GAME.getCurrentState().finalPhaseCounter)
-            );
-        }
+        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
     }
 
     public void cancelTimerTask(){

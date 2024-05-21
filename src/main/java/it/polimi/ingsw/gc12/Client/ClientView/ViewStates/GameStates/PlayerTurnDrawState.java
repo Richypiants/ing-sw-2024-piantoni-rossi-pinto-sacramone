@@ -25,12 +25,10 @@ public class PlayerTurnDrawState extends GameScreenState {
 
     @Override
     public void executeState() {
-        super.executeState();
         ClientController.getInstance().view.gameScreen();
     }
 
     public void restoreScreenState(){
-        super.executeState();
         ClientController.getInstance().view.gameScreen();
     }
 

@@ -61,7 +61,7 @@ public class PlayerTurnPlayState extends GameState {
         //TODO: send alert a tutti i giocatori che si è entrati nella fase finale?
 
         System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
-        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers(), GAME.getCurrentPlayer());
+        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
 
         GAME.setState(new PlayerTurnDrawState(GAME, currentPlayer, finalPhaseCounter));
 

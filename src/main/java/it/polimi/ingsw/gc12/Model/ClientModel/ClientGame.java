@@ -41,11 +41,12 @@ public class ClientGame extends GameLobby implements Serializable {
                 .toList());
 
         Map<Integer, ClientCard> clientCards = ServerController.getInstance().clientCardsList;
-
+        //FIXME: Check what is MYSELF pointing at, since we're just building it I think it is empty
         this.MYSELF = getPlayers().stream().filter((player) -> player.getNickname().equals(myself.getNickname())).findAny().orElseThrow();
         this.OWN_HAND = myself.getCardsInHand().stream()
                         .map((card) -> clientCards.get(card.ID))
                 .collect(Collectors.toCollection(ArrayList::new));
+        //TODO: we're not sending this player ownedResources?
         this.PLACED_RESOURCE_CARDS = Arrays.stream(game.getPlacedResources())
                 .map((card) -> clientCards.get(card.ID))
                 .toArray(ClientCard[]::new);

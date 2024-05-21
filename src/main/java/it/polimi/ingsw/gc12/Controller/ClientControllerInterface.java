@@ -17,7 +17,7 @@ public interface ClientControllerInterface extends ControllerInterface {
 
     void setNickname(String nickname);
 
-    void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD);
+    void restoreGame(UUID gameUUID, ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD);
 
     void setLobbies(Map<UUID, GameLobby> lobbies);
 

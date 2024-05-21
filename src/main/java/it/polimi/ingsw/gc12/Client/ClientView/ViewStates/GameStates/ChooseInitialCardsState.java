@@ -19,18 +19,13 @@ public class ChooseInitialCardsState extends GameScreenState{
 
     @Override
     public void executeState() {
-        super.executeState();
-
-        if(ClientController.getInstance().viewModel.getGame().getThisPlayer().getPlacedCards().containsKey(new GenericPair<>(0,0)))
-            ClientController.getInstance().view.gameScreen();
-        else
+        ClientController.getInstance().view.gameScreen();
+        if(!ClientController.getInstance().viewModel.getGame().getThisPlayer().getPlacedCards().containsKey(new GenericPair<>(0,0)))
             ClientController.getInstance().view.showInitialCardsChoice();
     }
 
     public void restoreScreenState(){
         //FIXME: For the moment this behaviour is handled by the executeState()
-        super.executeState();
-
         if(ClientController.getInstance().viewModel.getGame().getThisPlayer().getPlacedCards().containsKey(new GenericPair<>(0,0)))
             ClientController.getInstance().view.gameScreen();
         else

@@ -215,6 +215,7 @@ public class ServerController implements ServerControllerInterface {
                     ((AwaitingReconnectionState) targetGame.getCurrentState()).recoverGame();
 
                 requestToClient(sender, new RestoreGameCommand(
+                        keyReverseLookup(lobbiesAndGames, targetGame::equals),
                         targetGame.generateDTO((InGamePlayer) target),
                         targetGame.getCurrentState().getStringEquivalent(), //To let the client understand in which state it has to be recovered to.
                         targetGame.generateTemporaryFieldsToPlayers() //fields related to the players inGame.

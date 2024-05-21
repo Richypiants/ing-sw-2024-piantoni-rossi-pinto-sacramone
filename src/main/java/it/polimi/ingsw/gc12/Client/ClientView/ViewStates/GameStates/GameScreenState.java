@@ -13,9 +13,7 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 public abstract class GameScreenState extends ViewState {
 
     @Override
-    public void executeState() {
-        ClientController.getInstance().view.gameScreen();
-    }
+    public abstract void executeState();
 
     public abstract void restoreScreenState();
 

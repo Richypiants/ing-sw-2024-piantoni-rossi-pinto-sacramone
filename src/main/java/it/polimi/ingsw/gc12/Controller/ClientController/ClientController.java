@@ -113,27 +113,6 @@ public class ClientController implements ClientControllerInterface {
         viewState.updateNickname();
     }
 
-    public void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD){
-
-        for(var playerEntry : PLAYERS_FIELD.entrySet()) {
-            var clientPlayerInstance = gameDTO.getPlayers().stream()
-                    .filter( (player) -> player.getNickname().equals(playerEntry.getKey())).findAny().orElseThrow();
-
-            for (var fieldEntry : PLAYERS_FIELD.get(clientPlayerInstance.getNickname()).sequencedEntrySet())
-                gameDTO.getThisPlayer().placeCard(fieldEntry.getKey(), cardsList.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
-        }
-        viewModel.joinLobbyOrGame(viewModel.getCurrentLobbyUUID(), gameDTO);
-
-        switch(currentState){
-            case "initialState" -> viewState = new ChooseInitialCardsState();
-            case "objectiveState" -> viewState = new ChooseObjectiveCardsState();
-            case "playState" -> viewState = new PlayerTurnPlayState();
-            case "drawState" -> viewState = new PlayerTurnDrawState();
-        }
-
-        ((GameScreenState) viewState).restoreScreenState();
-    }
-
     public void setLobbies(Map<UUID, GameLobby> lobbies){
         viewModel.setLobbies(lobbies);
         if(!(viewState instanceof LeaderboardScreenState)) {
@@ -169,6 +148,27 @@ public class ClientController implements ClientControllerInterface {
         //FIXME: send clientGame directly?
 
         viewState = new ChooseInitialCardsState();
+    }
+
+    public void restoreGame(UUID gameUUID, ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD){
+
+        for(var playerEntry : PLAYERS_FIELD.entrySet()) {
+            var clientPlayerInstance = gameDTO.getPlayers().stream()
+                    .filter( (player) -> player.getNickname().equals(playerEntry.getKey())).findAny().orElseThrow();
+
+            for (var fieldEntry : PLAYERS_FIELD.get(clientPlayerInstance.getNickname()).sequencedEntrySet())
+                gameDTO.getThisPlayer().placeCard(fieldEntry.getKey(), cardsList.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
+        }
+        viewModel.joinLobbyOrGame(gameUUID, gameDTO);
+
+        switch(currentState){
+            case "initialState" -> viewState = new ChooseInitialCardsState();
+            case "objectiveState" -> viewState = new ChooseObjectiveCardsState();
+            case "playState" -> viewState = new PlayerTurnPlayState();
+            case "drawState" -> viewState = new PlayerTurnDrawState();
+        }
+
+        ((GameScreenState) viewState).restoreScreenState();
     }
 
     public void confirmObjectiveChoice(int cardID){
@@ -229,8 +229,8 @@ public class ClientController implements ClientControllerInterface {
     public synchronized void transition(int round, int currentPlayerIndex) {
         if(round != 0 )
             viewModel.getGame().setCurrentRound(round);
-        if(currentPlayerIndex != -1 )
-            viewModel.getGame().setCurrentPlayerIndex(currentPlayerIndex);
+        //if(currentPlayerIndex != -1 ) /*TODO: Should be deleted,since I'm currently updating this index every GameTransition*/
+        viewModel.getGame().setCurrentPlayerIndex(currentPlayerIndex);
 
         ((GameScreenState) viewState).transition();
         viewState.executeState();
