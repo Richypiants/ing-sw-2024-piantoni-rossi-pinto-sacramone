@@ -13,6 +13,7 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.ClientModel.ViewModel;
 import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.GameStates.VictoryCalculationState;
 import it.polimi.ingsw.gc12.Utilities.*;
 
 import java.util.*;
@@ -112,10 +113,15 @@ public class ClientController implements ClientControllerInterface {
         viewState.updateNickname();
     }
 
-    public void restoreGame(ClientGame gameDTO, String currentState){
-        for(var fieldEntry: gameDTO.getTemporaryReceiverField().sequencedEntrySet())
-            gameDTO.getThisPlayer().placeCard( fieldEntry.getKey(), cardsList.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
+    public void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD){
 
+        for(var playerEntry : PLAYERS_FIELD.entrySet()) {
+            var clientPlayerInstance = gameDTO.getPlayers().stream()
+                    .filter( (player) -> player.getNickname().equals(playerEntry.getKey())).findAny().orElseThrow();
+
+            for (var fieldEntry : PLAYERS_FIELD.get(clientPlayerInstance.getNickname()).sequencedEntrySet())
+                gameDTO.getThisPlayer().placeCard(fieldEntry.getKey(), cardsList.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
+        }
         viewModel.joinLobbyOrGame(viewModel.getCurrentLobbyUUID(), gameDTO);
 
         switch(currentState){
@@ -124,14 +130,16 @@ public class ClientController implements ClientControllerInterface {
             case "playState" -> viewState = new PlayerTurnPlayState();
             case "drawState" -> viewState = new PlayerTurnDrawState();
         }
-        // viewState = new GameScreenState();
-        viewState.executeState();
+
+        ((GameScreenState) viewState).restoreScreenState();
     }
 
     public void setLobbies(Map<UUID, GameLobby> lobbies){
         viewModel.setLobbies(lobbies);
-        viewState = new LobbyScreenState();
-        viewState.executeState();
+        if(!(viewState instanceof LeaderboardScreenState)) {
+            viewState = new LobbyScreenState();
+            viewState.executeState();
+        }
     }
 
     public void updateLobby(UUID lobbyUUID, GameLobby lobby){
@@ -149,7 +157,6 @@ public class ClientController implements ClientControllerInterface {
             viewModel.leaveLobbyOrGame();
         }
 
-        //Ristampare tutte le lobby nella schermata in qualsiasi caso
         if(!(viewState instanceof LeaderboardScreenState)) {
             viewState = new LobbyScreenState();
             viewState.executeState();
@@ -231,6 +238,7 @@ public class ClientController implements ClientControllerInterface {
 
     public void pauseGame(){
         viewState = new AwaitingReconnectionState(viewState);
+        viewModel.getGame().setCurrentPlayerIndex(-1);
 
         viewState.executeState();
     }
@@ -245,6 +253,7 @@ public class ClientController implements ClientControllerInterface {
 
     public void endGame(List<Triplet<String, Integer, Integer>> pointsStats, boolean gameEndedDueToDisconnections) {
         viewState = new LeaderboardScreenState(pointsStats, gameEndedDueToDisconnections);
+        viewModel.leaveLobbyOrGame();
         viewState.executeState();
     }
 

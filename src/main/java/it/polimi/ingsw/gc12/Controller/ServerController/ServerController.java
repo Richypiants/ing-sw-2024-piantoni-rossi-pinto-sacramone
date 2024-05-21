@@ -214,7 +214,11 @@ public class ServerController implements ServerControllerInterface {
                     //If game was in AwaitingReconnectingState, you need to resume it before sending the DTO
                     ((AwaitingReconnectionState) targetGame.getCurrentState()).recoverGame();
 
-                requestToClient(sender, new RestoreGameCommand(targetGame.generateDTO((InGamePlayer) target), targetGame.getCurrentState().getStringEquivalent())); //restoreGame();
+                requestToClient(sender, new RestoreGameCommand(
+                        targetGame.generateDTO((InGamePlayer) target),
+                        targetGame.getCurrentState().getStringEquivalent(), //To let the client understand in which state it has to be recovered to.
+                        targetGame.generateTemporaryFieldsToPlayers() //fields related to the players inGame.
+                )); //restoreGame();
 
                 for (var player : targetGame.getActivePlayers())
                     if (player.isActive()) {
@@ -655,9 +659,6 @@ public class ServerController implements ServerControllerInterface {
         if(targetGame.getCurrentState().getCurrentPlayer() == null || targetGame.getCurrentState().getCurrentPlayer().equals(targetPlayer))
             targetGame.getCurrentState().playerDisconnected(targetPlayer);
 
-        //TODO: useful?
-        int activePlayers = targetGame.getActivePlayers().size();
-
         System.out.println("[SERVER]: sending ToggleActiveCommand to clients");
 
         for(var player : targetGame.getActivePlayers()) {
@@ -665,12 +666,15 @@ public class ServerController implements ServerControllerInterface {
             requestToClient(targetClient, new ToggleActiveCommand(player.getNickname()));
         }
 
+        int activePlayers = targetGame.getActivePlayers().size();
         if(activePlayers == 1){
-            for(var player : targetGame.getActivePlayers()) {
+            for(var player : targetGame.getActivePlayers())
                 requestToClient(keyReverseLookup(players, player::equals), new PauseGameCommand());
-            }
+
             targetGame.setState(new AwaitingReconnectionState(targetGame));
+            System.out.println("[SERVER]: Freezing " + targetGame.toString() + " game");
         } else if(activePlayers == 0){
+            ((AwaitingReconnectionState) targetGame.getCurrentState()).cancelTimerTask();
             for(var player: targetGame.getPlayers())
                 playersToLobbiesAndGames.remove(player);
             lobbiesAndGames.remove(targetGame);

@@ -33,6 +33,12 @@ public class PlayerTurnPlayState extends GameScreenState {
         ClientController.getInstance().view.gameScreen();
     }
 
+    public void restoreScreenState(){
+        super.executeState();
+
+        ClientController.getInstance().view.gameScreen();
+    }
+
     @Override
     public void placeCard(GenericPair<Integer, Integer> coordinates, int inHandPosition, Side playedSide) {
         sendCardToPlace(coordinates, inHandPosition - 1, playedSide);

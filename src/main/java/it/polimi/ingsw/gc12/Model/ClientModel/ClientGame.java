@@ -33,8 +33,6 @@ public class ClientGame extends GameLobby implements Serializable {
     private int currentPlayerIndex;
     private final List<String> chatLog;
 
-    private LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>> temporaryReceiverField;
-
     //TODO: costruire scoreboard
     public ClientGame(Game game, InGamePlayer myself) {
         super(game.getMaxPlayers(), game.getPlayers().stream()
@@ -45,13 +43,9 @@ public class ClientGame extends GameLobby implements Serializable {
         Map<Integer, ClientCard> clientCards = ServerController.getInstance().clientCardsList;
 
         this.MYSELF = getPlayers().stream().filter((player) -> player.getNickname().equals(myself.getNickname())).findAny().orElseThrow();
-
-        LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>> receiverField = new LinkedHashMap<>();
-        for(var thisPlayerFieldEntry : myself.getPlacedCards().sequencedEntrySet())
-            receiverField.put(thisPlayerFieldEntry.getKey(), new GenericPair<>(thisPlayerFieldEntry.getValue().getX().ID, thisPlayerFieldEntry.getValue().getY()));
-
-        this.temporaryReceiverField = receiverField;
-        this.OWN_HAND = new ArrayList<>();
+        this.OWN_HAND = myself.getCardsInHand().stream()
+                        .map((card) -> clientCards.get(card.ID))
+                .collect(Collectors.toCollection(ArrayList::new));
         this.PLACED_RESOURCE_CARDS = Arrays.stream(game.getPlacedResources())
                 .map((card) -> clientCards.get(card.ID))
                 .toArray(ClientCard[]::new);
@@ -96,11 +90,6 @@ public class ClientGame extends GameLobby implements Serializable {
 
     public void removeCardFromHand(ClientCard card){
         OWN_HAND.remove(card);
-    }
-
-    //TODO: Maybe move as an attribute of RestoreGameCommand
-    public LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>> getTemporaryReceiverField(){
-        return this.temporaryReceiverField;
     }
     /**
      * Returns the ResourceCards placed on the table

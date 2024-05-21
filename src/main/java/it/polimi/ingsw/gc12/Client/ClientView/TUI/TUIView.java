@@ -242,19 +242,23 @@ public class TUIView extends View {
         showField(ClientController.getInstance().viewModel.getGame().getThisPlayer());
         showHand();
         showChat();
+        printStateCommandInfo();
 
         //FIXME: al momento comandi filtrati per stato di gioco, replicati in ogni viewState, orribile anche perchè alla GUI non servono...
         // però forse possiamo avere una lista di prompt e caricare quelli da mostrare a seconda di TUI o GUI?
         // (per esempio, trascina una carta per posizionarla)
 
+    }
+
+    public void printStateCommandInfo(){
         int i = 42;
         ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
 
         Ansi printedMessage = thisGame.getCurrentPlayerIndex() != -1 ?
                 ansi().cursor(i++, 2).bold().a("It is ").fg(9).a(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname()).reset().bold().a("'s turn! Your available commands are: ") :
                 ClientController.getInstance().viewState instanceof AwaitingReconnectionState ?
-                    ansi().cursor(i++, 2).bold().a("[GAME PAUSED] Awaiting for Reconnection ...") :
-                    ansi().cursor(i++, 2).bold().a("[SETUP PHASE] Every player needs to do an action! Your available commands are: ");
+                        ansi().cursor(i++, 2).bold().a("[GAME PAUSED] Awaiting for Reconnection ...") :
+                        ansi().cursor(i++, 2).bold().a("[SETUP PHASE] Every player needs to do an action! Your available commands are: ");
 
         printToPosition(printedMessage);
         for (var command : ClientController.getInstance().viewState.TUICommands)
@@ -476,9 +480,8 @@ public class TUIView extends View {
         }
     }
 
-    private GenericPair<Integer, Integer> findExtremeCoordinates(ToIntBiFunction<Integer, Integer> criterion) {
-        return ClientController.getInstance().viewModel.getGame().getThisPlayer()
-                .getPlacedCards().keySet().stream()
+    private GenericPair<Integer, Integer> findExtremeCoordinates(ClientPlayer target, ToIntBiFunction<Integer, Integer> criterion) {
+        return target.getPlacedCards().keySet().stream()
                 .reduce(new GenericPair<>(0, 0),
                         (a, b) -> new GenericPair<>(
                                 criterion.applyAsInt(a.getX(), b.getX()),
@@ -497,8 +500,8 @@ public class TUIView extends View {
         printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX() - 2, FIELD_TOP_LEFT.getY()).a("Field of: ")
                 .bold().a(player.getNickname()).eraseLine(Erase.FORWARD));
 
-        GenericPair<Integer, Integer> maxCoordinates = findExtremeCoordinates(Math::max);
-        GenericPair<Integer, Integer> minCoordinates = findExtremeCoordinates(Math::min);
+        GenericPair<Integer, Integer> maxCoordinates = findExtremeCoordinates(player, Math::max);
+        GenericPair<Integer, Integer> minCoordinates = findExtremeCoordinates(player, Math::min);
 
         final GenericPair<Float, Float> fieldCenterOfGravity =
                 new GenericPair<>(
