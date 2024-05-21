@@ -17,6 +17,8 @@ public abstract class GameScreenState extends ViewState {
         ClientController.getInstance().view.gameScreen();
     }
 
+    public abstract void restoreScreenState();
+
     protected void sendCardToPlace(GenericPair<Integer, Integer> coordinates, int inHandPosition, Side playedSide) {
         ClientCard card = null;
         try {

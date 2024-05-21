@@ -6,10 +6,10 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.GameStates.GameState;
 import it.polimi.ingsw.gc12.Model.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.Side;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -246,6 +246,20 @@ public class Game extends GameLobby {
 
     public ClientGame generateDTO(InGamePlayer receiver){
         return new ClientGame(this, receiver);
+    }
+
+
+    public Map<String,LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> generateTemporaryFieldsToPlayers() {
+        Map<String,LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> playersField = new HashMap<>();
+
+        for(var player : getPlayers()) {
+            LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>> playerField = new LinkedHashMap<>();
+            for (var thisPlayerFieldEntry : player.getPlacedCards().sequencedEntrySet())
+                playerField.put(thisPlayerFieldEntry.getKey(), new GenericPair<>(thisPlayerFieldEntry.getValue().getX().ID, thisPlayerFieldEntry.getValue().getY()));
+            playersField.put(player.getNickname(), playerField);
+        }
+
+        return playersField;
     }
 }
 

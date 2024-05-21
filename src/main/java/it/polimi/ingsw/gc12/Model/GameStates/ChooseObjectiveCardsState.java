@@ -18,7 +18,7 @@ public class ChooseObjectiveCardsState extends GameState {
     private final Map<InGamePlayer, ArrayList<ObjectiveCard>> objectivesMap;
 
     public ChooseObjectiveCardsState(Game thisGame, Map<InGamePlayer, ArrayList<ObjectiveCard>> map) {
-        super(thisGame, 0, -1, "objectiveState");
+        super(thisGame, -1, -1, "objectiveState");
         this.objectivesMap = map;
 
         //Executing a Random Action for the players disconnected in the Initial State

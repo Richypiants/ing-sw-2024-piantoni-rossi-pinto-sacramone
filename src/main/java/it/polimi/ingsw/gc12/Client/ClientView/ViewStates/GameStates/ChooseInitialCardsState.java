@@ -27,6 +27,16 @@ public class ChooseInitialCardsState extends GameScreenState{
             ClientController.getInstance().view.showInitialCardsChoice();
     }
 
+    public void restoreScreenState(){
+        //FIXME: For the moment this behaviour is handled by the executeState()
+        super.executeState();
+
+        if(ClientController.getInstance().viewModel.getGame().getThisPlayer().getPlacedCards().containsKey(new GenericPair<>(0,0)))
+            ClientController.getInstance().view.gameScreen();
+        else
+            ClientController.getInstance().view.showInitialCardsChoice();
+    }
+
     @Override
     public void placeCard(GenericPair<Integer, Integer> coordinates, int inHandPosition, Side playedSide) {
         sendCardToPlace(coordinates, inHandPosition - 1, playedSide);

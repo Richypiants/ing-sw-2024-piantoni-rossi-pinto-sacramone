@@ -7,10 +7,7 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public interface ClientControllerInterface extends ControllerInterface {
 
@@ -20,7 +17,7 @@ public interface ClientControllerInterface extends ControllerInterface {
 
     void setNickname(String nickname);
 
-    void restoreGame(ClientGame gameDTO, String currentState);
+    void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD);
 
     void setLobbies(Map<UUID, GameLobby> lobbies);
 

@@ -13,17 +13,20 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 public class AwaitingReconnectionState extends GameState {
 
     private final GameState previousState;
+
+    private final Timer timer;
     private final TimerTask terminateGame;
+
     private static final int TIMEOUT_GAME_ENDED = 60000;
 
     public AwaitingReconnectionState(Game thisGame) {
-        super(thisGame, thisGame.getCurrentState().currentPlayer, thisGame.getCurrentState().finalPhaseCounter, "awaitingReconnectionState");
+        super(thisGame, -1, thisGame.getCurrentState().finalPhaseCounter, "awaitingReconnectionState");
 
         synchronized (GAME.getCurrentState()) {
             this.previousState = GAME.getCurrentState();
         }
 
-        Timer timer = new Timer(true);
+        timer = new Timer(true);
         timer.schedule(terminateGame = new TimerTask() {
 
             @Override
@@ -46,5 +49,9 @@ public class AwaitingReconnectionState extends GameState {
         }
     }
 
+    public void cancelTimerTask(){
+        timer.cancel();
+        terminateGame.cancel();
+    }
 
 }

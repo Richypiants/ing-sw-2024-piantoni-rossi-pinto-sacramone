@@ -29,6 +29,11 @@ public class PlayerTurnDrawState extends GameScreenState {
         ClientController.getInstance().view.gameScreen();
     }
 
+    public void restoreScreenState(){
+        super.executeState();
+        ClientController.getInstance().view.gameScreen();
+    }
+
     @Override
     public void drawFromDeck(String deck) {
         if (invalidDeck(deck)) throw new IllegalArgumentException("deck fornito da cui pescare invalido");
@@ -64,9 +69,6 @@ public class PlayerTurnDrawState extends GameScreenState {
 
     @Override
     public void transition() {
-        /*if(...){
-            increaseRound();
-        }*/
         ClientController.getInstance().viewState = new PlayerTurnPlayState();
     }
 }

@@ -24,6 +24,10 @@ public class AwaitingReconnectionState extends GameScreenState{
         ClientController.getInstance().view.gameScreen();
     }
 
+    public void restoreScreenState(){
+        //Never called at the moment
+    }
+
     @Override
     public void transition() {
         ClientController.getInstance().viewState = LAST_STATE;
