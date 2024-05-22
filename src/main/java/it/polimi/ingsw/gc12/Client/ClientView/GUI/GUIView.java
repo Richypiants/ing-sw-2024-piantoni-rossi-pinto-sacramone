@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 //FIXME: consider removing some Platform.runLater() and restricting some of them to necessary actions only
@@ -460,11 +461,21 @@ public class GUIView extends View {
     private void showScoreboard() {
         Platform.runLater(() -> {
             AnchorPane scoreboardPane = (AnchorPane) stage.getScene().lookup("#scoreboardPane");
-            scoreboardPane.setPrefSize(screenSizes.getX() * 25 / 100, screenSizes.getY() * 75 / 100);
+            scoreboardPane.setPrefHeight(screenSizes.getY() * 50 / 100);
             scoreboardPane.setStyle("-fx-background-image: url('/images/scoreboard.png'); -fx-background-size: stretch;");
 
-            // Try with a circle
-            Circle redCircle = new Circle();
+            //TODO: ???????
+            AtomicReference<Double> xOffset = new AtomicReference<>((double) 0);
+            AtomicReference<Double> yOffset = new AtomicReference<>((double) 0);
+
+            scoreboardPane.setOnMousePressed((event) -> {
+                xOffset.set(scoreboardPane.getLayoutX() - event.getScreenX());
+                yOffset.set(scoreboardPane.getLayoutY() - event.getScreenY());
+            });
+
+            scoreboardPane.setOnMouseDragged((event) -> {
+                scoreboardPane.relocate(event.getScreenX() + xOffset.get(), event.getScreenY() + yOffset.get());
+            });
 
             //TODO: Find correct coordinates of each point cell
             ArrayList<GenericPair<Double, Double>> relativeOffsetScaleFactors = new ArrayList<>();
@@ -643,8 +654,20 @@ public class GUIView extends View {
         Platform.runLater(() -> {
             //TODO: maybe perform chatPane initialization only at the start of a game instead of everytime?
             AnchorPane chatPane = (AnchorPane) stage.getScene().lookup("#chatPane");
-            chatPane.setPrefSize(screenSizes.getX() * 30 / 100, screenSizes.getY());
-            chatPane.relocate(screenSizes.getX() * 70 / 100, 0);
+            chatPane.setPrefSize(screenSizes.getX() * 30 / 100, screenSizes.getY() * 70 / 100);
+
+            //TODO: ???????
+            AtomicReference<Double> xOffset = new AtomicReference<>((double) 0);
+            AtomicReference<Double> yOffset = new AtomicReference<>((double) 0);
+
+            chatPane.setOnMousePressed((event) -> {
+                xOffset.set(chatPane.getLayoutX() - event.getScreenX());
+                yOffset.set(chatPane.getLayoutY() - event.getScreenY());
+            });
+
+            chatPane.setOnMouseDragged((event) -> {
+                chatPane.relocate(event.getScreenX() + xOffset.get(), event.getScreenY() + yOffset.get());
+            });
 
             ScrollPane chatScrollPane = (ScrollPane) stage.getScene().lookup("#chatScrollPane");
             VBox messagesBox = (VBox) chatPane.lookup("#messagesBox");

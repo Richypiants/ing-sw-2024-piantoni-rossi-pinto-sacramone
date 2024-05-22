@@ -211,7 +211,7 @@ public class ClientController implements ClientControllerInterface {
         for (var cardID : cardIDs)
             ((ChooseObjectiveCardsState) viewState).objectivesSelection.add(cardsList.get(cardID));
 
-        viewState.executeState();
+        view.showObjectiveCardsChoice();
     }
 
     public synchronized void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {

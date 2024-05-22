@@ -24,6 +24,7 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 public class GameController extends ServerController {
 
     private final Game CONTROLLED_GAME;
+    //TODO: move gamestates in here instead of having them in Game (also move back currentPlayer and round in Game after this?)
     private GameState currentGameState;
 
     public GameController(Game controlledGame) {

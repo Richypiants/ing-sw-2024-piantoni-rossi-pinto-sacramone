@@ -15,11 +15,6 @@ public class LobbyScreenState extends ViewState {
 
     @Override
     public void executeState() {
-        /*try {
-            sleep(20000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }*/
         ClientController.getInstance().view.lobbyScreen();
     }
 

@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.PickObjectiveCommand;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,6 @@ public class ChooseObjectiveCardsState extends GameScreenState {
     @Override
     public void executeState() {
         ClientController.getInstance().view.gameScreen();
-        ClientController.getInstance().view.showObjectiveCardsChoice();
     }
 
     public void restoreScreenState(){
