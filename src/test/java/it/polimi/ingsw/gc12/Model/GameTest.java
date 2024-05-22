@@ -6,8 +6,13 @@ import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -92,5 +97,34 @@ class GameTest {
 
         assertInstanceOf(ClientGame.class, game.generateDTO(game.getPlayers().getFirst()));
     }
+
+    @Test
+    void getActivePlayerTest() throws Throwable {
+
+        assertEquals(game.getPlayers(), game.getActivePlayers());
+    }
+
+    @Test
+    void getTurnNumberTest() throws Throwable {
+
+        assertEquals(0, game.getTurnNumber());
+    }
+
+    @Test
+    void correctToLobby() throws Throwable {
+        GameLobby lobby = game.toLobby();
+        assertInstanceOf(GameLobby.class, lobby);
+        assert (!lobby.getPlayers().isEmpty());
+
+    }
+
+    @Test
+    void generatetemporaryfieldTest() throws Throwable {
+        Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> Test = game.generateTemporaryFieldsToPlayers();
+        assertInstanceOf(Map.class, Test);
+        assert (!Test.isEmpty());
+
+    }
+
 
 }

@@ -111,13 +111,13 @@ class PlayerTurnPlayStateTest {
 
     @Test
     void correctTransitionTest() throws Exception {
-        game.getCurrentState().placeCard(game.getPlayers().getLast(), new GenericPair<>(1, 1), game.getPlayers().getLast().getCardsInHand().getFirst(), Side.FRONT);
+        game.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
         assertInstanceOf(PlayerTurnDrawState.class, game.getCurrentState());
     }
 
     @Test
     void correctThrowsExceptionTest() throws Exception {
-        assertThrows(UnexpectedPlayerException.class, () -> game.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT));
+        assertThrows(UnexpectedPlayerException.class, () -> game.getCurrentState().placeCard(game.getPlayers().getLast(), new GenericPair<>(1, 1), game.getPlayers().getLast().getCardsInHand().getFirst(), Side.FRONT));
 
     }
 

@@ -119,7 +119,7 @@ class VictoryCalculationStateTest {
         //FIXME: unused?
         //PlayerTurnPlayState state1 = new PlayerTurnPlayState(game, state.currentPlayer, 0);
         game.getCurrentState().transition();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 6; i++) {
 
             game.getCurrentState().transition();
 
