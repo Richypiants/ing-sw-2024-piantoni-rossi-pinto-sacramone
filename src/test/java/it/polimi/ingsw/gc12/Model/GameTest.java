@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc12.Model;
 
+import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.PlayerTurnPlayState;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
-import it.polimi.ingsw.gc12.Model.GameStates.PlayerTurnPlayState;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

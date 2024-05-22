@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc12.Controller;
 
+import it.polimi.ingsw.gc12.Network.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
-import it.polimi.ingsw.gc12.Utilities.VirtualClient;
 
 import java.util.UUID;
 

@@ -1037,7 +1037,7 @@ public class GUIView extends View {
 
             ScrollPane fieldPane = new ScrollPane();
             fieldPane.setPannable(true);
-            fieldPane.setPrefSize(popupContent.getPrefWidth() * 80 / 100, popupContent.getPrefHeight() * 80 / 100);
+            fieldPane.setPrefSize(popupContent.getPrefWidth(), popupContent.getPrefHeight());
             //TODO: ??? fieldPane.setFitToHeight();
             drawField(fieldPane, player, false);
             popupContent.getChildren().add(/*playerNameLabel,*/ fieldPane);

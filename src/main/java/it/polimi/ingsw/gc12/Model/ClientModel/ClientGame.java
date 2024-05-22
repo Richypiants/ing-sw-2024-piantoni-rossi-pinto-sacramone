@@ -4,8 +4,6 @@ import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.io.Serializable;
 import java.util.*;
@@ -40,7 +38,7 @@ public class ClientGame extends GameLobby implements Serializable {
                 .map(ClientPlayer::new)
                 .toList());
 
-        Map<Integer, ClientCard> clientCards = ServerController.getInstance().clientCardsList;
+        Map<Integer, ClientCard> clientCards = ServerController.clientCardsList;
         //FIXME: Check what is MYSELF pointing at, since we're just building it I think it is empty
         this.MYSELF = getPlayers().stream().filter((player) -> player.getNickname().equals(myself.getNickname())).findAny().orElseThrow();
         this.OWN_HAND = myself.getCardsInHand().stream()

@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc12.Model;
 
+import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.GameState;
+import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
-import it.polimi.ingsw.gc12.Model.GameStates.GameState;
-import it.polimi.ingsw.gc12.Model.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -61,11 +61,11 @@ public class Game extends GameLobby {
         this.currentRound = 0;
         setState(new SetupState(this));
 
-        this.RESOURCE_CARDS_DECK = new CardDeck<>(ServerController.getInstance().cardsList.values().stream()
+        this.RESOURCE_CARDS_DECK = new CardDeck<>(ServerController.cardsList.values().stream()
                 .filter((card -> card instanceof ResourceCard))
                 .map((card) -> (ResourceCard) card)
                 .toList());
-        this.GOLD_CARDS_DECK = new CardDeck<>(ServerController.getInstance().cardsList.values().stream()
+        this.GOLD_CARDS_DECK = new CardDeck<>(ServerController.cardsList.values().stream()
                 .filter((card -> card instanceof GoldCard))
                 .map((card) -> (GoldCard) card)
                 .toList());

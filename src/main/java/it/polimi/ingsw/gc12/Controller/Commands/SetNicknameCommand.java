@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
-import it.polimi.ingsw.gc12.Utilities.VirtualClient;
+import it.polimi.ingsw.gc12.Network.VirtualClient;
 
 public class SetNicknameCommand implements ServerCommand, ClientCommand {
 

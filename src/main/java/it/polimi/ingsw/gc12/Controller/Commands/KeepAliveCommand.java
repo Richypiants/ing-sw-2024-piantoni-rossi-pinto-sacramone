@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc12.Controller.Commands;
 
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
-import it.polimi.ingsw.gc12.Utilities.VirtualClient;
+import it.polimi.ingsw.gc12.Network.VirtualClient;
 
 public class KeepAliveCommand implements ServerCommand {
 

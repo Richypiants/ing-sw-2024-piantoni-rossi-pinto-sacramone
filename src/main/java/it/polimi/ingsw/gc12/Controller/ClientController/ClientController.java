@@ -13,7 +13,10 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.ClientModel.ViewModel;
 import it.polimi.ingsw.gc12.Model.GameLobby;
-import it.polimi.ingsw.gc12.Model.GameStates.VictoryCalculationState;
+import it.polimi.ingsw.gc12.Network.Client.RMIClientSkeleton;
+import it.polimi.ingsw.gc12.Network.Client.SocketClient;
+import it.polimi.ingsw.gc12.Network.VirtualClient;
+import it.polimi.ingsw.gc12.Network.VirtualServer;
 import it.polimi.ingsw.gc12.Utilities.*;
 
 import java.util.*;
