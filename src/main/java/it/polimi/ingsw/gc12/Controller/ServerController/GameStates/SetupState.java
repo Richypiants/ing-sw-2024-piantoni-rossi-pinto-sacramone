@@ -14,7 +14,7 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 public class SetupState extends GameState {
 
     public SetupState(Game thisGame) {
-        super(thisGame, 0, -1, "setupState");
+        super(thisGame, -1, -1, "setupState");
     }
 
     @Override

@@ -157,10 +157,10 @@ public class ClientController implements ClientControllerInterface {
 
         for(var playerEntry : PLAYERS_FIELD.entrySet()) {
             var clientPlayerInstance = gameDTO.getPlayers().stream()
-                    .filter( (player) -> player.getNickname().equals(playerEntry.getKey())).findAny().orElseThrow();
+                    .filter( (player) -> player.getNickname().equals(playerEntry.getKey())).findFirst().orElseThrow();
 
-            for (var fieldEntry : PLAYERS_FIELD.get(clientPlayerInstance.getNickname()).sequencedEntrySet())
-                gameDTO.getThisPlayer().placeCard(fieldEntry.getKey(), cardsList.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
+            for (var fieldEntry : PLAYERS_FIELD.get(playerEntry.getKey()).sequencedEntrySet())
+                clientPlayerInstance.placeCard(fieldEntry.getKey(), cardsList.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
         }
         viewModel.joinLobbyOrGame(gameUUID, gameDTO);
 

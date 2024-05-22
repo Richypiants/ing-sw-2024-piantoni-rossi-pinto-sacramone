@@ -136,7 +136,10 @@ class ClientGameTest {
         assert (!client.getTopDeckResourceCard().GUI_SPRITES.isEmpty());
         assert (!client.getTopDeckResourceCard().TUI_SPRITES.isEmpty());
 
-        assertEquals(0, client.getCurrentRound());
+        int roundNumberTest = 10;
+        client.setCurrentRound(roundNumberTest);
+        assertEquals(roundNumberTest, client.getCurrentRound());
+
         assertEquals(2, client.getMaxPlayers());
         assertEquals(1, client.getPlayersNumber());
     }

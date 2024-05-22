@@ -35,7 +35,7 @@ public class ClientGame extends GameLobby implements Serializable {
     public ClientGame(Game game, InGamePlayer myself) {
         super(game.getMaxPlayers(), game.getPlayers().stream()
                 //.filter(Predicate.not(myself::equals))
-                .map(ClientPlayer::new)
+                .map((player) -> new ClientPlayer(player, player.getOpenCorners(), player.getOwnedResources(), player.getPoints()))
                 .toList());
 
         Map<Integer, ClientCard> clientCards = ServerController.clientCardsList;
@@ -44,7 +44,6 @@ public class ClientGame extends GameLobby implements Serializable {
         this.OWN_HAND = myself.getCardsInHand().stream()
                         .map((card) -> clientCards.get(card.ID))
                 .collect(Collectors.toCollection(ArrayList::new));
-        //TODO: we're not sending this player ownedResources?
         this.PLACED_RESOURCE_CARDS = Arrays.stream(game.getPlacedResources())
                 .map((card) -> clientCards.get(card.ID))
                 .toArray(ClientCard[]::new);
@@ -57,8 +56,8 @@ public class ClientGame extends GameLobby implements Serializable {
         this.topDeckResourceCard = clientCards.get(game.peekFrom(game.getResourceCardsDeck()) == null ? -1 : game.peekFrom(game.getResourceCardsDeck()).ID);
         this.topDeckGoldCard = clientCards.get(game.peekFrom(game.getGoldCardsDeck()) == null ? -1 : game.peekFrom(game.getGoldCardsDeck()).ID);
         this.ownObjective = myself.getSecretObjective() == null ? null : clientCards.get(myself.getSecretObjective().ID);
-        this.currentRound = 0;
-        this.currentPlayerIndex = -1;
+        this.currentRound = game.getTurnNumber();
+        this.currentPlayerIndex = game.getPlayers().indexOf(game.getCurrentPlayer());
         this.chatLog = new ArrayList<>();
     }
 

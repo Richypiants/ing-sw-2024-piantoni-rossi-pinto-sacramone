@@ -6,7 +6,9 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class ClientPlayer extends Player implements Serializable {
 
@@ -31,12 +33,13 @@ public class ClientPlayer extends Player implements Serializable {
      */
     private boolean isActive = true; //TODO: implement activity management
 
-    public ClientPlayer(Player player){
+    public ClientPlayer(Player player, List<GenericPair<Integer, Integer>> openCorners,
+            EnumMap<Resource, Integer> ownedResources, int playerPoints){
         super(player);
-        this.ownedResources = new EnumMap<>(Resource.class);
+        this.openCorners = openCorners;
+        this.ownedResources = ownedResources;
         this.placedCards = new LinkedHashMap<>();
-        this.openCorners = new ArrayList<>();
-        this.points = 0;
+        this.points = playerPoints;
     }
 
     public EnumMap<Resource, Integer> getOwnedResources(){

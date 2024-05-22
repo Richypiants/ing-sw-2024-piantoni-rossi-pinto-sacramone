@@ -57,7 +57,6 @@ public abstract class ServerController implements ServerControllerInterface {
                 .stream().collect(Collectors.toMap((card) -> card.ID, (card) -> card));
     }
 
-    //TODO: implement a placeholder null player that has a special controller associated for createPlayer()?
     public static ServerController getAssociatedController(Player target) {
         ServerController associatedController = playersToControllers.get(target);
         return associatedController == null ? ConnectionController.getInstance() : associatedController;
@@ -164,7 +163,7 @@ public abstract class ServerController implements ServerControllerInterface {
                 .filter((player) -> player.getNickname().equals(nickname))
                 .findAny();
         target.ifPresent((player) -> players.put(sender, player));
-        getAssociatedController(target.orElseGet(() -> null)).generatePlayer(sender, nickname);
+        getAssociatedController(target.orElse(null)).generatePlayer(sender, nickname);
 
         //Creating the timeoutRoutine that will be started in case the client doesn't send a keepAliveCommand in the 60 seconds span.
         renewTimeoutTimerTask(sender);

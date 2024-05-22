@@ -95,6 +95,9 @@ public abstract class ViewState {
 
     }
 
+    public void toLobbies() {
+    }
+
     public void quit() {
         ClientController.getInstance().thisClient = null;
         try {

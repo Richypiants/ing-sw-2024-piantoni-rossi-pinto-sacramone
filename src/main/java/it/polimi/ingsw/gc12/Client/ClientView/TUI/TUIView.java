@@ -576,7 +576,7 @@ public class TUIView extends View {
                     .bold().fg(9).a(leaderboard.getFirst().getX()).reset().a(" is the WINNER!")
             );
 
-        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW - 2, 1).a("Scrivi 'quit' per ritornare alla schermata delle lobby")
+        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW - 2, 1).a("Type 'ok' to return to lobbies")
                 .cursorDownLine()
                 .a("------------------------------------------------------------------").eraseLine(Erase.FORWARD)
                 .cursorDownLine()

@@ -110,6 +110,7 @@ public class TUIListener {
                 }
                 case "showField" -> currentState.showField(Integer.parseInt(tokens.removeFirst()));
                 case "quit" -> currentState.quit();
+                case "ok" -> currentState.toLobbies();
                 default -> throw new IllegalArgumentException("Unknown command");
             }
         } catch (NoSuchElementException e) {

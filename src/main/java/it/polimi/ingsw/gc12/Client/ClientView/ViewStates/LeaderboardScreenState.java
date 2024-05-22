@@ -21,7 +21,7 @@ public class LeaderboardScreenState extends ViewState {
     }
 
     @Override
-    public void quit() {
+    public void toLobbies() {
         ClientController.getInstance().viewState = new LobbyScreenState();
         ClientController.getInstance().viewState.executeState();
     }

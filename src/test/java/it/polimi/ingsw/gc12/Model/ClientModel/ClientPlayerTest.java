@@ -101,7 +101,7 @@ class ClientPlayerTest {
 
     @Test
     void getterESetterTest() {
-        ClientPlayer player = new ClientPlayer(player1);
+        ClientPlayer player = new ClientPlayer(player1, null, null, 0);
 
         assertEquals("Sacri", player.getNickname());
 

@@ -21,7 +21,7 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class ConnectionController extends ServerController {
 
-    private static ConnectionController SINGLETON_INSTANCE = new ConnectionController();
+    private static final ConnectionController SINGLETON_INSTANCE = new ConnectionController();
 
     private ConnectionController() {
     }

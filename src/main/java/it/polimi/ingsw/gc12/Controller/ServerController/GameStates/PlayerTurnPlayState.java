@@ -65,9 +65,11 @@ public class PlayerTurnPlayState extends GameState {
 
         GAME.setState(new PlayerTurnDrawState(GAME, currentPlayer, finalPhaseCounter));
 
-        //Check if there's a card that can be drawn, if not, call transition to the just created state.
+        //Check if there's a card that can be drawn, if not, directly call the transition of the PlayerTurnDrawState
+        //The condition is computed in or(||) with the case that the currentPlayer is disconnected, so the PlayerTurnDrawState has to be skipped as well.
         if(GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty()
-                && GAME.getPlacedResources().length == 0 && GAME.getPlacedGolds().length == 0) {
+                && GAME.getPlacedResources().length == 0 && GAME.getPlacedGolds().length == 0
+                || !getCurrentPlayer().isActive()) {
 
             GAME.getCurrentState().transition();
         }

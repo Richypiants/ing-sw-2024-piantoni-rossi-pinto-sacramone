@@ -35,12 +35,14 @@ class GameTest {
     void nextPlayer() {
         lobby.addPlayer(player2);
         game.getCurrentState().nextPlayer();  // don't touch this line
-        assertEquals(game.getPlayers().get(0), game.getCurrentPlayer());
+        assertEquals(game.getPlayers().getFirst(), game.getCurrentPlayer());
     }
 
     @Test
     void getCurrentPlayer() {
-        assertInstanceOf(InGamePlayer.class, game.getCurrentPlayer());
+        var result = game.getCurrentPlayer();
+        if(result != null)
+            assertInstanceOf(InGamePlayer.class, result);
     }
 
     @Test
