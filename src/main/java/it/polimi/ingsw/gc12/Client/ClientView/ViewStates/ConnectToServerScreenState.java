@@ -66,7 +66,6 @@ public class ConnectToServerScreenState extends ViewState {
     public void updateNickname() {
         ClientController.getInstance().view.connectedConfirmation();
 
-
         ClientController.getInstance().keepAlive = new Thread(() -> {
             while (true) {
                 ClientController.getInstance().requestToServer(new KeepAliveCommand());
@@ -81,8 +80,5 @@ public class ConnectToServerScreenState extends ViewState {
         }); //keepAlive() thread
         ClientController.getInstance().keepAlive.setDaemon(true);
         ClientController.getInstance().keepAlive.start();
-
-        //ClientController.getInstance().viewState = new LobbyScreenState();
-        //ClientController.getInstance().viewState.executeState();
     }
 }

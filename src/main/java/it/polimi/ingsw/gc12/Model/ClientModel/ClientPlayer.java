@@ -6,7 +6,10 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class ClientPlayer extends Player implements Serializable {
 
@@ -17,7 +20,7 @@ public class ClientPlayer extends Player implements Serializable {
     /**
      * The field of this player
      */
-    private LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> placedCards;
+    private final LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> PLACED_CARDS;
     /**
      * The positions where this player can currently place new cards
      */
@@ -34,7 +37,7 @@ public class ClientPlayer extends Player implements Serializable {
     public ClientPlayer(Player player){
         super(player);
         this.ownedResources = new EnumMap<>(Resource.class);
-        this.placedCards = new LinkedHashMap<>();
+        this.PLACED_CARDS = new LinkedHashMap<>();
         this.openCorners = new ArrayList<>();
         this.points = 0;
     }
@@ -48,11 +51,11 @@ public class ClientPlayer extends Player implements Serializable {
     }
 
     public LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> getPlacedCards(){
-        return placedCards; //TODO: copia?
+        return PLACED_CARDS; //TODO: copia?
     }
 
     public void placeCard(GenericPair<Integer, Integer> coordinates, ClientCard card, Side playedSide){
-        placedCards.put(coordinates, new GenericPair<>(card, playedSide));
+        PLACED_CARDS.put(coordinates, new GenericPair<>(card, playedSide));
     }
 
     public List<GenericPair<Integer, Integer>> getOpenCorners() {

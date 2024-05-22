@@ -164,7 +164,7 @@ public abstract class ServerController implements ServerControllerInterface {
                 .filter((player) -> player.getNickname().equals(nickname))
                 .findAny();
         target.ifPresent((player) -> players.put(sender, player));
-        getAssociatedController(target.orElseGet(() -> null)).generatePlayer(sender, nickname);
+        getAssociatedController(target.orElse(null)).generatePlayer(sender, nickname);
 
         //Creating the timeoutRoutine that will be started in case the client doesn't send a keepAliveCommand in the 60 seconds span.
         renewTimeoutTimerTask(sender);
