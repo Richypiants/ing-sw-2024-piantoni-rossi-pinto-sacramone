@@ -318,7 +318,7 @@ public class TUIView extends View {
 
         column = 15;
         printToPosition(ansi().cursor(18, 3).a("Gold:"));
-        for (var card : ClientController.getInstance().viewModel.getGame().getPlacedGold()) {
+        for (var card : ClientController.getInstance().viewModel.getGame().getPlacedGolds()) {
             printToPosition(ansi().cursor(16, column).a(standardAnsi(card, Side.FRONT)));
             column += 20;
         }

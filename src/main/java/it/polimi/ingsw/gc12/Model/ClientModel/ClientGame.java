@@ -106,7 +106,7 @@ public class ClientGame extends GameLobby implements Serializable {
     /**
      * Returns the GoldCards placed on the table
      */
-    public ClientCard[] getPlacedGold() {
+    public ClientCard[] getPlacedGolds() {
         return PLACED_GOLD_CARDS;
     }
 

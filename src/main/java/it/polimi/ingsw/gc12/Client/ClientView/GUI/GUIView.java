@@ -11,6 +11,7 @@ import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,13 +21,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
@@ -34,9 +36,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -45,26 +45,13 @@ public class GUIView extends View {
 
     private static GUIView SINGLETON_GUI_INSTANCE = null;
 
-    Stage stage;
+    static Stage stage;
+    static Map<String, Parent> sceneRoots; //screenName to associated loader
+
     ObservableList<String> connectionList = FXCollections.observableArrayList("Socket", "RMI");
     ObservableList<Integer> maxPlayersSelector = FXCollections.observableArrayList(2, 3, 4);
 
-    @FXML
-    TextField nicknameField;
-
-    @FXML
-    TextField addressField;
-
-    @FXML
-    Label profile;
-
-    @FXML
-    ComboBox<String> connection;
-
-    @FXML
-    Label error;
-
-    GenericPair<Double, Double> screenSizes;
+    static GenericPair<Double, Double> screenSizes;
 
     GenericPair<Double, Double> cardSizes = new GenericPair<>(100.0, 66.0);
     GenericPair<Double, Double> clippedPaneCenter = null;
@@ -74,6 +61,30 @@ public class GUIView extends View {
     DataFormat placeCardDataFormat = new DataFormat("text/genericpair<integer,side>");
 
     private GUIView() {
+        //FIXME: is there a thread problem here in scene initialization?
+        new Thread(() -> Application.launch(GUIApplication.class)).start(); //starting the GUI thread
+
+        //Precaricamento di tutti i nodi root di tutte i file fxml
+        Map<String, Parent> tmp = new HashMap<>();
+        List<String> fxmlFiles = List.of(
+                "title_screen",
+                "connection_setup",
+                "waiting_for_connection",
+                "lobby_menu",
+                "game_screen"
+        );
+        FXMLLoader sceneRootLoader;
+
+        for (var fxmlFile : fxmlFiles) {
+            sceneRootLoader = new FXMLLoader(GUIView.class.getResource("/fxml/" + fxmlFile + ".fxml"));
+            try {
+                tmp.put(fxmlFile, sceneRootLoader.load());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        sceneRoots = Map.copyOf(tmp);
     }
 
     public static GUIView getInstance() {
@@ -83,9 +94,7 @@ public class GUIView extends View {
     }
 
     private void setScreenSizes() {
-        Screen screen = Screen.getPrimary();
-        //FIXME: getVisualBounds() per quando non è in fullscreen?
-        this.screenSizes = new GenericPair<>(screen.getBounds().getWidth(), screen.getBounds().getHeight());
+        screenSizes = new GenericPair<>(stage.getWidth(), stage.getHeight());
     }
 
     @Override
@@ -125,46 +134,23 @@ public class GUIView extends View {
 
     @Override
     public void titleScreen() {
-        FXMLLoader fxmlLoader = new FXMLLoader(GUIView.class.getResource("/fxml/title_screen.fxml"));
-        fxmlLoader.setController(ClientController.getInstance().view);
-        Parent root = null;
-        try {
-            root = fxmlLoader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        //FIXME: repeat this everywhere????
-        setScreenSizes();
+        Platform.runLater(() -> {
+            setScreenSizes();
+            Parent root = sceneRoots.get("title_screen");
+            stage.getScene().setRoot(root);
 
-        Screen screen = Screen.getPrimary();
-        Scene scene = new Scene(root, screen.getVisualBounds().getWidth(), screen.getVisualBounds().getHeight());
-        stage.setScene(scene);
+            Button startButton = (Button) root.lookup("#startButton");
+            startButton.setOnAction(this::keyPressed);
 
-        stage.addEventHandler(KeyEvent.KEY_PRESSED, (event) -> {
-            if (event.getCode().equals(KeyCode.F11))
-                stage.setFullScreen(!stage.isFullScreen());
-            //TODO: + show hint per rientrare in fullscreen
+            // Dimensione Schermo
+            double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+
+            StackPane.setAlignment(startButton, Pos.CENTER);
+            StackPane.setMargin(startButton, new Insets(screenHeight * 0.8, 0, 0, 0));
+
+            //FIXME: non funziona e non indirizza gli input sulla schermata... stage.requestFocus();
+            stage.show();
         });
-
-        Button startButton = (Button) fxmlLoader.getNamespace().get("startButton");
-        startButton.setOnAction(this::keyPressed);
-        //StackPane First = (StackPane) fxmlLoader.getNamespace().get("titleScreen");
-
-        // Dimensione Schermo
-        double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
-
-        StackPane.setAlignment(startButton, Pos.CENTER);
-        StackPane.setMargin(startButton, new Insets(screenHeight * 0.8, 0, 0, 0));
-
-        // Image icon = new Image("C:/Users/jacop/Desktop/Stage.png");
-        // stage.getIcons().add(icon);
-
-        stage.setTitle("Codex Naturalis");
-        stage.setFullScreen(true);
-        stage.setResizable(false);
-        stage.centerOnScreen();
-        //FIXME: non funziona e non indirizza gli input sulla schermata... stage.requestFocus();
-        stage.show();
     }
 
     @FXML
@@ -182,20 +168,17 @@ public class GUIView extends View {
     }
 
     private void selection() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/connection_setup.fxml"));
-        fxmlLoader.setController(ClientController.getInstance().view);
-        Parent root = fxmlLoader.load(); // Carica il file FXML e ottiene il root
-
+        Parent root = sceneRoots.get("connection_setup");
         stage.getScene().setRoot(root);
 
         //TODO: al posto della lingua, far inserire indirizzo IP del server!
-        TextField addressField = (TextField) fxmlLoader.getNamespace().get("addressField");
+        TextField addressField = (TextField) root.lookup("#addressField");
 
-        ComboBox<String> connection = (ComboBox<String>) fxmlLoader.getNamespace().get("connection");
+        ComboBox<String> connection = (ComboBox<String>) root.lookup("#connection");
         connection.setValue("Select communication technology");
         connection.setItems(connectionList);
 
-        Button button = (Button) fxmlLoader.getNamespace().get("button");
+        Button button = (Button) root.lookup("#button");
         button.setOnAction(event -> {
             try {
                 waitingForConnection(event);
@@ -204,10 +187,10 @@ public class GUIView extends View {
             }
         });
 
-        TextField nicknameField = (TextField) fxmlLoader.getNamespace().get("nicknameField");
-        Label error = (Label) fxmlLoader.getNamespace().get("error");
-        Label nicknameLabel = (Label) fxmlLoader.getNamespace().get("nicknameLabel");
-        Label addressLabel = (Label) fxmlLoader.getNamespace().get("addressLabel");
+        TextField nicknameField = (TextField) root.lookup("#nicknameField");
+        Label error = (Label) root.lookup("#error");
+        Label nicknameLabel = (Label) root.lookup("#nicknameLabel");
+        Label addressLabel = (Label) root.lookup("#addressLabel");
 
         // Dimensione Schermo
         double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
@@ -233,6 +216,11 @@ public class GUIView extends View {
 
     @FXML
     protected void waitingForConnection(ActionEvent event) throws IOException {
+        TextField nicknameField = ((TextField) sceneRoots.get("connection_setup").lookup("#nicknameField"));
+        Label error = ((Label) sceneRoots.get("connection_setup").lookup("#error"));
+        ComboBox<String> connection = ((ComboBox<String>) sceneRoots.get("connection_setup").lookup("#connection"));
+        TextField addressField = ((TextField) sceneRoots.get("connection_setup").lookup("#addressField"));
+
         if (nicknameField.getText().isEmpty()) {
             error.setText("Inserire un nickname prima di proseguire");
             return;
@@ -247,14 +235,11 @@ public class GUIView extends View {
             addressField.setText("localhost");
         }
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/waiting_for_connection.fxml"));
-        fxmlLoader.setController(ClientController.getInstance().view);
-        Parent root = fxmlLoader.load(); // Carica il file FXML e ottiene il root
-
+        Parent root = sceneRoots.get("waiting_for_connection"); // Carica il file FXML e ottiene il root
         stage.getScene().setRoot(root);
 
-        Label downloadLabel = (Label) fxmlLoader.getNamespace().get("download");
-        ProgressIndicator progressIndicator = (ProgressIndicator) fxmlLoader.getNamespace().get("progress");
+        Label downloadLabel = (Label) root.lookup("#download");
+        ProgressIndicator progressIndicator = (ProgressIndicator) root.lookup("#progress");
 
         // Dimensione Schermo
         double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
@@ -283,23 +268,18 @@ public class GUIView extends View {
     @Override
     public void lobbyScreen() {
         Platform.runLater(() -> {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/lobby_menu.fxml"));
-            fxmlLoader.setController(ClientController.getInstance().view);
-            Parent root = null;
-            try {
-                root = fxmlLoader.load();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            Parent root = sceneRoots.get("lobby_menu");
+
+            Label profile = (Label) root.lookup("#profile");
 
             profile.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
             profile.setTextAlignment(TextAlignment.CENTER);
             profile.setAlignment(Pos.TOP_LEFT);
 
-            Button button = (Button) fxmlLoader.getNamespace().get("BackTitleButton");
+            Button button = (Button) root.lookup("#BackTitleButton");
             button.setOnAction(event -> ClientController.getInstance().viewState.quit());
 
-            ScrollPane lobbiesPane = (ScrollPane) fxmlLoader.getNamespace().get("lobbiesPane");
+            ScrollPane lobbiesPane = (ScrollPane) root.lookup("#lobbiesPane");
             VBox lobbiesList = new VBox(10);
             lobbiesList.setPadding(new Insets(10));
             lobbiesList.setAlignment(Pos.TOP_CENTER);
@@ -312,39 +292,39 @@ public class GUIView extends View {
             lobbiesPane.setContent(lobbiesList);
 
             String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
+            ;
 
-            // New lobby Popup
-            Popup lobbyPopup = new Popup();
-
-            VBox popupLobbyBox = new VBox(10);
-            popupLobbyBox.setAlignment(Pos.CENTER);
-
-            ComboBox<Integer> maxPlayers = (ComboBox<Integer>) fxmlLoader.getNamespace().get("maxPlayersInput");
-            maxPlayers.setValue(2);
-            maxPlayers.setItems(maxPlayersSelector);
-
-            Label players = (Label) fxmlLoader.getNamespace().get("players");
-            Button okPlayers = (Button) fxmlLoader.getNamespace().get("okPlayers");
-
-            popupLobbyBox.getChildren().addAll(players, maxPlayers, okPlayers);
-            lobbyPopup.getContent().add(popupLobbyBox);
-
-            lobbyPopup.setHeight(500);
-            lobbyPopup.setWidth(700);
-            popupLobbyBox.setStyle(style);
-
-            lobbyPopup.setAutoFix(true);
-            lobbyPopup.setAutoHide(true);
-            lobbyPopup.setHideOnEscape(true);
-
-            okPlayers.setOnAction(event -> {
-                ClientController.getInstance().viewState.createLobby(maxPlayers.getValue());
-                lobbyPopup.hide();
-            });
-
-            Button lobby = (Button) fxmlLoader.getNamespace().get("CreateGameButton");
+            Button lobby = (Button) root.lookup("#CreateGameButton");
             lobby.setOnAction(event -> {
+                // New lobby Popup
+                Popup lobbyPopup = new Popup();
+
+                VBox lobbyCreationPopupBox = (VBox) root.lookup("#lobbyCreationPopupBox");
+
+                ComboBox<Integer> maxPlayers = (ComboBox<Integer>) lobbyCreationPopupBox.lookup("#maxPlayersInput");
+                maxPlayers.setValue(2);
+                maxPlayers.setItems(maxPlayersSelector);
+
+                Button okPlayers = (Button) root.lookup("#okPlayers");
+
+                lobbyPopup.getContent().add(lobbyCreationPopupBox);
+
+                lobbyPopup.setHeight(500);
+                lobbyPopup.setWidth(700);
+                lobbyCreationPopupBox.setStyle(style);
+
+                lobbyPopup.setAutoFix(true);
+                lobbyPopup.setAutoHide(true);
+                lobbyPopup.setHideOnEscape(true);
+
+                okPlayers.setOnAction(event2 -> {
+                    ClientController.getInstance().viewState.createLobby(maxPlayers.getValue());
+                    lobbyCreationPopupBox.setVisible(false);
+                    lobbyPopup.hide();
+                });
+
                 lobbyPopup.show(stage);
+                lobbyCreationPopupBox.setVisible(true);
                 lobbyPopup.centerOnScreen();
             });
 
@@ -369,7 +349,7 @@ public class GUIView extends View {
             nickPopup.setAutoHide(true);
             nickPopup.setHideOnEscape(true);
 
-            Button changeNickname = (Button) fxmlLoader.getNamespace().get("nicknameButton");
+            Button changeNickname = (Button) root.lookup("#nicknameButton");
             changeNickname.setOnAction(event -> {
                 nickPopup.show(stage);
                 nickPopup.centerOnScreen();
@@ -387,47 +367,23 @@ public class GUIView extends View {
     @Override
     public void gameScreen() {
         Platform.runLater(() -> {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/game_screen.fxml"));
-            fxmlLoader.setController(ClientController.getInstance().view);
-            Parent root = null; // Carica il file FXML e ottiene il root
-            try {
-                root = fxmlLoader.load();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
+            Parent root = sceneRoots.get("game_screen");
             stage.getScene().setRoot(root);
-            ((Pane) root).setPrefSize(screenSizes.getX() * 0.98, screenSizes.getY() * 0.98);
 
             ClientPlayer thisPlayer = ClientController.getInstance().viewModel.getGame().getThisPlayer();
 
             showHand();
-
             showCommonPlacedCards();
 
             //TODO: estrarre in una funzione
-            AnchorPane ownFieldPane = (AnchorPane) stage.getScene().lookup("#ownFieldPane");
+            AnchorPane ownFieldPane = (AnchorPane) root.lookup("#ownFieldPane");
             ownFieldPane.setPrefSize(screenSizes.getX() * 75 / 100, screenSizes.getY() * 50 / 100);
             ownFieldPane.relocate(screenSizes.getX() * 25 / 100, screenSizes.getY() * 35 / 100);
 
-            ScrollPane ownFieldScrollPane = new ScrollPane();
-            ownFieldScrollPane.setPannable(true);
-            ownFieldScrollPane.setPrefSize(ownFieldPane.getPrefWidth() * 9 / 10, ownFieldPane.getPrefHeight());
-            drawField(ownFieldScrollPane, thisPlayer, true);
+            VBox statsBox = (VBox) root.lookup("#statsBox");
 
-            Button zoomedOwnFieldButton = new Button("[]");
-            zoomedOwnFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
-            zoomedOwnFieldButton.setOnMouseClicked((event) -> showField(thisPlayer));
+            statsBox.getChildren().clear();
 
-            Button centerFieldButton = new Button("+");
-            centerFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
-            centerFieldButton.setOnMouseClicked((event) -> {
-                ownFieldScrollPane.setHvalue((ownFieldScrollPane.getHmax() + ownFieldScrollPane.getHmin()) / 2);
-                ownFieldScrollPane.setVvalue((ownFieldScrollPane.getVmax() + ownFieldScrollPane.getVmin()) / 2);
-            });
-
-            VBox statsBox = new VBox(0);
-            statsBox.setAlignment(Pos.CENTER);
             statsBox.setPrefSize(ownFieldPane.getPrefWidth() / 10, ownFieldPane.getPrefHeight());
             for (var resourceEntry : thisPlayer.getOwnedResources().entrySet()) {
                 //TODO: dopo aggiungeremo le immaginette o le icone o le emoji che al momento non abbiamo
@@ -438,21 +394,39 @@ public class GUIView extends View {
                 statsBox.getChildren().add(resourceInfo);
             }
 
-            ownFieldPane.getChildren().addAll(statsBox, ownFieldScrollPane, zoomedOwnFieldButton, centerFieldButton);
+            ScrollPane ownFieldScrollPane = (ScrollPane) ownFieldPane.lookup("#ownFieldScrollPane");
+            ownFieldScrollPane.setPannable(true);
+            ownFieldScrollPane.setPrefSize(ownFieldPane.getPrefWidth() * 9 / 10, ownFieldPane.getPrefHeight());
+            drawField(ownFieldScrollPane, thisPlayer, true);
+
+            Button zoomedOwnFieldButton = (Button) ownFieldPane.lookup("#zoomedOwnFieldButton");
+            zoomedOwnFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            zoomedOwnFieldButton.setOnMouseClicked((event) -> showField(thisPlayer));
+
+            Button centerOwnFieldButton = (Button) ownFieldPane.lookup("#centerOwnFieldButton");
+            centerOwnFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            centerOwnFieldButton.setOnMouseClicked((event) -> {
+                ownFieldScrollPane.setHvalue((ownFieldScrollPane.getHmax() + ownFieldScrollPane.getHmin()) / 2);
+                ownFieldScrollPane.setVvalue((ownFieldScrollPane.getVmax() + ownFieldScrollPane.getVmin()) / 2);
+            });
+
             ownFieldScrollPane.relocate(ownFieldPane.getPrefWidth() / 10, 0);
             zoomedOwnFieldButton.relocate(ownFieldPane.getPrefWidth() - 50, 20);
-            centerFieldButton.relocate(ownFieldPane.getPrefWidth() - 50, 60);
+            centerOwnFieldButton.relocate(ownFieldPane.getPrefWidth() - 50, 60);
             showOpponentsFieldsMiniaturized();
 
-            showScoreboard();
+            Button scoreboardButton = (Button) root.lookup("#scoreboardButton");
+            scoreboardButton.setOnMouseClicked((event) -> showScoreboard());
+            scoreboardButton.relocate(screenSizes.getX() * 10 / 100, screenSizes.getY() * 10 / 100);
+            scoreboardButton.toFront();
 
-            Button leaveButton = (Button) fxmlLoader.getNamespace().get("leaveButton");
+            Button leaveButton = (Button) root.lookup("#leaveButton");
             leaveButton.setOnMouseClicked((event) -> ClientController.getInstance().viewState.quit());
             leaveButton.relocate(screenSizes.getX() * 90 / 100, screenSizes.getY() * 90 / 100);
             leaveButton.toFront();
 
-            Button chatButton = (Button) fxmlLoader.getNamespace().get("chatButton");
-            chatButton.setOnMouseClicked((event) -> showChat());
+            Button chatButton = (Button) root.lookup("#chatButton");
+            chatButton.setOnMouseClicked((event) -> showChat()); //FIXME: make toggleChat()?
             chatButton.relocate(screenSizes.getX() * 95 / 100, screenSizes.getY() * 95 / 100);
             chatButton.toFront();
         });
@@ -461,8 +435,14 @@ public class GUIView extends View {
     private void showScoreboard() {
         Platform.runLater(() -> {
             AnchorPane scoreboardPane = (AnchorPane) stage.getScene().lookup("#scoreboardPane");
-            scoreboardPane.setPrefHeight(screenSizes.getY() * 50 / 100);
+            scoreboardPane.setPrefSize(screenSizes.getY() * 50 / 100 / 2, screenSizes.getY() * 50 / 100);
             scoreboardPane.setStyle("-fx-background-image: url('/images/scoreboard.png'); -fx-background-size: stretch;");
+
+            Button hideScoreboardButton = (Button) scoreboardPane.lookup("#hideScoreboardButton");
+            hideScoreboardButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            hideScoreboardButton.setOnMouseClicked((event) -> scoreboardPane.setVisible(false));
+
+            hideScoreboardButton.relocate(scoreboardPane.getPrefWidth(), 0);
 
             //TODO: ???????
             AtomicReference<Double> xOffset = new AtomicReference<>((double) 0);
@@ -471,6 +451,7 @@ public class GUIView extends View {
             scoreboardPane.setOnMousePressed((event) -> {
                 xOffset.set(scoreboardPane.getLayoutX() - event.getScreenX());
                 yOffset.set(scoreboardPane.getLayoutY() - event.getScreenY());
+                scoreboardPane.toFront();
             });
 
             scoreboardPane.setOnMouseDragged((event) -> {
@@ -525,6 +506,7 @@ public class GUIView extends View {
                          scoreboardPane.getPrefHeight() * scaleFactor.getY() + stackOffset * token.getFitHeight() / stdHeight);
             }*/
 
+            /*
             GenericPair<Double, Double> scaleFactorCircle = relativeOffsetScaleFactors.get(0);
             Circle circle = new Circle();
             circle.setRadius((230 * scoreboardPane.getPrefWidth() / 1575) / 2);
@@ -533,6 +515,10 @@ public class GUIView extends View {
             scoreboardPane.getChildren().add(circle);
             circle.relocate(scoreboardPane.getPrefWidth() * scaleFactorCircle.getX(),
                     scoreboardPane.getPrefHeight() * scaleFactorCircle.getY());
+             */
+
+            //FIXME: we need to clear all the previous token, but this also clears the hideScoreboardButton...
+            //scoreboardPane.getChildren().clear();
 
             for (int i = 1; i < 30; i++) {
                 GenericPair<Double, Double> scaleFactor = relativeOffsetScaleFactors.get(i);
@@ -544,12 +530,18 @@ public class GUIView extends View {
                 token.relocate(scoreboardPane.getPrefWidth() * scaleFactor.getX(),
                         scoreboardPane.getPrefHeight() * scaleFactor.getY());
             }
+
+            scoreboardPane.setVisible(true);
+            scoreboardPane.toFront();
         });
     }
 
     @Override
     public void updateNickname() {
-
+        Platform.runLater(() -> {
+            Label profile = (Label) sceneRoots.get("lobby_menu").lookup("#profile");
+            profile.setText(ClientController.getInstance().viewModel.getOwnNickname());
+        });
     }
 
     public OverlayPopup drawOverlayPopup(Pane popupContent, boolean isCloseable) {
@@ -663,6 +655,7 @@ public class GUIView extends View {
             chatPane.setOnMousePressed((event) -> {
                 xOffset.set(chatPane.getLayoutX() - event.getScreenX());
                 yOffset.set(chatPane.getLayoutY() - event.getScreenY());
+                chatPane.toFront();
             });
 
             chatPane.setOnMouseDragged((event) -> {
@@ -673,7 +666,7 @@ public class GUIView extends View {
             VBox messagesBox = (VBox) chatPane.lookup("#messagesBox");
             ComboBox<String> receiverNicknameSelector = (ComboBox<String>) chatPane.lookup("#receiverSelector");
             TextField messageText = (TextField) chatPane.lookup("#messageText");
-            Button hideButton = (Button) chatPane.lookup("#hideButton");
+            Button hideChatButton = (Button) chatPane.lookup("#hideChatButton");
             Button sendButton = (Button) chatPane.lookup("#sendButton");
 
             ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
@@ -694,7 +687,7 @@ public class GUIView extends View {
             receiverNicknameSelector.setItems(receiverNicknames);
             receiverNicknameSelector.getSelectionModel().selectFirst();
 
-            hideButton.setOnMouseClicked((event) -> chatPane.setVisible(false));
+            hideChatButton.setOnMouseClicked((event) -> chatPane.setVisible(false));
 
             sendButton.setOnMouseClicked((event) -> {
                 String receiver = receiverNicknameSelector.getValue();
@@ -721,6 +714,8 @@ public class GUIView extends View {
         ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
 
         String style = "-fx-font-size: 15px; -fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+
+        opponentsFieldsPane.getChildren().clear();
 
         for (var player : thisGame.getPlayers().stream()
                 .filter((player) -> !(player.getNickname().equals(ClientController.getInstance().viewModel.getOwnNickname()))).toList()) {
@@ -868,89 +863,87 @@ public class GUIView extends View {
 
     @Override
     public void showHand() {
-        Platform.runLater(() ->
-                {
-                    HBox handPane = (HBox) stage.getScene().lookup("#handPane");
-                    handPane.setPrefSize(screenSizes.getX() * 50 / 100, screenSizes.getY() * 15 / 100);
-                    handPane.relocate(screenSizes.getX() * 40 / 100, screenSizes.getY() * 85 / 100);
-                    handPane.setAlignment(Pos.CENTER);
+        Platform.runLater(() -> {
+            HBox handPane = (HBox) stage.getScene().lookup("#handPane");
+            handPane.setPrefSize(screenSizes.getX() * 50 / 100, screenSizes.getY() * 15 / 100);
+            handPane.relocate(screenSizes.getX() * 40 / 100, screenSizes.getY() * 85 / 100);
+            handPane.setAlignment(Pos.CENTER);
 
-                    double handPaneHeight = handPane.getPrefHeight();
-                    double handPaneWidth = handPane.getPrefWidth();
-                    List<ClientCard> cardsInHand = ClientController.getInstance().viewModel.getGame().getCardsInHand();
+            double handPaneHeight = handPane.getPrefHeight();
+            double handPaneWidth = handPane.getPrefWidth();
+            List<ClientCard> cardsInHand = ClientController.getInstance().viewModel.getGame().getCardsInHand();
 
-                    handPane.getChildren().clear();
+            handPane.getChildren().clear();
 
-                    for (int i = 0; i < cardsInHand.size(); i++) {
-                        ClientCard card = cardsInHand.get(i);
-                        AnchorPane pane = new AnchorPane();
+            for (int i = 0; i < cardsInHand.size(); i++) {
+                ClientCard card = cardsInHand.get(i);
+                AnchorPane pane = new AnchorPane();
 
-                        pane.setPrefSize(handPaneWidth / 3, handPaneHeight);  //FIXME: Diviso 3? (cardInHand.size()?)
-                        pane.setStyle("-fx-background-color: darkorange;");
+                pane.setPrefSize(handPaneWidth / 3, handPaneHeight);  //FIXME: Diviso 3? (cardInHand.size()?)
+                pane.setStyle("-fx-background-color: darkorange;");
 
-                        //FIXME: mappa anche per gli sprite GUI come sprite TUI? altrimenti card.XXX_SPRITE
-                        ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.FRONT))));
-                        ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.BACK))));
+                //FIXME: mappa anche per gli sprite GUI come sprite TUI? altrimenti card.XXX_SPRITE
+                ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.FRONT))));
+                ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.BACK))));
 
-                        pane.getChildren().addAll(backCardView, frontCardView);
-                        backCardView.toBack();
+                pane.getChildren().addAll(backCardView, frontCardView);
+                backCardView.toBack();
 
-                        double paneChildrenHeight = pane.getHeight();
-                        double paneChildrenWidth = pane.getWidth();
+                double paneChildrenHeight = pane.getHeight();
+                double paneChildrenWidth = pane.getWidth();
 
-                        frontCardView.setFitWidth(pane.getPrefWidth() * 0.7);
-                        frontCardView.setPreserveRatio(true);
+                frontCardView.setFitWidth(pane.getPrefWidth() * 0.7);
+                frontCardView.setPreserveRatio(true);
 
-                        backCardView.setFitWidth(pane.getPrefWidth() * 0.7);
-                        backCardView.setPreserveRatio(true);
+                backCardView.setFitWidth(pane.getPrefWidth() * 0.7);
+                backCardView.setPreserveRatio(true);
 
-                        //TODO: vs setLayoutX/Y ?
-                        frontCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.05);
-                        backCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.05);
+                //TODO: vs setLayoutX/Y ?
+                frontCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.05);
+                backCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.05);
 
 //                        frontCardView.setLayoutX((pane.getPrefWidth() - frontCardView.getFitWidth()) / 2);
 //                        frontCardView.setLayoutY((pane.getPrefHeight() - frontCardView.getFitHeight()) / 2);
 //                        backCardView.setLayoutX((pane.getPrefWidth() - backCardView.getFitWidth()) / 2);
 //                        backCardView.setLayoutY((pane.getPrefHeight() - backCardView.getFitHeight()) / 2);
 
-                        backCardView.setOnMouseClicked((event) -> frontCardView.toFront());
-                        frontCardView.setOnMouseClicked((event) -> backCardView.toFront());
+                backCardView.setOnMouseClicked((event) -> frontCardView.toFront());
+                frontCardView.setOnMouseClicked((event) -> backCardView.toFront());
 
-                        //TODO: Complete implementation of drag-and-drop of cards with all DragEvents specified, and this is horrible...
-                        int inHandPosition = i + 1;
+                //TODO: Complete implementation of drag-and-drop of cards with all DragEvents specified, and this is horrible...
+                int inHandPosition = i + 1;
 
-                        frontCardView.setOnDragDetected((event) -> {
-                            Dragboard cardDragboard = frontCardView.startDragAndDrop(TransferMode.MOVE);
-                            cardDragboard.setDragView(frontCardView.getImage(), cardSizes.getX() / 2, cardSizes.getY() / 2);
-                            ClipboardContent cardClipboard = new ClipboardContent();
-                            cardClipboard.put(placeCardDataFormat, new GenericPair<>(inHandPosition, Side.FRONT));
-                            cardDragboard.setContent(cardClipboard);
-                        });
+                frontCardView.setOnDragDetected((event) -> {
+                    Dragboard cardDragboard = frontCardView.startDragAndDrop(TransferMode.MOVE);
+                    cardDragboard.setDragView(frontCardView.getImage(), cardSizes.getX() / 2, cardSizes.getY() / 2);
+                    ClipboardContent cardClipboard = new ClipboardContent();
+                    cardClipboard.put(placeCardDataFormat, new GenericPair<>(inHandPosition, Side.FRONT));
+                    cardDragboard.setContent(cardClipboard);
+                });
 
-                        frontCardView.setOnDragDone((event) -> {
-                            if (event.getTransferMode() == TransferMode.MOVE && event.isDropCompleted()) {
-                            }
-                            //TODO: visually clear card from hand?
-                        });
-
-                        backCardView.setOnDragDetected((event) -> {
-                            Dragboard cardDragboard = backCardView.startDragAndDrop(TransferMode.MOVE);
-                            cardDragboard.setDragView(backCardView.getImage(), cardSizes.getX() / 2, cardSizes.getY() / 2);
-                            ClipboardContent cardClipboard = new ClipboardContent();
-                            cardClipboard.put(placeCardDataFormat, new GenericPair<>(inHandPosition, Side.BACK));
-                            cardDragboard.setContent(cardClipboard);
-                        });
-
-                        backCardView.setOnDragDone((event) -> {
-                            if (event.getTransferMode() == TransferMode.MOVE && event.isDropCompleted()) {
-                            }
-                            //TODO: visually clear card from hand?
-                        });
-
-                        handPane.getChildren().add(pane);
+                frontCardView.setOnDragDone((event) -> {
+                    if (event.getTransferMode() == TransferMode.MOVE && event.isDropCompleted()) {
                     }
-                }
-        );
+                    //TODO: visually clear card from hand?
+                });
+
+                backCardView.setOnDragDetected((event) -> {
+                    Dragboard cardDragboard = backCardView.startDragAndDrop(TransferMode.MOVE);
+                    cardDragboard.setDragView(backCardView.getImage(), cardSizes.getX() / 2, cardSizes.getY() / 2);
+                    ClipboardContent cardClipboard = new ClipboardContent();
+                    cardClipboard.put(placeCardDataFormat, new GenericPair<>(inHandPosition, Side.BACK));
+                    cardDragboard.setContent(cardClipboard);
+                });
+
+                backCardView.setOnDragDone((event) -> {
+                    if (event.getTransferMode() == TransferMode.MOVE && event.isDropCompleted()) {
+                    }
+                    //TODO: visually clear card from hand?
+                });
+
+                handPane.getChildren().add(pane);
+            }
+        });
     }
 
     @Override
@@ -958,20 +951,18 @@ public class GUIView extends View {
         Platform.runLater(() ->
         {
             //TODO: maybe GridPane and padding?
-            VBox deckVBox = (VBox) stage.getScene().lookup("#deckAndVisiblePane");
-            deckVBox.setPrefSize(screenSizes.getX() * 25 / 100, screenSizes.getY() * 25 / 100);
-            deckVBox.relocate(0, screenSizes.getY() * 75 / 100);
-            // deckVBox.setSpacing(10);
-
-            //TODO. make vbox and hbox static and clear and refresh only the content
-            deckVBox.getChildren().clear();
+            VBox deckAndVisiblePane = (VBox) stage.getScene().lookup("#deckAndVisiblePane");
+            deckAndVisiblePane.setPrefSize(screenSizes.getX() * 25 / 100, screenSizes.getY() * 25 / 100);
+            deckAndVisiblePane.relocate(0, screenSizes.getY() * 75 / 100);
 
             ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
 
             // HBox for resource cards
-            HBox resourceHBox = new HBox(10);
-            resourceHBox.setAlignment(Pos.CENTER);
-            resourceHBox.setPrefSize(deckVBox.getPrefWidth(), deckVBox.getPrefHeight() / 3);
+            HBox resourceHBox = (HBox) deckAndVisiblePane.lookup("#resourceHBox");
+            resourceHBox.setPrefSize(deckAndVisiblePane.getPrefWidth(), deckAndVisiblePane.getPrefHeight() / 3);
+
+            //TODO. make imageView static and clear and avoid clearing children and refresh only the content
+            resourceHBox.getChildren().clear();
 
             ImageView resourceDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckResourceCard().GUI_SPRITES.get(Side.BACK))));
 
@@ -983,22 +974,26 @@ public class GUIView extends View {
             resourceHBox.getChildren().add(resourceDeck);
 
             for (int i = 0; i < thisGame.getPlacedResources().length; i++) {
-                ImageView resource = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedResources()[i].GUI_SPRITES.get(Side.FRONT))));
-                resource.setFitWidth(cardSizes.getX());
-                resource.setPreserveRatio(true);
+                if (thisGame.getPlacedResources()[i] != null) {
+                    ImageView resource = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedResources()[i].GUI_SPRITES.get(Side.FRONT))));
+                    resource.setFitWidth(cardSizes.getX());
+                    resource.setPreserveRatio(true);
 
-                int finalI = i + 1;
-                resource.setOnMouseClicked((event) ->
-                        ClientController.getInstance().viewState.drawFromVisibleCards("Resource", finalI)
-                );
+                    int finalI = i + 1;
+                    resource.setOnMouseClicked((event) ->
+                            ClientController.getInstance().viewState.drawFromVisibleCards("Resource", finalI)
+                    );
 
-                resourceHBox.getChildren().add(resource);
+                    resourceHBox.getChildren().add(resource);
+                }
             }
 
             // HBox for gold cards
-            HBox goldHBox = new HBox(10);
-            goldHBox.setAlignment(Pos.CENTER);
-            goldHBox.setPrefSize(deckVBox.getPrefWidth(), deckVBox.getPrefHeight() / 3);
+            HBox goldHBox = (HBox) deckAndVisiblePane.lookup("#goldHBox");
+            goldHBox.setPrefSize(deckAndVisiblePane.getPrefWidth(), deckAndVisiblePane.getPrefHeight() / 3);
+
+            //TODO. make imageView static and clear and avoid clearing children and refresh only the content
+            goldHBox.getChildren().clear();
 
             ImageView goldDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckGoldCard().GUI_SPRITES.get(Side.BACK))));
 
@@ -1009,39 +1004,45 @@ public class GUIView extends View {
             );
             goldHBox.getChildren().add(goldDeck);
 
-            for (int i = 0; i < thisGame.getPlacedGold().length; i++) {
-                ImageView gold = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedGold()[i].GUI_SPRITES.get(Side.FRONT))));
-                gold.setFitWidth(cardSizes.getX());
-                gold.setPreserveRatio(true);
+            for (int i = 0; i < thisGame.getPlacedGolds().length; i++) {
+                if (thisGame.getPlacedGolds()[i] != null) {
+                    ImageView gold = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedGolds()[i].GUI_SPRITES.get(Side.FRONT))));
+                    gold.setFitWidth(cardSizes.getX());
+                    gold.setPreserveRatio(true);
 
-                int finalI = i + 1;
-                gold.setOnMouseClicked((event) ->
-                        ClientController.getInstance().viewState.drawFromVisibleCards("Gold", finalI)
-                );
+                    int finalI = i + 1;
+                    gold.setOnMouseClicked((event) ->
+                            ClientController.getInstance().viewState.drawFromVisibleCards("Gold", finalI)
+                    );
 
-                goldHBox.getChildren().add(gold);
+                    goldHBox.getChildren().add(gold);
+                }
             }
 
             // HBox for objective cards
-            HBox objectiveHBox = new HBox(10);
-            objectiveHBox.setAlignment(Pos.CENTER);
-            objectiveHBox.setPrefSize(deckVBox.getPrefWidth(), deckVBox.getPrefHeight() / 3);
+            HBox objectiveHBox = (HBox) deckAndVisiblePane.lookup("#objectiveHBox");
+            objectiveHBox.setPrefSize(deckAndVisiblePane.getPrefWidth(), deckAndVisiblePane.getPrefHeight() / 3);
+
+            //TODO. make imageView static and clear and avoid clearing children and refresh only the content
+            objectiveHBox.getChildren().clear();
 
             for (int i = 0; i < thisGame.getCommonObjectives().length; i++) {
-                ImageView commonObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getCommonObjectives()[i].GUI_SPRITES.get(Side.FRONT))));
-                commonObjective.setFitWidth(cardSizes.getX());
-                commonObjective.setPreserveRatio(true);
+                if (thisGame.getCommonObjectives()[i] != null) {
+                    ImageView commonObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getCommonObjectives()[i].GUI_SPRITES.get(Side.FRONT))));
+                    commonObjective.setFitWidth(cardSizes.getX());
+                    commonObjective.setPreserveRatio(true);
 
-                objectiveHBox.getChildren().add(commonObjective);
+                    objectiveHBox.getChildren().add(commonObjective);
+                }
             }
 
-            ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getOwnObjective().GUI_SPRITES.get(Side.FRONT))));
-            secretObjective.setFitWidth(cardSizes.getX());
-            secretObjective.setPreserveRatio(true);
+            if (thisGame.getOwnObjective() != null) {
+                ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getOwnObjective().GUI_SPRITES.get(Side.FRONT))));
+                secretObjective.setFitWidth(cardSizes.getX());
+                secretObjective.setPreserveRatio(true);
 
-            objectiveHBox.getChildren().add(secretObjective);
-
-            deckVBox.getChildren().addAll(resourceHBox, goldHBox, objectiveHBox);
+                objectiveHBox.getChildren().add(secretObjective);
+            }
         });
     }
 
