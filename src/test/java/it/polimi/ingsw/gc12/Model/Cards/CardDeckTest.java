@@ -113,6 +113,4 @@ public class CardDeckTest {
 
         assertNull(resourceCardDeck.peek());
     }
-
-
 }

@@ -22,13 +22,13 @@ class GameLobbyTest {
     }
 
     @Test
-    void addPlayerSuccces() {
+    void addPlayerSuccessful() {
         lobby.addPlayer(player2);
         assert (lobby.getPlayers().contains(player2));
     }
 
     @Test
-    void addPlayerNotSucccesForMaxNumberOfPlayer() {
+    void addPlayerNotSuccessfulForMaxNumberOfPlayer() {
         lobby.addPlayer(player2);
         assertEquals(true, lobby.getPlayers().contains(player2));
     }
@@ -42,14 +42,14 @@ class GameLobbyTest {
     }
 
     @Test
-    void setMAxPlayerTest() {
+    void setMaxPlayerTest() {
         GameLobby lobby = new GameLobby(player1, 2);
         lobby.setMaxPlayers(4);
         assertEquals(4, lobby.getMaxPlayers());
     }
 
     @Test
-    void shuffleplayerTest() {
+    void shufflePlayerTest() {
         lobby = new GameLobby(player1, 2);
         lobby.addPlayer(player2);
         lobby.shufflePlayers();

@@ -45,14 +45,11 @@ class ClientGameTest {
         player2 = new Player("Piants");
         lobby = new GameLobby(player1, 2);
         game = new Game(lobby);
-        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
-        });
-        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
-        });
-        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
-        });
-        objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {
-        });
+
+        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {});
+        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {});
+        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {});
+        objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {});
 
         client1 = command -> {
         };
@@ -71,11 +68,9 @@ class ClientGameTest {
         int i = 0;
         for (var target : game.getPlayers()) {
             target.placeCard(new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
+            target.addCardToHand(resourceCards.get(i++));
             target.addCardToHand(resourceCards.get(i));
-            i++;
-            target.addCardToHand(resourceCards.get(i));
-            target.addCardToHand(goldCards.get(i));
-            i++;
+            target.addCardToHand(goldCards.get(i++));
         }
 
 
