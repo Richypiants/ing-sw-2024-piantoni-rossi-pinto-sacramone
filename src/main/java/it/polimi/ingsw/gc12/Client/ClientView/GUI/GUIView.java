@@ -11,6 +11,7 @@ import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
+import javafx.animation.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -34,6 +35,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.*;
@@ -60,6 +62,8 @@ public class GUIView extends View {
     //FIXME: this is probably not the correct MIME type syntax for the data we want to pass...
     DataFormat placeCardDataFormat = new DataFormat("text/genericpair<integer,side>");
 
+    ToggleGroup connection;
+
     private GUIView() {
         //FIXME: is there a thread problem here in scene initialization?
         new Thread(() -> Application.launch(GUIApplication.class)).start(); //starting the GUI thread
@@ -85,6 +89,8 @@ public class GUIView extends View {
         }
 
         sceneRoots = Map.copyOf(tmp);
+
+        setScreenSizes();
     }
 
     public static GUIView getInstance() {
@@ -100,9 +106,7 @@ public class GUIView extends View {
     @Override
     public void printError(Throwable t) {
         //TODO: popup con l'exception
-
         Platform.runLater(() -> {
-
             String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
 
             //Popup error
@@ -135,18 +139,53 @@ public class GUIView extends View {
     @Override
     public void titleScreen() {
         Platform.runLater(() -> {
-            setScreenSizes();
+            //TODO: maybe prima aggiungere schermate loghi
             Parent root = sceneRoots.get("title_screen");
             stage.getScene().setRoot(root);
 
-            Button startButton = (Button) root.lookup("#startButton");
+            AnchorPane titleScreenBox = (AnchorPane) root.lookup("#titleScreenBox");
+            titleScreenBox.setPrefSize(screenSizes.getX(), screenSizes.getY());
+
+            ImageView titleScreenGameLogo = new ImageView(String.valueOf(GUIView.class.getResource("/images/only_center_logo_no_bg.png")));
+            titleScreenGameLogo.setFitWidth(650);
+            titleScreenGameLogo.setFitHeight(650);
+            titleScreenGameLogo.setPreserveRatio(true);
+            titleScreenGameLogo.setId("titleScreenLogo");
+
+            titleScreenBox.getChildren().add(titleScreenGameLogo);
+            titleScreenGameLogo.relocate(
+                    (screenSizes.getX() - titleScreenGameLogo.getFitWidth()) / 2,
+                    screenSizes.getY() * 5 / 100
+            );
+            //titleScreenGameLogo.setLayoutY(titleScreenBox.getPrefHeight() * 20 / 100);
+
+            FadeTransition backgroundTransition = new FadeTransition(Duration.millis(6000));
+            backgroundTransition.setNode(titleScreenBox);
+            backgroundTransition.setFromValue(0);
+            backgroundTransition.setToValue(1);
+            //backgroundTransition.setInterpolator(Interpolator.EASE_BOTH);
+            backgroundTransition.play();
+
+            Button startButton = new Button("Premi Invio per iniziare");
+            startButton.setId("startButton");
             startButton.setOnAction(this::keyPressed);
+            startButton.setPrefSize(300, 25);
 
-            // Dimensione Schermo
-            double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+            FadeTransition fadeTransition = new FadeTransition(Duration.millis(2000));
+            fadeTransition.setNode(startButton);
+            fadeTransition.setFromValue(1.0);
+            fadeTransition.setToValue(0.3);
+            fadeTransition.setCycleCount(Animation.INDEFINITE);
+            fadeTransition.setAutoReverse(true);
+            fadeTransition.setInterpolator(Interpolator.EASE_BOTH);
+            fadeTransition.play();
 
-            StackPane.setAlignment(startButton, Pos.CENTER);
-            StackPane.setMargin(startButton, new Insets(screenHeight * 0.8, 0, 0, 0));
+            //startButton.setLayoutY(titleScreenBox.getPrefHeight() * 80 / 100);
+            titleScreenBox.getChildren().add(startButton);
+            startButton.relocate(
+                    (screenSizes.getX() - startButton.getPrefWidth()) / 2,
+                    screenSizes.getY() * 85 / 100
+            );
 
             //FIXME: non funziona e non indirizza gli input sulla schermata... stage.requestFocus();
             stage.show();
@@ -160,25 +199,47 @@ public class GUIView extends View {
 
     @Override
     public void connectToServerScreen() {
-        try {
-            selection();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+        ImageView titleScreenGameLogo = (ImageView) stage.getScene().getRoot().lookup("#titleScreenLogo");
 
-    private void selection() throws IOException {
-        Parent root = sceneRoots.get("connection_setup");
-        stage.getScene().setRoot(root);
+        AnchorPane titleScreenPane = (AnchorPane) stage.getScene().getRoot().lookup("#titleScreenPane");
+        AnchorPane titleScreenBox = (AnchorPane) titleScreenPane.lookup("#titleScreenBox");
 
-        //TODO: al posto della lingua, far inserire indirizzo IP del server!
-        TextField addressField = (TextField) root.lookup("#addressField");
+        titleScreenBox.getChildren().remove(titleScreenBox.lookup("#startButton"));
 
-        ComboBox<String> connection = (ComboBox<String>) root.lookup("#connection");
-        connection.setValue("Select communication technology");
-        connection.setItems(connectionList);
+        VBox connectionSetupBox = new VBox(50);
+        connectionSetupBox.setId("connectionSetupBox");
+        connectionSetupBox.setPrefSize(screenSizes.getX() / 4, screenSizes.getY() / 2);
+        connectionSetupBox.setOpacity(0.0);
 
-        Button button = (Button) root.lookup("#button");
+        Label nicknameLabel = new Label("Scegli il tuo nickname pubblico per connetterti al server: ");
+
+        TextField nicknameField = new TextField();
+        nicknameField.setId("nicknameField");
+        nicknameField.setPromptText("Scrivi qui il tuo nickname...");
+        nicknameField.setPrefSize(10.0, 10.0);
+
+        Label addressLabel = new Label("Inserisci l'indirizzo IP del server: ");
+
+        TextField addressField = new TextField();
+        addressField.setId("addressField");
+        addressField.setPromptText("localhost");
+        addressField.setPrefSize(10.0, 10.0);
+
+        Label connectionTechnologyPrompt = new Label("Scegli la tecnologia di comunicazione che preferisci: ");
+
+        HBox connectionTechnology = new HBox(200);
+
+        RadioButton socket = new RadioButton("Socket");
+        RadioButton rmi = new RadioButton("RMI");
+        this.connection = new ToggleGroup();
+        this.connection.getToggles().addAll(socket, rmi);
+        this.connection.selectToggle(socket);
+
+        connectionTechnology.getChildren().addAll(socket, rmi);
+
+        Button button = new Button("Inizia a scrivere il tuo manoscritto!");
+        button.setStyle("-fx-font-size: 12;");
+        button.setPrefSize(connectionSetupBox.getPrefWidth(), 10.0);
         button.setOnAction(event -> {
             try {
                 waitingForConnection(event);
@@ -187,47 +248,67 @@ public class GUIView extends View {
             }
         });
 
-        TextField nicknameField = (TextField) root.lookup("#nicknameField");
-        Label error = (Label) root.lookup("#error");
-        Label nicknameLabel = (Label) root.lookup("#nicknameLabel");
-        Label addressLabel = (Label) root.lookup("#addressLabel");
+        //TODO: sostituire con un popup
+        /*Label error = new Label();
+        error.setId("#error");
+         */
 
-        // Dimensione Schermo
-        double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
-        double screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
+        connectionSetupBox.getChildren().addAll(nicknameLabel, nicknameField, addressLabel,
+                addressField, connectionTechnologyPrompt, connectionTechnology, button);
+        ((AnchorPane) stage.getScene().getRoot()).getChildren().add(connectionSetupBox);
+        connectionSetupBox.relocate(screenSizes.getX() * 5 / 8, screenSizes.getY() / 4);
 
-        //StackPane.setAlignment(connection, Pos.CENTER);
-        connection.relocate(screenWidth * 0.5, screenHeight * 0.4);
-        //StackPane.setAlignment(button, Pos.CENTER);
-        button.relocate(screenWidth * 0.5, screenHeight * 0.6);
-        //StackPane.setAlignment(error, Pos.CENTER);
-        error.relocate(screenWidth * 0.5, screenHeight * 0.5);
+        TranslateTransition centerLogoTransition = new TranslateTransition(Duration.millis(2000));
+        centerLogoTransition.setNode(titleScreenGameLogo);
+        centerLogoTransition.setInterpolator(Interpolator.EASE_BOTH);
+        centerLogoTransition.setToX(screenSizes.getX() * 5 / 100 - titleScreenGameLogo.getLayoutX());
+        centerLogoTransition.setToY((screenSizes.getY() - titleScreenGameLogo.getFitHeight()) / 2 - titleScreenGameLogo.getLayoutY());
 
-        //StackPane.setAlignment(addressField, Pos.CENTER);
-        addressField.relocate(screenWidth * 0.7, screenHeight * 0.4);
-        //StackPane.setAlignment(addressLabel, Pos.CENTER);
-        addressLabel.relocate(screenWidth * 0.7, screenHeight * 0.3);
+        ImageView appearingLogo = new ImageView(String.valueOf(GUIView.class.getResource("/images/transparent_game_logo2.png")));
+        appearingLogo.setOpacity(0.0);
+        appearingLogo.setFitWidth(650);
+        appearingLogo.setFitHeight(650);
+        appearingLogo.relocate(
+                (screenSizes.getX() - appearingLogo.getFitWidth()) / 2,
+                screenSizes.getY() * 5 / 100
+        );
 
-        //StackPane.setAlignment(nicknameLabel, Pos.CENTER);
-        nicknameLabel.relocate(screenWidth * 0.3, screenHeight * 0.3);
-        //StackPane.setAlignment(nicknameField, Pos.CENTER);
-        nicknameField.relocate(screenWidth * 0.3, screenHeight * 0.4);
+        ((AnchorPane) stage.getScene().getRoot().lookup("#titleScreenPane")).getChildren().add(appearingLogo);
+
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(2000));
+        fadeTransition.setNode(appearingLogo);
+        fadeTransition.setFromValue(0.0);
+        fadeTransition.setToValue(1);
+        fadeTransition.setInterpolator(Interpolator.EASE_BOTH);
+
+        TranslateTransition appearingLogoTransition2 = new TranslateTransition(Duration.millis(2000));
+        appearingLogoTransition2.setNode(appearingLogo);
+        appearingLogoTransition2.setInterpolator(Interpolator.EASE_BOTH);
+        appearingLogoTransition2.setByX(screenSizes.getX() * 5 / 100 - appearingLogo.getLayoutX());
+        appearingLogoTransition2.setByY((screenSizes.getY() - titleScreenGameLogo.getFitHeight()) / 2 - appearingLogo.getLayoutY());
+
+        FadeTransition connectionBoxTransition = new FadeTransition(Duration.millis(1000));
+        connectionBoxTransition.setDelay(Duration.millis(1000));
+        connectionBoxTransition.setNode(connectionSetupBox);
+        connectionBoxTransition.setFromValue(0.0);
+        connectionBoxTransition.setToValue(1);
+        connectionBoxTransition.setInterpolator(Interpolator.EASE_BOTH);
+
+        ParallelTransition movement = new ParallelTransition(centerLogoTransition, fadeTransition, appearingLogoTransition2, connectionBoxTransition);
+        movement.play();
     }
 
     @FXML
     protected void waitingForConnection(ActionEvent event) throws IOException {
-        TextField nicknameField = ((TextField) sceneRoots.get("connection_setup").lookup("#nicknameField"));
-        Label error = ((Label) sceneRoots.get("connection_setup").lookup("#error"));
-        ComboBox<String> connection = ((ComboBox<String>) sceneRoots.get("connection_setup").lookup("#connection"));
-        TextField addressField = ((TextField) sceneRoots.get("connection_setup").lookup("#addressField"));
+        AnchorPane titleScreenPane = (AnchorPane) stage.getScene().getRoot().lookup("#titleScreenPane");
+        VBox connectionSetupBox = (VBox) titleScreenPane.lookup("#connectionSetupBox");
+
+        TextField nicknameField = (TextField) connectionSetupBox.lookup("#nicknameField");
+        //Label error = ((Label) stage.getScene().getRoot().lookup("#error"));
+        TextField addressField = (TextField) connectionSetupBox.lookup("#addressField");
 
         if (nicknameField.getText().isEmpty()) {
-            error.setText("Inserire un nickname prima di proseguire");
-            return;
-        }
-
-        if (connection.valueProperty().get() == null) {
-            error.setText("Selezionare una connessione prima di proseguire");
+            //error.setText("Inserire un nickname prima di proseguire");
             return;
         }
 
@@ -257,7 +338,9 @@ public class GUIView extends View {
         }
 
         // Before changing scene, we notify the chosen comm technology to the controller so that it initializes it
-        new Thread(() -> ClientController.getInstance().viewState.connect(addressField.getText(), connection.valueProperty().get(), nicknameField.getText())).start();
+        new Thread(() -> ClientController.getInstance().viewState.connect(
+                addressField.getText(), ((RadioButton) connection.getSelectedToggle()).getText(), nicknameField.getText())
+        ).start();
     }
 
     @Override
@@ -292,7 +375,6 @@ public class GUIView extends View {
             lobbiesPane.setContent(lobbiesList);
 
             String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
-            ;
 
             Button lobby = (Button) root.lookup("#CreateGameButton");
             lobby.setOnAction(event -> {
@@ -540,7 +622,7 @@ public class GUIView extends View {
     public void updateNickname() {
         Platform.runLater(() -> {
             Label profile = (Label) sceneRoots.get("lobby_menu").lookup("#profile");
-            profile.setText(ClientController.getInstance().viewModel.getOwnNickname());
+            profile.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
         });
     }
 

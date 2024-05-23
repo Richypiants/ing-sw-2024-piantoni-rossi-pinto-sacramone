@@ -1,47 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.*?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="connectionPane" maxHeight="-Infinity" maxWidth="-Infinity"
-            minHeight="-Infinity"
-            minWidth="-Infinity" xmlns="http://javafx.com/javafx/21">
-    <children>
-        <Label fx:id="error" prefHeight="10.0" prefWidth="800.0" style="-fx-alignment: Center"
-               textAlignment="CENTER" textFill="#000000">
-            <font>
-                <Font name="Bell MT" size="14.0"/>
-            </font>
-        </Label>
-        <Button fx:id="button" alignment="CENTER" mnemonicParsing="false"
-                prefHeight="38.0" prefWidth="323.0" text="OK"
-                textAlignment="JUSTIFY" wrapText="true">
-        </Button>
-        <ComboBox fx:id="connection" layoutX="225.0" layoutY="188.0" prefWidth="150.0" promptText="Select a language"/>
-        <Label fx:id="nicknameLabel" alignment="CENTER" layoutX="198.0" layoutY="115.0" prefHeight="10.0"
-               prefWidth="100.0" text="Nickname"
-               textFill="#000000">
-            <font>
-                <Font name="Bell MT" size="30.0"/>
-            </font>
-        </Label>
-        <TextField fx:id="nicknameField" prefHeight="10.0" prefWidth="100.0">
-            <font>
-                <Font name="Bell MT" size="20.0"/>
-            </font>
-        </TextField>
-        <Label fx:id="addressLabel" alignment="CENTER" layoutX="198.0" layoutY="115.0" prefHeight="10.0"
-               prefWidth="100.0" text="Inserisci un indirizzo IP (Lascia vuoto per localhost)"
-               textFill="#000000">
-            <font>
-                <Font name="Bell MT" size="20.0"/>
-            </font>
-        </Label>
-        <TextField fx:id="addressField" prefHeight="10.0" prefWidth="100.0" promptText="localhost">
-            <font>
-                <Font name="Bell MT" size="20.0"/>
-            </font>
-        </TextField>
-    </children>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
+            fx:id="connectionPane" stylesheets="/style.css">
 </AnchorPane>

@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--> stylesheets="/style.css" <-->
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1"
-            maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            xmlns="http://javafx.com/javafx/21">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
+            fx:id="gameScreenPane" stylesheets="/style.css">
 
-    <Button fx:id="scoreboardButton" mnemonicParsing="false" text="Show Scoreboard"/>
-    <Button fx:id="chatButton" mnemonicParsing="false" rotate="270.0" text="Chat"/>
-    <Button fx:id="leaveButton" mnemonicParsing="false" text="Leave Game"/>
+    <Button fx:id="scoreboardButton" styleClass="button" mnemonicParsing="false" text="Show Scoreboard"/>
+    <Button fx:id="chatButton" styleClass="button" mnemonicParsing="false" rotate="270.0" text="Chat"/>
+    <Button fx:id="leaveButton" styleClass="button" mnemonicParsing="false" text="Leave Game"/>
 
     <AnchorPane fx:id="scoreboardPane" style="-fx-background-color: blue;" visible="false">
         <Button fx:id="hideScoreboardButton" mnemonicParsing="false" text="X"/>
@@ -44,7 +42,7 @@
 
     <AnchorPane fx:id="chatPane" style="-fx-background-color: gray;" visible="false">
         <HBox alignment="CENTER">
-            <Button fx:id="hideChatButton" mnemonicParsing="false" rotate="270.0"
+            <Button fx:id="hideChatButton" styleClass="button" mnemonicParsing="false" rotate="270.0"
                     text="Hide"/>
             <VBox fx:id="chatBox" alignment="CENTER">
                 <ScrollPane fx:id="chatScrollPane" prefHeight="500.0" prefWidth="350.0">
@@ -68,7 +66,8 @@
                             <Font name="Bell MT" size="20.0"/>
                         </font>
                     </TextField>
-                    <Button fx:id="sendButton" layoutX="846.0" layoutY="360.0" mnemonicParsing="false" text="Send"/>
+                    <Button fx:id="sendButton" styleClass="button" layoutX="846.0" layoutY="360.0"
+                            mnemonicParsing="false" text="Send"/>
                 </HBox>
             </VBox>
         </HBox>

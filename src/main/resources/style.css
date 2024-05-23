@@ -1,3 +1,23 @@
+#titleScreenPane {
+    -fx-background-color: black;
+}
+
+/*
+#titleScreenGameLogo {
+    -fx-background-image: url('/images/black_game_logo.jpg');
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+}
+ */
+
+.button {
+    -fx-alignment: CENTER;
+    -fx-text-alignment: JUSTIFY;
+    -fx-wrap-text: true;
+    -fx-font-family: Castellar;
+    -fx-font-size: 16.0;
+}
+
 #scoreboardPane {
     -fx-pref-width: 21.09; /* 270 / 1280 * 100 = 21.09% */
     -fx-pref-height: 75; /* 540 / 720 * 100 = 75% */
