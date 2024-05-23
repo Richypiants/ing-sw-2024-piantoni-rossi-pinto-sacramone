@@ -13,7 +13,6 @@ import java.util.Map;
 A template for a Gold card in the game's card set
  */
 public class GoldCard extends PlayableCard {
-
     /**
     The condition which is evaluated when calculating total points granted upon playing this card
      */
@@ -31,20 +30,18 @@ public class GoldCard extends PlayableCard {
                     Map<Resource, Integer> centerBackResources, PointsCondition pointsCondition,
                     ResourcesCondition resourcesNeededToPlay) {
         super(id, pointsGranted, centerBackResources, corners);
-        this.POINTS_CONDITION = pointsCondition; //FIXME: should we copy this?
-        this.RESOURCES_NEEDED_TO_PLAY = resourcesNeededToPlay; //FIXME: and should we copy this too?
+        this.POINTS_CONDITION = pointsCondition;
+        this.RESOURCES_NEEDED_TO_PLAY = resourcesNeededToPlay;
     }
 
     /**
     Returns the list of resources needed to play this card
      */
     public ResourcesCondition getNeededResourcesToPlay() {
-        //FIXME: unsafe?
         return RESOURCES_NEEDED_TO_PLAY;
     }
 
     public PointsCondition getPointsCondition(){
-        //FIXME: unsafe?
         return POINTS_CONDITION;
     }
 

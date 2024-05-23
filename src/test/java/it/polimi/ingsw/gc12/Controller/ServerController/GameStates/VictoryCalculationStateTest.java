@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc12.Controller.GameStates;
+package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;

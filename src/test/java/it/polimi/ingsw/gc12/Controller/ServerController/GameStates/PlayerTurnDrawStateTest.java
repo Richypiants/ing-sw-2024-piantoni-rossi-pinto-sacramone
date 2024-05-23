@@ -1,8 +1,9 @@
-package it.polimi.ingsw.gc12.Model.ClientModel;
+package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseObjectiveCardsState;
+import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.PlayerTurnPlayState;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
@@ -13,18 +14,24 @@ import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Network.VirtualClient;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidDeckPositionException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Side;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 
-class ClientGameTest {
+class PlayerTurnDrawStateTest {
+
     private static ArrayList<ResourceCard> resourceCards;
     private static ArrayList<GoldCard> goldCards;
     private static ArrayList<InitialCard> initialCards;
@@ -33,18 +40,13 @@ class ClientGameTest {
     Player player2;
     GameLobby lobby;
     Game game;
-    ClientGame client;
     VirtualClient client1;
     VirtualClient client2;
+    ServerController server;
     ChooseObjectiveCardsState state;
 
-
-    @BeforeEach
-    void setGameParameters() throws Exception {
-        player1 = new Player("Sacri");
-        player2 = new Player("Piants");
-        lobby = new GameLobby(player1, 2);
-        game = new Game(lobby);
+    @BeforeAll
+    static void setCardsLists() {
         resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
         });
         goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
@@ -53,6 +55,15 @@ class ClientGameTest {
         });
         objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {
         });
+    }
+
+    @BeforeEach
+    void setGameParameters() throws Exception {
+        player1 = new Player("giovanni");
+        player2 = new Player("paolo");
+        lobby = new GameLobby(player1, 2);
+        lobby.addPlayer(player2);
+        game = new Game(lobby);
 
         client1 = command -> {
         };
@@ -61,11 +72,11 @@ class ClientGameTest {
 
         UUID lobbyUUID = UUID.randomUUID();
         ServerController.lobbiesAndGames.put(lobbyUUID, game);
-        ServerController.players.put(client1, game.getPlayers().getFirst());
-        ServerController.players.put(client2, game.getPlayers().getLast());
+        ServerController.players.put(client1, game.getPlayers().get(0));
+        ServerController.players.put(client2, game.getPlayers().get(1));
         GameController gameController = new GameController(game);
-        ServerController.playersToControllers.put(game.getPlayers().getFirst(), gameController);
-        ServerController.playersToControllers.put(game.getPlayers().getLast(), gameController);
+        ServerController.playersToControllers.put(game.getPlayers().get(0), gameController);
+        ServerController.playersToControllers.put(game.getPlayers().get(1), gameController);
         game.getCurrentState().transition();
 
         int i = 0;
@@ -98,58 +109,36 @@ class ClientGameTest {
         }
 
         game.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
+
     }
 
     @Test
-    void getterTest() {
-        client = new ClientGame(game, game.getPlayers().getFirst());
-        assertInstanceOf(ClientPlayer.class, client.getThisPlayer());
-
-        assertInstanceOf(ArrayList.class, client.getCardsInHand());
-        assert (!client.getCardsInHand().isEmpty());
-
-        assertInstanceOf(ClientCard.class, client.getOwnObjective());
-        assert (!client.getOwnObjective().GUI_SPRITES.isEmpty());
-        assert (!client.getOwnObjective().TUI_SPRITES.isEmpty());
-
-        assertInstanceOf(ClientCard[].class, client.getPlacedGold());
-        assert (!Arrays.stream(client.getPlacedGold()).toList().isEmpty());
-
-        assertInstanceOf(ClientCard[].class, client.getPlacedResources());
-        assert (!Arrays.stream(client.getPlacedResources()).toList().isEmpty());
-
-        assertInstanceOf(ClientCard[].class, client.getCommonObjectives());
-        assert (!Arrays.stream(client.getCommonObjectives()).toList().isEmpty());
-
-        client.setCurrentPlayerIndex(1);
-        assertEquals(1, client.getCurrentPlayerIndex());
-
-        client.addMessageToChatLog("ciao");
-        assert (!client.getChatLog().isEmpty());
-
-        assertInstanceOf(ClientCard.class, client.getTopDeckGoldCard());
-        assert (!client.getTopDeckGoldCard().GUI_SPRITES.isEmpty());
-        assert (!client.getTopDeckGoldCard().TUI_SPRITES.isEmpty());
-
-        assertInstanceOf(ClientCard.class, client.getTopDeckResourceCard());
-        assert (!client.getTopDeckResourceCard().GUI_SPRITES.isEmpty());
-        assert (!client.getTopDeckResourceCard().TUI_SPRITES.isEmpty());
-
-        int roundNumberTest = 10;
-        client.setCurrentRound(roundNumberTest);
-        assertEquals(roundNumberTest, client.getCurrentRound());
-
-        assertEquals(2, client.getMaxPlayers());
-        assertEquals(1, client.getPlayersNumber());
+    void correctTransitionTest_Draw1() throws Exception {
+        game.getCurrentState().drawFrom(game.getCurrentState().getCurrentPlayer(), "Resource");
+        assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
+        assertEquals(game.getPlayers().getLast(), game.getCurrentState().getCurrentPlayer());
     }
 
     @Test
-    void setterTest() {
-        client = new ClientGame(game, game.getPlayers().getFirst());
+    void correctTransitionTest_Draw2() throws Exception {
+        game.getCurrentState().drawFrom(game.getCurrentState().getCurrentPlayer(), "Resource", 1);
+        assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
+        assertEquals(game.getPlayers().getLast(), game.getCurrentState().getCurrentPlayer());
+    }
 
-        client.setCurrentRound(1);
-        assertEquals(1, client.getCurrentRound());
-
+    @Test
+    void correctUnexpectedPlayerExceptionCall() throws Exception {
+        assertThrows(UnexpectedPlayerException.class, () -> game.getCurrentState().drawFrom(game.getPlayers().getLast(), "Resource"));
 
     }
+
+    @Test
+    void correctInvalidDeckPositionException() throws Exception {
+        assertThrows(InvalidDeckPositionException.class, () -> game.getCurrentState().drawFrom(game.getCurrentState().getCurrentPlayer(), "Resource", 3));
+
+    }
+
+
+
+
 }

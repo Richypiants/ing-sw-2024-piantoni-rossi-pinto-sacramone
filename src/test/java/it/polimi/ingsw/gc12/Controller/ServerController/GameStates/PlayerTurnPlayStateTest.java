@@ -1,9 +1,9 @@
-package it.polimi.ingsw.gc12.Controller.GameStates;
+package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseObjectiveCardsState;
-import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.PlayerTurnPlayState;
+import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.PlayerTurnDrawState;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
@@ -14,7 +14,6 @@ import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Network.VirtualClient;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidDeckPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
@@ -28,10 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class PlayerTurnDrawStateTest {
-
+class PlayerTurnPlayStateTest {
     private static ArrayList<ResourceCard> resourceCards;
     private static ArrayList<GoldCard> goldCards;
     private static ArrayList<InitialCard> initialCards;
@@ -108,37 +107,25 @@ class PlayerTurnDrawStateTest {
             state.pickObjective(target, objectivesMap.get(target).getFirst());
         }
 
+    }
+
+    @Test
+    void correctTransitionTest() throws Exception {
         game.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
+        assertInstanceOf(PlayerTurnDrawState.class, game.getCurrentState());
+    }
+
+    @Test
+    void correctThrowsExceptionTest() throws Exception {
+        assertThrows(UnexpectedPlayerException.class, () -> game.getCurrentState().placeCard(game.getPlayers().getLast(), new GenericPair<>(1, 1), game.getPlayers().getLast().getCardsInHand().getFirst(), Side.FRONT));
 
     }
 
     @Test
-    void correctTransitionTest_Draw1() throws Exception {
-        game.getCurrentState().drawFrom(game.getCurrentState().getCurrentPlayer(), "Resource");
-        assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
-        assertEquals(game.getPlayers().getLast(), game.getCurrentState().getCurrentPlayer());
+    void transitionFromDisconnectedPlayerTest() throws Exception {
+        //FIXME: unused?
+        //PlayerTurnPlayState state1 = new PlayerTurnPlayState(game, state.currentPlayer, 0);
+        game.getCurrentState().playerDisconnected(game.getCurrentPlayer());
+        assertInstanceOf(PlayerTurnDrawState.class, game.getCurrentState());
     }
-
-    @Test
-    void correctTransitionTest_Draw2() throws Exception {
-        game.getCurrentState().drawFrom(game.getCurrentState().getCurrentPlayer(), "Resource", 1);
-        assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
-        assertEquals(game.getPlayers().getLast(), game.getCurrentState().getCurrentPlayer());
-    }
-
-    @Test
-    void correctUnexpectedPlayerExceptionCall() throws Exception {
-        assertThrows(UnexpectedPlayerException.class, () -> game.getCurrentState().drawFrom(game.getPlayers().getLast(), "Resource"));
-
-    }
-
-    @Test
-    void correctInvalidDeckPositionException() throws Exception {
-        assertThrows(InvalidDeckPositionException.class, () -> game.getCurrentState().drawFrom(game.getCurrentState().getCurrentPlayer(), "Resource", 3));
-
-    }
-
-
-
-
 }

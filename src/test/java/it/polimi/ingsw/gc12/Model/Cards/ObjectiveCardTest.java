@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc12.Model.Cards;
 
 import com.google.gson.reflect.TypeToken;
+import it.polimi.ingsw.gc12.Model.Conditions.PointsCondition;
+import it.polimi.ingsw.gc12.Model.Conditions.ResourcesCondition;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
@@ -9,13 +11,15 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.JSONParser;
+import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -32,26 +36,22 @@ class ObjectiveCardTest {
 
     @BeforeAll
     static void setCardsLists() {
-        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
-        });
-        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
-        });
-        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
-        });
-        objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {
-        });
+        resourceCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.RESOURCE_DECK_FILENAME, new TypeToken<>(){});
+        goldCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.GOLD_DECK_FILENAME, new TypeToken<>(){});
+        initialCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.INITIAL_DECK_FILENAME, new TypeToken<>(){});
+        objectiveCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.OBJECTIVE_DECK_FILENAME, new TypeToken<>(){});
     }
 
     @BeforeEach
     void setGameParameters() {
-
-        player = new Player("Sacri");
+        player = new Player("testPlayer");
         lobby = new GameLobby(player, 1);
         game = new Game(lobby);
     }
 
     @Test
     void awardPoints() throws InvalidCardPositionException, NotEnoughResourcesException, CardNotInHandException {
+        int expectedAwardedPoints = 2;
         InGamePlayer playerGame = game.getPlayers().getFirst();
 
         playerGame.setSecretObjective(objectiveCards.get(15));
@@ -65,13 +65,35 @@ class ObjectiveCardTest {
         playerGame.addCardToHand(goldCards.get(30));
         playerGame.placeCard(new GenericPair<>(-1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
 
-        assertEquals(2, playerGame.getSecretObjective().awardPoints(playerGame));
+        assertEquals(expectedAwardedPoints, playerGame.getSecretObjective().awardPoints(playerGame));
+    }
+
+    @Test
+    void objectiveCardConstructorTest(){
+        int id = 100;
+        int pointsGranted = 3;
+
+        Map<Resource, Integer> placeHolderResources = new EnumMap<>(Resource.class);
+        placeHolderResources.put(Resource.FUNGI, 1);
+        placeHolderResources.put(Resource.INSECT, 0);
+        placeHolderResources.put(Resource.ANIMAL, 1);
+        placeHolderResources.put(Resource.PLANT, 1);
+
+        PointsCondition placeHolderPointsCondition = new ResourcesCondition(placeHolderResources);
+
+       ObjectiveCard thisObjectiveCard = new ObjectiveCard(
+                id,
+                pointsGranted,
+                placeHolderPointsCondition
+        );
+
+        assertEquals(id, thisObjectiveCard.ID);
+        assertEquals(pointsGranted, thisObjectiveCard.POINTS_GRANTED);
+        assertEquals(placeHolderPointsCondition, thisObjectiveCard.getPointsCondition());
     }
 
     @Test
     void toStringTest() {
-
         assertInstanceOf(String.class, objectiveCards.getFirst().toString());
-
     }
 }

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Model;
 
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.PlayerTurnPlayState;
+import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
@@ -11,6 +12,7 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,10 +27,57 @@ class GameTest {
 
     @BeforeEach
     void setGameParameters() {
-        player1 = new Player("Sacri");
-        player2 = new Player("Piants");
+        player1 = new Player("testPlayer_1");
+        player2 = new Player("testPlayer_2");
         lobby = new GameLobby(player1, 2);
+        lobby.addPlayer(player2);
         game = new Game(lobby);
+    }
+
+    /**
+     * When a Game is created, some preliminary operations should be executed in a well-constructed game:
+     *  1. Players are randomly shuffled from the Lobby, which is maintaining join-order.
+     *  2. The round is set to 0
+     *  3. The resourceCardDeck and goldCardDeck are created and the associated common cards are set.
+     *  4. The gameState is a SetupState.
+    * */
+
+    @Test
+    void gameConstructorTest(){
+        assertEquals( lobby.getPlayers().size(), game.getPlayers().size());
+        assertEquals(0, game.getTurnNumber());
+        assertNotNull(game.getResourceCardsDeck());
+        assertNotNull(game.getGoldCardsDeck());
+        assertEquals(2, game.getCommonObjectives().length);
+        assertInstanceOf(SetupState.class, game.getCurrentState());
+    }
+
+    @Test
+    void everyPlayerReturnsToLobby(){
+        GameLobby lobby = game.toLobby();
+        assertEquals(game.getPlayers().size(), lobby.getPlayers().size());
+    }
+
+    @Test
+    void toLobbyRemovingAnInactivePlayers(){
+        game.getPlayers().getFirst().toggleActive();
+        GameLobby lobby = game.toLobby();
+
+        assertEquals(game.getPlayers().size()-1, game.getActivePlayers().size());
+        assertEquals(game.getActivePlayers().size(), lobby.getPlayers().size());
+    }
+
+    @Test
+    void getPlayers(){
+        ArrayList<InGamePlayer> playersOfThisGame = game.getPlayers();
+        assertEquals( game.getPlayers().size(), playersOfThisGame.size());
+        assertEquals(game.getMaxPlayers(), playersOfThisGame.size());
+    }
+
+    @Test
+    void getActivePlayers(){
+        ArrayList<InGamePlayer> activePlayersOfThisGame = game.getActivePlayers();
+        assertTrue(activePlayersOfThisGame.size() <= game.getMaxPlayers() && activePlayersOfThisGame.size() <= game.getPlayers().size());
     }
 
     @Test
@@ -113,15 +162,7 @@ class GameTest {
     }
 
     @Test
-    void correctToLobby() throws Throwable {
-        GameLobby lobby = game.toLobby();
-        assertInstanceOf(GameLobby.class, lobby);
-        assert (!lobby.getPlayers().isEmpty());
-
-    }
-
-    @Test
-    void generatetemporaryfieldTest() throws Throwable {
+    void generateTemporaryFieldTest() throws Throwable {
         Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> Test = game.generateTemporaryFieldsToPlayers();
         assertInstanceOf(Map.class, Test);
         assert (!Test.isEmpty());

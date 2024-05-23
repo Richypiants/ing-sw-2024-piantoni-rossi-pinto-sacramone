@@ -7,7 +7,6 @@ import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,13 +20,13 @@ import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 class CornersConditionTest {
 
     private static ArrayList<ResourceCard> resourceCards;
-    private static ArrayList<GoldCard> goldCards;
     private static ArrayList<InitialCard> initialCards;
-    private static ArrayList<ObjectiveCard> objectiveCards;
+    private static ArrayList<GoldCard> goldCards;
 
     Player player;
     GameLobby lobby;
@@ -36,19 +35,14 @@ class CornersConditionTest {
 
     @BeforeAll
     static void setCardsLists() {
-        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
-        });
-        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
-        });
-        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
-        });
-        objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {
-        });
+        resourceCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.RESOURCE_DECK_FILENAME, new TypeToken<>(){});
+        initialCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.INITIAL_DECK_FILENAME, new TypeToken<>(){});
+        goldCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.GOLD_DECK_FILENAME, new TypeToken<>(){});
     }
 
     @BeforeEach
     void setGameParameters() {
-        player = new Player("Sacri");
+        player = new Player("testPlayer");
         lobby = new GameLobby(player, 1);
         game = new Game(lobby);
         corner = new CornersCondition();
@@ -106,8 +100,6 @@ class CornersConditionTest {
     final void genericMultiCornersPatternTest(int[] numberOfTimesSatisfied,
                                        Triplet<GenericPair<Integer, Integer>, PlayableCard, Side>... cardsToPlay)
             throws Exception {
-        ObjectiveCard c_o = objectiveCards.getFirst();
-
         InGamePlayer player1InGame = game.getPlayers().getFirst();
 
         for (int i = 0; i < numberOfTimesSatisfied.length; i++){
@@ -117,5 +109,10 @@ class CornersConditionTest {
 
             assertEquals(numberOfTimesSatisfied[i], corner.numberOfTimesSatisfied(cardsToPlay[i].getY(), game.getPlayers().getFirst()));
         }
+    }
+
+    @Test
+    void toStringTest(){
+        assertInstanceOf(String.class, goldCards.get(3).getPointsCondition().toString());
     }
 }

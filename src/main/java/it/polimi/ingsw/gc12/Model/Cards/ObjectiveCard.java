@@ -18,7 +18,7 @@ public final class ObjectiveCard extends Card {
      */
     public ObjectiveCard(int id, int pointsGranted, PointsCondition condition) {
         super(id, pointsGranted);
-        this.POINTS_CONDITION = condition; //FIXME: copy this?
+        this.POINTS_CONDITION = condition;
     }
 
     /**

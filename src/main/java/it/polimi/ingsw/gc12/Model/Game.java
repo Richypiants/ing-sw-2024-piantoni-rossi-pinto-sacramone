@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 /**
  * A structure for games after they have started
  */
-//FIXME: should inherit from GameLobby to manage the start of games more easily in the Controller... fix UML
 public class Game extends GameLobby {
 
     /**
@@ -59,7 +58,6 @@ public class Game extends GameLobby {
         shufflePlayers();
 
         this.currentRound = 0;
-        setState(new SetupState(this));
 
         this.RESOURCE_CARDS_DECK = new CardDeck<>(ServerController.cardsList.values().stream()
                 .filter((card -> card instanceof ResourceCard))
@@ -107,7 +105,7 @@ public class Game extends GameLobby {
     }
 
     /**
-     * Returns the player who is currently playing
+     * Returns all the active and inactive instances of InGamePlayers in this game
      */
     @Override
     public ArrayList<InGamePlayer> getPlayers() {
@@ -232,11 +230,9 @@ public class Game extends GameLobby {
     /**
      * Changes the currentState of this game to newState
      */
-    //TODO:ADDED Sync keyword
     public void setState(GameState newState) {
         currentState = newState;
     }
-
     /**
      * Returns the current game state (of type GameState)
      */
