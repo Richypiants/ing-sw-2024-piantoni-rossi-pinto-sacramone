@@ -113,8 +113,8 @@ class ClientGameTest {
         assert (!client.getOwnObjective().GUI_SPRITES.isEmpty());
         assert (!client.getOwnObjective().TUI_SPRITES.isEmpty());
 
-        assertInstanceOf(ClientCard[].class, client.getPlacedGold());
-        assert (!Arrays.stream(client.getPlacedGold()).toList().isEmpty());
+        assertInstanceOf(ClientCard[].class, client.getPlacedGolds());
+        assert (!Arrays.stream(client.getPlacedGolds()).toList().isEmpty());
 
         assertInstanceOf(ClientCard[].class, client.getPlacedResources());
         assert (!Arrays.stream(client.getPlacedResources()).toList().isEmpty());

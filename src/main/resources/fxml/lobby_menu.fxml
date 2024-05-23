@@ -9,30 +9,30 @@
             minWidth="-Infinity"
             prefHeight="720.0" prefWidth="1280.0"
             xmlns="http://javafx.com/javafx/21">
-    <children>
-        <Button fx:id="CreateGameButton" alignment="CENTER" layoutX="51.0" layoutY="122.0" mnemonicParsing="false"
-                prefHeight="27.0" prefWidth="141.0" text="Create Game">
-            <font>
-                <Font name="Bell MT" size="14.0"/>
-            </font>
-        </Button>
-        <Button fx:id="nicknameButton" alignment="CENTER" layoutX="51.0" layoutY="200.0" mnemonicParsing="false"
-                prefHeight="27.0" prefWidth="141.0" text="Change Nickname">
-            <font>
-                <Font name="Bell MT" size="14.0"/>
-            </font>
-        </Button>
-        <Button fx:id="BackTitleButton" layoutX="51.0" layoutY="278.0" mnemonicParsing="false"
-                prefHeight="27.0" prefWidth="141.0" text="Back to title screen">
-            <font>
-                <Font name="Bell MT" size="14.0"/>
-            </font>
-        </Button>
-        <ScrollPane fx:id="lobbiesPane" layoutX="400.0" layoutY="30.0" prefHeight="800.0" prefWidth="1100.0">
-            <content>
-                <VBox fx:id="anchor" minHeight="0.0" minWidth="0.0" prefHeight="802.0" prefWidth="1102.0"/>
-            </content>
-        </ScrollPane>
+    <Button fx:id="CreateGameButton" alignment="CENTER" layoutX="51.0" layoutY="122.0" mnemonicParsing="false"
+            prefHeight="27.0" prefWidth="141.0" text="Create Game">
+        <font>
+            <Font name="Bell MT" size="14.0"/>
+        </font>
+    </Button>
+    <Button fx:id="nicknameButton" alignment="CENTER" layoutX="51.0" layoutY="200.0" mnemonicParsing="false"
+            prefHeight="27.0" prefWidth="141.0" text="Change Nickname">
+        <font>
+            <Font name="Bell MT" size="14.0"/>
+        </font>
+    </Button>
+    <Button fx:id="BackTitleButton" layoutX="51.0" layoutY="278.0" mnemonicParsing="false"
+            prefHeight="27.0" prefWidth="141.0" text="Back to title screen">
+        <font>
+            <Font name="Bell MT" size="14.0"/>
+        </font>
+    </Button>
+
+    <ScrollPane fx:id="lobbiesPane" layoutX="400.0" layoutY="30.0" prefHeight="800.0" prefWidth="1100.0">
+        <VBox fx:id="anchor" minHeight="0.0" minWidth="0.0" prefHeight="802.0" prefWidth="1102.0"/>
+    </ScrollPane>
+
+    <VBox fx:id="lobbyCreationPopupBox" spacing="10" alignment="CENTER" visible="false">
         <ComboBox fx:id="maxPlayersInput" prefWidth="150.0" promptText="Select maximum number of players:"/>
         <Label fx:id="players" alignment="CENTER" text="Inserire il numero di giocatori">
             <font>
@@ -45,10 +45,11 @@
                 <Font name="Bell MT" size="14.0"/>
             </font>
         </Button>
-        <Label fx:id="profile" alignment="TOP_RIGHT">
-            <font>
-                <Font name="Bell MT" size="14.0"/>
-            </font>
-        </Label>
-    </children>
+    </VBox>
+
+    <Label fx:id="profile" alignment="TOP_RIGHT">
+        <font>
+            <Font name="Bell MT" size="14.0"/>
+        </font>
+    </Label>
 </AnchorPane>
