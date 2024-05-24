@@ -10,6 +10,37 @@
 }
  */
 
+#titleScreenPrompt {
+    -fx-font-family: Bell MT;
+    -fx-font-size: 28;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-text-fill: white;
+}
+
+.titleScreenLabel {
+    -fx-font-family: Bell MT;
+    -fx-font-size: 18;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-text-fill: white;
+}
+
+.titleScreenTextField {
+    -fx-pref-width: 150.0;
+    -fx-pref-height: 10.0;
+    -fx-font-family: Bell MT;
+    -fx-font-size: 18;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-background-radius: 5.0 5.0 5.0 5.0;
+}
+
+#awaitingConnectionPane {
+    -fx-background-color: black;
+}
+
 .button {
     -fx-alignment: CENTER;
     -fx-text-alignment: JUSTIFY;
@@ -19,31 +50,25 @@
 }
 
 #scoreboardPane {
-    -fx-pref-width: 21.09; /* 270 / 1280 * 100 = 21.09% */
-    -fx-pref-height: 75; /* 540 / 720 * 100 = 75% */
+
 }
 
 #deckAndVisiblePane {
-    -fx-pref-width: 21.09; /* 270 / 1280 * 100 = 21.09% */
-    -fx-pref-height: 36.11; /* 260 / 720 * 100 = 36.11% */
+
 }
 
 #opponentsFieldsPane {
-    -fx-pref-width: 78.91; /* 1010 / 1280 * 100 = 78.91% */
-    -fx-pref-height: 34.72; /* 250 / 720 = 34.72% */
+
 }
 
 #ownFieldPane {
-    -fx-pref-width: 78.91; /* 1010 / 1280 * 100 = 78.91% */
-    -fx-pref-height: 48.61; /* 350 / 720 = 48.61% */
+
 }
 
 #handPane {
-    -fx-pref-width: 53.91; /* 690 / 1280 * 100 = 53.91% */
-    -fx-pref-height: 16.67; /* 120 / 720 = 16.67% */
+
 }
 
 #chatPane {
-    -fx-pref-width: 31.25; /* 400 / 1280 = 31.25% */
-    -fx-pref-height: 100; /* 720 / 720 = 100% */
+
 }

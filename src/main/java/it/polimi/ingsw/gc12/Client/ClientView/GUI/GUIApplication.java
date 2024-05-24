@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -22,7 +23,11 @@ public class GUIApplication extends Application {
         stage.setWidth(screen.getVisualBounds().getWidth());
         stage.setHeight(screen.getVisualBounds().getHeight());
 
-        stage.setScene(new Scene(new Pane(), stage.getWidth(), stage.getHeight()));
+        Scene stageScene = new Scene(new Pane(), stage.getWidth(), stage.getHeight());
+        AnchorPane initializationPane = new AnchorPane();
+        initializationPane.setStyle("-fx-background-color: black;");
+        stageScene.setRoot(initializationPane);
+        stage.setScene(stageScene);
 
         stage.setTitle("Codex Naturalis");
         //stage.initStyle(StageStyle.UNDECORATED);
@@ -48,5 +53,10 @@ public class GUIApplication extends Application {
         });
 
         //stage.addEventHandler(MouseDragEvent.MOUSE_DRAGGED, (event) -> stage.setMaximized(true));
+
+        stage.show();
+
+        //FIXME: non funziona il requestFocus()...
+        //stage.requestFocus();
     }
 }

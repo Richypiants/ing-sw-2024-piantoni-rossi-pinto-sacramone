@@ -28,12 +28,14 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -50,7 +52,6 @@ public class GUIView extends View {
     static Stage stage;
     static Map<String, Parent> sceneRoots; //screenName to associated loader
 
-    ObservableList<String> connectionList = FXCollections.observableArrayList("Socket", "RMI");
     ObservableList<Integer> maxPlayersSelector = FXCollections.observableArrayList(2, 3, 4);
 
     static GenericPair<Double, Double> screenSizes;
@@ -143,8 +144,29 @@ public class GUIView extends View {
             Parent root = sceneRoots.get("title_screen");
             stage.getScene().setRoot(root);
 
+            ImageView cranioCreationsLogo = new ImageView(String.valueOf(GUIView.class.getResource("/images/cranio_creations_logo_no_bg.png")));
+            cranioCreationsLogo.setFitWidth(650);
+            cranioCreationsLogo.setPreserveRatio(true);
+            cranioCreationsLogo.setOpacity(0.0);
+
+            ((AnchorPane) root).getChildren().add(cranioCreationsLogo);
+            cranioCreationsLogo.relocate(
+                    (screenSizes.getX() - cranioCreationsLogo.getFitWidth()) / 2,
+                    screenSizes.getY() * 5 / 100
+            );
+
+            FadeTransition logoTransition = new FadeTransition(Duration.millis(3000));
+            logoTransition.setNode(cranioCreationsLogo);
+            logoTransition.setDelay(Duration.millis(2000));
+            logoTransition.setFromValue(0);
+            logoTransition.setToValue(1);
+            logoTransition.setCycleCount(2);
+            logoTransition.setAutoReverse(true);
+            logoTransition.setOnFinished((event -> cranioCreationsLogo.setVisible(false)));
+
             AnchorPane titleScreenBox = (AnchorPane) root.lookup("#titleScreenBox");
             titleScreenBox.setPrefSize(screenSizes.getX(), screenSizes.getY());
+            titleScreenBox.setOpacity(0.0);
 
             ImageView titleScreenGameLogo = new ImageView(String.valueOf(GUIView.class.getResource("/images/only_center_logo_no_bg.png")));
             titleScreenGameLogo.setFitWidth(650);
@@ -157,44 +179,61 @@ public class GUIView extends View {
                     (screenSizes.getX() - titleScreenGameLogo.getFitWidth()) / 2,
                     screenSizes.getY() * 5 / 100
             );
-            //titleScreenGameLogo.setLayoutY(titleScreenBox.getPrefHeight() * 20 / 100);
 
             FadeTransition backgroundTransition = new FadeTransition(Duration.millis(6000));
             backgroundTransition.setNode(titleScreenBox);
             backgroundTransition.setFromValue(0);
             backgroundTransition.setToValue(1);
-            //backgroundTransition.setInterpolator(Interpolator.EASE_BOTH);
-            backgroundTransition.play();
 
-            Button startButton = new Button("Premi Invio per iniziare");
-            startButton.setId("startButton");
-            startButton.setOnAction(this::keyPressed);
-            startButton.setPrefSize(300, 25);
+            Label titleScreenPrompt = new Label("Premi INVIO per iniziare");
+            titleScreenPrompt.setId("titleScreenPrompt");
+            titleScreenPrompt.setOnMouseClicked((event -> ClientController.getInstance().viewState.keyPressed()));
+            titleScreenPrompt.setOnKeyPressed((event -> ClientController.getInstance().viewState.keyPressed()));
+            titleScreenPrompt.setPrefSize(500, 25);
 
             FadeTransition fadeTransition = new FadeTransition(Duration.millis(2000));
-            fadeTransition.setNode(startButton);
+            fadeTransition.setNode(titleScreenPrompt);
             fadeTransition.setFromValue(1.0);
-            fadeTransition.setToValue(0.3);
+            fadeTransition.setToValue(0.1);
             fadeTransition.setCycleCount(Animation.INDEFINITE);
             fadeTransition.setAutoReverse(true);
             fadeTransition.setInterpolator(Interpolator.EASE_BOTH);
-            fadeTransition.play();
 
-            //startButton.setLayoutY(titleScreenBox.getPrefHeight() * 80 / 100);
-            titleScreenBox.getChildren().add(startButton);
-            startButton.relocate(
-                    (screenSizes.getX() - startButton.getPrefWidth()) / 2,
+            ParallelTransition titleScreenBoxTransition = new ParallelTransition(backgroundTransition, fadeTransition);
+            SequentialTransition titleScreenTransition = new SequentialTransition(logoTransition, titleScreenBoxTransition);
+
+            //FIXME: KeyEvent non ricevuto...
+            cranioCreationsLogo.setOnMouseClicked((event) -> {
+                cranioCreationsLogo.setVisible(false);
+                titleScreenTransition.jumpTo(logoTransition.getTotalDuration());
+            });
+            cranioCreationsLogo.setOnKeyPressed((event) -> {
+                cranioCreationsLogo.setVisible(false);
+                titleScreenTransition.jumpTo(logoTransition.getTotalDuration());
+            });
+
+            //FIXME: ci sono ancora i 2000ms di delay quando clicco qua prima che diventi STOPPED...
+            titleScreenGameLogo.setOnMouseClicked((event) -> {
+                if (!backgroundTransition.getStatus().equals(Animation.Status.STOPPED)) {
+                    titleScreenTransition.jumpTo(logoTransition.getTotalDuration().add(backgroundTransition.getTotalDuration()));
+                    event.consume();
+                }
+            });
+            titleScreenGameLogo.setOnKeyPressed((event) -> {
+                if (!backgroundTransition.getStatus().equals(Animation.Status.STOPPED)) {
+                    titleScreenTransition.jumpTo(logoTransition.getTotalDuration().add(backgroundTransition.getTotalDuration()));
+                    event.consume();
+                }
+            });
+
+            titleScreenTransition.play();
+
+            titleScreenBox.getChildren().add(titleScreenPrompt);
+            titleScreenPrompt.relocate(
+                    (screenSizes.getX() - titleScreenPrompt.getPrefWidth()) / 2,
                     screenSizes.getY() * 85 / 100
             );
-
-            //FIXME: non funziona e non indirizza gli input sulla schermata... stage.requestFocus();
-            stage.show();
         });
-    }
-
-    @FXML
-    public void keyPressed(ActionEvent event) {
-        ClientController.getInstance().viewState.keyPressed();
     }
 
     @Override
@@ -204,33 +243,39 @@ public class GUIView extends View {
         AnchorPane titleScreenPane = (AnchorPane) stage.getScene().getRoot().lookup("#titleScreenPane");
         AnchorPane titleScreenBox = (AnchorPane) titleScreenPane.lookup("#titleScreenBox");
 
-        titleScreenBox.getChildren().remove(titleScreenBox.lookup("#startButton"));
+        titleScreenBox.getChildren().remove(titleScreenBox.lookup("#titleScreenPrompt"));
 
         VBox connectionSetupBox = new VBox(50);
         connectionSetupBox.setId("connectionSetupBox");
-        connectionSetupBox.setPrefSize(screenSizes.getX() / 4, screenSizes.getY() / 2);
+        connectionSetupBox.setPrefSize(screenSizes.getX() * 3 / 8, screenSizes.getY() / 2);
         connectionSetupBox.setOpacity(0.0);
 
         Label nicknameLabel = new Label("Scegli il tuo nickname pubblico per connetterti al server: ");
+        nicknameLabel.getStyleClass().add("titleScreenLabel");
 
         TextField nicknameField = new TextField();
         nicknameField.setId("nicknameField");
-        nicknameField.setPromptText("Scrivi qui il tuo nickname...");
-        nicknameField.setPrefSize(10.0, 10.0);
+        nicknameField.setPromptText("Scrivi qui il tuo nickname... (max 10 caratteri)");
+        nicknameField.getStyleClass().add("titleScreenTextField");
 
         Label addressLabel = new Label("Inserisci l'indirizzo IP del server: ");
+        addressLabel.getStyleClass().add("titleScreenLabel");
 
         TextField addressField = new TextField();
         addressField.setId("addressField");
         addressField.setPromptText("localhost");
-        addressField.setPrefSize(10.0, 10.0);
+        addressField.getStyleClass().add("titleScreenTextField");
 
         Label connectionTechnologyPrompt = new Label("Scegli la tecnologia di comunicazione che preferisci: ");
+        connectionTechnologyPrompt.getStyleClass().add("titleScreenLabel");
 
         HBox connectionTechnology = new HBox(200);
 
+        //ObservableList<String> connectionList = FXCollections.observableArrayList("Socket", "RMI");
         RadioButton socket = new RadioButton("Socket");
+        socket.getStyleClass().add("titleScreenLabel");
         RadioButton rmi = new RadioButton("RMI");
+        rmi.getStyleClass().add("titleScreenLabel");
         this.connection = new ToggleGroup();
         this.connection.getToggles().addAll(socket, rmi);
         this.connection.selectToggle(socket);
@@ -238,7 +283,7 @@ public class GUIView extends View {
         connectionTechnology.getChildren().addAll(socket, rmi);
 
         Button button = new Button("Inizia a scrivere il tuo manoscritto!");
-        button.setStyle("-fx-font-size: 12;");
+        button.setStyle("-fx-font-size: 18;");
         button.setPrefSize(connectionSetupBox.getPrefWidth(), 10.0);
         button.setOnAction(event -> {
             try {
@@ -256,7 +301,7 @@ public class GUIView extends View {
         connectionSetupBox.getChildren().addAll(nicknameLabel, nicknameField, addressLabel,
                 addressField, connectionTechnologyPrompt, connectionTechnology, button);
         ((AnchorPane) stage.getScene().getRoot()).getChildren().add(connectionSetupBox);
-        connectionSetupBox.relocate(screenSizes.getX() * 5 / 8, screenSizes.getY() / 4);
+        connectionSetupBox.relocate(screenSizes.getX() * 9 / 16, screenSizes.getY() / 5);
 
         TranslateTransition centerLogoTransition = new TranslateTransition(Duration.millis(2000));
         centerLogoTransition.setNode(titleScreenGameLogo);
@@ -321,21 +366,10 @@ public class GUIView extends View {
 
         Label downloadLabel = (Label) root.lookup("#download");
         ProgressIndicator progressIndicator = (ProgressIndicator) root.lookup("#progress");
+        downloadLabel.setStyle("-fx-font-size: 30");
 
-        // Dimensione Schermo
-        double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
-
-        StackPane.setAlignment(downloadLabel, Pos.CENTER);
-        StackPane.setMargin(downloadLabel, new Insets(-screenHeight * 0.1, 0, 0, 0));
-        StackPane.setAlignment(progressIndicator, Pos.CENTER);
-        StackPane.setMargin(progressIndicator, new Insets(screenHeight * 0.1, 0, 0, 0));
-
-        if (downloadLabel != null) {
-            downloadLabel.setText("Ciao " + nicknameField.getText() + "\nStiamo caricando il Codex Naturalis");
-            downloadLabel.setTextAlignment(TextAlignment.CENTER);
-        } else {
-            System.out.println("Label non trovata nel FXML");
-        }
+        downloadLabel.relocate((screenSizes.getX() - downloadLabel.getPrefWidth()) / 2, screenSizes.getY() * 0.45);
+        progressIndicator.relocate((screenSizes.getX() - progressIndicator.getPrefWidth()) / 2, screenSizes.getY() * 0.55);
 
         // Before changing scene, we notify the chosen comm technology to the controller so that it initializes it
         new Thread(() -> ClientController.getInstance().viewState.connect(
