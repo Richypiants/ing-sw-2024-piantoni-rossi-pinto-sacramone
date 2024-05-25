@@ -1206,6 +1206,7 @@ public class GUIView extends View {
         });
     }
 
+
     private HBox createLobbyListElement(UUID lobbyUUID, GameLobby lobby) {
         String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
 
