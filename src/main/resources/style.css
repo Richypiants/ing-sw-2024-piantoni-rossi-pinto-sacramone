@@ -49,6 +49,15 @@
     -fx-font-size: 16.0;
 }
 
+#lobbiesPane {
+    -fx-alignment: CENTER;
+    -fx-text-alignment: JUSTIFY;
+    -fx-background-color: #CC9966;
+}
+
+.lobbyHBox {
+}
+
 #scoreboardPane {
 
 }

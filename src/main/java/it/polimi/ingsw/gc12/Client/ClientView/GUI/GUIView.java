@@ -1210,8 +1210,9 @@ public class GUIView extends View {
         String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
 
         // Box
-        HBox lobbyBox = new HBox(250);
+        HBox lobbyBox = new HBox(100);
         lobbyBox.setPadding(new Insets(15, 12, 15, 12));
+        lobbyBox.setStyle("-fx-alignment: CENTER; -fx-text-alignment: JUSTIFY; -fx-background-color: #00665C;");
 
         // Label giocatori
         Label playerCount = new Label(String.valueOf(lobby.getMaxPlayers()));
@@ -1225,6 +1226,7 @@ public class GUIView extends View {
         }
 
         lobbyBox.setStyle(style);
+        lobbyBox.getChildren().add(playerCount);
 
         if (ClientController.getInstance().viewModel.getCurrentLobby() == null) {
             Button joinButton = new Button("JOIN");
@@ -1245,8 +1247,6 @@ public class GUIView extends View {
                 lobbyBox.getChildren().add(leaveButton);
             }
         }
-
-        lobbyBox.getChildren().add(playerCount);
 
         return lobbyBox;
     }
