@@ -1,10 +1,8 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
-import it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIApplication;
 import it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.TitleScreenState;
-import javafx.application.Application;
 
 import java.util.Scanner;
 
@@ -34,7 +32,8 @@ public class Main {
                 */
             } else if (graphics.equals("gui")) {
                 ClientController.getInstance().view = GUIView.getInstance();
-                new Thread(() -> Application.launch(GUIApplication.class, args)).start();
+                ClientController.getInstance().viewState = new TitleScreenState();
+                ClientController.getInstance().viewState.executeState(); //TODO: generalize these with ones for TUI
             }
         } while (!graphics.equals("tui") && !graphics.equals("gui"));
     }

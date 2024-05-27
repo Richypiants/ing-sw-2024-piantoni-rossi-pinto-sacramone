@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc12.Controller.Commands.ServerCommands;
 
 import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
-import it.polimi.ingsw.gc12.Utilities.VirtualClient;
+import it.polimi.ingsw.gc12.Network.VirtualClient;
 
 public class CreatePlayerCommand implements ServerCommand {
 

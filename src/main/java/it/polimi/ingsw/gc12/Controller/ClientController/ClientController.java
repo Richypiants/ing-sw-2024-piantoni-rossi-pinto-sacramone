@@ -13,7 +13,10 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.ClientModel.ViewModel;
 import it.polimi.ingsw.gc12.Model.GameLobby;
-import it.polimi.ingsw.gc12.Model.GameStates.VictoryCalculationState;
+import it.polimi.ingsw.gc12.Network.Client.RMIClientSkeleton;
+import it.polimi.ingsw.gc12.Network.Client.SocketClient;
+import it.polimi.ingsw.gc12.Network.VirtualClient;
+import it.polimi.ingsw.gc12.Network.VirtualServer;
 import it.polimi.ingsw.gc12.Utilities.*;
 
 import java.util.*;
@@ -154,10 +157,10 @@ public class ClientController implements ClientControllerInterface {
 
         for(var playerEntry : PLAYERS_FIELD.entrySet()) {
             var clientPlayerInstance = gameDTO.getPlayers().stream()
-                    .filter( (player) -> player.getNickname().equals(playerEntry.getKey())).findAny().orElseThrow();
+                    .filter( (player) -> player.getNickname().equals(playerEntry.getKey())).findFirst().orElseThrow();
 
-            for (var fieldEntry : PLAYERS_FIELD.get(clientPlayerInstance.getNickname()).sequencedEntrySet())
-                gameDTO.getThisPlayer().placeCard(fieldEntry.getKey(), cardsList.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
+            for (var fieldEntry : PLAYERS_FIELD.get(playerEntry.getKey()).sequencedEntrySet())
+                clientPlayerInstance.placeCard(fieldEntry.getKey(), cardsList.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
         }
         viewModel.joinLobbyOrGame(gameUUID, gameDTO);
 
@@ -208,7 +211,7 @@ public class ClientController implements ClientControllerInterface {
         for (var cardID : cardIDs)
             ((ChooseObjectiveCardsState) viewState).objectivesSelection.add(cardsList.get(cardID));
 
-        viewState.executeState();
+        view.showObjectiveCardsChoice();
     }
 
     public synchronized void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {

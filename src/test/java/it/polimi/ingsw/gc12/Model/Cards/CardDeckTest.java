@@ -12,45 +12,67 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CardDeckTest {
+public class CardDeckTest {
+    final int RESOURCE_DECK_SIZE = 40;
+    final int GOLD_DECK_SIZE = 40;
+    final int INITIAL_DECK_SIZE = 6;
+    final int OBJECTIVE_DECK_SIZE = 16;
+    public final static String RESOURCE_DECK_FILENAME = "resource_cards.json";
+    public final static String GOLD_DECK_FILENAME = "gold_cards.json";
+    public final static String INITIAL_DECK_FILENAME = "initial_cards.json";
+    public final static String OBJECTIVE_DECK_FILENAME = "objective_cards.json";
 
-    @Test
-    void deckCorrectSize() {
-        ArrayList<Card> resource = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
-        })));
-        assertEquals(40, resource.size());
+    protected static <T extends Card> CardDeck<T> loadCardDeck(String filename, TypeToken<ArrayList<T>> typifiedTypeToken){
+        return new CardDeck<>(Objects.requireNonNull(
+                JSONParser.deckFromJSONConstructor(
+                        filename,
+                        typifiedTypeToken
+                )));
+    }
 
-        ArrayList<Card> gold = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
-        })));
-        assertEquals(40, gold.size());
-
-        ArrayList<Card> initial = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
-        })));
-        assertEquals(6, initial.size());
-
-        ArrayList<Card> objective = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
-        })));
-        assertEquals(16, objective.size());
+    public static <T extends Card> ArrayList<T> loadCardDeckAsArrayList(String filename, TypeToken<ArrayList<T>> typifiedTypeToken){
+        return new ArrayList<>(Objects.requireNonNull(
+                JSONParser.deckFromJSONConstructor(
+                        filename,
+                        typifiedTypeToken
+                )));
     }
 
     @Test
-    void deckIsNotEmpty() {
-        CardDeck<ResourceCard> resource = new CardDeck<>(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
-        }));
-        assertEquals(false, resource.isEmpty());
+    void resourceDeckHasCorrectSize(){
+        ArrayList<ResourceCard> resourceCards = loadCardDeckAsArrayList(RESOURCE_DECK_FILENAME, new TypeToken<>(){});
+        assertEquals(RESOURCE_DECK_SIZE, resourceCards.size());
+    }
 
-        ArrayList<Card> gold = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
-        })));
-        assertEquals(false, gold.isEmpty());
+    @Test
+    void goldDeckHasCorrectSize(){
+        ArrayList<GoldCard> goldCards = loadCardDeckAsArrayList(GOLD_DECK_FILENAME, new TypeToken<>(){});
+        assertEquals(GOLD_DECK_SIZE, goldCards.size());
+    }
 
-        ArrayList<Card> initial = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
-        })));
-        assertEquals(false, initial.isEmpty());
+    @Test
+    void initialDeckHasCorrectSize(){
+        ArrayList<InitialCard> initialCards = loadCardDeckAsArrayList(INITIAL_DECK_FILENAME, new TypeToken<>(){});
+        assertEquals(INITIAL_DECK_SIZE, initialCards.size());
+    }
 
-        ArrayList<Card> objective = new ArrayList<>(Objects.requireNonNull(JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
-        })));
-        assertEquals(false, objective.isEmpty());
+    @Test
+    void objectiveDeckHasCorrectSize(){
+        ArrayList<ObjectiveCard> objectiveCards = loadCardDeckAsArrayList(OBJECTIVE_DECK_FILENAME, new TypeToken<>(){});
+        assertEquals(OBJECTIVE_DECK_SIZE, objectiveCards.size());
+    }
 
+    @Test
+    void cardDecksAreNotEmpty() {
+        CardDeck<ResourceCard> resourceCardDeck = loadCardDeck(RESOURCE_DECK_FILENAME, new TypeToken<>(){});
+        CardDeck<ResourceCard> goldCardDeck = loadCardDeck(GOLD_DECK_FILENAME, new TypeToken<>(){});
+        CardDeck<ResourceCard> initialCardDeck = loadCardDeck(INITIAL_DECK_FILENAME, new TypeToken<>(){});
+        CardDeck<ResourceCard> objectiveCardDeck = loadCardDeck(OBJECTIVE_DECK_FILENAME, new TypeToken<>(){});
+
+        assertFalse(resourceCardDeck.isEmpty());
+        assertFalse(goldCardDeck.isEmpty());
+        assertFalse(initialCardDeck.isEmpty());
+        assertFalse(objectiveCardDeck.isEmpty());
     }
 
     @Test
@@ -58,22 +80,37 @@ class CardDeckTest {
         Player p1 = new Player("giovanni");
         GameLobby lobby = new GameLobby(p1, 1);
         Game game = new Game(lobby);
-        CardDeck<ResourceCard> deck = new CardDeck<>(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
-        }));
+        CardDeck<ResourceCard> resourceCardDeck = loadCardDeck(RESOURCE_DECK_FILENAME, new TypeToken<>(){});
 
-        assertDoesNotThrow(() -> game.getPlayers().getFirst().addCardToHand(deck.draw()));
-        assert (!game.getPlayers().getFirst().getCardsInHand().isEmpty());
+        assertDoesNotThrow(() -> game.getPlayers().getFirst().addCardToHand(resourceCardDeck.draw()));
+        assert(!game.getPlayers().getFirst().getCardsInHand().isEmpty());
     }
 
     @Test
     void fullDeckPull() {
-        CardDeck<ResourceCard> deck = new CardDeck<>(JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<ArrayList<ResourceCard>>() {
-        }));
+        CardDeck<ResourceCard> resourceCardDeck = loadCardDeck(RESOURCE_DECK_FILENAME, new TypeToken<>(){});
 
-        while (!deck.isEmpty()) {
-            assertDoesNotThrow(() -> assertInstanceOf(ResourceCard.class, deck.draw()));
+        while (!resourceCardDeck.isEmpty()) {
+            assertDoesNotThrow(() -> assertInstanceOf(ResourceCard.class, resourceCardDeck.draw()));
         }
 
-        assertTrue(deck.isEmpty());
+        assertTrue(resourceCardDeck.isEmpty());
+    }
+
+    @Test
+    void peekFromNotEmptyDeck(){
+        CardDeck<ResourceCard> resourceCardDeck = loadCardDeck(RESOURCE_DECK_FILENAME, new TypeToken<>(){});
+        assertInstanceOf(ResourceCard.class, resourceCardDeck.peek());
+        assertNotNull(resourceCardDeck.peek());
+    }
+
+    @Test
+    void peekFromEmptyDeck(){
+        CardDeck<ResourceCard> resourceCardDeck = loadCardDeck(RESOURCE_DECK_FILENAME, new TypeToken<>(){});
+
+        while (!resourceCardDeck.isEmpty())
+            assertDoesNotThrow(resourceCardDeck::draw);
+
+        assertNull(resourceCardDeck.peek());
     }
 }

@@ -7,16 +7,19 @@ import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.JSONParser;
+import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ResourcesConditionTest {
 
     private static ArrayList<ResourceCard> resourceCards;
-    private static ArrayList<GoldCard> goldCards;
     private static ArrayList<InitialCard> initialCards;
     private static ArrayList<ObjectiveCard> objectiveCards;
 
@@ -34,14 +36,9 @@ class ResourcesConditionTest {
 
     @BeforeAll
     static void setCardsLists() {
-        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
-        });
-        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
-        });
-        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
-        });
-        objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {
-        });
+        resourceCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.RESOURCE_DECK_FILENAME, new TypeToken<>(){});
+        initialCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.INITIAL_DECK_FILENAME, new TypeToken<>(){});
+        objectiveCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.OBJECTIVE_DECK_FILENAME, new TypeToken<>(){});
     }
 
     static Stream<Arguments> provideMultiConditionParameters() {
@@ -100,7 +97,7 @@ class ResourcesConditionTest {
                                          Triplet<GenericPair<Integer, Integer>, PlayableCard, Side>... cardsToPlay)
             throws Exception {
 
-        ObjectiveCard c_o = objectiveCards.getFirst();
+        ObjectiveCard c_o = objectiveCards.getLast();
         InGamePlayer player1InGame = game.getPlayers().getFirst();
         for (var card : cardsToPlay) {
             player1InGame.addCardToHand(card.getY());
@@ -110,7 +107,14 @@ class ResourcesConditionTest {
         assertEquals(numberOfTimesSatisfied, condition.numberOfTimesSatisfied(c_o, game.getPlayers().getFirst()));
     }
 
+    @Test
+    void getConditionParametersTest(){
+        Map<Resource, Integer> resourcesToOwn = new EnumMap<>(Resource.class);
+        resourcesToOwn.put(Resource.SCROLL, 1);
+        resourcesToOwn.put(Resource.QUILL, 1);
+        resourcesToOwn.put(Resource.INK, 1);
 
-
-
+        ResourcesCondition resourceCondition = new ResourcesCondition(resourcesToOwn);
+        assertEquals(resourcesToOwn, resourceCondition.getConditionParameters());
+    }
 }

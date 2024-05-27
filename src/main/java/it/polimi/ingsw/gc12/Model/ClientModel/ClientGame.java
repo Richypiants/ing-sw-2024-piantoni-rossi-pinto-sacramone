@@ -4,8 +4,6 @@ import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.io.Serializable;
 import java.util.*;
@@ -37,16 +35,15 @@ public class ClientGame extends GameLobby implements Serializable {
     public ClientGame(Game game, InGamePlayer myself) {
         super(game.getMaxPlayers(), game.getPlayers().stream()
                 //.filter(Predicate.not(myself::equals))
-                .map(ClientPlayer::new)
+                .map((player) -> new ClientPlayer(player, player.getOpenCorners(), player.getOwnedResources(), player.getPoints()))
                 .toList());
 
-        Map<Integer, ClientCard> clientCards = ServerController.getInstance().clientCardsList;
+        Map<Integer, ClientCard> clientCards = ServerController.clientCardsList;
         //FIXME: Check what is MYSELF pointing at, since we're just building it I think it is empty
         this.MYSELF = getPlayers().stream().filter((player) -> player.getNickname().equals(myself.getNickname())).findAny().orElseThrow();
         this.OWN_HAND = myself.getCardsInHand().stream()
                         .map((card) -> clientCards.get(card.ID))
                 .collect(Collectors.toCollection(ArrayList::new));
-        //TODO: we're not sending this player ownedResources?
         this.PLACED_RESOURCE_CARDS = Arrays.stream(game.getPlacedResources())
                 .map((card) -> clientCards.get(card.ID))
                 .toArray(ClientCard[]::new);
@@ -59,8 +56,8 @@ public class ClientGame extends GameLobby implements Serializable {
         this.topDeckResourceCard = clientCards.get(game.peekFrom(game.getResourceCardsDeck()) == null ? -1 : game.peekFrom(game.getResourceCardsDeck()).ID);
         this.topDeckGoldCard = clientCards.get(game.peekFrom(game.getGoldCardsDeck()) == null ? -1 : game.peekFrom(game.getGoldCardsDeck()).ID);
         this.ownObjective = myself.getSecretObjective() == null ? null : clientCards.get(myself.getSecretObjective().ID);
-        this.currentRound = 0;
-        this.currentPlayerIndex = -1;
+        this.currentRound = game.getTurnNumber();
+        this.currentPlayerIndex = game.getPlayers().indexOf(game.getCurrentPlayer());
         this.chatLog = new ArrayList<>();
     }
 
@@ -109,7 +106,7 @@ public class ClientGame extends GameLobby implements Serializable {
     /**
      * Returns the GoldCards placed on the table
      */
-    public ClientCard[] getPlacedGold() {
+    public ClientCard[] getPlacedGolds() {
         return PLACED_GOLD_CARDS;
     }
 

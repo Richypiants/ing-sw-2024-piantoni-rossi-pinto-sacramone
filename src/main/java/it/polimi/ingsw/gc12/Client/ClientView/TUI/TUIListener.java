@@ -64,52 +64,53 @@ public class TUIListener {
         }
 
         try {
-            switch (command) {
-                case "setNickname" -> {
+            switch (command.toLowerCase()) {
+                case "setnickname", "sn" -> {
                     String nickname = tokens.removeFirst();
                     //TODO: invece di troncare, printare errore e reimmissione nickname?
                     currentState.setNickname(nickname.substring(0, Math.min(nickname.length(), 10)));
                 }
-                case "createLobby" -> {
+                case "createlobby", "cl" -> {
                     errorMessage = "expected numero di giocatori nella lobby as first argument";
                     currentState.createLobby(Integer.parseInt(tokens.removeFirst()));
                 }
-                case "joinLobby" -> {
+                case "joinlobby", "jl" -> {
                     errorMessage = "expected lobbyUUID as second argument";
                     currentState.joinLobby((UUID.fromString(tokens.removeFirst())));
                 }
-                case "leaveLobby" -> currentState.leaveLobby();
-                case "broadcastMessage" -> {
+                case "leavelobby", "ll" -> currentState.leaveLobby();
+                case "broadcastmessage", "bm" -> {
                     String message = tokens.stream().reduce("", (a, b) -> a + " " + b);
                     currentState.broadcastMessage(
                             message.substring(0, Math.min(message.length(), 150))
                     );
                 }
-                case "directMessage" -> {
+                case "directmessage", "dm" -> {
                     String receiverNickname = tokens.removeFirst();
                     String message = tokens.stream().reduce("", (a, b) -> a + " " + b);
                     currentState.directMessage(
                             receiverNickname, message.substring(0, Math.min(message.length(), 150))
                     );
                 }
-                case "pickInitial" ->
+                case "pickinitial", "pi" ->
                         currentState.placeCard(new GenericPair<>(0, 0), 1, convertSide(tokens.removeFirst()));
-                case "placeCard" ->
+                case "placecard", "pc" ->
                     currentState.placeCard(
                             new GenericPair<>(Integer.parseInt(tokens.removeFirst()), Integer.parseInt(tokens.removeFirst())),
                             Integer.parseInt(tokens.removeFirst()),
                             convertSide(tokens.removeFirst())
                     );
-                case "pickObjective" -> currentState.pickObjective(Integer.parseInt(tokens.removeFirst()));
-                case "drawFromDeck" -> currentState.drawFromDeck(tokens.removeFirst());
-                case "drawFromVisibleCards" -> {
+                case "pickobjective", "po" -> currentState.pickObjective(Integer.parseInt(tokens.removeFirst()));
+                case "drawfromdeck", "dfd" -> currentState.drawFromDeck(tokens.removeFirst());
+                case "drawfromvisiblecards", "dfvc" -> {
                     errorMessage = "expected position to draw from as second argument";
                     currentState.drawFromVisibleCards(
                             tokens.removeFirst(), Integer.parseInt(tokens.removeFirst())
                     );
                 }
-                case "showField" -> currentState.showField(Integer.parseInt(tokens.removeFirst()));
+                case "showfield", "sf" -> currentState.showField(Integer.parseInt(tokens.removeFirst()));
                 case "quit" -> currentState.quit();
+                case "ok" -> currentState.toLobbies();
                 default -> throw new IllegalArgumentException("Unknown command");
             }
         } catch (NoSuchElementException e) {

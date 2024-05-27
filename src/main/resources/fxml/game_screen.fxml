@@ -1,39 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--> stylesheets="/style.css" <-->
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1"
-            maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            xmlns="http://javafx.com/javafx/21">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
+            fx:id="gameScreenPane" stylesheets="/style.css">
 
-    <Button fx:id="chatButton" mnemonicParsing="false" rotate="270.0" text="Chat"/>
-    <Button fx:id="leaveButton" mnemonicParsing="false" text="Leave Game"/>
-    <AnchorPane fx:id="scoreboardPane" style="-fx-background-color: blue;">
+    <Button fx:id="scoreboardButton" styleClass="button" mnemonicParsing="false" text="Show Scoreboard"/>
+    <Button fx:id="chatButton" styleClass="button" mnemonicParsing="false" rotate="270.0" text="Chat"/>
+    <Button fx:id="leaveButton" styleClass="button" mnemonicParsing="false" text="Leave Game"/>
+
+    <AnchorPane fx:id="scoreboardPane" style="-fx-background-color: blue;" visible="false">
+        <Button fx:id="hideScoreboardButton" mnemonicParsing="false" text="X"/>
     </AnchorPane>
-    <VBox fx:id="deckAndVisiblePane" style="-fx-background-color: green;">
 
+    <VBox fx:id="deckAndVisiblePane" style="-fx-background-color: green;" spacing="10">
+        <HBox fx:id="resourceHBox" alignment="CENTER" spacing="10">
+            <!--> <ImageView fx:id="resourceDeck"/> <-->
+        </HBox>
+        <HBox fx:id="goldHBox" alignment="CENTER" spacing="10">
+            <!--> <ImageView fx:id="goldDeck"/> <-->
+        </HBox>
+        <HBox fx:id="objectiveHBox" alignment="CENTER" spacing="10">
+            <!--> <ImageView fx:id="secretObjective"/> <-->
+        </HBox>
     </VBox>
+
     <HBox fx:id="opponentsFieldsPane" style="-fx-background-color: yellow;">
     </HBox>
-    <AnchorPane fx:id="ownFieldPane" style="-fx-background-color: red;">
 
+    <AnchorPane fx:id="ownFieldPane" style="-fx-background-color: red;">
+        <VBox fx:id="statsBox" alignment="CENTER"/>
+        <ScrollPane fx:id="ownFieldScrollPane"/>
+        <Button fx:id="zoomedOwnFieldButton" mnemonicParsing="false" text="[]"/>
+        <Button fx:id="centerOwnFieldButton" mnemonicParsing="false" text="+"/>
     </AnchorPane>
+
     <HBox fx:id="handPane" style="-fx-background-color: purple;">
 
     </HBox>
+
     <AnchorPane fx:id="chatPane" style="-fx-background-color: gray;" visible="false">
-        <HBox>
-            <Button fx:id="hideButton" layoutX="846.0" layoutY="360.0" mnemonicParsing="false" rotate="270.0"
+        <HBox alignment="CENTER">
+            <Button fx:id="hideChatButton" styleClass="button" mnemonicParsing="false" rotate="270.0"
                     text="Hide"/>
-            <VBox fx:id="chatBox">
-                <ScrollPane fx:id="chatScrollPane" layoutX="880.0" prefHeight="500.0" prefWidth="350.0">
-                    <content>
-                        <VBox fx:id="messagesBox"></VBox>
-                    </content>
+            <VBox fx:id="chatBox" alignment="CENTER">
+                <ScrollPane fx:id="chatScrollPane" prefHeight="500.0" prefWidth="350.0">
+                    <VBox fx:id="messagesBox"/>
                 </ScrollPane>
-                <HBox>
+                <HBox alignment="CENTER">
                     <Label fx:id="to" layoutX="198.0" layoutY="115.0" prefHeight="10.0"
                            prefWidth="100.0" text="To: "
                            textFill="#000000">
@@ -44,14 +59,15 @@
                     <ComboBox fx:id="receiverSelector" layoutX="225.0" layoutY="188.0" prefWidth="150.0"
                               promptText="everyone"/>
                 </HBox>
-                <HBox fx:id="sendControls">
+                <HBox fx:id="sendControls" alignment="CENTER">
                     <TextField fx:id="messageText" prefHeight="10.0" prefWidth="100.0"
                                promptText="Scrivi qui il tuo messaggio...">
                         <font>
                             <Font name="Bell MT" size="20.0"/>
                         </font>
                     </TextField>
-                    <Button fx:id="sendButton" layoutX="846.0" layoutY="360.0" mnemonicParsing="false" text="Send"/>
+                    <Button fx:id="sendButton" styleClass="button" layoutX="846.0" layoutY="360.0"
+                            mnemonicParsing="false" text="Send"/>
                 </HBox>
             </VBox>
         </HBox>

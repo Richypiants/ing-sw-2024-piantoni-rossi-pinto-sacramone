@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
+import it.polimi.ingsw.gc12.Network.Server.Server;
+
 public class Main {
 
     public static void main(String[] args) {

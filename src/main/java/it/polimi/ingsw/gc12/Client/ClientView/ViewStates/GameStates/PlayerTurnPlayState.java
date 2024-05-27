@@ -10,7 +10,6 @@ import java.util.List;
 public class PlayerTurnPlayState extends GameScreenState {
 
     public PlayerTurnPlayState() {
-
         //TODO: add showField <playerID>
         TUICommands =
                 ClientController.getInstance().isThisClientTurn() ?
@@ -45,7 +44,7 @@ public class PlayerTurnPlayState extends GameScreenState {
         if(playerID < 0 || playerID > game.getMaxPlayers())
             throw new IllegalArgumentException("The provided ID doesn't match to a player's ID in the game.");
 
-        ClientController.getInstance().view.showField(game.getPlayers().get(playerID-1));
+        ClientController.getInstance().view.showField(game.getPlayers().get(playerID - 1));
     }
 
     @Override

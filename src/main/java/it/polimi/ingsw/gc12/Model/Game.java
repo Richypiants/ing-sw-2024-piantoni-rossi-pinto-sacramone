@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc12.Model;
 
+import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.GameState;
+import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
-import it.polimi.ingsw.gc12.Model.GameStates.GameState;
-import it.polimi.ingsw.gc12.Model.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 /**
  * A structure for games after they have started
  */
-//FIXME: should inherit from GameLobby to manage the start of games more easily in the Controller... fix UML
 public class Game extends GameLobby {
 
     /**
@@ -59,13 +58,12 @@ public class Game extends GameLobby {
         shufflePlayers();
 
         this.currentRound = 0;
-        setState(new SetupState(this));
 
-        this.RESOURCE_CARDS_DECK = new CardDeck<>(ServerController.getInstance().cardsList.values().stream()
+        this.RESOURCE_CARDS_DECK = new CardDeck<>(ServerController.cardsList.values().stream()
                 .filter((card -> card instanceof ResourceCard))
                 .map((card) -> (ResourceCard) card)
                 .toList());
-        this.GOLD_CARDS_DECK = new CardDeck<>(ServerController.getInstance().cardsList.values().stream()
+        this.GOLD_CARDS_DECK = new CardDeck<>(ServerController.cardsList.values().stream()
                 .filter((card -> card instanceof GoldCard))
                 .map((card) -> (GoldCard) card)
                 .toList());
@@ -79,9 +77,8 @@ public class Game extends GameLobby {
 
             PLACED_GOLD_CARDS[0] = GOLD_CARDS_DECK.draw();
             PLACED_GOLD_CARDS[1] = GOLD_CARDS_DECK.draw();
-        } catch(EmptyDeckException e) {
+        } catch(EmptyDeckException ignored) {
             //cannot happen as deck has just been initialized
-            e.printStackTrace();
         }
 
         this.COMMON_OBJECTIVES = new ObjectiveCard[2];
@@ -107,7 +104,7 @@ public class Game extends GameLobby {
     }
 
     /**
-     * Returns the player who is currently playing
+     * Returns all the active and inactive instances of InGamePlayers in this game
      */
     @Override
     public ArrayList<InGamePlayer> getPlayers() {
@@ -216,8 +213,6 @@ public class Game extends GameLobby {
             } catch (EmptyDeckException e) {
                 PLACED_RESOURCE_CARDS[position] = null;
             }
-        } else {
-            //TODO: UnmatchedStringException
         }
 
         if (returnedCard == null)
@@ -232,11 +227,9 @@ public class Game extends GameLobby {
     /**
      * Changes the currentState of this game to newState
      */
-    //TODO:ADDED Sync keyword
     public void setState(GameState newState) {
         currentState = newState;
     }
-
     /**
      * Returns the current game state (of type GameState)
      */
@@ -247,7 +240,6 @@ public class Game extends GameLobby {
     public ClientGame generateDTO(InGamePlayer receiver){
         return new ClientGame(this, receiver);
     }
-
 
     public Map<String,LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> generateTemporaryFieldsToPlayers() {
         Map<String,LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> playersField = new HashMap<>();
@@ -262,35 +254,3 @@ public class Game extends GameLobby {
         return playersField;
     }
 }
-
-
-
-
-// nextPlayer() -> Si test (verificare se funziona bene / i due casi per l'if)
-//                 Statement coverage
-//                 currentPlayer = 3
-//
-//                 Edge Coverage (anche se già con lo statement coverage vengono eseguite tutte le righe ...
-//                 ... e non credo che this.increaseTurn() crei problemi)
-//                 currentPlayer != 3 (2)
-//
-// getCurrentPlayer() (Getter) -> No test
-// increaseTurn() -> No test
-// getTurnNumber() (Getter) -> No test
-// getPlacedResources() (Getter) -> No test
-// getPlacedGolds()  (Getter) -> No test
-// getCommonObjectives() (Getter) -> No test
-// drawFrom() -> Si test
-//               - Casi limite
-//                 deck undefined
-//
-// drawFromVisibleCards() -> Si test
-//                           Statement coverage
-//                           position = 0
-//                           position = 2
-//                           whichType = gold
-//                           whichType = resource
-//                           whichType = CavoloCappuccioRosso
-//
-//                           Edge and Condition coverage (Non necessario)
-//                           position = 1

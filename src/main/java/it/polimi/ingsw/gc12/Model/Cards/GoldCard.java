@@ -14,7 +14,6 @@ import java.util.Map;
  * and requires resources to be played.
  */
 public class GoldCard extends PlayableCard {
-
     /**
      * The condition evaluated to determine the total points granted upon playing this card.
      */
@@ -60,7 +59,6 @@ public class GoldCard extends PlayableCard {
      * @return The points condition.
      */
     public PointsCondition getPointsCondition(){
-        //FIXME: unsafe?
         return POINTS_CONDITION;
     }
 
