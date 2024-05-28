@@ -8,17 +8,23 @@ import java.util.List;
 import java.util.Stack;
 
 /**
-A card deck from which to draw cards during games
+ * Represents a deck of cards used in the game, allowing cards to be drawn,
+ * shuffled, and managed in a stack, with visibility of the top one.
+ *
+ * @param <T> The type of card in the deck, which must extend the {@link Card} class.
  */
 public class CardDeck<T extends Card>{
 
     /**
-    The group of cards which form the deck
+     * The stack of cards that forms the deck.
      */
     private final Stack<T> DECK;
 
     /**
-    Constructs a deck of cards by copying the passed cards, shuffling and then pushing them into the card stack
+     * Constructs a deck of cards by copying the provided list of cards,
+     * shuffling them, and then pushing them into the stack.
+     *
+     * @param deck The list of cards to initialize the deck with.
      */
     public CardDeck(List<T> deck) {
         List<T> copy = new ArrayList<>(deck);
@@ -31,14 +37,19 @@ public class CardDeck<T extends Card>{
     }
 
     /**
-    Pushes a card into the stack
+     * Pushes a card onto the stack.
+     *
+     * @param toInsert The card to be added to the deck.
      */
     private void push(T toInsert){
         this.DECK.push(toInsert);
     }
 
     /**
-    Pops the first card of the stack and returns it to the caller
+     * Draws the top card from the deck and returns it.
+     *
+     * @return The top card from the deck.
+     * @throws EmptyDeckException If the deck is empty.
      */
     public T draw() throws EmptyDeckException {
         if (DECK.isEmpty())
@@ -46,6 +57,11 @@ public class CardDeck<T extends Card>{
         return this.DECK.pop();
     }
 
+    /**
+     * Shows the top card of the deck without removing it.
+     *
+     * @return The top card of the deck, or null if the deck is empty.
+     */
     public T peek() {
         if(DECK.isEmpty())
             return null;
@@ -53,18 +69,11 @@ public class CardDeck<T extends Card>{
     }
 
     /**
-    Returns true if the deck has no cards, false otherwise
+     * Checks if the deck is empty.
+     *
+     * @return true if the deck has no cards, false otherwise.
      */
     public boolean isEmpty() {
         return this.DECK.isEmpty();
     }
 }
-
-// push -> Si test
-//         - Edge cases
-//           toInsert undefined
-//
-// draw -> Si test
-//         DECK.isEmpty() = TRUE
-//
-// empty -> No test

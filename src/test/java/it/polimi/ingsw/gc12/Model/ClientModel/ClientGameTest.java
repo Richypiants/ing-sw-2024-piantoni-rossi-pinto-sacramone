@@ -141,9 +141,33 @@ class ClientGameTest {
     @Test
     void setterTest() {
         client = new ClientGame(game, game.getPlayers().getFirst());
-
+        ClientCard card = new ClientCard(1, new HashMap<>(), new HashMap<>());
         client.setCurrentRound(1);
         assertEquals(1, client.getCurrentRound());
+
+        client.addCardToHand(new ClientCard(1, new HashMap<>(), new HashMap<>()));
+        assert (!client.getCardsInHand().isEmpty());
+        client.removeCardFromHand(new ClientCard(1, new HashMap<>(), new HashMap<>()));
+        assert (!client.getCardsInHand().contains(new ClientCard(1, new HashMap<>(), new HashMap<>())));
+
+        client.setPlacedResources(card, 1);
+        assertEquals(card, client.getPlacedResources()[1]);
+
+        client.setPlacedGold(card, 1);
+        assertEquals(card, client.getPlacedGolds()[1]);
+
+        client.setCommonObjectives(card, 1);
+        assertEquals(card, client.getCommonObjectives()[1]);
+
+        client.setTopDeckGoldCard(card);
+        assertEquals(card, client.getTopDeckGoldCard());
+
+        client.setTopDeckResourceCard(card);
+        assertEquals(card, client.getTopDeckResourceCard());
+
+        client.setOwnObjective(card);
+        assertEquals(card, client.getOwnObjective());
+
 
 
     }
