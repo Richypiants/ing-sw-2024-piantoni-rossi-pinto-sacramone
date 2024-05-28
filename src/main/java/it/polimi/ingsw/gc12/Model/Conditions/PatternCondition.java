@@ -16,17 +16,23 @@ import java.util.stream.Collectors;
 import static java.util.Collections.disjoint;
 
 /**
-A condition that counts how many "disjoint" times the condition pattern can be found among the played cards
+ * A condition that counts how many "disjoint" times the condition pattern can be found among the played cards
  */
 public class PatternCondition implements PointsCondition {
 
     /**
-    The pattern to be found among the played cards
+     * The pattern to be found among the played cards
      */
     private final List<Triplet<Integer, Integer, Resource>> CONDITION;
 
     /**
-    Generates an instance of a pattern condition from the given condition in parameters
+     * Generates an instance of a pattern condition from the given condition in parameters
+     *
+     * @param condition A List of Triplet elements, each one representing the relative collocation and the color of one card
+     *                  of the examined pattern. For each Triplet, the first and second arguments are Integers representing
+     *                  the x and y position offset with respect to the first card of the List (for which these values are
+     *                  always going to be 0, 0); the third argument represents the color of the card in the examined
+     *                  pattern, each color being identified by a particular Resource.
      */
     public PatternCondition(List<Triplet<Integer, Integer, Resource>> condition) {
         //TODO: should we keep safe copy of the condition arraylist?
@@ -34,7 +40,7 @@ public class PatternCondition implements PointsCondition {
     }
 
     /**
-    Returns a copy of this card's condition pattern
+     * Returns a copy of this card's condition pattern
      */
     //FIXME: make this collection immutable (all the other ones in PointsCondition subclasses too?
     // somewhere else too?)
@@ -43,10 +49,10 @@ public class PatternCondition implements PointsCondition {
     }
 
     /**
-    Counts how many corners are covered when playing the associated card.
-    The same-type patterns should be considered in a way such that the points obtained from them is maxed.
-    Thus, we want to find the largest maximum compatibility class between all the same-type patterns,
-    that is the choice of patterns such that we consider the most possible amount of them
+     * Counts how many corners are covered when playing the associated card.
+     * The same-type patterns should be considered in a way such that the points obtained from them is maxed.
+     * Thus, we want to find the largest maximum compatibility class between all the same-type patterns,
+     * that is the choice of patterns such that we consider the most possible amount of them
      */
     //FIXME: ALL THIS CODE SHOULD BE CLEANED AND OPTIMIZED, IT IS TOO INTRICATE
     // AND PROBABLY REPEATS OPERATION AND IS NOT DRY
@@ -84,8 +90,8 @@ public class PatternCondition implements PointsCondition {
     }
 
     /**
-    Using the tree algorithm from Digital Circuits Design course, finds the size of the largest compatibility
-    class, that is the maximum number of patterns that are disjoint
+     * Using the tree algorithm from Digital Circuits Design course, finds the size of the largest compatibility
+     * class, that is the maximum number of patterns that are disjoint
      */
     private int largestMaximumCompatibilityClass(ArrayList<PlayableCard> patternStartingCards,
                                                  InGamePlayer target) {
@@ -154,7 +160,7 @@ public class PatternCondition implements PointsCondition {
     }
 
     /**
-    Checks whether the patterns passed as parameters are compatible (disjoint)
+     * Checks whether the patterns passed as parameters are compatible (disjoint)
      */
     //FIXME: maybe a BiMap would solve this problem?
     private boolean compatibleWith(PlayableCard pattern1, PlayableCard pattern2, InGamePlayer target) {
@@ -166,7 +172,7 @@ public class PatternCondition implements PointsCondition {
     }
 
     /**
-    Returns the list of coordinates of all the cards in the pattern passed as parameter
+     * Returns the list of coordinates of all the cards in the pattern passed as parameter
      */
     private List<GenericPair<Integer, Integer>> fullPatternCoordinates(
             PlayableCard pattern, InGamePlayer target) {

@@ -82,6 +82,9 @@ public class GameLobby implements Serializable {
         }
     }
 
+    /**
+     * Shuffle players to obtain order of players in the game.
+     */
     public void shufflePlayers() {
         Collections.shuffle(LIST_OF_PLAYERS);
     }

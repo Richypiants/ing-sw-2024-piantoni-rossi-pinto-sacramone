@@ -7,12 +7,15 @@ import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
 /**
-A condition that counts how many corners are covered when playing the associated card
+ * A condition that counts how many corners are covered when playing the associated card
  */
 public class CornersCondition implements PointsCondition {
 
     /**
-    Counts how many corners are covered when playing the associated card
+     * Returns numbers of corners covered by a card
+     *
+     * @param thisCard               Card to play
+     * @param target                 Player that play card
      */
     public int numberOfTimesSatisfied(Card thisCard, InGamePlayer target) {
         //TODO: check for exceptions!
