@@ -42,6 +42,7 @@ class ClientPlayerTest {
         player1 = new Player("Sacri");
         player2 = new Player("Piants");
         lobby = new GameLobby(player1, 2);
+        lobby.addPlayer(player2);
         game = new Game(lobby);
         resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
         });
