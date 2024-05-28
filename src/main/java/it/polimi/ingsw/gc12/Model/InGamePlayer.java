@@ -14,36 +14,48 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * A structure for a player which is currently playing a game
+ * Represents a player who is currently in a game.
+ * This class extends the basic Player class to include attributes and methods
+ * specific to a player who is in a game. It maintains the player's hand
+ * of cards, their owned resources, their field, their secret objective and their points.
+ * Furthermore, it keeps track of the player activity or inactivity due to network or voluntary disconnections.
  */
 public class InGamePlayer extends Player {
+
     /**
-     * The cards in this player's hand
+     * The cards currently held in this player's hand.
      */
     private final ArrayList<PlayableCard> CARDS_IN_HAND;
+
     /**
-     * The resources owned by this player currently
+     * The resources currently owned by this player.
      */
     private final EnumMap<Resource, Integer> OWNED_RESOURCES;
+
     /**
-     * The field of this player
+     * The field of cards placed by this player.
      */
     private final Field OWN_FIELD;
+
     /**
-     *
+     * The active status of this player, indicating whether the player is currently connected to the game and playing.
      */
     private boolean active;
     /**
-     * The points currently gained by this player
+     * The points currently accumulated by this player
      */
     private int points;
+
     /**
-     * The secret Objective Card chosen by this player
+     * The secret objective card chosen by this player
      */
     private ObjectiveCard secretObjective;
 
     /**
-     * Constructs an InGamePlayer from the player passed as parameter
+     * Constructs an InGamePlayer from the given Player instance.
+     * Initializes the player's hand, resources, field, active status, and secret objective.
+     *
+     * @param player The Player instance from which to create the InGamePlayer.
      */
     protected InGamePlayer(Player player) {
         super(player);
@@ -63,55 +75,71 @@ public class InGamePlayer extends Player {
 
     }
 
+    /**
+     * Converts this InGamePlayer back to a Player instance.
+     *
+     * @return A new Player instance with the same nickname as this InGamePlayer.
+     */
     public Player toPlayer(){
         return new Player(getNickname());
     }
 
     /**
-     * Given the desired amount to be increased by, updates the player's points
+     * Increases this player's points by the specified amount.
+     *
+     * @param pointsToAdd The amount of points to add.
      */
     public void increasePoints(int pointsToAdd) {
         points += pointsToAdd;
     }
 
     /**
-     * Returns this player's current points
+     * Returns this player's current points.
+     *
+     * @return The current points of this player.
      */
     public int getPoints() {
         return points;
     }
 
     /**
-     * Returns the activity status of this player
+     * Returns the activity status of this player.
+     *
+     * @return {@code true} if the player is active, {@code false} otherwise.
      */
     public boolean isActive() {
         return active;
     }
 
     /**
-     * Switch the activity status of a player
+     * Toggles the active status of this player.
+     * If the player is currently active, they will become inactive, and vice versa.
      */
     public void toggleActive() {
         active = !active;
     }
 
     /**
-     * Returns a copy of the list of cards in this player's hand
+     * Returns the list of cards in this player's hand.
+     *
+     * @return A copy of the list of PlayableCards in the player's hand.
      */
     public ArrayList<PlayableCard> getCardsInHand() {
         return new ArrayList<>(CARDS_IN_HAND);
     }
 
     /**
-     * Given the card and the desired position, wrapped in a GenericPair structure meaning <x,y> coordinates on
-     * the field, places the card into the ownField HashMap, also incrementing the ownedResources by the correct number
-     * @requires the given card to place must be in this player's hand (it is contained in CARDS_IN_HAND)
-     * @requires if the given card is a GoldCard: this player must have the needed resources to play it
-     * @ensures this player's points are increased by the amount awarded by the played card (IF THE CARD IS PLAYED FRONT)
-     * @ensures for each Resource contained in a corner or on the back of the given card's played side, this player's
-     * resources are incremented by 1
-     * @ensures if the given card (after being placed) covers corners of other cards, for each covered corner the
-     * amount is decremented by 1
+     * Places a card from the player's hand onto their field at the specified coordinates.
+     * Updates the player's points and resources based on the card's placement.
+     * After being placed, if the given card covers corners of other cards which contains resources,
+     * their amount is decremented.
+     *
+     * @param coordinates The pair of coordinates where the card should be placed.
+     * @param card        The card to place.
+     * @param playedSide  The side of the card that is played.
+     * @throws CardNotInHandException       if the card is not in the player's hand while trying to place it.
+     * @throws NotEnoughResourcesException  if the player does not have enough resources to play a GoldCard.
+     * @throws InvalidCardPositionException if the card cannot be placed at the specified coordinates.
      */
     public void placeCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
             throws CardNotInHandException, NotEnoughResourcesException, InvalidCardPositionException {
@@ -173,78 +201,78 @@ public class InGamePlayer extends Player {
     }
 
     /**
-     * Adds the pickedCard to the current player's hand
+     * Adds the specified card to this player's hand.
+     *
+     * @param pickedCard The card to add to the player's hand.
      */
     public void addCardToHand(PlayableCard pickedCard) {
         CARDS_IN_HAND.add(pickedCard);
     }
 
+
     /**
-     * Given a specific resource type and the quantity to be increased by, updates the HashMap
+     * Increments the specified resource by the given amount.
+     *
+     * @param resource            The resource to increment.
+     * @param numberToBeIncreased The amount to increment the resource by.
      */
     protected void incrementOwnedResource(Resource resource, int numberToBeIncreased){
         OWNED_RESOURCES.put(resource, OWNED_RESOURCES.get(resource) + numberToBeIncreased);
     }
 
     /**
-     * Returns a copy of the map of resources owned by this player
+     * Returns a copy of the map of resources owned by this player.
+     *
+     * @return A copy of the EnumMap containing the player's resources.
      */
     public EnumMap<Resource, Integer> getOwnedResources() {
         return new EnumMap<>(OWNED_RESOURCES);
     }
 
     /**
-     * Returns the cards placed by this player
+     * Returns the cards placed by this player on their field.
+     *
+     * @return A LinkedHashMap of the coordinates to pairs of placed cards and their sides.
      */
     public LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
         return OWN_FIELD.getPlacedCards();
     }
 
     /**
-     * Returns the available positions where this player can place cards next
+     * Returns the available positions where this player can place the next cards.
+     *
+     * @return An ArrayList of coordinates where cards can be placed.
      */
     public ArrayList<GenericPair<Integer, Integer>> getOpenCorners() {
         return OWN_FIELD.getOpenCorners();
     }
 
     /**
-     * Returns this player's secret Objective card
+     * Returns this player's secret Objective Card.
+     *
+     * @return The secret Objective Card of this player.
      */
     public ObjectiveCard getSecretObjective() {
         return secretObjective;
     }
 
     /**
-     * Sets this player's secret Objective card
+     * Sets this player's secret Objective Card.
+     *
+     * @param objectiveCard The Objective Card to set as this player's secret objective.
      */
     public void setSecretObjective(ObjectiveCard objectiveCard) {
-        //FIXME: if Cards classes' attributes are final, this is fine.
         this.secretObjective = objectiveCard;
     }
 
+
+    /**
+     * Returns the coordinates of the specified card on this player's field.
+     *
+     * @param placedCard The card whose coordinates are to be retrieved.
+     * @return The coordinates of the specified card.
+     */
     public GenericPair<Integer, Integer> getCardCoordinates(PlayableCard placedCard) {
         return OWN_FIELD.getCardCoordinates(placedCard);
     }
 }
-
-// increasePoints() -> No test
-// getPoints() (Getter) -> No test
-// getCardsInHand() (Getter) -> No test
-// placeCard() -> Si test
-//                - Casi limite
-//                  card undefined
-//
-// addCardToHand() -> Si test
-//                    - Casi limite
-//                      pickedCard undefined
-//
-// incrementOwnedResource() -> No test
-// getOwnedResources() (Getter) -> No test
-// getOwnField() (Getter) -> No test
-// getPlacedCards() (Getter) -> No test
-// getOpenCorners() (Getter) -> No test
-// setSecretObjective() (Setter senza condizioni particolari) -> Si test
-//                                                               - Casi limite
-//                                                                 objectiveCard undefined
-//
-// getSecretObjective() (Getter) -> No test

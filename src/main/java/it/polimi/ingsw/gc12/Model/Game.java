@@ -13,41 +13,46 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * A structure for games after they have started
+ * Represents a game session after it has started, keeping track of the players in the associated game lobby.
+ * This class manages the decks of cards, the players' information related to the game, such as their hands, fields, and secret objectives,
+ * and the current state of the game.
  */
 public class Game extends GameLobby {
 
     /**
-     * The deck of Resource cards of this game
+     * The deck of Resource cards of this game.
      */
     private final CardDeck<ResourceCard> RESOURCE_CARDS_DECK;
     /**
-     * The deck of Gold cards of this game
+     * The deck of Gold cards of this game.
      */
     private final CardDeck<GoldCard> GOLD_CARDS_DECK;
     /**
-     * The two Resource cards placed on the table
+     * The two resource cards visible to all the players placed on the table.
      */
     private final ResourceCard[] PLACED_RESOURCE_CARDS;
     /**
-     * The two Gold cards placed on the table
+     * The two gold cards visible to all the players placed on the table.
      */
     private final GoldCard[] PLACED_GOLD_CARDS;
     /**
-     * The two common Objective cards placed on the table
+     * The two objective cards visible to all the players placed on the table.
      */
     private final ObjectiveCard[] COMMON_OBJECTIVES;
     /**
-     * The current turn's number (starting from 1 in the first turn)
+     * The current turn's number, which is handled by the GameState.
      */
     private int currentRound;
     /**
-     *
+     * The current state of the game.
      */
     private GameState currentState;
 
     /**
-     * Constructs a new game instance from the lobby passed as parameter
+     * Constructs a new Game instance from the specified lobby.
+     * Initializes decks, shuffles players, and sets up the game state.
+     *
+     * @param lobby The GameLobby instance from which this game is created.
      */
     public Game(GameLobby lobby) {
         super(lobby.getMaxPlayers(), lobby.getPlayers()
@@ -86,6 +91,13 @@ public class Game extends GameLobby {
         this.currentState = new SetupState(this);
     }
 
+    /**
+     * Converts the current game state back to a lobby state.
+     * This method is useful for scenarios where the players in-game need to be converted in player instances,
+     * such as after a game ends and players return to a lobby.
+     *
+     * @return A new GameLobby instance reflecting only the current active players.
+     */
     public GameLobby toLobby(){
         List<Player> playersList = new ArrayList<>();
 
@@ -104,7 +116,9 @@ public class Game extends GameLobby {
     }
 
     /**
-     * Returns all the active and inactive instances of InGamePlayers in this game
+     * Returns all players in the game, both active and inactive.
+     *
+     * @return An ArrayList of InGamePlayer instances representing all players in the game.
      */
     @Override
     public ArrayList<InGamePlayer> getPlayers() {
@@ -114,6 +128,11 @@ public class Game extends GameLobby {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    /**
+     * Returns only the active players in the game.
+     *
+     * @return An ArrayList of InGamePlayer instances representing the active players in the game.
+     */
     public ArrayList<InGamePlayer> getActivePlayers() {
         return super.getPlayers()
                 .stream()
@@ -123,78 +142,104 @@ public class Game extends GameLobby {
     }
 
     /**
-     * Increases the turn number
+     * Increments the current round number, indicating the progression of the game.
      */
     public void increaseTurn() {
         currentRound++;
     }
 
     /**
-     * Returns the player that is currently playing
+     * Retrieves the player who is currently taking their turn.
+     *
+     * @return The InGamePlayer instance representing the current player.
      */
     public InGamePlayer getCurrentPlayer() {
         return getCurrentState().getCurrentPlayer();
     }
 
     /**
-     * Returns the turn number
+     * Gets the current round number.
+     *
+     * @return The current round number as an integer.
      */
     public int getTurnNumber() {
         return currentRound;
     }
 
-    //FIXME: are these below unsafe returns? (Reference escaping?)
-
     /**
-     * Returns the deck of ResourceCards placed on the table
+     * Retrieves the deck of ResourceCards placed on the table.
+     *
+     * @return The CardDeck of ResourceCards instances.
      */
     public CardDeck<ResourceCard> getResourceCardsDeck() {
         return RESOURCE_CARDS_DECK;
     }
 
     /**
-     * Returns the deck of GoldCards placed on the table
+     * Retrieves the deck of GoldCards placed on the table.
+     *
+     * @return The CardDeck of GoldCard instances.
      */
     public CardDeck<GoldCard> getGoldCardsDeck() {
         return GOLD_CARDS_DECK;
     }
 
     /**
-     * Returns the ResourceCards placed on the table
+     * Retrieves the array of ResourceCards currently placed on the table.
+     *
+     * @return An array of ResourceCard instances.
      */
     public ResourceCard[] getPlacedResources() {
         return PLACED_RESOURCE_CARDS;
     }
 
     /**
-     * Returns the GoldCards placed on the table
+     * Retrieves the array of GoldCards currently placed on the table.
+     *
+     * @return An array of GoldCard instances.
      */
     public GoldCard[] getPlacedGolds() {
         return PLACED_GOLD_CARDS;
     }
 
     /**
-     * Returns the ObjectiveCards placed on the table
+     * Retrieves the array of ObjectiveCards currently placed on the table.
+     *
+     * @return An array of ObjectiveCard instances.
      */
     public ObjectiveCard[] getCommonObjectives() {
         return COMMON_OBJECTIVES;
     }
 
+    /**
+     * Sets the common objective cards for the game.
+     *
+     * @param objectives An array of two ObjectiveCard instances.
+     */
     public void setCommonObjectives(ObjectiveCard[] objectives) {
         COMMON_OBJECTIVES[0] = objectives[0];
         COMMON_OBJECTIVES[1] = objectives[1];
     }
 
     /**
-     * Draws from the deck passed as parameter and returns the drawn card
+     * Draws a card from the specified deck.
+     *
+     * @param deck The deck to draw from.
+     * @param <T>  The type of cards in the deck.
+     * @return The drawn card of type T.
+     * @throws EmptyDeckException if the deck is empty.
      */
     public <T extends Card> T drawFrom(CardDeck<T> deck) throws EmptyDeckException {
         return deck.draw();
     }
 
     /**
-     * Given a pattern matching string {gold, resource} and a valid position {0, 1}, returns the selected card and
-     * replaces it on the board
+     * Draws a card from the specified deck at a given position and replaces it with a new card from the deck.
+     *
+     * @param deck     The array of cards from which to draw.
+     * @param position The position of the card to draw.
+     * @return The drawn card.
+     * @throws EmptyDeckException if the deck is empty.
      */
     public PlayableCard drawFrom(Card[] deck, int position) throws EmptyDeckException {
         PlayableCard returnedCard = null;
@@ -221,26 +266,54 @@ public class Game extends GameLobby {
         return returnedCard;
     }
 
+    /**
+     * Peeks at the top card of the specified deck without removing it.
+     *
+     * @param deck The deck to peek from.
+     * @param <T>  The type of cards in the deck.
+     * @return The top card of type T.
+     */
+
     public <T extends Card> T peekFrom(CardDeck<T> deck){
         return deck.peek();
     }
     /**
      * Changes the currentState of this game to newState
+     *
+     * @param newState A new GameState
      */
     public void setState(GameState newState) {
         currentState = newState;
     }
     /**
-     * Returns the current game state (of type GameState)
+     * Retrieves the current state associated to this game.
+     *
+     * @return The current state.
      */
     public GameState getCurrentState() {
         return currentState;
     }
 
+    /**
+     * Creates an instance of ClientGame, which contains only the essential information
+     * needed by a client to correctly create and manage its local instance of the game.
+     * The generated Data Transfer Object (DTO) will include only the relevant personal
+     * information of the specified player.
+     *
+     * @param receiver The player for whom the DTO is created. The relevant information in the DTO will pertain to this player.
+     * @return A ClientGame instance containing the necessary information for the specified player.
+     */
+
     public ClientGame generateDTO(InGamePlayer receiver){
         return new ClientGame(this, receiver);
     }
 
+    /**
+     * Generates a temporary map of fields to players. This map contains only the ID associated to the placed cards for each player,
+     * where each player's field is represented as a LinkedHashMap with specific key-value pairs indicating card placements.
+     *
+     * @return A map where each key is a player's nickname and each value is a LinkedHashMap representing that player's field.
+     */
     public Map<String,LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> generateTemporaryFieldsToPlayers() {
         Map<String,LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> playersField = new HashMap<>();
 

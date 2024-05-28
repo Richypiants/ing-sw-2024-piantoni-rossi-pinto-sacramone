@@ -16,49 +16,51 @@ import java.util.stream.Collectors;
 import static java.util.Collections.disjoint;
 
 /**
- * A condition that counts how many "disjoint" times the condition pattern can be found among the played cards
+ * A condition that counts how many "disjoint" times the condition pattern can be found among the played cards.
+ * This condition is used to evaluate specific patterns formed by the type of resources related the played cards.
+ * The patterns must be disjoint, meaning they do not share any overlapping parts, to be counted.
+ * </p>
  */
 public class PatternCondition implements PointsCondition {
 
     /**
-     * The pattern to be found among the played cards
+     * The pattern to be found on the field among the played cards.
+     * This list of {@link Triplet} represents the required pattern of resources, where each triplet
+     * contains the x and y offsets indicating the corners and the {@link Resource} type.
+     * </p>
      */
     private final List<Triplet<Integer, Integer, Resource>> CONDITION;
 
     /**
-     * Generates an instance of a pattern condition from the given condition in parameters
+     * Generates an instance of a pattern condition from the given condition in parameters.
      *
-     * @param condition A List of Triplet elements, each one representing the relative collocation and the color of one card
-     *                  of the examined pattern. For each Triplet, the first and second arguments are Integers representing
-     *                  the x and y position offset with respect to the first card of the List (for which these values are
-     *                  always going to be 0, 0); the third argument represents the color of the card in the examined
-     *                  pattern, each color being identified by a particular Resource.
+     * @param condition The pattern to be found among the played cards.
      */
     public PatternCondition(List<Triplet<Integer, Integer, Resource>> condition) {
-        //TODO: should we keep safe copy of the condition arraylist?
         this.CONDITION = List.copyOf(condition);
     }
 
     /**
-     * Returns a copy of this card's condition pattern
+     * Returns this card's condition pattern.
+     *
+     * @return A list of {@link Triplet} representing the condition pattern.
      */
-    //FIXME: make this collection immutable (all the other ones in PointsCondition subclasses too?
-    // somewhere else too?)
     protected List<Triplet<Integer, Integer, Resource>> getConditionParameters() {
         return CONDITION;
     }
 
     /**
-     * Counts how many corners are covered when playing the associated card.
-     * The same-type patterns should be considered in a way such that the points obtained from them is maxed.
-     * Thus, we want to find the largest maximum compatibility class between all the same-type patterns,
-     * that is the choice of patterns such that we consider the most possible amount of them
+     * Counts how many times the condition pattern is satisfied when playing the associated card.
+     * The same-type patterns should be considered in a way that maximizes the points obtained from them.
+     * This method finds the largest set of disjoint patterns among the played cards.
+     *
+     * @param thisCard The card being played.
+     * @param target The player who is playing the card.
+     * @return The number of times the pattern condition is satisfied.
      */
     //FIXME: ALL THIS CODE SHOULD BE CLEANED AND OPTIMIZED, IT IS TOO INTRICATE
     // AND PROBABLY REPEATS OPERATION AND IS NOT DRY
     public int numberOfTimesSatisfied(Card thisCard, InGamePlayer target) {
-        //FIXME: sacra might be right, is it better to save all the cards of a pattern to avoid
-        // propagating target? Or maybe should we add a map in the opposite direction?
         return largestMaximumCompatibilityClass(
                 target.getPlacedCards().entrySet().stream()
                         // We don't want to consider the initial card
@@ -90,8 +92,15 @@ public class PatternCondition implements PointsCondition {
     }
 
     /**
-     * Using the tree algorithm from Digital Circuits Design course, finds the size of the largest compatibility
-     * class, that is the maximum number of patterns that are disjoint
+     * Finds the size of the largest compatibility class using a tree algorithm,
+     * determining the maximum number of disjoint patterns.
+     * This method evaluates all potential starting cards for the patterns and
+     * identifies the largest set of patterns that do not overlap.
+     *
+     * @param patternStartingCards An {@link ArrayList} containing all candidate cards that can form a valid pattern.
+     *                             Each pattern is represented by one of its constituent cards.
+     * @param target The {@link InGamePlayer} whose field will be searched for valid patterns.
+     * @return The size of the largest compatibility class of disjoint patterns.
      */
     private int largestMaximumCompatibilityClass(ArrayList<PlayableCard> patternStartingCards,
                                                  InGamePlayer target) {
@@ -142,7 +151,6 @@ public class PatternCondition implements PointsCondition {
             }
 
             for (int i = 0; i < frontier.size(); i++) {
-                //FIXME: it's really horrible... functional?
                 if (frontier.get(i).size() < 2 || patternStartingCards.indexOf(frontier.get(i).get(frontier.get(i).size() - 2)) < depth) {
                     result.add(frontier.remove(i));
                     i--;
@@ -160,9 +168,13 @@ public class PatternCondition implements PointsCondition {
     }
 
     /**
-     * Checks whether the patterns passed as parameters are compatible (disjoint)
+     * Checks whether the patterns passed as parameters are compatible (disjoint).
+     *
+     * @param pattern1 The first pattern to be checked.
+     * @param pattern2 The second pattern to be checked.
+     * @param target The player whose cards are being checked.
+     * @return {@code true} if the patterns are disjoint, {@code false} otherwise.
      */
-    //FIXME: maybe a BiMap would solve this problem?
     private boolean compatibleWith(PlayableCard pattern1, PlayableCard pattern2, InGamePlayer target) {
         //FIXME: add try checks or exceptions?
         return disjoint(
@@ -172,7 +184,11 @@ public class PatternCondition implements PointsCondition {
     }
 
     /**
-     * Returns the list of coordinates of all the cards in the pattern passed as parameter
+     * Returns the list of coordinates of all the cards in the pattern passed as parameter.
+     *
+     * @param pattern The pattern to get the coordinates for.
+     * @param target The player whose cards are being checked.
+     * @return A list of {@link GenericPair} representing the coordinates of the pattern.
      */
     private List<GenericPair<Integer, Integer>> fullPatternCoordinates(
             PlayableCard pattern, InGamePlayer target) {
@@ -187,6 +203,14 @@ public class PatternCondition implements PointsCondition {
                 ).toList();
     }
 
+    /**
+     * Returns a string representation of this condition.
+     * The string representation provides a simple description indicating that this
+     * is a PatternCondition along with the condition pattern.
+     *
+     * @return A string representation of this condition.
+     */
+    @Override
     public String toString() {
         return "(PatternCondition) {" +
                 "CONDITION=" + CONDITION +
@@ -194,12 +218,3 @@ public class PatternCondition implements PointsCondition {
     }
 }
 
-// Test
-// - Casi limite
-//   thisCard undefined
-//   target undefined
-//
-//   Zero tiles on field
-//   One tile on field
-//   More than one tiles on field
-//   No pattern

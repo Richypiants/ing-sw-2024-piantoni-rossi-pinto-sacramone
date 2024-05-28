@@ -13,17 +13,18 @@ import java.util.Optional;
 import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 /**
- * A field that stores the cards played by a player and the open corners where the next cards can be played
+ * Represents a field that stores the cards placed by a player and manages the open corners where
+ * the next cards can be played according to the rules
  */
 public class Field {
 
     /**
-     * The map from coordinates to the card played in that position
+     * The map from coordinates to the card played at that position, including the side it was played on.
      */
     private final LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> PLACED_CARDS;
 
     /**
-     * Available position where the next cards can be played
+     * The list of available positions where the next cards can be played.
      */
     private final ArrayList<GenericPair<Integer, Integer>> OPEN_CORNERS;
 
@@ -37,16 +38,16 @@ public class Field {
     }
 
     /**
-     * Adds a card to the played cards on the field
-     * @requires the given coordinates' pair is valid (contained in OPEN_CORNERS)
-     * @ensures the given card is now contained in PLAYED_CARDS
-     * @ensures OPEN_CORNERS invalidated by the played card are removed
-     * @ensures the given coordinates are no longer in OPEN_CORNERS
-     * @ensures the coordinates' pairs corresponding to the given card's corners are added to OPEN_CORNERS, but only if:
-     * - 1) they really are corners (they do not contain NOT_A_CORNER);
-     * - 2) there isn't a card already placed at those coordinates in PLACED_CARDS
-     * - 3) they are not already contained in OPEN_CORNERS
-     * - 4) they do not overlap a NOT_A_CORNER of another card in PLACED_CARDS
+     * Adds a played card to the field at the specified coordinates and side.
+     * If the action is successfully executed, updates the OPEN_CORNERS accordingly.
+     * This method ensures that the corners involved in this operation are valid and that
+     * the new placement does not overlap with other cards that are marked as
+     * not having effective corners on that corner.
+     *
+     * @param coordinates The coordinates where the card is placed.
+     * @param card        The card to be played.
+     * @param playedSide  The side of the card that is facing up.
+     * @throws InvalidCardPositionException if the coordinates are not valid for placing the card.
      */
     protected void addCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
     throws InvalidCardPositionException {
@@ -109,42 +110,31 @@ public class Field {
     }
 
     /**
-     * Returns a copy of the map of placed cards, addressed by their position as key
+     * Returns a copy of the map of placed cards, addressed by their position as key.
+     *
+     * @return A copy of the placed cards map.
      */
     public LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<PlayableCard, Side>> getPlacedCards() {
         return new LinkedHashMap<>(PLACED_CARDS);
     }
 
     /**
-     * Returns a copy of the list of corners where cards can be placed
+     * Returns a copy of the list of corners where cards can be placed.
+     *
+     * @return A copy of the open corners list.
      */
     public ArrayList<GenericPair<Integer, Integer>> getOpenCorners() {
         return new ArrayList<>(OPEN_CORNERS);
     }
 
     /**
-     * Returns the coordinates for a given card, inverting the map
+     * Returns the coordinates for a given card by navigating the map in the reversed way.
+     *
+     * @param placedCard The card for which to find the coordinates.
+     * @return The coordinates of the given card.
      */
     public GenericPair<Integer, Integer> getCardCoordinates(PlayableCard placedCard) {
-        //TODO: check for exceptions and Optional<> value when card hasn't been played!
-        // look in leaveLobbby() in Controller for a solution to a similar problem to this get()
         return keyReverseLookup(PLACED_CARDS, (value) -> value.getX().equals(placedCard));
     }
 }
 
-// addCard() -> Si test
-//              - Statement coverage (edge coverage)
-//                OPEN_CORNERS.contains(coordinates) = TRUE
-//                OPEN_CORNERS.contains(coordinates) = FALSE
-//
-//                PLACED_CARDS.containsKey(newOpenCorner) = TRUE
-//                PLACED_CARDS.containsKey(newOpenCorner) = FALSE
-//
-//              - Casi limite
-//                card undefined
-//
-// getPlacedCards() (Getter) -> No test
-// getOpenCorners() (Getter) -> No test
-// getCardCoordinates() (Getter) -> Si test
-//                                  - Casi limite
-//                                    placedCard undefined
