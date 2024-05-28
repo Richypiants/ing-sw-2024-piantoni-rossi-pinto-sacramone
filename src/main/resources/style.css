@@ -1,14 +1,17 @@
 #titleScreenPane {
-    -fx-background-color: black;
-}
-
-/*
-#titleScreenGameLogo {
-    -fx-background-image: url('/images/black_game_logo.jpg');
+    /*-fx-background-color: black;*/
+    -fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");
     -fx-background-repeat: no-repeat;
     -fx-background-size: stretch;
 }
- */
+
+#cranioCreationsLogo {
+    -fx-opacity: 0.0;
+}
+
+#titleScreenBox {
+    -fx-opacity: 0.0;
+}
 
 #titleScreenPrompt {
     -fx-font-family: Bell MT;
@@ -16,15 +19,22 @@
     -fx-font-weight: bold;
     -fx-alignment: CENTER;
     -fx-text-alignment: CENTER;
-    -fx-text-fill: white;
+    -fx-text-fill: #368B84;
 }
 
 .titleScreenLabel {
     -fx-font-family: Bell MT;
-    -fx-font-size: 18;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
     -fx-alignment: CENTER;
     -fx-text-alignment: CENTER;
-    -fx-text-fill: white;
+    -fx-text-fill: #368B84;
+}
+
+#connectionPane {
+    -fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
 }
 
 .titleScreenTextField {
@@ -37,8 +47,19 @@
     -fx-background-radius: 5.0 5.0 5.0 5.0;
 }
 
+#connectionSetupBox {
+    -fx-spacing: 50;
+    -fx-opacity: 0.0;
+}
+
+#connectionTechnologySetupBox {
+    -fx-spacing: 200;
+}
+
 #awaitingConnectionPane {
-    -fx-background-color: black;
+    -fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
 }
 
 .button {

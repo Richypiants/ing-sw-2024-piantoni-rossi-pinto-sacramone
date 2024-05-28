@@ -1,24 +1,18 @@
-package it.polimi.ingsw.gc12.Client.ClientView.GUI;
+package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers;
 
-import it.polimi.ingsw.gc12.Client.ClientView.View;
+import it.polimi.ingsw.gc12.Client.ClientView.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
-import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
-import javafx.animation.*;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -30,466 +24,30 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.Popup;
-import javafx.stage.Stage;
-import javafx.util.Duration;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-//FIXME: consider removing some Platform.runLater() and restricting some of them to necessary actions only
-public class GUIView extends View {
-
-    private static GUIView SINGLETON_GUI_INSTANCE = null;
-
-    static Stage stage;
-    static Map<String, Parent> sceneRoots; //screenName to associated loader
-
-    ObservableList<Integer> maxPlayersSelector = FXCollections.observableArrayList(2, 3, 4);
-
-    static GenericPair<Double, Double> screenSizes;
-
-    GenericPair<Double, Double> cardSizes = new GenericPair<>(100.0, 66.0);
-    GenericPair<Double, Double> clippedPaneCenter = null;
-    GenericPair<Double, Double> cornerScaleFactor = new GenericPair<>(2.0 / 9, 2.0 / 5);
+public class GUIGameScreenController extends GUIView {
 
     //FIXME: this is probably not the correct MIME type syntax for the data we want to pass...
-    DataFormat placeCardDataFormat = new DataFormat("text/genericpair<integer,side>");
+    static DataFormat placeCardDataFormat = new DataFormat("text/genericpair<integer,side>");
 
-    ToggleGroup connection;
-
-    private GUIView() {
-        //FIXME: is there a thread problem here in scene initialization?
-        new Thread(() -> Application.launch(GUIApplication.class)).start(); //starting the GUI thread
-
-        //Precaricamento di tutti i nodi root di tutte i file fxml
-        Map<String, Parent> tmp = new HashMap<>();
-        List<String> fxmlFiles = List.of(
-                "title_screen",
-                "connection_setup",
-                "waiting_for_connection",
-                "lobby_menu",
-                "game_screen"
-        );
-        FXMLLoader sceneRootLoader;
-
-        for (var fxmlFile : fxmlFiles) {
-            sceneRootLoader = new FXMLLoader(GUIView.class.getResource("/fxml/" + fxmlFile + ".fxml"));
-            try {
-                tmp.put(fxmlFile, sceneRootLoader.load());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        sceneRoots = Map.copyOf(tmp);
-
-        setScreenSizes();
-    }
-
-    public static GUIView getInstance() {
-        if (SINGLETON_GUI_INSTANCE == null)
-            SINGLETON_GUI_INSTANCE = new GUIView();
-        return SINGLETON_GUI_INSTANCE;
-    }
-
-    private void setScreenSizes() {
-        screenSizes = new GenericPair<>(stage.getWidth(), stage.getHeight());
-    }
-
-    @Override
-    public void printError(Throwable t) {
-        //TODO: popup con l'exception
-        Platform.runLater(() -> {
-            String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
-
-            //Popup error
-            Popup errorPopup = new Popup();
-
-            VBox popupErrorBox = new VBox(10);
-            popupErrorBox.setAlignment(Pos.CENTER);
-
-            Label error = new Label();
-            error.setAlignment(Pos.CENTER);
-            error.setTextAlignment(TextAlignment.CENTER);
-            // Button okError = new Button("Ok"); // se si ri-aggiunge bottone allora metterlo anche in addAll
-
-            popupErrorBox.getChildren().add(error);
-            errorPopup.getContent().addAll(popupErrorBox);
-
-            errorPopup.setHeight(500);
-            errorPopup.setWidth(700);
-            popupErrorBox.setStyle(style);
-
-            errorPopup.setAutoFix(true);
-            errorPopup.setAutoHide(true);
-            errorPopup.setHideOnEscape(true);
-
-            error.setText(t.getMessage());
-            errorPopup.show(stage);
-        });
-    }
-
-    @Override
-    public void titleScreen() {
-        Platform.runLater(() -> {
-            //TODO: maybe prima aggiungere schermate loghi
-            Parent root = sceneRoots.get("title_screen");
-            stage.getScene().setRoot(root);
-
-            ImageView cranioCreationsLogo = new ImageView(String.valueOf(GUIView.class.getResource("/images/cranio_creations_logo_no_bg.png")));
-            cranioCreationsLogo.setFitWidth(650);
-            cranioCreationsLogo.setPreserveRatio(true);
-            cranioCreationsLogo.setOpacity(0.0);
-
-            ((AnchorPane) root).getChildren().add(cranioCreationsLogo);
-            cranioCreationsLogo.relocate(
-                    (screenSizes.getX() - cranioCreationsLogo.getFitWidth()) / 2,
-                    screenSizes.getY() * 5 / 100
-            );
-
-            FadeTransition logoTransition = new FadeTransition(Duration.millis(3000));
-            logoTransition.setNode(cranioCreationsLogo);
-            logoTransition.setDelay(Duration.millis(2000));
-            logoTransition.setFromValue(0);
-            logoTransition.setToValue(1);
-            logoTransition.setCycleCount(2);
-            logoTransition.setAutoReverse(true);
-            logoTransition.setOnFinished((event -> cranioCreationsLogo.setVisible(false)));
-
-            AnchorPane titleScreenBox = (AnchorPane) root.lookup("#titleScreenBox");
-            titleScreenBox.setPrefSize(screenSizes.getX(), screenSizes.getY());
-            titleScreenBox.setOpacity(0.0);
-
-            ImageView titleScreenGameLogo = new ImageView(String.valueOf(GUIView.class.getResource("/images/only_center_logo_no_bg.png")));
-            titleScreenGameLogo.setFitWidth(650);
-            titleScreenGameLogo.setFitHeight(650);
-            titleScreenGameLogo.setPreserveRatio(true);
-            titleScreenGameLogo.setId("titleScreenLogo");
-
-            titleScreenBox.getChildren().add(titleScreenGameLogo);
-            titleScreenGameLogo.relocate(
-                    (screenSizes.getX() - titleScreenGameLogo.getFitWidth()) / 2,
-                    screenSizes.getY() * 5 / 100
-            );
-
-            FadeTransition backgroundTransition = new FadeTransition(Duration.millis(6000));
-            backgroundTransition.setNode(titleScreenBox);
-            backgroundTransition.setFromValue(0);
-            backgroundTransition.setToValue(1);
-
-            Label titleScreenPrompt = new Label("Premi INVIO per iniziare");
-            titleScreenPrompt.setId("titleScreenPrompt");
-            titleScreenPrompt.setOnMouseClicked((event -> ClientController.getInstance().viewState.keyPressed()));
-            titleScreenPrompt.setOnKeyPressed((event -> ClientController.getInstance().viewState.keyPressed()));
-            titleScreenPrompt.setPrefSize(500, 25);
-
-            FadeTransition fadeTransition = new FadeTransition(Duration.millis(2000));
-            fadeTransition.setNode(titleScreenPrompt);
-            fadeTransition.setFromValue(1.0);
-            fadeTransition.setToValue(0.1);
-            fadeTransition.setCycleCount(Animation.INDEFINITE);
-            fadeTransition.setAutoReverse(true);
-            fadeTransition.setInterpolator(Interpolator.EASE_BOTH);
-
-            ParallelTransition titleScreenBoxTransition = new ParallelTransition(backgroundTransition, fadeTransition);
-            SequentialTransition titleScreenTransition = new SequentialTransition(logoTransition, titleScreenBoxTransition);
-
-            //FIXME: KeyEvent non ricevuto...
-            cranioCreationsLogo.setOnMouseClicked((event) -> {
-                cranioCreationsLogo.setVisible(false);
-                titleScreenTransition.jumpTo(logoTransition.getTotalDuration());
-            });
-            cranioCreationsLogo.setOnKeyPressed((event) -> {
-                cranioCreationsLogo.setVisible(false);
-                titleScreenTransition.jumpTo(logoTransition.getTotalDuration());
-            });
-
-            //FIXME: ci sono ancora i 2000ms di delay quando clicco qua prima che diventi STOPPED...
-            titleScreenGameLogo.setOnMouseClicked((event) -> {
-                if (!backgroundTransition.getStatus().equals(Animation.Status.STOPPED)) {
-                    titleScreenTransition.jumpTo(logoTransition.getTotalDuration().add(backgroundTransition.getTotalDuration()));
-                    event.consume();
-                }
-            });
-            titleScreenGameLogo.setOnKeyPressed((event) -> {
-                if (!backgroundTransition.getStatus().equals(Animation.Status.STOPPED)) {
-                    titleScreenTransition.jumpTo(logoTransition.getTotalDuration().add(backgroundTransition.getTotalDuration()));
-                    event.consume();
-                }
-            });
-
-            titleScreenTransition.play();
-
-            titleScreenBox.getChildren().add(titleScreenPrompt);
-            titleScreenPrompt.relocate(
-                    (screenSizes.getX() - titleScreenPrompt.getPrefWidth()) / 2,
-                    screenSizes.getY() * 85 / 100
-            );
-        });
-    }
-
-    @Override
-    public void connectToServerScreen() {
-        ImageView titleScreenGameLogo = (ImageView) stage.getScene().getRoot().lookup("#titleScreenLogo");
-
-        AnchorPane titleScreenPane = (AnchorPane) stage.getScene().getRoot().lookup("#titleScreenPane");
-        AnchorPane titleScreenBox = (AnchorPane) titleScreenPane.lookup("#titleScreenBox");
-
-        titleScreenBox.getChildren().remove(titleScreenBox.lookup("#titleScreenPrompt"));
-
-        VBox connectionSetupBox = new VBox(50);
-        connectionSetupBox.setId("connectionSetupBox");
-        connectionSetupBox.setPrefSize(screenSizes.getX() * 3 / 8, screenSizes.getY() / 2);
-        connectionSetupBox.setOpacity(0.0);
-
-        Label nicknameLabel = new Label("Scegli il tuo nickname pubblico per connetterti al server: ");
-        nicknameLabel.getStyleClass().add("titleScreenLabel");
-
-        TextField nicknameField = new TextField();
-        nicknameField.setId("nicknameField");
-        nicknameField.setPromptText("Scrivi qui il tuo nickname... (max 10 caratteri)");
-        nicknameField.getStyleClass().add("titleScreenTextField");
-
-        Label addressLabel = new Label("Inserisci l'indirizzo IP del server: ");
-        addressLabel.getStyleClass().add("titleScreenLabel");
-
-        TextField addressField = new TextField();
-        addressField.setId("addressField");
-        addressField.setPromptText("localhost");
-        addressField.getStyleClass().add("titleScreenTextField");
-
-        Label connectionTechnologyPrompt = new Label("Scegli la tecnologia di comunicazione che preferisci: ");
-        connectionTechnologyPrompt.getStyleClass().add("titleScreenLabel");
-
-        HBox connectionTechnology = new HBox(200);
-
-        //ObservableList<String> connectionList = FXCollections.observableArrayList("Socket", "RMI");
-        RadioButton socket = new RadioButton("Socket");
-        socket.getStyleClass().add("titleScreenLabel");
-        RadioButton rmi = new RadioButton("RMI");
-        rmi.getStyleClass().add("titleScreenLabel");
-        this.connection = new ToggleGroup();
-        this.connection.getToggles().addAll(socket, rmi);
-        this.connection.selectToggle(socket);
-
-        connectionTechnology.getChildren().addAll(socket, rmi);
-
-        Button button = new Button("Inizia a scrivere il tuo manoscritto!");
-        button.setStyle("-fx-font-size: 18;");
-        button.setPrefSize(connectionSetupBox.getPrefWidth(), 10.0);
-        button.setOnAction(event -> {
-            try {
-                waitingForConnection(event);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        //TODO: sostituire con un popup
-        /*Label error = new Label();
-        error.setId("#error");
-         */
-
-        connectionSetupBox.getChildren().addAll(nicknameLabel, nicknameField, addressLabel,
-                addressField, connectionTechnologyPrompt, connectionTechnology, button);
-        ((AnchorPane) stage.getScene().getRoot()).getChildren().add(connectionSetupBox);
-        connectionSetupBox.relocate(screenSizes.getX() * 9 / 16, screenSizes.getY() / 5);
-
-        TranslateTransition centerLogoTransition = new TranslateTransition(Duration.millis(2000));
-        centerLogoTransition.setNode(titleScreenGameLogo);
-        centerLogoTransition.setInterpolator(Interpolator.EASE_BOTH);
-        centerLogoTransition.setToX(screenSizes.getX() * 5 / 100 - titleScreenGameLogo.getLayoutX());
-        centerLogoTransition.setToY((screenSizes.getY() - titleScreenGameLogo.getFitHeight()) / 2 - titleScreenGameLogo.getLayoutY());
-
-        ImageView appearingLogo = new ImageView(String.valueOf(GUIView.class.getResource("/images/transparent_game_logo2.png")));
-        appearingLogo.setOpacity(0.0);
-        appearingLogo.setFitWidth(650);
-        appearingLogo.setFitHeight(650);
-        appearingLogo.relocate(
-                (screenSizes.getX() - appearingLogo.getFitWidth()) / 2,
-                screenSizes.getY() * 5 / 100
-        );
-
-        ((AnchorPane) stage.getScene().getRoot().lookup("#titleScreenPane")).getChildren().add(appearingLogo);
-
-        FadeTransition fadeTransition = new FadeTransition(Duration.millis(2000));
-        fadeTransition.setNode(appearingLogo);
-        fadeTransition.setFromValue(0.0);
-        fadeTransition.setToValue(1);
-        fadeTransition.setInterpolator(Interpolator.EASE_BOTH);
-
-        TranslateTransition appearingLogoTransition2 = new TranslateTransition(Duration.millis(2000));
-        appearingLogoTransition2.setNode(appearingLogo);
-        appearingLogoTransition2.setInterpolator(Interpolator.EASE_BOTH);
-        appearingLogoTransition2.setByX(screenSizes.getX() * 5 / 100 - appearingLogo.getLayoutX());
-        appearingLogoTransition2.setByY((screenSizes.getY() - titleScreenGameLogo.getFitHeight()) / 2 - appearingLogo.getLayoutY());
-
-        FadeTransition connectionBoxTransition = new FadeTransition(Duration.millis(1000));
-        connectionBoxTransition.setDelay(Duration.millis(1000));
-        connectionBoxTransition.setNode(connectionSetupBox);
-        connectionBoxTransition.setFromValue(0.0);
-        connectionBoxTransition.setToValue(1);
-        connectionBoxTransition.setInterpolator(Interpolator.EASE_BOTH);
-
-        ParallelTransition movement = new ParallelTransition(centerLogoTransition, fadeTransition, appearingLogoTransition2, connectionBoxTransition);
-        movement.play();
-    }
-
-    @FXML
-    protected void waitingForConnection(ActionEvent event) throws IOException {
-        AnchorPane titleScreenPane = (AnchorPane) stage.getScene().getRoot().lookup("#titleScreenPane");
-        VBox connectionSetupBox = (VBox) titleScreenPane.lookup("#connectionSetupBox");
-
-        TextField nicknameField = (TextField) connectionSetupBox.lookup("#nicknameField");
-        //Label error = ((Label) stage.getScene().getRoot().lookup("#error"));
-        TextField addressField = (TextField) connectionSetupBox.lookup("#addressField");
-
-        if (nicknameField.getText().isEmpty()) {
-            //error.setText("Inserire un nickname prima di proseguire");
-            return;
-        }
-
-        if (addressField.getText().isEmpty()) {
-            addressField.setText("localhost");
-        }
-
-        Parent root = sceneRoots.get("waiting_for_connection"); // Carica il file FXML e ottiene il root
-        stage.getScene().setRoot(root);
-
-        Label downloadLabel = (Label) root.lookup("#download");
-        ProgressIndicator progressIndicator = (ProgressIndicator) root.lookup("#progress");
-        downloadLabel.setStyle("-fx-font-size: 30");
-
-        downloadLabel.relocate((screenSizes.getX() - downloadLabel.getPrefWidth()) / 2, screenSizes.getY() * 0.45);
-        progressIndicator.relocate((screenSizes.getX() - progressIndicator.getPrefWidth()) / 2, screenSizes.getY() * 0.55);
-
-        // Before changing scene, we notify the chosen comm technology to the controller so that it initializes it
-        new Thread(() -> ClientController.getInstance().viewState.connect(
-                addressField.getText(), ((RadioButton) connection.getSelectedToggle()).getText(), nicknameField.getText())
-        ).start();
-    }
-
-    @Override
-    public void connectedConfirmation() {
-        //TODO: maybe consider deleting this for TUI also?
-    }
-
-    @Override
-    public void lobbyScreen() {
-        Platform.runLater(() -> {
-            Parent root = sceneRoots.get("lobby_menu");
-
-            Label profile = (Label) root.lookup("#profile");
-
-            profile.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
-            profile.setTextAlignment(TextAlignment.CENTER);
-            profile.setAlignment(Pos.TOP_LEFT);
-
-            Button button = (Button) root.lookup("#BackTitleButton");
-            button.setOnAction(event -> ClientController.getInstance().viewState.quit());
-
-            ScrollPane lobbiesPane = (ScrollPane) root.lookup("#lobbiesPane");
-            VBox lobbiesList = new VBox(10);
-            lobbiesList.setPadding(new Insets(10));
-            lobbiesList.setAlignment(Pos.TOP_CENTER);
-
-            //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
-            for (var lobby : ClientController.getInstance().viewModel.getLobbies().entrySet()) {
-                lobbiesList.getChildren().add(createLobbyListElement(lobby.getKey(), lobby.getValue()));
-            }
-
-            lobbiesPane.setContent(lobbiesList);
-
-            String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
-
-            Button lobby = (Button) root.lookup("#CreateGameButton");
-            lobby.setOnAction(event -> {
-                // New lobby Popup
-                Popup lobbyPopup = new Popup();
-
-                VBox lobbyCreationPopupBox = (VBox) root.lookup("#lobbyCreationPopupBox");
-
-                ComboBox<Integer> maxPlayers = (ComboBox<Integer>) lobbyCreationPopupBox.lookup("#maxPlayersInput");
-                maxPlayers.setValue(2);
-                maxPlayers.setItems(maxPlayersSelector);
-
-                Button okPlayers = (Button) root.lookup("#okPlayers");
-
-                lobbyPopup.getContent().add(lobbyCreationPopupBox);
-
-                lobbyPopup.setHeight(500);
-                lobbyPopup.setWidth(700);
-                lobbyCreationPopupBox.setStyle(style);
-
-                lobbyPopup.setAutoFix(true);
-                lobbyPopup.setAutoHide(true);
-                lobbyPopup.setHideOnEscape(true);
-
-                okPlayers.setOnAction(event2 -> {
-                    ClientController.getInstance().viewState.createLobby(maxPlayers.getValue());
-                    lobbyCreationPopupBox.setVisible(false);
-                    lobbyPopup.hide();
-                });
-
-                lobbyPopup.show(stage);
-                lobbyCreationPopupBox.setVisible(true);
-                lobbyPopup.centerOnScreen();
-            });
-
-            // Nickname Popup
-            Popup nickPopup = new Popup();
-
-            VBox popupNickBox = new VBox(10);
-            popupNickBox.setAlignment(Pos.CENTER);
-
-            Label nickname = new Label("Inserisci un nuovo nickname");
-            TextField nicknameField = new TextField();
-            Button okNicknameButton = new Button("Ok");
-
-            popupNickBox.getChildren().addAll(nickname, nicknameField, okNicknameButton);
-            nickPopup.getContent().add(popupNickBox);
-
-            nickPopup.setHeight(500);
-            nickPopup.setWidth(700);
-            popupNickBox.setStyle(style);
-
-            nickPopup.setAutoFix(true);
-            nickPopup.setAutoHide(true);
-            nickPopup.setHideOnEscape(true);
-
-            Button changeNickname = (Button) root.lookup("#nicknameButton");
-            changeNickname.setOnAction(event -> {
-                nickPopup.show(stage);
-                nickPopup.centerOnScreen();
-            });
-
-            okNicknameButton.setOnAction(event -> {
-                ClientController.getInstance().viewState.setNickname(nicknameField.getText());
-                nickPopup.hide();
-            });
-
-            stage.getScene().setRoot(root);
-        });
-    }
-
-    @Override
-    public void gameScreen() {
+    //FIXME: togliere tutti i new dai nomi...
+    public static void newGameScreen() {
         Platform.runLater(() -> {
             Parent root = sceneRoots.get("game_screen");
             stage.getScene().setRoot(root);
 
             ClientPlayer thisPlayer = ClientController.getInstance().viewModel.getGame().getThisPlayer();
 
-            showHand();
-            showCommonPlacedCards();
+            GUIView.getInstance().showHand();
+            GUIView.getInstance().showCommonPlacedCards();
 
             //TODO: estrarre in una funzione
             AnchorPane ownFieldPane = (AnchorPane) root.lookup("#ownFieldPane");
@@ -517,7 +75,7 @@ public class GUIView extends View {
 
             Button zoomedOwnFieldButton = (Button) ownFieldPane.lookup("#zoomedOwnFieldButton");
             zoomedOwnFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
-            zoomedOwnFieldButton.setOnMouseClicked((event) -> showField(thisPlayer));
+            zoomedOwnFieldButton.setOnMouseClicked((event) -> GUIView.getInstance().showField(thisPlayer));
 
             Button centerOwnFieldButton = (Button) ownFieldPane.lookup("#centerOwnFieldButton");
             centerOwnFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
@@ -542,13 +100,13 @@ public class GUIView extends View {
             leaveButton.toFront();
 
             Button chatButton = (Button) root.lookup("#chatButton");
-            chatButton.setOnMouseClicked((event) -> showChat()); //FIXME: make toggleChat()?
+            chatButton.setOnMouseClicked((event) -> GUIView.getInstance().showChat()); //FIXME: make toggleChat()?
             chatButton.relocate(screenSizes.getX() * 95 / 100, screenSizes.getY() * 95 / 100);
             chatButton.toFront();
         });
     }
 
-    private void showScoreboard() {
+    private static void showScoreboard() {
         Platform.runLater(() -> {
             AnchorPane scoreboardPane = (AnchorPane) stage.getScene().lookup("#scoreboardPane");
             scoreboardPane.setPrefSize(screenSizes.getY() * 50 / 100 / 2, screenSizes.getY() * 50 / 100);
@@ -652,38 +210,9 @@ public class GUIView extends View {
         });
     }
 
-    @Override
-    public void updateNickname() {
-        Platform.runLater(() -> {
-            Label profile = (Label) sceneRoots.get("lobby_menu").lookup("#profile");
-            profile.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
-        });
-    }
-
-    public OverlayPopup drawOverlayPopup(Pane popupContent, boolean isCloseable) {
-        OverlayPopup overlayPopup = new OverlayPopup();
-        //TODO: aggiungere per quanto possibile gli elementi dei popup all'fxml?
-
-        AnchorPane content = new AnchorPane();
-        content.setPrefSize(popupContent.getPrefWidth(), popupContent.getPrefHeight());
-        content.getChildren().add(popupContent);
-
-        if (isCloseable) {
-            Button XButton = new Button("X");
-            XButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
-            XButton.setOnMouseClicked((event) -> overlayPopup.hide());
-
-            content.getChildren().add(XButton);
-            XButton.relocate(content.getPrefWidth() - 50, 20);
-        }
-
-        overlayPopup.getContent().add(content);
-        overlayPopup.setWidth(7);
-        return overlayPopup;
-    }
 
     //TODO: eventually remove boolean from signature?
-    private void drawField(ScrollPane fieldPane, ClientPlayer player, boolean isInteractive) {
+    private static void drawField(ScrollPane fieldPane, ClientPlayer player, boolean isInteractive) {
         fieldPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         fieldPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
@@ -757,8 +286,7 @@ public class GUIView extends View {
         fieldPane.setVvalue((fieldPane.getVmax() + fieldPane.getVmin()) / 2);
     }
 
-    @Override
-    public void showChat() {
+    public static void newShowChat() {
         Platform.runLater(() -> {
             //TODO: maybe perform chatPane initialization only at the start of a game instead of everytime?
             AnchorPane chatPane = (AnchorPane) stage.getScene().lookup("#chatPane");
@@ -822,7 +350,7 @@ public class GUIView extends View {
     }
 
     //TODO: centrare l'opponentField sulla carta nuova appena piazzata?
-    public void showOpponentsFieldsMiniaturized() {
+    public static void showOpponentsFieldsMiniaturized() {
         HBox opponentsFieldsPane = (HBox) stage.getScene().lookup("#opponentsFieldsPane");
         opponentsFieldsPane.setPrefSize(screenSizes.getX() * 75 / 100, screenSizes.getY() * 35 / 100);
         opponentsFieldsPane.relocate(screenSizes.getX() * 25 / 100, 0);
@@ -870,7 +398,7 @@ public class GUIView extends View {
 
             Button zoomedOwnFieldButton = new Button("[]");
             zoomedOwnFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
-            zoomedOwnFieldButton.setOnMouseClicked((event) -> showField(player));
+            zoomedOwnFieldButton.setOnMouseClicked((event) -> newShowField(player));
 
             Button centerFieldButton = new Button("+");
             centerFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
@@ -889,8 +417,7 @@ public class GUIView extends View {
         }
     }
 
-    @Override
-    public void showInitialCardsChoice() {
+    public static void newShowInitialCardsChoice() {
         Platform.runLater(() -> {
             double popupWidth = 720, popupHeight = 480;
             String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
@@ -918,7 +445,7 @@ public class GUIView extends View {
             initialChoiceHBox.getChildren().addAll(frontCardView, backCardView);
             initialCardsChoiceVBox.getChildren().addAll(cardLabel, initialChoiceHBox/*, aggiungere scritta "Scegli carta iniziale: "*/);
 
-            OverlayPopup createdPopup = drawOverlayPopup(initialCardsChoiceVBox, false);
+            OverlayPopup createdPopup = GUIView.getInstance().drawOverlayPopup(initialCardsChoiceVBox, false);
 
             frontCardView.setOnMouseClicked((event) -> {
                 ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 1, Side.FRONT);
@@ -934,8 +461,7 @@ public class GUIView extends View {
         });
     }
 
-    @Override
-    public void showObjectiveCardsChoice() {
+    public static void newShowObjectiveCardsChoice() {
         Platform.runLater(() -> {
             double popupWidth = 720, popupHeight = 480;
             String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
@@ -953,7 +479,7 @@ public class GUIView extends View {
             ArrayList<ClientCard> objectivesSelection = ((ChooseObjectiveCardsState) ClientController.getInstance()
                     .getCurrentState()).objectivesSelection;
 
-            OverlayPopup createdPopup = drawOverlayPopup(objectiveChoiceVBox, false);
+            OverlayPopup createdPopup = GUIView.getInstance().drawOverlayPopup(objectiveChoiceVBox, false);
 
             for (int i = 0; i < objectivesSelection.size(); i++) {
                 ClientCard objectiveCard = objectivesSelection.get(i);
@@ -977,8 +503,7 @@ public class GUIView extends View {
         });
     }
 
-    @Override
-    public void showHand() {
+    public static void newShowHand() {
         Platform.runLater(() -> {
             HBox handPane = (HBox) stage.getScene().lookup("#handPane");
             handPane.setPrefSize(screenSizes.getX() * 50 / 100, screenSizes.getY() * 15 / 100);
@@ -1005,9 +530,6 @@ public class GUIView extends View {
                 pane.getChildren().addAll(backCardView, frontCardView);
                 backCardView.toBack();
 
-                double paneChildrenHeight = pane.getHeight();
-                double paneChildrenWidth = pane.getWidth();
-
                 frontCardView.setFitWidth(pane.getPrefWidth() * 0.7);
                 frontCardView.setPreserveRatio(true);
 
@@ -1017,11 +539,6 @@ public class GUIView extends View {
                 //TODO: vs setLayoutX/Y ?
                 frontCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.05);
                 backCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.05);
-
-//                        frontCardView.setLayoutX((pane.getPrefWidth() - frontCardView.getFitWidth()) / 2);
-//                        frontCardView.setLayoutY((pane.getPrefHeight() - frontCardView.getFitHeight()) / 2);
-//                        backCardView.setLayoutX((pane.getPrefWidth() - backCardView.getFitWidth()) / 2);
-//                        backCardView.setLayoutY((pane.getPrefHeight() - backCardView.getFitHeight()) / 2);
 
                 backCardView.setOnMouseClicked((event) -> frontCardView.toFront());
                 frontCardView.setOnMouseClicked((event) -> backCardView.toFront());
@@ -1062,8 +579,7 @@ public class GUIView extends View {
         });
     }
 
-    @Override
-    public void showCommonPlacedCards() {
+    public static void newShowCommonPlacedCards() {
         Platform.runLater(() ->
         {
             //TODO: maybe GridPane and padding?
@@ -1165,8 +681,7 @@ public class GUIView extends View {
     //TODO: 1) where do you show your own current resource amount?
     //TODO: 2) add possibility do zoom in/out (hard) or add a zoom button that calls drawField, just as opponentsFields
     // do when clicking on it?
-    @Override
-    public void showField(ClientPlayer player) {
+    public static void newShowField(ClientPlayer player) {
         Platform.runLater(() ->
         {
             AnchorPane popupContent = new AnchorPane();
@@ -1192,68 +707,21 @@ public class GUIView extends View {
             popupContent.getChildren().add(centerFieldButton);
             centerFieldButton.relocate(popupContent.getPrefWidth() - 50, 60);
 
-            OverlayPopup overlayPopup = drawOverlayPopup(popupContent, true);
+            OverlayPopup overlayPopup = GUIView.getInstance().drawOverlayPopup(popupContent, true);
             overlayPopup.setX(screenSizes.getX() * 15 / 100);
             overlayPopup.setY(screenSizes.getY() * 10 / 100);
             overlayPopup.show(stage);
         });
     }
 
-    @Override
-    public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
+    public static void newShowLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
         Platform.runLater(() ->
         {
         });
     }
 
-
-    private HBox createLobbyListElement(UUID lobbyUUID, GameLobby lobby) {
-        String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
-
-        // Box
-        HBox lobbyBox = new HBox(100);
-        lobbyBox.setPadding(new Insets(15, 12, 15, 12));
-        lobbyBox.setStyle("-fx-alignment: CENTER; -fx-text-alignment: JUSTIFY; -fx-background-color: #00665C;");
-
-        // Label giocatori
-        Label playerCount = new Label(String.valueOf(lobby.getMaxPlayers()));
-        playerCount.setStyle("-fx-font-size: 16px;");
-
-        // Label nomi
-        for (var player : lobby.getPlayers()) {
-            Label playerName = new Label(player.getNickname());
-            playerName.setStyle("-fx-font-size: 14px;");
-            lobbyBox.getChildren().add(playerName);
-        }
-
-        lobbyBox.setStyle(style);
-        lobbyBox.getChildren().add(playerCount);
-
-        if (ClientController.getInstance().viewModel.getCurrentLobby() == null) {
-            Button joinButton = new Button("JOIN");
-            joinButton.setOnAction(e ->
-                    {
-                        ClientController.getInstance().viewState.joinLobby(lobbyUUID);
-                    }
-            );
-            lobbyBox.getChildren().add(joinButton);
-        } else {
-            if (ClientController.getInstance().viewModel.getCurrentLobby().equals(lobby)) {
-                Button leaveButton = new Button("LEAVE");
-                leaveButton.setOnAction(e ->
-                        {
-                            ClientController.getInstance().viewState.leaveLobby();
-                        }
-                );
-                lobbyBox.getChildren().add(leaveButton);
-            }
-        }
-
-        return lobbyBox;
-    }
-
     //FIXME: separate parameter receiver from message both in signature here, in TUI and in viewModel?
-    private HBox createMessageElement(String message) {
+    private static HBox createMessageElement(String message) {
         String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
 
         // Box

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Client.ClientView.GUI;
 
+import it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers.GUIView;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;

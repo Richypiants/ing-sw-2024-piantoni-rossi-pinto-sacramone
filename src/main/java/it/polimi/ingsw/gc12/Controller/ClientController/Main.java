@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
-import it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIView;
+import it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers.GUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.TitleScreenState;
 

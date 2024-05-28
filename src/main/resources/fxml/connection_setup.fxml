@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
             fx:id="connectionPane" stylesheets="/style.css">
+    <AnchorPane fx:id="titleScreenBox">
+        <!-- why tags here not working??? -->
+        <ImageView fx:id="titleScreenGameLogo" fitWidth="650.0" fitHeight="650.0" preserveRatio="true">
+            <!-- <Image url="@/images/cranio_creations_logo_no_bg.png"/> -->
+        </ImageView>
+    </AnchorPane>
+    <VBox fx:id="connectionSetupBox">
+        <Label fx:id="nicknamePrompt" styleClass="titleScreenLabel" text="Scegli il tuo nickname: "/>
+        <TextField fx:id="nicknameField" styleClass="titleScreenTextField"
+                   promptText="Scrivi qui il tuo nickname... (max 10 caratteri)"/>
+        <Label fx:id="addressPrompt" styleClass="titleScreenLabel" text="Inserisci l'indirizzo IP del server: "/>
+        <TextField fx:id="addressField" styleClass="titleScreenTextField" promptText="localhost"/>
+        <Label fx:id="connectionTechnologyPrompt" styleClass="titleScreenLabel"
+               text="Scegli la tecnologia di comunicazione: "/>
+        <HBox fx:id="connectionTechnologySetupBox">
+
+        </HBox>
+        <!-- <Button fx:id="connectionSetupSendButton" styleClass="button" text="Inizia a scrivere il tuo manoscritto!"/> -->
+    </VBox>
 </AnchorPane>
