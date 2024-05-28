@@ -3,37 +3,46 @@ package it.polimi.ingsw.gc12.Model.Cards;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 
 /**
- A template representing a standard card object
+ * Represents a generic card in the game, providing common properties that exist for all types of cards.
+ * This class serves as a base class for specific card implementations.
  */
 public abstract class Card {
 
     /**
-     A unique card identifier to facilitate the card's retrieval
+     * A unique card identifier to facilitate the card's retrieval
      */
     public final int ID;
 
     /**
-    The number of points granted to a player upon playing this card (0 for cards that do not have points physically
-    portrayed on the artwork)
+     * The number of points a player receives when this card is played.
+     * If the card does not directly grant points, this value is set to 0.
      */
     public final int POINTS_GRANTED;
 
     /**
-    Constructs instances of Card's subclasses by initializing the attributes they have in common
+     * Constructs a card with the specified unique identifier and point value.
+     *
+     * @param id            The unique identifier for the card.
+     * @param pointsGranted The number of points granted by this card.
      */
-    //FIXME: I don't particularly like this description...
     public Card(int id, int pointsGranted) {
         this.ID = id;
         this.POINTS_GRANTED = pointsGranted;
-        //FIXME: this will depend on how Images will be implemented
     }
 
     /**
-    Returns the number of points granted to player target who has just played the card (default for cards
-    without points conditions)
+     * Awards points to the specified player based on the card's conditions
+     *
+     * @param target The player who played the card.
+     * @return The number of points to award to the player.
      */
     public abstract int awardPoints(InGamePlayer target);
 
+    /**
+     * Returns a string representation of the card, including its ID and points granted.
+     *
+     * @return A string describing the card.
+     */
     public String toString() {
         return "{" +
                 "ID=" + ID +
@@ -41,12 +50,3 @@ public abstract class Card {
                 '}';
     }
 }
-
-// getShownSide() (Getter) -> No test
-// setShownSide() (Setter) -> Si test
-//                            - Casi limite
-//                              side undefined
-//
-// awardPoints() -> Si test
-//                  - Casi limite
-//                    target undefined
