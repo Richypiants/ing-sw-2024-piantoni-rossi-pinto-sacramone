@@ -18,47 +18,35 @@ import java.util.UUID;
 
 public class GUILobbiesScreenController extends GUIView {
 
+    static Parent sceneRoot = sceneRoots.get("lobby_menu");
+
+    static Label profile = (Label) sceneRoot.lookup("#profile");
+
+    static Button createLobbyButton = (Button) sceneRoot.lookup("#createGameButton");
+
+    static Button backToTitleButton = (Button) sceneRoot.lookup("#backToTitleButton");
+
+    static ScrollPane lobbiesPane = (ScrollPane) sceneRoot.lookup("#lobbiesPane");
+
     static ObservableList<Integer> maxPlayersSelector = FXCollections.observableArrayList(2, 3, 4);
+
+    static VBox lobbiesList;
 
     public static void lobbiesScreen() {
         Platform.runLater(() -> {
-            Parent root = sceneRoots.get("lobby_menu");
-
-            Label profile = (Label) root.lookup("#profile");
-
-            profile.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
-            profile.setTextAlignment(TextAlignment.CENTER);
-            profile.setAlignment(Pos.TOP_LEFT);
-
-            Button button = (Button) root.lookup("#BackTitleButton");
-            button.setOnAction(event -> ClientController.getInstance().viewState.quit());
-
-            ScrollPane lobbiesPane = (ScrollPane) root.lookup("#lobbiesPane");
-            VBox lobbiesList = new VBox(10);
-            lobbiesList.setPadding(new Insets(10));
-            lobbiesList.setAlignment(Pos.TOP_CENTER);
-
-            //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
-            for (var lobby : ClientController.getInstance().viewModel.getLobbies().entrySet()) {
-                lobbiesList.getChildren().add(GUILobbiesScreenController.createLobbyListElement(lobby.getKey(), lobby.getValue()));
-            }
-
-            lobbiesPane.setContent(lobbiesList);
-
             String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
 
-            Button lobby = (Button) root.lookup("#CreateGameButton");
-            lobby.setOnAction(event -> {
+            createLobbyButton.setOnAction(event -> {
                 // New lobby Popup
                 Popup lobbyPopup = new Popup();
 
-                VBox lobbyCreationPopupBox = (VBox) root.lookup("#lobbyCreationPopupBox");
+                VBox lobbyCreationPopupBox = (VBox) sceneRoot.lookup("#lobbyCreationPopupBox");
 
                 ComboBox<Integer> maxPlayers = (ComboBox<Integer>) lobbyCreationPopupBox.lookup("#maxPlayersInput");
                 maxPlayers.setValue(2);
                 maxPlayers.setItems(maxPlayersSelector);
 
-                Button okPlayers = (Button) root.lookup("#okPlayers");
+                Button okPlayers = (Button) sceneRoot.lookup("#okPlayers");
 
                 lobbyPopup.getContent().add(lobbyCreationPopupBox);
 
@@ -80,6 +68,31 @@ public class GUILobbiesScreenController extends GUIView {
                 lobbyCreationPopupBox.setVisible(true);
                 lobbyPopup.centerOnScreen();
             });
+            createLobbyButton.relocate(lobbiesPane.getPrefWidth() * 5 / 100, lobbiesPane.getPrefHeight());
+
+            backToTitleButton.setOnAction(event -> ClientController.getInstance().viewState.quit());
+
+
+            profile.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
+            profile.setTextAlignment(TextAlignment.CENTER);
+            profile.setAlignment(Pos.TOP_LEFT);
+
+            lobbiesPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            lobbiesPane.setPrefSize(screenSizes.getX() * 3 / 5, screenSizes.getY() * 13 / 16);
+            lobbiesPane.relocate(screenSizes.getX() * 3 / 10, (screenSizes.getY() - lobbiesPane.getPrefHeight()) / 2);
+            lobbiesList = new VBox(10);
+            lobbiesList.setStyle("-fx-background-color: transparent;");
+            lobbiesList.setMinHeight(lobbiesPane.getPrefHeight() * 98 / 100);
+            lobbiesList.setPrefWidth(lobbiesPane.getPrefWidth() * 98 / 100);
+            lobbiesList.setPadding(new Insets(10));
+            lobbiesList.setAlignment(Pos.TOP_CENTER);
+
+            //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
+            for (var lobby : ClientController.getInstance().viewModel.getLobbies().entrySet()) {
+                lobbiesList.getChildren().add(GUILobbiesScreenController.createLobbyListElement(lobby.getKey(), lobby.getValue()));
+            }
+
+            lobbiesPane.setContent(lobbiesList);
 
             // Nickname Popup
             Popup nickPopup = new Popup();
@@ -102,7 +115,7 @@ public class GUILobbiesScreenController extends GUIView {
             nickPopup.setAutoHide(true);
             nickPopup.setHideOnEscape(true);
 
-            Button changeNickname = (Button) root.lookup("#nicknameButton");
+            Button changeNickname = (Button) sceneRoot.lookup("#nicknameButton");
             changeNickname.setOnAction(event -> {
                 nickPopup.show(stage);
                 nickPopup.centerOnScreen();
@@ -113,7 +126,7 @@ public class GUILobbiesScreenController extends GUIView {
                 nickPopup.hide();
             });
 
-            stage.getScene().setRoot(root);
+            stage.getScene().setRoot(sceneRoot);
         });
     }
 
@@ -125,12 +138,10 @@ public class GUILobbiesScreenController extends GUIView {
     }
 
     private static HBox createLobbyListElement(UUID lobbyUUID, GameLobby lobby) {
-        String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
-
         // Box
         HBox lobbyBox = new HBox(100);
-        lobbyBox.setPadding(new Insets(15, 12, 15, 12));
-        lobbyBox.setStyle("-fx-alignment: CENTER; -fx-text-alignment: JUSTIFY; -fx-background-color: #00665C;");
+        lobbyBox.getStyleClass().add("lobbyBox");
+        lobbyBox.setPrefSize(lobbiesList.getPrefWidth() - 10, 10);
 
         // Label giocatori
         Label playerCount = new Label(String.valueOf(lobby.getMaxPlayers()));
@@ -143,7 +154,6 @@ public class GUILobbiesScreenController extends GUIView {
             lobbyBox.getChildren().add(playerName);
         }
 
-        lobbyBox.setStyle(style);
         lobbyBox.getChildren().add(playerCount);
 
         if (ClientController.getInstance().viewModel.getCurrentLobby() == null) {

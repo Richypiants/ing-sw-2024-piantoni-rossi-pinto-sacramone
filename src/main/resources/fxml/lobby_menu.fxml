@@ -5,8 +5,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
-            fx:id="lobbyMenuPane" stylesheets="/style.css">
-    <Button fx:id="CreateGameButton" styleClass="button" layoutX="51.0" layoutY="122.0" mnemonicParsing="false"
+            fx:id="lobbiesMenuPane" stylesheets="/style.css">
+    <Button fx:id="createGameButton" styleClass="button" layoutX="51.0" layoutY="122.0" mnemonicParsing="false"
             prefHeight="27.0" prefWidth="250.0" text="Create Game">
         <font>
             <Font name="Bell MT" size="14.0"/>
@@ -18,7 +18,7 @@
             <Font name="Bell MT" size="14.0"/>
         </font>
     </Button>
-    <Button fx:id="BackTitleButton" styleClass="button" layoutX="51.0" layoutY="278.0" mnemonicParsing="false"
+    <Button fx:id="backToTitleButton" styleClass="button" layoutX="51.0" layoutY="278.0" mnemonicParsing="false"
             prefHeight="27.0" prefWidth="250.0" text="Back to title screen">
         <font>
             <Font name="Bell MT" size="14.0"/>

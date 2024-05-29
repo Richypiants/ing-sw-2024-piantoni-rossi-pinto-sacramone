@@ -17,6 +17,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
@@ -546,9 +547,13 @@ public class GUIGameScreenController extends GUIView {
                 //TODO: Complete implementation of drag-and-drop of cards with all DragEvents specified, and this is horrible...
                 int inHandPosition = i + 1;
 
+
+                //FIXME: Refactor image/dragboard/imageview
                 frontCardView.setOnDragDetected((event) -> {
                     Dragboard cardDragboard = frontCardView.startDragAndDrop(TransferMode.MOVE);
-                    cardDragboard.setDragView(frontCardView.getImage(), cardSizes.getX() / 2, cardSizes.getY() / 2);
+                    ImageView imageView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.FRONT))));
+                    Image image = new Image(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.FRONT))), 100, 150, true, true);
+                    cardDragboard.setDragView(image, cardSizes.getX() / 2, cardSizes.getY() / 2);
                     ClipboardContent cardClipboard = new ClipboardContent();
                     cardClipboard.put(placeCardDataFormat, new GenericPair<>(inHandPosition, Side.FRONT));
                     cardDragboard.setContent(cardClipboard);

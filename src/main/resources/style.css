@@ -70,13 +70,29 @@
     -fx-font-size: 16.0;
 }
 
+#lobbiesMenuPane {
+    -fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+}
+
 #lobbiesPane {
     -fx-alignment: CENTER;
     -fx-text-alignment: JUSTIFY;
-    -fx-background-color: #CC9966;
+    -fx-background-color: transparent;
 }
 
-.lobbyHBox {
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.lobbyBox {
+    -fx-background-color: #B0E0E6;
+    -fx-border-color: black;
+    -fx-border-width: 1;
+    -fx-padding: 10;
+    -fx-alignment: LEFT;
+    -fx-text-alignment: JUSTIFY;
 }
 
 #scoreboardPane {
