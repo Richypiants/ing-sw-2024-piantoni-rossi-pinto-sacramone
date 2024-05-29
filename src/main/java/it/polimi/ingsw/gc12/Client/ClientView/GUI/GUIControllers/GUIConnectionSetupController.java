@@ -16,16 +16,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-import java.io.IOException;
 import java.util.Objects;
 
 public class GUIConnectionSetupController extends GUIView {
 
     static Parent sceneRoot = sceneRoots.get("connection_setup");
 
-    static AnchorPane titleScreenBox = (AnchorPane) sceneRoot.lookup("#titleScreenBox");
+    static AnchorPane connectionTitleScreenBox = (AnchorPane) sceneRoot.lookup("#connectionTitleScreenBox");
 
-    static ImageView titleScreenGameLogo = (ImageView) titleScreenBox.lookup("#titleScreenGameLogo");
+    static ImageView connectionTitleScreenGameLogo = (ImageView) connectionTitleScreenBox.lookup("#connectionTitleScreenGameLogo");
 
     static VBox connectionSetupBox = (VBox) sceneRoot.lookup("#connectionSetupBox");
 
@@ -37,14 +36,20 @@ public class GUIConnectionSetupController extends GUIView {
 
     static Button connectionSetupSendButton;
 
+    static ImageView appearingLogo = (ImageView) connectionTitleScreenBox.lookup("#appearingLogo");
+
     static ToggleGroup connection;
 
     public static void connectionSetupScreen() {
+        connectionTitleScreenGameLogo.setImage(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/images/only_center_logo_no_bg.png"))));
+        connectionTitleScreenGameLogo.setFitWidth(650);
+        connectionTitleScreenGameLogo.setFitHeight(650);
+        connectionTitleScreenGameLogo.setPreserveRatio(true);
 
-        titleScreenGameLogo.setImage(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/images/only_center_logo_no_bg.png"))));
-        titleScreenGameLogo.setFitWidth(650);
-        titleScreenGameLogo.setFitHeight(650);
-        titleScreenGameLogo.setPreserveRatio(true);
+        connectionTitleScreenGameLogo.relocate(
+                (screenSizes.getX() - appearingLogo.getFitWidth()) / 2,
+                screenSizes.getY() * 5 / 100
+        );
 
         connectionSetupBox.setPrefSize(screenSizes.getX() / 4, screenSizes.getY() / 2);
 
@@ -65,13 +70,8 @@ public class GUIConnectionSetupController extends GUIView {
         connectionSetupSendButton.getStyleClass().add("button");
         connectionSetupSendButton.setStyle("-fx-font-size: 15.0;");
         connectionSetupSendButton.setPrefSize(connectionSetupBox.getPrefWidth(), 10.0);
-        connectionSetupSendButton.setOnAction(event -> {
-            try {
-                waitingForConnection(event);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        connectionSetupSendButton.setOnMouseClicked(event -> waitingForConnection());
+
         connectionSetupBox.getChildren().remove(connectionSetupBox.lookup(".button"));
         connectionSetupBox.getChildren().add(connectionSetupSendButton);
 
@@ -83,24 +83,20 @@ public class GUIConnectionSetupController extends GUIView {
         connectionSetupBox.relocate(screenSizes.getX() * 9 / 16, screenSizes.getY() / 5);
 
         TranslateTransition centerLogoTransition = new TranslateTransition(Duration.millis(2000));
-        centerLogoTransition.setNode(titleScreenGameLogo);
+        centerLogoTransition.setNode(connectionTitleScreenGameLogo);
         centerLogoTransition.setInterpolator(Interpolator.EASE_BOTH);
-        centerLogoTransition.setToX(screenSizes.getX() * (5.0 / 100 + 1.0 / 16) - titleScreenGameLogo.getLayoutX());
-        centerLogoTransition.setToY((screenSizes.getY() - titleScreenGameLogo.getFitHeight()) / 2 - titleScreenGameLogo.getLayoutY());
+        centerLogoTransition.setToX(screenSizes.getX() * (5.0 / 100 + 1.0 / 16) - connectionTitleScreenGameLogo.getLayoutX());
+        centerLogoTransition.setToY((screenSizes.getY() - connectionTitleScreenGameLogo.getFitHeight()) / 2 - connectionTitleScreenGameLogo.getLayoutY());
 
-        ((AnchorPane) sceneRoot).getChildren().remove(sceneRoot.lookup("#appearingLogo"));
-
-        ImageView appearingLogo = new ImageView(String.valueOf(GUIView.class.getResource("/images/transparent_game_logo2.png")));
-        appearingLogo.setId("appearingLogo");
+        appearingLogo.setImage(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/images/transparent_game_logo2.png"))));
         appearingLogo.setOpacity(0.0);
         appearingLogo.setFitWidth(650);
         appearingLogo.setFitHeight(650);
+        appearingLogo.setPreserveRatio(true);
         appearingLogo.relocate(
                 (screenSizes.getX() - appearingLogo.getFitWidth()) / 2,
                 screenSizes.getY() * 5 / 100
         );
-
-        ((AnchorPane) sceneRoot).getChildren().add(appearingLogo);
 
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(2000));
         fadeTransition.setNode(appearingLogo);
@@ -112,7 +108,7 @@ public class GUIConnectionSetupController extends GUIView {
         appearingLogoTransition2.setNode(appearingLogo);
         appearingLogoTransition2.setInterpolator(Interpolator.EASE_BOTH);
         appearingLogoTransition2.setByX(screenSizes.getX() * (5.0 / 100 + 1.0 / 16) - appearingLogo.getLayoutX());
-        appearingLogoTransition2.setByY((screenSizes.getY() - titleScreenGameLogo.getFitHeight()) / 2 - appearingLogo.getLayoutY());
+        appearingLogoTransition2.setByY((screenSizes.getY() - connectionTitleScreenGameLogo.getFitHeight()) / 2 - appearingLogo.getLayoutY());
 
         FadeTransition connectionBoxTransition = new FadeTransition(Duration.millis(1000));
         connectionBoxTransition.setDelay(Duration.millis(1000));

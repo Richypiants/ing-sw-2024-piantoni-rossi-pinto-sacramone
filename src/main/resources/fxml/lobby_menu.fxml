@@ -26,16 +26,17 @@
     </Button>
 
     <ScrollPane fx:id="lobbiesPane" layoutX="400.0" layoutY="30.0" prefHeight="800.0" prefWidth="800.0">
-        <VBox fx:id="anchor" minHeight="0.0" minWidth="0.0" prefHeight="802.0" prefWidth="1102.0"/>
+        <VBox fx:id="lobbiesList" minHeight="0.0" minWidth="0.0"/>
     </ScrollPane>
-    <VBox fx:id="lobbyCreationPopupBox" spacing="10" alignment="CENTER" visible="false">
-        <Label fx:id="players" alignment="CENTER" text="Inserire il numero di giocatori">
+
+    <VBox fx:id="lobbyCreationPopupBox" styleClass="lobbyScreenPopupBox" visible="false">
+        <Label fx:id="playersNumberPrompt" alignment="CENTER" text="Inserisci il numero di giocatori:">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>
         </Label>
-        <ComboBox fx:id="maxPlayersInput" prefWidth="150.0" promptText="Select maximum number of players:"/>
-        <Button fx:id="okPlayers" styleClass="button" mnemonicParsing="false"
+        <ComboBox fx:id="maxPlayersSelector" prefWidth="150.0"/>
+        <Button fx:id="confirmLobbyCreationButton" styleClass="button" mnemonicParsing="false"
                 prefHeight="27.0" prefWidth="141.0" text="OK">
             <font>
                 <Font name="Bell MT" size="14.0"/>
@@ -43,7 +44,22 @@
         </Button>
     </VBox>
 
-    <Label fx:id="profile" alignment="TOP_RIGHT">
+    <VBox fx:id="changeNicknamePopupBox" styleClass="lobbyScreenPopupBox" visible="false">
+        <Label fx:id="nicknamePrompt" alignment="CENTER" text="Inserisci un nuovo nickname:">
+            <font>
+                <Font name="Bell MT" size="30.0"/>
+            </font>
+        </Label>
+        <TextField fx:id="nicknameField" prefWidth="150.0" promptText="nickname"/>
+        <Button fx:id="confirmNicknameChangeButton" styleClass="button" mnemonicParsing="false"
+                prefHeight="27.0" prefWidth="141.0" text="OK">
+            <font>
+                <Font name="Bell MT" size="14.0"/>
+            </font>
+        </Button>
+    </VBox>
+
+    <Label fx:id="profile" styleClass="titleScreenLabel">
         <font>
             <Font name="Bell MT" size="14.0"/>
         </font>

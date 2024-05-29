@@ -58,7 +58,7 @@ public abstract class GUITitleScreenController extends GUIView {
             titleScreenGameLogo.setFitHeight(650);
             titleScreenGameLogo.setPreserveRatio(true);
 
-            FadeTransition backgroundTransition = new FadeTransition(Duration.millis(6000), titleScreenBox);
+            FadeTransition backgroundTransition = new FadeTransition(Duration.millis(4000), titleScreenBox);
             backgroundTransition.setFromValue(0.0);
             backgroundTransition.setToValue(1.0);
 
@@ -77,7 +77,7 @@ public abstract class GUITitleScreenController extends GUIView {
 
             titleScreenPrompt.relocate(
                     (titleScreenBox.getPrefWidth() - titleScreenPrompt.getPrefWidth()) / 2,
-                    titleScreenBox.getPrefHeight() * 85 / 100
+                    titleScreenBox.getPrefHeight() * 80 / 100
             );
 
             FadeTransition fadeTransition = new FadeTransition(Duration.millis(2000), titleScreenPrompt);

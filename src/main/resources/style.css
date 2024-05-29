@@ -86,13 +86,29 @@
     -fx-background-color: transparent;
 }
 
+#lobbiesList {
+    -fx-spacing: 10;
+    -fx-background-color: transparent;
+    -fx-padding: 10 10 10 10;
+    -fx-alignment: TOP-CENTER;
+}
+
 .lobbyBox {
     -fx-background-color: #B0E0E6;
     -fx-border-color: black;
     -fx-border-width: 1;
     -fx-padding: 10;
-    -fx-alignment: LEFT;
+    -fx-alignment: CENTER-LEFT;
     -fx-text-alignment: JUSTIFY;
+}
+
+.lobbyScreenPopupBox {
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-border-width: 1;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-alignment: CENTER;
 }
 
 #scoreboardPane {

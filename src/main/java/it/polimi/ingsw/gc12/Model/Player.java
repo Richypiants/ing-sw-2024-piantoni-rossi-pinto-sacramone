@@ -88,14 +88,14 @@ public class Player implements Serializable {
     //TODO: Add Color in toString when implemented
     /**
      * Returns a string representation of this player
-     * The string representation is the player's nickname.
+     * The string representation is the player's nickname, along with the eventually assigned color.
      * </p>
      *
      * @return The nickname of the player as a string.
      */
     @Override
     public String toString() {
-        return this.nickname;
+        return this.nickname + ", " + color;
     }
 }
 

@@ -2,15 +2,13 @@ package it.polimi.ingsw.gc12.Client.ClientView.TUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Utilities.Color;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import org.fusesource.jansi.Ansi;
 
 import java.io.Console;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
-import java.util.UUID;
+import java.util.*;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -78,20 +76,10 @@ public class TUIListener {
                     errorMessage = "expected lobbyUUID as second argument";
                     currentState.joinLobby((UUID.fromString(tokens.removeFirst())));
                 }
+                case "selectcolor", "sc" -> {
+                    currentState.selectColor(convertColor(tokens.removeFirst()));
+                }
                 case "leavelobby", "ll" -> currentState.leaveLobby();
-                case "broadcastmessage", "bm" -> {
-                    String message = tokens.stream().reduce("", (a, b) -> a + " " + b);
-                    currentState.broadcastMessage(
-                            message.substring(0, Math.min(message.length(), 150))
-                    );
-                }
-                case "directmessage", "dm" -> {
-                    String receiverNickname = tokens.removeFirst();
-                    String message = tokens.stream().reduce("", (a, b) -> a + " " + b);
-                    currentState.directMessage(
-                            receiverNickname, message.substring(0, Math.min(message.length(), 150))
-                    );
-                }
                 case "pickinitial", "pi" ->
                         currentState.placeCard(new GenericPair<>(0, 0), 1, convertSide(tokens.removeFirst()));
                 case "placecard", "pc" ->
@@ -108,7 +96,21 @@ public class TUIListener {
                             tokens.removeFirst(), Integer.parseInt(tokens.removeFirst())
                     );
                 }
+                case "broadcastmessage", "bm" -> {
+                    String message = tokens.stream().reduce("", (a, b) -> a + " " + b);
+                    currentState.broadcastMessage(
+                            message.substring(0, Math.min(message.length(), 150))
+                    );
+                }
+                case "directmessage", "dm" -> {
+                    String receiverNickname = tokens.removeFirst();
+                    String message = tokens.stream().reduce("", (a, b) -> a + " " + b);
+                    currentState.directMessage(
+                            receiverNickname, message.substring(0, Math.min(message.length(), 150))
+                    );
+                }
                 case "showfield", "sf" -> currentState.showField(Integer.parseInt(tokens.removeFirst()));
+
                 case "quit" -> currentState.quit();
                 case "ok" -> currentState.toLobbies();
                 default -> throw new IllegalArgumentException("Unknown command");
@@ -140,5 +142,12 @@ public class TUIListener {
             case "back" -> Side.BACK;
             default -> throw new IllegalArgumentException("unknown side string given: " + input);
         };
+    }
+
+    private Color convertColor(String input) {
+        return Arrays.stream(Color.values())
+                .filter((color) -> color.name().equalsIgnoreCase(input))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("colore non valido fornito: " + input));
     }
 }

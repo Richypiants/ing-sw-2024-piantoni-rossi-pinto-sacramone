@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Utilities.Color;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
@@ -48,6 +49,10 @@ public abstract class ViewState {
     }
 
     public void joinLobby(UUID lobbyUUID){
+
+    }
+
+    public void selectColor(Color color) {
 
     }
 

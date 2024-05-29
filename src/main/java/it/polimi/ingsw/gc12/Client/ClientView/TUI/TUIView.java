@@ -215,6 +215,7 @@ public class TUIView extends View {
                             'createLobby <maxPlayers>' per creare una lobby,
                             'joinLobby <lobbyUUID>' per joinare una lobby esistente,
                             'setNickname <newNickname>' per cambiare il proprio nickname,
+                                    'selectColor <color> per scegliere un colore tra quelli disponibili,
                             'leaveLobby' per lasciare la lobby in cui si e' attualmente,
                             'quit' per ritornare alla schermata del titolo
                 """
@@ -288,7 +289,7 @@ public class TUIView extends View {
         for (ClientPlayer player : ClientController.getInstance().viewModel.getGame().getPlayers()) {
             EnumMap<Resource, Integer> playerResources = player.getOwnedResources();
 
-            printToPosition(ansi().cursor(i, 2).a("[#" + (i - 2) + "] ").a(player.getNickname())
+            printToPosition(ansi().cursor(i, 2).a("[#" + (i - 2) + "] ").fg(Ansi.Color.valueOf(player.getColor().name())).a(player.getNickname()).reset()
                     .cursor(i, 26).a(player.getPoints()) //POINTS
                     .cursor(i, 36).a(playerResources.containsKey(Resource.FUNGI) ? playerResources.get(Resource.FUNGI) : "0") //FUNGI
                     .cursor(i, 48).a(playerResources.containsKey(Resource.PLANT) ? playerResources.get(Resource.PLANT) : "0") //PLANT

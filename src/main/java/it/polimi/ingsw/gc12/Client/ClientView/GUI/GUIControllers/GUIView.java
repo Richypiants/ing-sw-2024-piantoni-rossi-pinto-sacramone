@@ -8,8 +8,6 @@ import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -114,8 +112,7 @@ public class GUIView extends View {
         });
     }
 
-    @FXML
-    protected static void waitingForConnection(ActionEvent event) throws IOException {
+    protected static void waitingForConnection() {
         GUIConnectionLoadingScreen.connectionLoadingScreen();
     }
 
@@ -150,7 +147,7 @@ public class GUIView extends View {
         GUIGameScreenController.newGameScreen();
     }
 
-    public OverlayPopup drawOverlayPopup(Pane popupContent, boolean isCloseable) {
+    public static OverlayPopup drawOverlayPopup(Pane popupContent, boolean isCloseable) {
         OverlayPopup overlayPopup = new OverlayPopup();
         //TODO: aggiungere per quanto possibile gli elementi dei popup all'fxml?
 

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.SetLobbiesCommand;
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.StartGameCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.UpdateLobbyCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.SetNicknameCommand;
@@ -13,11 +12,10 @@ import it.polimi.ingsw.gc12.Network.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.ForbiddenActionException;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class ConnectionController extends ServerController {
 
@@ -145,39 +143,14 @@ public class ConnectionController extends ServerController {
         Player target = players.get(sender);
 
         lobby.addPlayer(target);
-
-        //TODO: startGame()... && add synchronization
-        if (lobby.getPlayersNumber() >= lobby.getMaxPlayers()) {
-            Game newGame = new Game(lobby);
-            GameController controller = new GameController(newGame);
-
-            lobbiesAndGames.put(lobbyUUID, newGame);
-
-            System.out.println("[SERVER]: sending StartGameCommand to clients starting game");
-            //TODO: estrarre la logica di evoluzione dei player da Game (altrimenti, fixare i get) E SINCRONIZZAREEEE
-            for (var player : lobby.getPlayers()) {
-                VirtualClient targetClient = keyReverseLookup(players, player::equals);
-                InGamePlayer targetInGamePlayer = newGame.getPlayers().stream()
-                        .filter((inGamePlayer) -> inGamePlayer.getNickname().equals(player.getNickname()))
-                        .findFirst()
-                        .orElseThrow(); //TODO: strano... gestire?
-
-                players.put(targetClient, targetInGamePlayer);
-                playersToControllers.remove(target);
-                playersToControllers.put(targetInGamePlayer, controller);
-
-                requestToClient(targetClient, new StartGameCommand(lobbyUUID, newGame.generateDTO(targetInGamePlayer)));
-
-                //FIXME: should clients inform that they are ready before? (ready() method call?)
-                //Calls to game creation, generateInitialCards ...
-            }
-            newGame.getCurrentState().transition();
-
-            //FIXME: a better solution? or does this get fixed by fixing constructors for Game & GameLobby?
-            while (lobby.getPlayersNumber() > 0) {
-                lobby.removePlayer(lobby.getPlayers().getFirst());
-            }
-        }
+        playersToControllers.put(target, playersToControllers.values().stream()
+                        .filter((serverController) ->
+                                serverController instanceof LobbyController &&
+                                        ((LobbyController) serverController).CONTROLLED_LOBBY.equals(lobby)
+                        ).findAny()
+                        .orElseThrow(NoSuchElementException::new)
+                //FIXME: non sono sicuro debba essere lanciata questa, e comunque non dovrebbe mai venire lanciata...
+        );
 
         System.out.println("[SERVER]: sending UpdateLobbyCommand to clients");
         //FIXME: risolvere SINCRONIZZANDO su un gameCreationLock

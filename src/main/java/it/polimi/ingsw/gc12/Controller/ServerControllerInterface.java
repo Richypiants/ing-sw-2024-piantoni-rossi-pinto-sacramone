@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Controller;
 
 import it.polimi.ingsw.gc12.Network.VirtualClient;
+import it.polimi.ingsw.gc12.Utilities.Color;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
@@ -17,6 +18,8 @@ public interface ServerControllerInterface extends ControllerInterface {
     void createLobby(VirtualClient sender, int maxPlayers);
 
     void joinLobby(VirtualClient sender, UUID lobbyUUID);
+
+    void pickColor(VirtualClient sender, Color color);
 
     void leaveLobby(VirtualClient sender, boolean isInactive);
 

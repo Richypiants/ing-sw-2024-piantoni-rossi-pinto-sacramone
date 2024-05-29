@@ -7,9 +7,12 @@
 <?import javafx.scene.layout.VBox?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
             fx:id="connectionPane" stylesheets="/style.css">
-    <AnchorPane fx:id="titleScreenBox">
+    <AnchorPane fx:id="connectionTitleScreenBox">
         <!-- why tags here not working??? -->
-        <ImageView fx:id="titleScreenGameLogo" fitWidth="650.0" fitHeight="650.0" preserveRatio="true">
+        <ImageView fx:id="connectionTitleScreenGameLogo" fitWidth="650.0" fitHeight="650.0" preserveRatio="true">
+            <!-- <Image url="@/images/cranio_creations_logo_no_bg.png"/> -->
+        </ImageView>
+        <ImageView fx:id="appearingLogo" fitWidth="650.0" fitHeight="650.0" preserveRatio="true">
             <!-- <Image url="@/images/cranio_creations_logo_no_bg.png"/> -->
         </ImageView>
     </AnchorPane>

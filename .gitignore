@@ -3,11 +3,13 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Maven ###
+.mvn
+mvnw
+mvnw.cmd
+
 ### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
+.idea
 *.iws
 *.iml
 *.ipr
@@ -36,3 +38,11 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Other files ###
+out
+script.bat
+powershell_game_run.bat
+GC12.iml
+errorLog*.txt
+/src/main/resources/META-INF

@@ -41,5 +41,7 @@ module it.polimi.ingsw.gc12 {
     opens it.polimi.ingsw.gc12.Network.Server to com.google.gson;
     exports it.polimi.ingsw.gc12.Network.Client;
     opens it.polimi.ingsw.gc12.Network.Client to com.google.gson;
+    exports it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers;
+    opens it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers to javafx.fxml;
     // exports it.polimi.ingsw.gc12.Client.ClientView.GUI;
 }

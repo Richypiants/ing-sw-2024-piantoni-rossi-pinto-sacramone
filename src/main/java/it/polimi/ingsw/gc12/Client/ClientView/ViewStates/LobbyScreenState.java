@@ -4,7 +4,9 @@ import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.CreateLobbyCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.JoinLobbyCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.LeaveLobbyCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.PickColorCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.SetNicknameCommand;
+import it.polimi.ingsw.gc12.Utilities.Color;
 
 import java.util.UUID;
 
@@ -36,6 +38,11 @@ public class LobbyScreenState extends ViewState {
     @Override
     public void joinLobby(UUID lobbyUUID){
         ClientController.getInstance().requestToServer(new JoinLobbyCommand(lobbyUUID));
+    }
+
+    @Override
+    public void selectColor(Color color) {
+        ClientController.getInstance().requestToServer(new PickColorCommand(color));
     }
 
     @Override
