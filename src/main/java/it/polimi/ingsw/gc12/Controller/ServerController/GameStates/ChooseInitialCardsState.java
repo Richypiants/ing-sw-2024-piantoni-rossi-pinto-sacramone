@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
+import it.polimi.ingsw.gc12.Model.ServerModel;
 import it.polimi.ingsw.gc12.Network.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
@@ -24,8 +25,8 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class ChooseInitialCardsState extends GameState {
 
-    public ChooseInitialCardsState(Game thisGame) {
-        super(thisGame, -1, -1, "initialState");
+    public ChooseInitialCardsState(GameController controller, Game thisGame) {
+        super(controller, thisGame, "initialState");
     }
 
     @Override
@@ -63,8 +64,6 @@ public class ChooseInitialCardsState extends GameState {
 
     @Override
     public void transition() {
-        super.transition();
-
         for (InGamePlayer target : GAME.getPlayers()) {
             try {
                 target.addCardToHand(GAME.drawFrom(GAME.getResourceCardsDeck()));
@@ -93,7 +92,7 @@ public class ChooseInitialCardsState extends GameState {
             }
         }
 
-        CardDeck<ObjectiveCard> objectivesDeck = new CardDeck<>(GameController.cardsList.values().stream()
+        CardDeck<ObjectiveCard> objectivesDeck = new CardDeck<>(ServerModel.cardsList.values().stream()
                 .filter((card -> card instanceof ObjectiveCard))
                 .map((card) -> (ObjectiveCard) card)
                 .toList());
@@ -148,6 +147,6 @@ public class ChooseInitialCardsState extends GameState {
             }
         }
 
-        GAME.setState(new ChooseObjectiveCardsState(GAME, objectivesSelection));
+        GAME_CONTROLLER.setState(new ChooseObjectiveCardsState(GAME_CONTROLLER, GAME, objectivesSelection));
     }
 }

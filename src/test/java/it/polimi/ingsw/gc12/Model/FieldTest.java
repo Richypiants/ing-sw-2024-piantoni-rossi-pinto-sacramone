@@ -1,7 +1,10 @@
 package it.polimi.ingsw.gc12.Model;
 
 import com.google.gson.reflect.TypeToken;
-import it.polimi.ingsw.gc12.Model.Cards.*;
+import it.polimi.ingsw.gc12.Model.Cards.CardDeckTest;
+import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
+import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
+import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -19,7 +22,7 @@ class FieldTest {
 
     Player player;
     InGamePlayer targetPlayer;
-    GameLobby lobby;
+    Lobby lobby;
     Game game;
 
     @BeforeAll

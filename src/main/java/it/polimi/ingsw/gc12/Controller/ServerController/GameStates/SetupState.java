@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Model.Cards.CardDeck;
 import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
 import it.polimi.ingsw.gc12.Model.Game;
+import it.polimi.ingsw.gc12.Model.ServerModel;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 
 import java.util.List;
@@ -13,16 +14,14 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class SetupState extends GameState {
 
-    public SetupState(Game thisGame) {
-        super(thisGame, -1, -1, "setupState");
+    public SetupState(GameController controller, Game thisGame) {
+        super(controller, thisGame, "setupState");
     }
 
     @Override
     public void transition() {
-        super.transition();
-
         CardDeck<InitialCard> initialCardsDeck = new CardDeck<>(
-                GameController.cardsList.values().stream()
+                ServerModel.cardsList.values().stream()
                         .filter((card -> card instanceof InitialCard))
                         .map((card) -> (InitialCard) card)
                         .toList()
@@ -48,6 +47,6 @@ public class SetupState extends GameState {
             e.printStackTrace();
         }
 
-        GAME.setState(new ChooseInitialCardsState(GAME));
+        GAME_CONTROLLER.setState(new ChooseInitialCardsState(GAME_CONTROLLER, GAME));
     }
 }

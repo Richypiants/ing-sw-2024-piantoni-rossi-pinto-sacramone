@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
+import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Model.Game;
 
 import java.util.Timer;
@@ -14,11 +15,11 @@ public class AwaitingReconnectionState extends GameState {
 
     private static final int TIMEOUT_GAME_ENDED = 60000;
 
-    public AwaitingReconnectionState(Game thisGame) {
-        super(thisGame, -1, thisGame.getCurrentState().finalPhaseCounter, "awaitingReconnectionState");
+    public AwaitingReconnectionState(GameController controller, Game thisGame) {
+        super(controller, thisGame, "awaitingReconnectionState");
 
-        synchronized (GAME.getCurrentState()) {
-            this.previousState = GAME.getCurrentState();
+        synchronized (GAME_CONTROLLER.getCurrentState()) {
+            this.previousState = GAME_CONTROLLER.getCurrentState();
         }
 
         timer = new Timer(true);
@@ -26,8 +27,8 @@ public class AwaitingReconnectionState extends GameState {
 
             @Override
             public void run() {
-                GAME.setState(new VictoryCalculationState(GAME, currentPlayer, finalPhaseCounter));
-                GAME.getCurrentState().transition();
+                GAME_CONTROLLER.setState(new VictoryCalculationState(GAME_CONTROLLER, GAME));
+                GAME_CONTROLLER.getCurrentState().transition();
             }
         }, TIMEOUT_GAME_ENDED);
     }
@@ -35,9 +36,9 @@ public class AwaitingReconnectionState extends GameState {
     public void recoverGame(){
         timer.cancel();
         terminateGame.cancel();
-        GAME.setState(previousState);
+        GAME_CONTROLLER.setState(previousState);
 
-        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
+        notifyTransition(GAME.getActivePlayers(), GAME.getRoundNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
     }
 
     public void cancelTimerTask(){
@@ -45,4 +46,8 @@ public class AwaitingReconnectionState extends GameState {
         terminateGame.cancel();
     }
 
+    //FIXME: merge with recoverGame?
+    @Override
+    public void transition() {
+    }
 }

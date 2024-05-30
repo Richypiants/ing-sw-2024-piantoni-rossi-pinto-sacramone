@@ -3,12 +3,15 @@ package it.polimi.ingsw.gc12.Controller.ServerController;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.*;
 import it.polimi.ingsw.gc12.Controller.Commands.SetNicknameCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.AwaitingReconnectionState;
+import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.GameState;
+import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Model.Cards.Card;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
+import it.polimi.ingsw.gc12.Model.ServerModel;
 import it.polimi.ingsw.gc12.Network.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
@@ -22,16 +25,23 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 public class GameController extends ServerController {
 
     private final Game CONTROLLED_GAME;
-    //TODO: move gamestates in here instead of having them in Game (also move back currentPlayer and round in Game after this?)
-    //private GameState currentGameState;
+    private GameState currentGameState;
 
     public GameController(Game controlledGame) {
         this.CONTROLLED_GAME = controlledGame;
-        //currentGameState = new SetupState(CONTROLLED_GAME);
+        currentGameState = new SetupState(this, CONTROLLED_GAME);
+    }
+
+    public GameState getCurrentState() {
+        return currentGameState;
+    }
+
+    public void setState(GameState state) {
+        currentGameState = state;
     }
 
     private boolean invalidCard(VirtualClient sender, int cardID) {
-        if (!cardsList.containsKey(cardID)) {
+        if (!ServerModel.cardsList.containsKey(cardID)) {
             requestToClient(
                     sender,
                     new ThrowExceptionCommand(
@@ -48,14 +58,14 @@ public class GameController extends ServerController {
         System.out.println("[SERVER]: sending SetNicknameCommand and RestoreGameCommand to client " + sender);
         requestToClient(sender, new SetNicknameCommand(nickname)); //setNickname();
 
-        if (CONTROLLED_GAME.getCurrentState() instanceof AwaitingReconnectionState)
+        if (currentGameState instanceof AwaitingReconnectionState)
             //If game was in AwaitingReconnectingState, you need to resume it before sending the DTO
-            ((AwaitingReconnectionState) CONTROLLED_GAME.getCurrentState()).recoverGame();
+            ((AwaitingReconnectionState) currentGameState).recoverGame();
 
         requestToClient(sender, new RestoreGameCommand(
-                keyReverseLookup(lobbiesAndGames, CONTROLLED_GAME::equals),
+                keyReverseLookup(model.ROOMS, CONTROLLED_GAME::equals),
                 CONTROLLED_GAME.generateDTO((InGamePlayer) players.get(sender)),
-                CONTROLLED_GAME.getCurrentState().getStringEquivalent(), //To let the client understand in which state it has to be recovered to.
+                currentGameState.getStringEquivalent(), //To let the client understand in which state it has to be recovered to.
                 CONTROLLED_GAME.generateTemporaryFieldsToPlayers() //fields related to the players inGame.
         ));
 
@@ -85,12 +95,11 @@ public class GameController extends ServerController {
         }
 
         InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
-        Game targetGame = ((GameController) playersToControllers.get(targetPlayer)).CONTROLLED_GAME;
-        Card targetCard = cardsList.get(cardID);
+        Card targetCard = ServerModel.cardsList.get(cardID);
 
         if (targetCard instanceof PlayableCard)
             try {
-                targetGame.getCurrentState().placeCard(targetPlayer, coordinates, (PlayableCard) targetCard, playedSide);
+                currentGameState.placeCard(targetPlayer, coordinates, (PlayableCard) targetCard, playedSide);
             } catch (ForbiddenActionException e) {
                 requestToClient(
                         sender,
@@ -144,12 +153,11 @@ public class GameController extends ServerController {
         if (invalidCard(sender, cardID)) return;
 
         InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
-        Game targetGame = ((GameController) playersToControllers.get(targetPlayer)).CONTROLLED_GAME;
-        Card targetCard = cardsList.get(cardID);
+        Card targetCard = ServerModel.cardsList.get(cardID);
 
         if (targetCard instanceof ObjectiveCard)
             try {
-                targetGame.getCurrentState().pickObjective(targetPlayer, (ObjectiveCard) targetCard);
+                currentGameState.pickObjective(targetPlayer, (ObjectiveCard) targetCard);
                 //TODO: maybe send a response back to the player?
             } catch (ForbiddenActionException e) {
                 requestToClient(
@@ -188,10 +196,9 @@ public class GameController extends ServerController {
         System.out.println("[CLIENT]: DrawFromDeckCommand received and being executed");
 
         InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
-        Game targetGame = ((GameController) playersToControllers.get(targetPlayer)).CONTROLLED_GAME;
 
         try {
-            targetGame.getCurrentState().drawFrom(targetPlayer, deck);
+            currentGameState.drawFrom(targetPlayer, deck);
         } catch (ForbiddenActionException e) {
             requestToClient(
                     sender,
@@ -228,10 +235,9 @@ public class GameController extends ServerController {
         System.out.println("[CLIENT]: DrawFromVisibleCardsCommand received and being executed");
 
         InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
-        Game targetGame = ((GameController) playersToControllers.get(targetPlayer)).CONTROLLED_GAME;
 
         try {
-            targetGame.getCurrentState().drawFrom(targetPlayer, deck, position);
+            currentGameState.drawFrom(targetPlayer, deck, position);
         } catch (ForbiddenActionException e) {
             requestToClient(
                     sender,
@@ -269,16 +275,13 @@ public class GameController extends ServerController {
         }
     }
 
-
     @Override
     public void leaveGame(VirtualClient sender) {
         System.out.println("[CLIENT]: LeaveGameCommand received and being executed");
 
         InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
-        Game targetGame = ((GameController) playersToControllers.get(targetPlayer)).CONTROLLED_GAME;
 
         targetPlayer.toggleActive();
-        disconnectionRoutine(sender);
         players.remove(sender);
 
         /*Checking if the disconnection happened during the sender turn. If so:
@@ -294,28 +297,28 @@ public class GameController extends ServerController {
          * because the players' activity is managed by the GameStates.
          * */
 
-        if (targetGame.getCurrentState().getCurrentPlayer() == null || targetGame.getCurrentState().getCurrentPlayer().equals(targetPlayer))
-            targetGame.getCurrentState().playerDisconnected(targetPlayer);
+        if (CONTROLLED_GAME.getCurrentPlayer() == null || CONTROLLED_GAME.getCurrentPlayer().equals(targetPlayer))
+            currentGameState.playerDisconnected(targetPlayer);
 
         System.out.println("[SERVER]: sending ToggleActiveCommand to clients");
 
-        for (var player : targetGame.getActivePlayers()) {
+        for (var player : CONTROLLED_GAME.getActivePlayers()) {
             VirtualClient targetClient = keyReverseLookup(players, player::equals);
             requestToClient(targetClient, new ToggleActiveCommand(player.getNickname()));
         }
 
-        int activePlayers = targetGame.getActivePlayers().size();
+        int activePlayers = CONTROLLED_GAME.getActivePlayers().size();
         if (activePlayers == 1) {
-            for (var player : targetGame.getActivePlayers())
+            for (var player : CONTROLLED_GAME.getActivePlayers())
                 requestToClient(keyReverseLookup(players, player::equals), new PauseGameCommand());
 
-            targetGame.setState(new AwaitingReconnectionState(targetGame));
-            System.out.println("[SERVER]: Freezing " + targetGame.toString() + " game");
+            currentGameState = new AwaitingReconnectionState(this, CONTROLLED_GAME);
+            System.out.println("[SERVER]: Freezing " + CONTROLLED_GAME + " game");
         } else if (activePlayers == 0) {
-            ((AwaitingReconnectionState) targetGame.getCurrentState()).cancelTimerTask();
-            for (var player : targetGame.getPlayers())
+            ((AwaitingReconnectionState) currentGameState).cancelTimerTask();
+            for (var player : CONTROLLED_GAME.getPlayers())
                 playersToControllers.remove(player);
-            lobbiesAndGames.remove(targetGame);
+            model.ROOMS.remove(CONTROLLED_GAME);
         }
     }
 

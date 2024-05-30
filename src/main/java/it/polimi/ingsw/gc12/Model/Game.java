@@ -1,8 +1,5 @@
 package it.polimi.ingsw.gc12.Model;
 
-import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.GameState;
-import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.SetupState;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
@@ -19,7 +16,7 @@ import java.util.stream.Collectors;
  * This class manages the decks of cards, the players' information related to the game, such as their hands, fields, and secret objectives,
  * and the current state of the game.
  */
-public class Game extends GameLobby {
+public class Game extends Room {
 
     /**
      * The deck of Resource cards of this game.
@@ -46,31 +43,35 @@ public class Game extends GameLobby {
      */
     private int currentRound;
     /**
-     * The current state of the game.
+     The index which points to the player which is playing right now (-1 when the game is in the setup phase)
      */
-    private GameState currentState;
+    private int currentPlayer;
+    /**
+     * The number of remaining turns before the game ends (-1 when the game is not in in final phase)
+     */
+    private int finalPhaseCounter;
 
     /**
      * Constructs a new Game instance from the specified lobby.
      * Initializes decks, shuffles players, and sets up the game state.
      *
-     * @param lobby The GameLobby instance from which this game is created.
+     * @param lobby The Lobby instance from which this game is created.
      */
-    public Game(GameLobby lobby) {
-        super(lobby.getMaxPlayers(), lobby.getPlayers()
+    public Game(Lobby lobby) {
+        super(lobby.getPlayers()
                 .stream()
                 .map(InGamePlayer::new)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toCollection(ArrayList::new)));
 
-        shufflePlayers();
+        Collections.shuffle(LIST_OF_PLAYERS);
 
         this.currentRound = 0;
 
-        this.RESOURCE_CARDS_DECK = new CardDeck<>(ServerController.cardsList.values().stream()
+        this.RESOURCE_CARDS_DECK = new CardDeck<>(ServerModel.cardsList.values().stream()
                 .filter((card -> card instanceof ResourceCard))
                 .map((card) -> (ResourceCard) card)
                 .toList());
-        this.GOLD_CARDS_DECK = new CardDeck<>(ServerController.cardsList.values().stream()
+        this.GOLD_CARDS_DECK = new CardDeck<>(ServerModel.cardsList.values().stream()
                 .filter((card -> card instanceof GoldCard))
                 .map((card) -> (GoldCard) card)
                 .toList());
@@ -90,7 +91,8 @@ public class Game extends GameLobby {
 
         this.COMMON_OBJECTIVES = new ObjectiveCard[2];
 
-        this.currentState = new SetupState(this);
+        this.currentPlayer = -1;
+        this.finalPhaseCounter = -1;
     }
 
     /**
@@ -98,9 +100,9 @@ public class Game extends GameLobby {
      * This method is useful for scenarios where the players in-game need to be converted in player instances,
      * such as after a game ends and players return to a lobby.
      *
-     * @return A new GameLobby instance reflecting only the current active players.
+     * @return A new Lobby instance reflecting only the current active players.
      */
-    public GameLobby toLobby(){
+    public Lobby toLobby(){
         List<Player> playersList = new ArrayList<>();
 
         for(var inGamePlayer : getPlayers()){
@@ -110,7 +112,7 @@ public class Game extends GameLobby {
             }
         }
 
-        GameLobby returnLobby = new GameLobby(playersList.removeFirst(), getMaxPlayers());
+        Lobby returnLobby = new Lobby(playersList.removeFirst(), playersList.size() + 1);
         for(var player : playersList)
             returnLobby.addPlayer(player);
 
@@ -146,8 +148,17 @@ public class Game extends GameLobby {
     /**
      * Increments the current round number, indicating the progression of the game.
      */
-    public void increaseTurn() {
+    public void increaseRound() {
         currentRound++;
+    }
+
+    /**
+     * Retrieves the index of the player who is currently taking their turn.
+     *
+     * @return The int value representing the current player index in the players' list.
+     */
+    public int getCurrentPlayerIndex() {
+        return currentPlayer;
     }
 
     /**
@@ -156,7 +167,30 @@ public class Game extends GameLobby {
      * @return The InGamePlayer instance representing the current player.
      */
     public InGamePlayer getCurrentPlayer() {
-        return getCurrentState().getCurrentPlayer();
+        if (currentPlayer != -1)
+            return getPlayers().get(currentPlayer);
+        //FIXME: Maybe not a null but something else?
+        return null;
+    }
+
+    //FIXME: check javadoc copypasted from gamestates when moving this field in here
+
+    /**
+     * Increases the current player counter, making it point to the next player, and also increasing the currentRound
+     * value after everyone has played in the current round
+     */
+    public void nextPlayer() {
+        if (currentPlayer == getPlayers().size() - 1)
+            increaseRound();
+
+        do {
+            currentPlayer = (currentPlayer + 1) % getPlayers().size();
+            if (finalPhaseCounter != -1)
+                finalPhaseCounter--;
+            if (finalPhaseCounter == 0)
+                //There's no need to find another active player, since the game is ended.
+                break;
+        } while (!getPlayers().get(currentPlayer).isActive());
     }
 
     /**
@@ -164,8 +198,31 @@ public class Game extends GameLobby {
      *
      * @return The current round number as an integer.
      */
-    public int getTurnNumber() {
+    public int getRoundNumber() {
         return currentRound;
+    }
+
+    /**
+     * Gets the number of turns left until the end of the game.
+     *
+     * @return The number of turns left until the end of the game as an integer.
+     */
+    public int getFinalPhaseCounter() {
+        return finalPhaseCounter;
+    }
+
+    /**
+     * Initializes the counter of turns left until the end of the game.
+     */
+    public void initializeFinalPhaseCounter() {
+        finalPhaseCounter = 2 * getPlayers().size() - currentPlayer;
+    }
+
+    /**
+     * Decreases the counter of turns left until the end of the game by 1.
+     */
+    public void decreaseFinalPhaseCounter() {
+        finalPhaseCounter--;
     }
 
     /**
@@ -275,45 +332,28 @@ public class Game extends GameLobby {
      * @param <T>  The type of cards in the deck.
      * @return The top card of type T.
      */
-
     public <T extends Card> T peekFrom(CardDeck<T> deck){
         return deck.peek();
     }
-    /**
-     * Changes the currentState of this game to newState
-     *
-     * @param newState A new GameState
-     */
-    public void setState(GameState newState) {
-        currentState = newState;
-    }
-    /**
-     * Retrieves the current state associated to this game.
-     *
-     * @return The current state.
-     */
-    public GameState getCurrentState() {
-        return currentState;
-    }
 
     /**
-     * Creates an instance of ClientGame, which contains only the essential information
+     * Creates an instance of Client, which contains only the essential information
      * needed by a client to correctly create and manage its local instance of the game.
      * The generated Data Transfer Object (DTO) will include only the relevant personal
      * information of the specified player.
      *
      * @param receiver The player for whom the DTO is created. The relevant information in the DTO will pertain to this player.
-     * @return A ClientGame instance containing the necessary information for the specified player.
+     * @return A Client instance containing the necessary information for the specified player.
      */
 
-    public ClientGame generateDTO(InGamePlayer receiver){
-        Map<Integer, ClientCard> clientCards = ServerController.clientCardsList;
+    public ClientGame generateDTO(InGamePlayer receiver) {
+        Map<Integer, ClientCard> clientCards = ServerModel.clientCardsList;
         var players = this.getPlayers().stream()
                 .map((player) -> new ClientPlayer(player, player.getOpenCorners(), player.getOwnedResources(), player.getPoints()))
                 .toList();
 
         return new ClientGame(
-                this.getMaxPlayers(),
+                this.getPlayersNumber(),
                 players,
                 players.stream().filter((player) -> player.getNickname().equals(receiver.getNickname())).findAny().orElseThrow(),
                 receiver.getCardsInHand().stream()
@@ -331,7 +371,7 @@ public class Game extends GameLobby {
                 clientCards.get(peekFrom(getResourceCardsDeck()) == null ? -1 : peekFrom(getResourceCardsDeck()).ID),
                 clientCards.get(peekFrom(getGoldCardsDeck()) == null ? -1 : peekFrom(getGoldCardsDeck()).ID),
                 receiver.getSecretObjective() == null ? null : clientCards.get(receiver.getSecretObjective().ID),
-                getTurnNumber(),
+                getRoundNumber(),
                 getPlayers().indexOf(getCurrentPlayer())
         );
     }

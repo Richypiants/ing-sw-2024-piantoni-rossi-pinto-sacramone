@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers;
 
 import it.polimi.ingsw.gc12.Client.ClientView.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Utilities.Color;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -100,7 +100,7 @@ public class GUILobbiesScreenController extends GUIView {
 
             //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
             for (var lobby : ClientController.getInstance().viewModel.getLobbies().entrySet()) {
-                lobbiesList.getChildren().add(GUILobbiesScreenController.createLobbyListElement(lobby.getKey(), lobby.getValue()));
+                lobbiesList.getChildren().add(GUILobbiesScreenController.createLobbyListElement(lobby.getKey(), (Lobby) lobby.getValue()));
             }
 
             stage.getScene().setRoot(sceneRoot);
@@ -114,7 +114,7 @@ public class GUILobbiesScreenController extends GUIView {
         });
     }
 
-    private static HBox createLobbyListElement(UUID lobbyUUID, GameLobby lobby) {
+    private static HBox createLobbyListElement(UUID lobbyUUID, Lobby lobby) {
         // Box
         HBox lobbyBox = new HBox(100);
         lobbyBox.getStyleClass().add("lobbyBox");

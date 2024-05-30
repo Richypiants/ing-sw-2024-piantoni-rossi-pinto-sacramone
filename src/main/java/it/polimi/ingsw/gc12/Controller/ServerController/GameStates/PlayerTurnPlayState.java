@@ -16,8 +16,8 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class PlayerTurnPlayState extends GameState {
 
-    public PlayerTurnPlayState(Game thisGame, int currentPlayer, int counter) {
-        super(thisGame, currentPlayer, counter, "playState");
+    public PlayerTurnPlayState(GameController controller, Game thisGame) {
+        super(controller, thisGame, "playState");
     }
 
     @Override
@@ -25,7 +25,7 @@ public class PlayerTurnPlayState extends GameState {
                                        Side playedSide)
             throws UnexpectedPlayerException, CardNotInHandException, NotEnoughResourcesException,
             InvalidCardPositionException {
-        if (!target.equals(GAME.getPlayers().get(currentPlayer)))
+        if (!target.equals(GAME.getCurrentPlayer()))
             throw new UnexpectedPlayerException();
 
         target.placeCard(coordinates, card, playedSide);
@@ -53,25 +53,23 @@ public class PlayerTurnPlayState extends GameState {
 
     @Override
     public void transition() {
-        super.transition();
-
-        if (finalPhaseCounter == -1)
-            if (GAME.getPlayers().get(currentPlayer).getPoints() >= 20)
-                finalPhaseCounter = 2 * GAME.getPlayers().size() - currentPlayer;
+        if (GAME.getFinalPhaseCounter() == -1)
+            if (GAME.getCurrentPlayer().getPoints() >= 20)
+                GAME.initializeFinalPhaseCounter();
         //TODO: send alert a tutti i giocatori che si è entrati nella fase finale?
 
         System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
-        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
+        notifyTransition(GAME.getActivePlayers(), GAME.getRoundNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
 
-        GAME.setState(new PlayerTurnDrawState(GAME, currentPlayer, finalPhaseCounter));
+        GAME_CONTROLLER.setState(new PlayerTurnDrawState(GAME_CONTROLLER, GAME));
 
         //Check if there's a card that can be drawn, if not, directly call the transition of the PlayerTurnDrawState
         //The condition is computed in or(||) with the case that the currentPlayer is disconnected, so the PlayerTurnDrawState has to be skipped as well.
         if(GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty()
                 && GAME.getPlacedResources().length == 0 && GAME.getPlacedGolds().length == 0
-                || !getCurrentPlayer().isActive()) {
+                || !GAME.getCurrentPlayer().isActive()) {
 
-            GAME.getCurrentState().transition();
+            GAME_CONTROLLER.getCurrentState().transition();
         }
     }
 }

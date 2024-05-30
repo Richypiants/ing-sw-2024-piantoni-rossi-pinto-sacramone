@@ -22,8 +22,6 @@ import java.util.function.Supplier;
 
 import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
-
-
 public class PlayerTurnDrawState extends GameState {
 
     private enum Deck {
@@ -44,8 +42,8 @@ public class PlayerTurnDrawState extends GameState {
      */
     List<Triplet<Supplier<PlayableCard>, Deck, Integer>> drawActionsRoutine = new ArrayList<>();
 
-    public PlayerTurnDrawState(Game thisGame, int currentPlayer, int counter) {
-        super(thisGame, currentPlayer, counter, "drawState");
+    public PlayerTurnDrawState(GameController controller, Game thisGame) {
+        super(controller, thisGame, "drawState");
 
         this.drawActionsRoutine.add(new Triplet<>(() -> tryDraw(() -> {
             try {
@@ -90,7 +88,7 @@ public class PlayerTurnDrawState extends GameState {
     @Override
     public synchronized void drawFrom(InGamePlayer target, String deck) throws UnexpectedPlayerException,
             UnknownStringException, EmptyDeckException {
-        if (!target.equals(GAME.getPlayers().get(currentPlayer)))
+        if (!target.equals(GAME.getCurrentPlayer()))
             throw new UnexpectedPlayerException();
 
         PlayableCard drawnCard = null;
@@ -149,7 +147,7 @@ public class PlayerTurnDrawState extends GameState {
     @Override
     public synchronized void drawFrom(InGamePlayer target, String whichType, int position)
             throws UnexpectedPlayerException, InvalidDeckPositionException, UnknownStringException, EmptyDeckException {
-        if (!target.equals(GAME.getPlayers().get(currentPlayer)))
+        if (!target.equals(GAME.getCurrentPlayer()))
             throw new UnexpectedPlayerException();
 
         if (position != 0 && position != 1) {
@@ -298,30 +296,30 @@ public class PlayerTurnDrawState extends GameState {
 
     @Override
     public void transition() {
-        super.transition();
-
         //REMINDER: se è stato completato il turno di un giocatore disconnesso,
         // il contatore dei turni rimanenti nel caso di finalPhase viene decrementato dalla nextPlayer().
 
-        nextPlayer();
+        GAME.nextPlayer();
 
         //Is final condition satisfied check
-        if (finalPhaseCounter == -1 && GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty())
-            finalPhaseCounter = 2 * GAME.getPlayers().size() - currentPlayer - 1;
+        if (GAME.getFinalPhaseCounter() == -1 && GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty()) {
+            GAME.initializeFinalPhaseCounter();
+            GAME.decreaseFinalPhaseCounter();
+        }
 
         //TODO: segnalare ai giocatori connessi che si stanno giocando i turni finali,
         // attraverso la GameTransitionCommand [Un campo Boolean, il # di Turno in cui finirà la partita,
         // il contatore decrementato?
 
-        if (finalPhaseCounter == 0) {
-            GAME.setState(new VictoryCalculationState(GAME, currentPlayer, finalPhaseCounter));
-            GAME.getCurrentState().transition();
+        if (GAME.getFinalPhaseCounter() == 0) {
+            GAME_CONTROLLER.setState(new VictoryCalculationState(GAME_CONTROLLER, GAME));
+            GAME_CONTROLLER.getCurrentState().transition();
             return;
         }
 
         System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
-        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
+        notifyTransition(GAME.getActivePlayers(), GAME.getRoundNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
 
-        GAME.setState(new PlayerTurnPlayState(GAME, currentPlayer, finalPhaseCounter));
+        GAME_CONTROLLER.setState(new PlayerTurnPlayState(GAME_CONTROLLER, GAME));
     }
 }

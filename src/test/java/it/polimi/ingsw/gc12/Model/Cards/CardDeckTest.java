@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc12.Model.Cards;
 
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import org.junit.jupiter.api.Test;
@@ -78,7 +78,7 @@ public class CardDeckTest {
     @Test
     void correctDraw() {
         Player p1 = new Player("giovanni");
-        GameLobby lobby = new GameLobby(p1, 1);
+        Lobby lobby = new Lobby(p1, 1);
         Game game = new Game(lobby);
         CardDeck<ResourceCard> resourceCardDeck = loadCardDeck(RESOURCE_DECK_FILENAME, new TypeToken<>(){});
 

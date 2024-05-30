@@ -4,8 +4,8 @@ import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.StartGameCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.UpdateLobbyCommand;
 import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
+import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Network.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.Color;
@@ -21,9 +21,9 @@ public class LobbyController extends ServerController {
     //TODO: implement this here
     //private final UUID lobbyUUID;
     //FIXME: this one here should be private...
-    protected final GameLobby CONTROLLED_LOBBY;
+    protected final Lobby CONTROLLED_LOBBY;
 
-    public LobbyController(GameLobby controlledLobby) {
+    public LobbyController(Lobby controlledLobby) {
         this.CONTROLLED_LOBBY = controlledLobby;
     }
 
@@ -51,14 +51,14 @@ public class LobbyController extends ServerController {
             return;
         }
 
-        UUID lobbyUUID = keyReverseLookup(lobbiesAndGames, CONTROLLED_LOBBY::equals);
+        UUID lobbyUUID = keyReverseLookup(model.ROOMS, CONTROLLED_LOBBY::equals);
 
         //TODO: startGame()... && add synchronization
         if (CONTROLLED_LOBBY.getAvailableColors().size() <= 4 - CONTROLLED_LOBBY.getMaxPlayers()) {
             Game newGame = new Game(CONTROLLED_LOBBY);
             GameController controller = new GameController(newGame);
 
-            lobbiesAndGames.put(lobbyUUID, newGame);
+            model.ROOMS.put(lobbyUUID, newGame);
 
             System.out.println("[SERVER]: sending StartGameCommand to clients starting game");
             //TODO: estrarre la logica di evoluzione dei player da Game (altrimenti, fixare i get) E SINCRONIZZAREEEE
@@ -78,9 +78,9 @@ public class LobbyController extends ServerController {
                 //FIXME: should clients inform that they are ready before? (ready() method call?)
                 //Calls to game creation, generateInitialCards ...
             }
-            newGame.getCurrentState().transition();
+            controller.getCurrentState().transition();
 
-            //FIXME: a better solution? or does this get fixed by fixing constructors for Game & GameLobby?
+            //FIXME: a better solution? or does this get fixed by fixing constructors for Game & Lobby?
             while (CONTROLLED_LOBBY.getPlayersNumber() > 0) {
                 CONTROLLED_LOBBY.removePlayer(CONTROLLED_LOBBY.getPlayers().getFirst());
             }
@@ -100,16 +100,15 @@ public class LobbyController extends ServerController {
 
         Player target = players.get(sender);
 
-        GameLobby lobby = CONTROLLED_LOBBY;
-        UUID lobbyUUID = keyReverseLookup(lobbiesAndGames, lobby::equals);
+        UUID lobbyUUID = keyReverseLookup(model.ROOMS, CONTROLLED_LOBBY::equals);
         //Assuming that lobby is contained (thus maps are coherent): check with synchronization that this
         // invariant holds
 
-        lobby.removePlayer(target);
+        CONTROLLED_LOBBY.removePlayer(target);
         playersToControllers.remove(target);
 
-        if (lobby.getPlayers().isEmpty()) {
-            lobbiesAndGames.remove(lobbyUUID);
+        if (CONTROLLED_LOBBY.getPlayers().isEmpty()) {
+            model.ROOMS.remove(lobbyUUID);
         }
 
         if (isInactive){
@@ -122,6 +121,6 @@ public class LobbyController extends ServerController {
 
         for (var client : players.keySet())
             if (!(players.get(client) instanceof InGamePlayer))
-                requestToClient(client, new UpdateLobbyCommand(lobbyUUID, lobby)); // updateLobby();
+                requestToClient(client, new UpdateLobbyCommand(lobbyUUID, CONTROLLED_LOBBY)); // updateLobby();
     }
 }

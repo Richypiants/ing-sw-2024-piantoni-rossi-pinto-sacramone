@@ -3,8 +3,8 @@ package it.polimi.ingsw.gc12.Model.Conditions;
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
+import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.*;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,7 +29,7 @@ class PatternConditionTest {
     private static ArrayList<ObjectiveCard> objectiveCards;
 
     Player player1;
-    GameLobby lobby;
+    Lobby lobby;
     Game game;
 
     @BeforeAll
@@ -281,7 +281,7 @@ class PatternConditionTest {
     @BeforeEach
     void setGameParameters() {
         player1 = new Player("giovanni");
-        lobby = new GameLobby(player1, 1);
+        lobby = new Lobby(player1, 1);
         game = new Game(lobby);
     }
 

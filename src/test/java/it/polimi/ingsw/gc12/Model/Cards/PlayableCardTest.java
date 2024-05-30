@@ -2,8 +2,8 @@ package it.polimi.ingsw.gc12.Model.Cards;
 
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
+import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
@@ -51,7 +51,7 @@ class PlayableCardTest {
     @Test
     void awardPointsOfCardPlacedOnBackTest(){
         Player player = new Player("TestPlayer");
-        GameLobby lobby = new GameLobby(player, 1);
+        Lobby lobby = new Lobby(player, 1);
         Game game = new Game(lobby);
         PlayableCard targetPlacedCard = initialCards.getFirst();
 

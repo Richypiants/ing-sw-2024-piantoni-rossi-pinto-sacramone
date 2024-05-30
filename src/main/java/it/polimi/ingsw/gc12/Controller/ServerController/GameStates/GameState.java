@@ -16,53 +16,21 @@ import java.util.ArrayList;
 import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public abstract class GameState { //TODO: make all exceptions extends RuntimeException so that you can cancel them from here
+
+    protected final GameController GAME_CONTROLLER;
     protected final Game GAME;
-    /**
-    The index which points to the player which is playing right now (-1 when the game is in the setup phase)
-     */
-    protected int currentPlayer;
-    protected int finalPhaseCounter;
 
     protected String state;
 
 
-    public GameState(Game thisGame, int currentPlayer, int finalPhaseCounter, String state) {
+    public GameState(GameController controller, Game thisGame, String state) {
+        this.GAME_CONTROLLER = controller;
         this.GAME = thisGame;
-        this.currentPlayer = currentPlayer;
-        this.finalPhaseCounter = finalPhaseCounter;
         this.state = state;
-    }
-
-    /**
-    Returns the player who is currently playing
-     */
-    public InGamePlayer getCurrentPlayer() {
-        if( currentPlayer != -1)
-            return GAME.getPlayers().get(currentPlayer);
-        //FIXME: Maybe not a null but something else?
-        return null;
     }
 
     public String getStringEquivalent(){
         return state;
-    }
-
-    /**
-    Increases the current player counter, making it point to the next player, increasing the turn after everyone
-    has played in the current turn
-     */
-    public void nextPlayer() {
-        if (currentPlayer == GAME.getPlayers().size()-1)
-            GAME.increaseTurn();
-
-        do {
-            currentPlayer = (currentPlayer + 1) % GAME.getPlayers().size();
-            if(finalPhaseCounter != -1)
-                finalPhaseCounter--;
-            if(finalPhaseCounter == 0)
-                //There's no need to find another active player, since the game is ended.
-                break;
-        } while(!GAME.getPlayers().get(currentPlayer).isActive());
     }
 
     public void pickObjective(InGamePlayer target, ObjectiveCard objective)
@@ -89,12 +57,10 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
     }
 
     public void playerDisconnected(InGamePlayer target){
-        //NOTHING TO DO? Can become abstract! (What to do in AwaitingReconnectionState... empty method)
+        //FIXME: NOTHING TO DO? Can become abstract! (What to do in AwaitingReconnectionState... empty method)
     }
 
-    public void transition() {
-        persistence();
-    }
+    public abstract void transition();
 
     protected static void notifyTransition(ArrayList<InGamePlayer> activePlayers, int turnNumber, int indexOfCurrentPlayer) {
         for (var targetPlayer : activePlayers) {
@@ -113,9 +79,5 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
                 e.printStackTrace();
             }
         }
-    }
-
-    private void persistence() {
-        //TODO: implement serialization here
     }
 }

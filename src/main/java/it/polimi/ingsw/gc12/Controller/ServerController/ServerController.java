@@ -1,62 +1,31 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
-import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
 import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
-import it.polimi.ingsw.gc12.Model.Cards.*;
-import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
-import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.Player;
+import it.polimi.ingsw.gc12.Model.ServerModel;
 import it.polimi.ingsw.gc12.Network.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.Color;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.ForbiddenActionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotExistingPlayerException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /*TODO: In case of high traffic volumes on network, we can reduce it by sending the updates to lobby states (creation, updates) only to clients
         which aren't already in a lobby. */
 public abstract class ServerController implements ServerControllerInterface {
 
-    public static final Map<Integer, Card> cardsList = loadModelCards();
-    public static final Map<Integer, ClientCard> clientCardsList = loadClientCards();
+    public static final ServerModel model = new ServerModel();
 
     public static final Map<VirtualClient, Player> players = new HashMap<>();
-    public static final Map<UUID, GameLobby> lobbiesAndGames = new HashMap<>();
     public static final Map<Player, ServerController> playersToControllers = new HashMap<>();
 
     public static final Map<VirtualClient, TimerTask> timeoutTasks = new HashMap<>();
     public static final long TIMEOUT_TASK_EXECUTION_AFTER = 30000;
-
-    private static Map<Integer, Card> loadModelCards() {
-        //TODO: map of maps?
-        Map<Integer, Card> tmp = new HashMap<>();
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("resource_cards.json",
-                        new TypeToken<ArrayList<ResourceCard>>(){}))
-                .forEach((card) -> tmp.put(card.ID, card));
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("gold_cards.json",
-                        new TypeToken<ArrayList<GoldCard>>(){}))
-                .forEach((card) -> tmp.put(card.ID, card));
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("initial_cards.json",
-                        new TypeToken<ArrayList<InitialCard>>(){}))
-                .forEach((card) -> tmp.put(card.ID, card));
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("objective_cards.json",
-                        new TypeToken<ArrayList<ObjectiveCard>>(){}))
-                .forEach((card) -> tmp.put(card.ID, card));
-
-        return Collections.unmodifiableMap(tmp);
-    }
-
-    private static Map<Integer, ClientCard> loadClientCards() {
-        return JSONParser.generateClientCardsFromJSON("client_cards.json")
-                .stream().collect(Collectors.toMap((card) -> card.ID, (card) -> card));
-    }
 
     public static ServerController getAssociatedController(Player target) {
         ServerController associatedController = playersToControllers.get(target);

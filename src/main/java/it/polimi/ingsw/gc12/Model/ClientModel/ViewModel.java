@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Model.ClientModel;
 
-import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.Lobby;
+import it.polimi.ingsw.gc12.Model.Room;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 
 import java.util.HashMap;
@@ -22,12 +23,12 @@ public class ViewModel {
      * The map containing all the lobbies in which this client can join
      * since they aren't full.
      */
-    private Map<UUID, GameLobby> lobbies;
+    private Map<UUID, Room> lobbies;
 
     /**
      * The pair containing the unique identifier and the lobby or game this client is currently in.
      */
-    private GenericPair<UUID, GameLobby> currentLobbyOrGame;
+    private GenericPair<UUID, Room> currentLobbyOrGame;
 
     /**
      * Constructs a new ViewModel with an empty nickname and no lobbies.
@@ -61,7 +62,7 @@ public class ViewModel {
      *
      * @return the map containing the lobbies
      */
-    public Map<UUID, GameLobby> getLobbies() {
+    public Map<UUID, Room> getLobbies() {
         return lobbies;
     }
 
@@ -70,7 +71,7 @@ public class ViewModel {
      *
      * @param lobbies the new map of lobbies
      */
-    public void setLobbies(Map<UUID, GameLobby> lobbies) {
+    public void setLobbies(Map<UUID, Room> lobbies) {
         this.lobbies = lobbies;
     }
 
@@ -80,7 +81,7 @@ public class ViewModel {
      * @param lobbyUUID the unique identifier of the lobby
      * @param lobby the lobby to add
      */
-    public void putLobby(UUID lobbyUUID, GameLobby lobby) {
+    public void putLobby(UUID lobbyUUID, Lobby lobby) {
         lobbies.put(lobbyUUID, lobby);
     }
 
@@ -117,7 +118,7 @@ public class ViewModel {
      * @param lobbyUUID the unique identifier of the lobby or game
      * @param lobby the lobby or game to join
      */
-    public void joinLobbyOrGame(UUID lobbyUUID, GameLobby lobby) {
+    public void joinLobbyOrGame(UUID lobbyUUID, Lobby lobby) {
         currentLobbyOrGame = new GenericPair<>(lobbyUUID, lobby);
     }
 
@@ -135,7 +136,7 @@ public class ViewModel {
      *
      * @return the current lobby in which the player is in
      */
-    public GameLobby getCurrentLobby() {
+    public Room getCurrentLobby() {
         return currentLobbyOrGame.getY();
     }
 

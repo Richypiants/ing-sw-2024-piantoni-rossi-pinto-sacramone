@@ -1,12 +1,9 @@
 package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
-import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseInitialCardsState;
-import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseObjectiveCardsState;
-import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Network.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
@@ -22,12 +19,12 @@ class ChooseInitialCardsStateTest {
 
     Player player1;
     Player player2;
-    GameLobby lobby;
+    Lobby lobby;
     Game game;
     VirtualClient client1;
     VirtualClient client2;
     ServerController server;
-
+    GameController gameController;
     SetupState state;
 
 
@@ -35,7 +32,7 @@ class ChooseInitialCardsStateTest {
     void setGameParameters() throws Exception {
         player1 = new Player("giovanni");
         player2 = new Player("paolo");
-        lobby = new GameLobby(player1, 2);
+        lobby = new Lobby(player1, 2);
         lobby.addPlayer(player2);
         game = new Game(lobby);
 
@@ -45,31 +42,31 @@ class ChooseInitialCardsStateTest {
         };
 
         UUID lobbyUUID = UUID.randomUUID();
-        ServerController.lobbiesAndGames.put(lobbyUUID, game);
+        ServerController.model.ROOMS.put(lobbyUUID, game);
         ServerController.players.put(client1, game.getPlayers().get(0));
         ServerController.players.put(client2, game.getPlayers().get(1));
-        GameController gameController = new GameController(game);
+        gameController = new GameController(game);
         ServerController.playersToControllers.put(game.getPlayers().get(0), gameController);
         ServerController.playersToControllers.put(game.getPlayers().get(1), gameController);
 
-        state = new SetupState(game);
+        state = new SetupState(gameController, game);
         state.transition();
     }
 
     @Test
     void correctTransitionTest() {
-        game.getCurrentState().transition();
-        assertInstanceOf(ChooseObjectiveCardsState.class, game.getCurrentState());
+        gameController.getCurrentState().transition();
+        assertInstanceOf(ChooseObjectiveCardsState.class, gameController.getCurrentState());
     }
 
     @Test
     void transitionStartAfterAllcheck() throws Exception {
         for (var target : game.getPlayers()) {
-            game.getCurrentState().placeCard(target, new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
+            gameController.getCurrentState().placeCard(target, new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
             if (target != game.getPlayers().getLast()) {
-                assertInstanceOf(ChooseInitialCardsState.class, game.getCurrentState());
+                assertInstanceOf(ChooseInitialCardsState.class, gameController.getCurrentState());
             } else {
-                assertInstanceOf(ChooseObjectiveCardsState.class, game.getCurrentState());
+                assertInstanceOf(ChooseObjectiveCardsState.class, gameController.getCurrentState());
             }
         }
 

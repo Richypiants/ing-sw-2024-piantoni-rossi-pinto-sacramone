@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.Model;
 
+import it.polimi.ingsw.gc12.Listeners.Listenable;
+import it.polimi.ingsw.gc12.Listeners.Listener;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
@@ -20,7 +22,9 @@ import java.util.stream.Collectors;
  * of cards, their owned resources, their field, their secret objective and their points.
  * Furthermore, it keeps track of the player activity or inactivity due to network or voluntary disconnections.
  */
-public class InGamePlayer extends Player {
+public class InGamePlayer extends Player implements Listenable {
+
+    private final List<Listener> PLAYER_LISTENERS;
 
     /**
      * The cards currently held in this player's hand.
@@ -59,6 +63,7 @@ public class InGamePlayer extends Player {
      */
     protected InGamePlayer(Player player) {
         super(player);
+        PLAYER_LISTENERS = new ArrayList<>();
         CARDS_IN_HAND = new ArrayList<>();
         OWNED_RESOURCES = new EnumMap<>(Resource.class);
         for (Resource r : Arrays.stream(Resource.values())
@@ -209,7 +214,6 @@ public class InGamePlayer extends Player {
         CARDS_IN_HAND.add(pickedCard);
     }
 
-
     /**
      * Increments the specified resource by the given amount.
      *
@@ -274,5 +278,20 @@ public class InGamePlayer extends Player {
      */
     public GenericPair<Integer, Integer> getCardCoordinates(PlayableCard placedCard) {
         return OWN_FIELD.getCardCoordinates(placedCard);
+    }
+
+    @Override
+    public void addListener(Listener listener) {
+
+    }
+
+    @Override
+    public void removeListener(Listener listener) {
+
+    }
+
+    @Override
+    public void notifyListeners() {
+
     }
 }

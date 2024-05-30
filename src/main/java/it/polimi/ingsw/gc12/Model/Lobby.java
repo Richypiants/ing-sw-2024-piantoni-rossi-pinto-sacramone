@@ -14,12 +14,7 @@ import java.util.stream.Collectors;
  * A game lobby where players wait for new games to start.
  * This class manages the list of players who have joined the lobby and keeps track of the maximum number of players allowed.
  */
-public class GameLobby implements Serializable {
-
-    /**
-     * The list of players who have already joined this lobby.
-     */
-    private final List<Player> LIST_OF_PLAYERS;
+public class Lobby extends Room implements Serializable {
 
     /**
      * The list of colors which have not yet been chosen by players in this lobby.
@@ -38,12 +33,12 @@ public class GameLobby implements Serializable {
      * @param creatorPlayer The player who created the lobby.
      * @param maxPlayers The maximum number of players allowed in this lobby.
      */
-    public GameLobby(Player creatorPlayer, int maxPlayers) {
-        this.maxPlayers = maxPlayers;
-        this.LIST_OF_PLAYERS = new ArrayList<>();
+    public Lobby(Player creatorPlayer, int maxPlayers) {
+        super(new ArrayList<>());
         this.AVAILABLE_COLORS = Arrays.stream(Color.values())
                 .filter((color) -> !(color.equals(Color.NO_COLOR) || color.equals(Color.BLACK)))
                 .collect(Collectors.toCollection(ArrayList::new));
+        this.maxPlayers = maxPlayers;
         addPlayer(creatorPlayer);
     }
 
@@ -53,11 +48,10 @@ public class GameLobby implements Serializable {
      * @param maxPlayers The maximum number of players allowed in this lobby.
      * @param players The list of players to be copied to this lobby.
      */
-    protected GameLobby(int maxPlayers, List<? extends Player> players) {
-        this.maxPlayers = maxPlayers;
-        this.LIST_OF_PLAYERS = new ArrayList<>(players);
+    protected Lobby(int maxPlayers, List<? extends Player> players) {
+        super(new ArrayList<>(players));
         this.AVAILABLE_COLORS = List.of();
-
+        this.maxPlayers = maxPlayers;
     }
 
     /**
@@ -85,30 +79,23 @@ public class GameLobby implements Serializable {
     }
 
     /**
-     * Returns the list of players currently in the lobby.
-     *
-     * @return A copy of the list of players in the lobby.
-     */
-    public ArrayList<? extends Player> getPlayers() {
-        return new ArrayList<>(LIST_OF_PLAYERS);
-    }
-
-    /**
-     * Returns the number of players currently in the lobby.
-     *
-     * @return The number of players in the lobby.
-     */
-    public int getPlayersNumber() {
-        return LIST_OF_PLAYERS.size();
-    }
-
-    /**
      * Returns the maximum number of players allowed in this lobby.
      *
      * @return The maximum number of players for this lobby.
      */
     public int getMaxPlayers() {
         return this.maxPlayers;
+    }
+
+    /**
+     * Sets a new maximum number of players for this lobby. The maximum value cannot exceed 4.
+     *
+     * @param numOfMaxPlayers The new maximum number of players.
+     */
+    public void setMaxPlayers(int numOfMaxPlayers) {
+        if (numOfMaxPlayers <= 4) {
+            this.maxPlayers = numOfMaxPlayers;
+        }
     }
 
     /**
@@ -140,17 +127,6 @@ public class GameLobby implements Serializable {
     }
 
     /**
-     * Sets a new maximum number of players for this lobby. The maximum value cannot exceed 4.
-     *
-     * @param numOfMaxPlayers The new maximum number of players.
-     */
-    public void setMaxPlayers(int numOfMaxPlayers) {
-        if (numOfMaxPlayers <= 4) {
-            this.maxPlayers = numOfMaxPlayers;
-        }
-    }
-
-    /**
      * Shuffles the players contained in the list.
      */
     public void shufflePlayers() {
@@ -165,7 +141,7 @@ public class GameLobby implements Serializable {
      */
     @Override
     public String toString() {
-        return "GameLobby{" + "maxPlayers=" + maxPlayers +
+        return "Lobby{" + "maxPlayers=" + maxPlayers +
                 " players=[" + LIST_OF_PLAYERS + "] availableColors=" + AVAILABLE_COLORS + "}";
     }
 }

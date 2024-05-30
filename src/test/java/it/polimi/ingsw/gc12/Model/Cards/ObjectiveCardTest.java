@@ -4,8 +4,8 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Model.Conditions.PointsCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.ResourcesCondition;
 import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
+import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
@@ -31,7 +31,7 @@ class ObjectiveCardTest {
     private static ArrayList<InitialCard> initialCards;
     private static ArrayList<ObjectiveCard> objectiveCards;
     Player player;
-    GameLobby lobby;
+    Lobby lobby;
     Game game;
 
     @BeforeAll
@@ -45,7 +45,7 @@ class ObjectiveCardTest {
     @BeforeEach
     void setGameParameters() {
         player = new Player("testPlayer");
-        lobby = new GameLobby(player, 1);
+        lobby = new Lobby(player, 1);
         game = new Game(lobby);
     }
 

@@ -1,7 +1,8 @@
 package it.polimi.ingsw.gc12.Controller;
 
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
-import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.Lobby;
+import it.polimi.ingsw.gc12.Model.Room;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -19,9 +20,9 @@ public interface ClientControllerInterface extends ControllerInterface {
 
     void restoreGame(UUID gameUUID, ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD);
 
-    void setLobbies(Map<UUID, GameLobby> lobbies);
+    void setLobbies(Map<UUID, Room> lobbies);
 
-    void updateLobby(UUID lobbyUUID, GameLobby lobby);
+    void updateLobby(UUID lobbyUUID, Lobby lobby);
 
     void startGame(UUID lobbyUUID, ClientGame gameDTO);
 

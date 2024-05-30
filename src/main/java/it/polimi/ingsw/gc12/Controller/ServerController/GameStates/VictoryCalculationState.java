@@ -4,8 +4,8 @@ import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.EndGameCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.SetLobbiesCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
+import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
@@ -16,8 +16,8 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class VictoryCalculationState extends GameState {
 
-    public VictoryCalculationState(Game thisGame, int currentPlayer, int counter) {
-        super(thisGame, currentPlayer, counter, "victoryCalculationState");
+    public VictoryCalculationState(GameController controller, Game thisGame) {
+        super(controller, thisGame, "victoryCalculationState");
     }
 
     //TODO: send steps in points calculation process for flavour?
@@ -83,7 +83,7 @@ public class VictoryCalculationState extends GameState {
                 ServerController.getInstance().playersToLobbiesAndGames.remove(player);
 
         UUID lobbyUUID = keyReverseLookup(ServerController.getInstance().lobbiesAndGames, GAME::equals);
-        GameLobby returnLobby = GAME.toLobby();
+         Lobby returnLobby = GAME.toLobby();
 
         ServerController.getInstance().lobbiesAndGames.put(lobbyUUID, returnLobby);
 
@@ -124,14 +124,14 @@ public class VictoryCalculationState extends GameState {
         }**/
 
         //Clearing the mappings to the game
-        UUID lobbyUUID = keyReverseLookup(GameController.lobbiesAndGames, GAME::equals);
+        UUID lobbyUUID = keyReverseLookup(GameController.model.ROOMS, GAME::equals);
 
         //Removing all active and inactive players from the Map containing all the mappings.
         for (var player : GAME.getPlayers())
             GameController.playersToControllers.remove(player);
 
-        //FIXME: Using a GameLobby to convert the instances of InGamePlayer to Player and then discarding it. Better solutions?
-        GameLobby returnLobby = GAME.toLobby();
+        //FIXME: Using a Lobby to convert the instances of InGamePlayer to Player and then discarding it. Better solutions?
+        Lobby returnLobby = GAME.toLobby();
 
         System.out.println("[SERVER]: Sending lobbies to clients previously in "+ GAME);
         int currentIndex = 0;
@@ -148,7 +148,7 @@ public class VictoryCalculationState extends GameState {
                         keyReverseLookup(GameController.players, thisPlayer::equals),
                         //TODO : Handle exceptions in the correct way and not like this
                 new SetLobbiesCommand(
-                        GameController.lobbiesAndGames.entrySet().stream()
+                        GameController.model.ROOMS.entrySet().stream()
                         .filter((entry) -> !(entry.getValue() instanceof Game))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
                 ));
@@ -158,6 +158,6 @@ public class VictoryCalculationState extends GameState {
             currentIndex++;
         }
 
-        GameController.lobbiesAndGames.remove(lobbyUUID);
+        GameController.model.ROOMS.remove(lobbyUUID);
     }
 }

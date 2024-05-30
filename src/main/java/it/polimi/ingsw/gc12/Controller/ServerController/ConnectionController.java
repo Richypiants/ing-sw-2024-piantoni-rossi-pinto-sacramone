@@ -4,10 +4,7 @@ import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.SetLobbiesCommand
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.UpdateLobbyCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.SetNicknameCommand;
-import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.GameLobby;
-import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Model.Player;
+import it.polimi.ingsw.gc12.Model.*;
 import it.polimi.ingsw.gc12.Network.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.ForbiddenActionException;
 
@@ -37,7 +34,7 @@ public class ConnectionController extends ServerController {
         requestToClient(
                 sender,
                 new SetLobbiesCommand(
-                        lobbiesAndGames.entrySet().stream()
+                        model.ROOMS.entrySet().stream()
                                 .filter((entry) -> !(entry.getValue() instanceof Game))
                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
                 )
@@ -86,14 +83,14 @@ public class ConnectionController extends ServerController {
         }
 
         Player target = players.get(sender);
-        GameLobby lobby = new GameLobby(target, maxPlayers);
+        Lobby lobby = new Lobby(target, maxPlayers);
         UUID lobbyUUID;
 
         do {
             lobbyUUID = UUID.randomUUID();
-        } while (lobbiesAndGames.containsKey(lobbyUUID));
+        } while (model.ROOMS.containsKey(lobbyUUID));
 
-        lobbiesAndGames.put(lobbyUUID, lobby);
+        model.ROOMS.put(lobbyUUID, lobby);
         LobbyController controller = new LobbyController(lobby);
         playersToControllers.put(target, controller);
 
@@ -108,7 +105,7 @@ public class ConnectionController extends ServerController {
         System.out.println("[CLIENT]: JoinLobbyCommand received and being executed");
         if (hasNoPlayer(sender)) return;
 
-        if (!lobbiesAndGames.containsKey(lobbyUUID)) {
+        if (!model.ROOMS.containsKey(lobbyUUID)) {
             requestToClient(
                     sender,
                     new ThrowExceptionCommand(
@@ -118,9 +115,9 @@ public class ConnectionController extends ServerController {
             return;
         }
 
-        GameLobby lobby = lobbiesAndGames.get(lobbyUUID);
+        Room room = model.ROOMS.get(lobbyUUID);
 
-        if (lobby instanceof Game) {
+        if (room instanceof Game) {
             requestToClient(
                     sender,
                     new ThrowExceptionCommand(
@@ -129,6 +126,8 @@ public class ConnectionController extends ServerController {
             );
             return;
         }
+
+        Lobby lobby = (Lobby) room;
 
         if (lobby.getPlayersNumber() >= lobby.getMaxPlayers()) {
             requestToClient(

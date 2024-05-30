@@ -8,16 +8,16 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class GameLobbyTest {
+class LobbyTest {
 
     Player player1;
-    GameLobby lobby;
+    Lobby lobby;
     Player player2;
 
     @BeforeEach
     void setGameParameters() {
         player1 = new Player("Sacri");
-        lobby = new GameLobby(player1, 2);
+        lobby = new Lobby(player1, 2);
         player2 = new Player("Piants");
     }
 
@@ -43,14 +43,14 @@ class GameLobbyTest {
 
     @Test
     void setMaxPlayerTest() {
-        GameLobby lobby = new GameLobby(player1, 2);
+        Lobby lobby = new Lobby(player1, 2);
         lobby.setMaxPlayers(4);
         assertEquals(4, lobby.getMaxPlayers());
     }
 
     @Test
     void shufflePlayerTest() {
-        lobby = new GameLobby(player1, 2);
+        lobby = new Lobby(player1, 2);
         lobby.addPlayer(player2);
         lobby.shufflePlayers();
         assert (lobby.getPlayers().contains(player2) && lobby.getPlayers().contains(player1));
@@ -58,8 +58,8 @@ class GameLobbyTest {
 
     @Test
     void toStringTest() {
-        lobby = new GameLobby(player1, 2);
-        assertEquals("GameLobby{" + "maxPlayers=" + 2 + " players=[" + "[Sacri, NO_COLOR]" +
+        lobby = new Lobby(player1, 2);
+        assertEquals("Lobby{" + "maxPlayers=" + 2 + " players=[" + "[Sacri, NO_COLOR]" +
                 "] availableColors=" + "[RED, YELLOW, GREEN, BLUE" + "]}", lobby.toString());
     }
 
@@ -68,7 +68,7 @@ class GameLobbyTest {
         List<Player> players = new ArrayList<>();
         players.add(player1);
         players.add(player2);
-        lobby = new GameLobby(2, players);
+        lobby = new Lobby(2, players);
         assert (lobby.getPlayers().contains(player1) && lobby.getPlayers().contains(player2));
         assertEquals(2, lobby.getPlayersNumber());
         assertEquals(2, lobby.getMaxPlayers());

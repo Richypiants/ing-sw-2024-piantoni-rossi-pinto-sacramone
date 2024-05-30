@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Model.ClientModel;
 
-import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.Lobby;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Represents a client-side game that extends the {@link GameLobby}.
+ * Represents a client-side game that extends the {@link Lobby}.
  * This class handles the state of the game from the client's perspective.
  */
-public class ClientGame extends GameLobby implements Serializable {
+//FIXME: is it correct that it extends Lobby and not Room?
+public class ClientGame extends Lobby implements Serializable {
 
     /**
      * The player associated to this client

@@ -46,8 +46,10 @@ public class GUIConnectionSetupController extends GUIView {
         connectionTitleScreenGameLogo.setFitHeight(650);
         connectionTitleScreenGameLogo.setPreserveRatio(true);
 
+        connectionTitleScreenGameLogo.setTranslateX(0);
+        connectionTitleScreenGameLogo.setTranslateY(0);
         connectionTitleScreenGameLogo.relocate(
-                (screenSizes.getX() - appearingLogo.getFitWidth()) / 2,
+                (screenSizes.getX() - connectionTitleScreenGameLogo.getFitWidth()) / 2,
                 screenSizes.getY() * 5 / 100
         );
 
@@ -93,6 +95,9 @@ public class GUIConnectionSetupController extends GUIView {
         appearingLogo.setFitWidth(650);
         appearingLogo.setFitHeight(650);
         appearingLogo.setPreserveRatio(true);
+
+        appearingLogo.setTranslateX(0);
+        appearingLogo.setTranslateY(0);
         appearingLogo.relocate(
                 (screenSizes.getX() - appearingLogo.getFitWidth()) / 2,
                 screenSizes.getY() * 5 / 100

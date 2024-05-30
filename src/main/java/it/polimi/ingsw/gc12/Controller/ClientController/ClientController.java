@@ -12,7 +12,8 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.ClientModel.ViewModel;
-import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.Lobby;
+import it.polimi.ingsw.gc12.Model.Room;
 import it.polimi.ingsw.gc12.Network.Client.RMIClientSkeleton;
 import it.polimi.ingsw.gc12.Network.Client.SocketClient;
 import it.polimi.ingsw.gc12.Network.VirtualClient;
@@ -116,7 +117,7 @@ public class ClientController implements ClientControllerInterface {
         viewState.updateNickname();
     }
 
-    public void setLobbies(Map<UUID, GameLobby> lobbies){
+    public void setLobbies(Map<UUID, Room> lobbies) {
         viewModel.setLobbies(lobbies);
         if(!(viewState instanceof LeaderboardScreenState)) {
             viewState = new LobbyScreenState();
@@ -124,7 +125,7 @@ public class ClientController implements ClientControllerInterface {
         }
     }
 
-    public void updateLobby(UUID lobbyUUID, GameLobby lobby){
+    public void updateLobby(UUID lobbyUUID, Lobby lobby) {
         //The received lobbies with a playersNumber equal to zero or below are removed from the ClientModel
         if(lobby.getPlayersNumber() <= 0)
             viewModel.removeLobby(lobbyUUID);

@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc12.Model.Cards;
 
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.GameLobby;
+import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -23,7 +23,7 @@ class CardTest {
     private static ArrayList<InitialCard> initialCards;
     Player player1;
     Player player2;
-    GameLobby lobby;
+    Lobby lobby;
     Game game;
 
     @BeforeAll
@@ -37,7 +37,7 @@ class CardTest {
     void setGameParameters() {
         player1 = new Player("testPlayer_1");
         player2 = new Player("testPlayer_2");
-        lobby = new GameLobby(player1, 2);
+        lobby = new Lobby(player1, 2);
         game = new Game(lobby);
     }
 

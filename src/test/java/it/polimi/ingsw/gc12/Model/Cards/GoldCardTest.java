@@ -4,8 +4,8 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Model.Conditions.PointsCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.ResourcesCondition;
 import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.GameLobby;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
+import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
@@ -27,7 +27,7 @@ class GoldCardTest{
     private static ArrayList<GoldCard> goldCards;
     private static ArrayList<InitialCard> initialCards;
     Player player;
-    GameLobby lobby;
+    Lobby lobby;
     Game game;
 
     @BeforeAll
@@ -40,7 +40,7 @@ class GoldCardTest{
     @BeforeEach
     void setGameParameters() {
         player = new Player("TestPlayer");
-        lobby = new GameLobby(player, 1);
+        lobby = new Lobby(player, 1);
         game = new Game(lobby);
     }
 

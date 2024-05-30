@@ -8,10 +8,7 @@ import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
-import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.GameLobby;
-import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Model.Player;
+import it.polimi.ingsw.gc12.Model.*;
 import it.polimi.ingsw.gc12.Network.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
@@ -31,7 +28,8 @@ class ClientGameTest {
     private static ArrayList<ObjectiveCard> objectiveCards;
     Player player1;
     Player player2;
-    GameLobby lobby;
+    ServerModel model;
+    Lobby lobby;
     Game game;
     ClientGame clientGame;
     VirtualClient client1;
@@ -43,7 +41,7 @@ class ClientGameTest {
     void setGameParameters() throws Exception {
         player1 = new Player("Sacri");
         player2 = new Player("Piants");
-        lobby = new GameLobby(player1, 2);
+        lobby = new Lobby(player1, 2);
         game = new Game(lobby);
 
         resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {});
@@ -56,14 +54,16 @@ class ClientGameTest {
         client2 = command -> {
         };
 
+        model = new ServerModel();
+
         UUID lobbyUUID = UUID.randomUUID();
-        ServerController.lobbiesAndGames.put(lobbyUUID, game);
+        model.ROOMS.put(lobbyUUID, game);
         ServerController.players.put(client1, game.getPlayers().getFirst());
         ServerController.players.put(client2, game.getPlayers().getLast());
         GameController gameController = new GameController(game);
         ServerController.playersToControllers.put(game.getPlayers().getFirst(), gameController);
         ServerController.playersToControllers.put(game.getPlayers().getLast(), gameController);
-        game.getCurrentState().transition();
+        gameController.getCurrentState().transition();
 
         int i = 0;
         for (var target : game.getPlayers()) {
@@ -86,13 +86,13 @@ class ClientGameTest {
         objectivesMap.put(game.getPlayers().getFirst(), obj_a);
         objectivesMap.put(game.getPlayers().getLast(), obj_a2);
 
-        state = new ChooseObjectiveCardsState(game, objectivesMap);
+        state = new ChooseObjectiveCardsState(gameController, game, objectivesMap);
 
         for (var target : game.getPlayers()) {
             state.pickObjective(target, objectivesMap.get(target).getFirst());
         }
 
-        game.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
+        gameController.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
     }
 
     @Test

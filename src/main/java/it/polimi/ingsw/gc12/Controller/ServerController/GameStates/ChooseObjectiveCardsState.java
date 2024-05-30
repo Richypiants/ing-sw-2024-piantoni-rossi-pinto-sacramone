@@ -17,8 +17,8 @@ public class ChooseObjectiveCardsState extends GameState {
 
     private final Map<InGamePlayer, ArrayList<ObjectiveCard>> objectivesMap;
 
-    public ChooseObjectiveCardsState(Game thisGame, Map<InGamePlayer, ArrayList<ObjectiveCard>> map) {
-        super(thisGame, -1, -1, "objectiveState");
+    public ChooseObjectiveCardsState(GameController controller, Game thisGame, Map<InGamePlayer, ArrayList<ObjectiveCard>> map) {
+        super(controller, thisGame, "objectiveState");
         this.objectivesMap = map;
 
         //Executing a Random Action for the players disconnected in the Initial State
@@ -71,13 +71,11 @@ public class ChooseObjectiveCardsState extends GameState {
 
     @Override
     public void transition() {
-        super.transition();
-
         System.out.println("[SERVER]: Sending GameTransitionCommand to active clients in "+ GAME.toString());
-        GAME.increaseTurn();
-        nextPlayer();
-        notifyTransition(GAME.getActivePlayers(), GAME.getTurnNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
+        GAME.increaseRound();
+        GAME.nextPlayer();
+        notifyTransition(GAME.getActivePlayers(), GAME.getRoundNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
 
-        GAME.setState(new PlayerTurnPlayState(GAME, currentPlayer, -1));
+        GAME_CONTROLLER.setState(new PlayerTurnPlayState(GAME_CONTROLLER, GAME));
     }
 }
