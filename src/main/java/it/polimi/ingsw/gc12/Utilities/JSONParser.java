@@ -21,11 +21,13 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
 
-//TODO: parse ClientCard correctly (add custom parser)
+/**
+ * Utility class to handle JSON parsing and serialization for various card types and conditions.
+ */
 public class JSONParser {
+
     /**
-     * Creates an instance of a GsonBuilder with custom directives related to how to parse our PointsCondition
-     * interface and ResourceCondition
+     * Gson instance configured with custom TypeAdapters for PointsCondition and ResourcesCondition.
      */
     private static final Gson GSON_CARD_BUILDER = new GsonBuilder().registerTypeAdapter(PointsCondition.class, new PointsConditionAdapter())
             .registerTypeAdapter(ResourcesCondition.class, new ResourcesConditionAdapter())
@@ -34,8 +36,12 @@ public class JSONParser {
     private static final Gson CARD_IMAGE_RESOURCES_BUILDER = new Gson();
 
     /**
-     *     Generic method which returns an ArrayList<Card> made of a specific card hierarchy subtype, provided the
-     *     filename and the TypeToken which represents the generic type
+     * Constructs a deck of cards from a JSON file.
+     *
+     * @param filename The name of the JSON file.
+     * @param type The TypeToken representing the generic type.
+     * @param <E> The type of the cards in the deck.
+     * @return An ArrayList of cards.
      */
     public static <E extends Card> ArrayList<E> deckFromJSONConstructor(String filename, TypeToken<ArrayList<E>> type) {
         try{
@@ -47,7 +53,10 @@ public class JSONParser {
     }
 
     /**
-     *     Helper Method which converts the String in the effective Resource.ENUM
+     * Helper method to convert a String to the corresponding Resource enum.
+     *
+     * @param resource The resource string.
+     * @return The corresponding Resource enum.
      */
     private static Resource conversionHelper(String resource){
         return switch (resource) {
@@ -63,12 +72,13 @@ public class JSONParser {
     }
 
     /**
-     * Custom TypeAdapter to handle the PointsCondition hierarchy serialization and deserialization
+     * Custom TypeAdapter to handle the PointsCondition hierarchy serialization and deserialization.
      */
     private static class PointsConditionAdapter extends TypeAdapter<PointsCondition> {
-        //This method is unused and only implemented due to the extends.
+        //This method is unused and overwritten due to the extends.
         @Override
         public void write(JsonWriter out, PointsCondition condition) throws IOException {
+            // Unused
         }
 
         @Override
@@ -114,7 +124,7 @@ public class JSONParser {
     }
 
     /**
-     *     Custom TypeAdapter to handle the ResourceCondition serialization and deserialization
+     * Custom TypeAdapter to handle the ResourcesCondition serialization and deserialization.
      */
     private static class ResourcesConditionAdapter extends TypeAdapter<ResourcesCondition> {
         //This method is unused and only implemented due to the extends.
@@ -134,7 +144,13 @@ public class JSONParser {
         }
     }
 
-    public static ArrayList<ClientCard> clientCardsFromJSON(String filename) {
+    /**
+     * Reads ClientCard objects from a JSON file.
+     *
+     * @param filename The name of the JSON file.
+     * @return An ArrayList of ClientCard objects.
+     */
+    public static ArrayList<ClientCard> generateClientCardsFromJSON(String filename) {
         try {
             return new ArrayList<>(CARD_IMAGE_RESOURCES_BUILDER.fromJson(
                     Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/Utilities/json_files/" + filename)),
@@ -144,6 +160,9 @@ public class JSONParser {
         }
     }
 
+    /**
+     * Generates a JSON file containing only the playable ClientCard objects.
+     */
     public static void generateClientCardsJSONPlayableOnly() {
         ArrayList<ResourceCard> rc = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>(){});
         ArrayList<GoldCard> gc = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>(){});
@@ -206,9 +225,15 @@ public class JSONParser {
         }
     }
 
+    /**
+     * Generates a playable card TUI sprite.
+     *
+     * @param card The playable card.
+     * @param side The side of the card.
+     * @return A sequence of TUI sprites.
+     */
     private static ArrayList<ArrayList<Triplet<String, Integer[], Integer>>> generatePlayableCardTUISprite(PlayableCard card, Side side) {
-        //TODO: mappare nel colore giusto di FG e BG
-        int cardColor = (card instanceof InitialCard) ? 214/*222-255? - 231?*/ : card.getCenterBackResources().keySet().stream().findAny().orElseThrow().ANSI_COLOR;
+        int cardColor = (card instanceof InitialCard) ? 214 : card.getCenterBackResources().keySet().stream().findAny().orElseThrow().ANSI_COLOR;
         Resource cornerResource;
 
         ArrayList<ArrayList<Triplet<String, Integer[], Integer>>> sequence = new ArrayList<>();
@@ -312,12 +337,19 @@ public class JSONParser {
         return sequence;
     }
 
+    /**
+     * Method used to rebuild .JSON files while updating some characteristics of the cards viewed on the TUI such as background color or letters.
+     * For some reason, the last generated PlayableCard is truncated, so it is safe to maintain a copy of the old file and fix it manually.
+     */
+    //FIXME: The last card generated by this script is always truncated
     public static void main(String[] args) {
         generateClientCardsJSONPlayableOnly();
 
+        //Test for printing the objective cards as they are represented on the TUI
+
         /*AnsiConsole.systemInstall();
         TUIView instance = TUIView.getInstance();
-        ArrayList<ClientCard> test = clientCardsFromJSON("client_cards.json");
+        ArrayList<ClientCard> test = generateClientCardsFromJSON("client_cards.json");
 
         for(int i = 86; i < 102; i++) {
             System.out.println(instance.standardAnsi(test.get(i), Side.BACK));

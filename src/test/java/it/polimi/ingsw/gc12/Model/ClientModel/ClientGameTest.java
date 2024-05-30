@@ -33,7 +33,7 @@ class ClientGameTest {
     Player player2;
     GameLobby lobby;
     Game game;
-    ClientGame client;
+    ClientGame clientGame;
     VirtualClient client1;
     VirtualClient client2;
     ChooseObjectiveCardsState state;
@@ -97,78 +97,75 @@ class ClientGameTest {
 
     @Test
     void getterTest() {
-        client = new ClientGame(game, game.getPlayers().getFirst());
-        assertInstanceOf(ClientPlayer.class, client.getThisPlayer());
+        clientGame = game.generateDTO(game.getCurrentPlayer());
+        assertInstanceOf(ClientPlayer.class, clientGame.getThisPlayer());
 
-        assertInstanceOf(ArrayList.class, client.getCardsInHand());
-        assert (!client.getCardsInHand().isEmpty());
+        assertInstanceOf(ArrayList.class, clientGame.getCardsInHand());
+        assert (!clientGame.getCardsInHand().isEmpty());
 
-        assertInstanceOf(ClientCard.class, client.getOwnObjective());
-        assert (!client.getOwnObjective().GUI_SPRITES.isEmpty());
-        assert (!client.getOwnObjective().TUI_SPRITES.isEmpty());
+        assertInstanceOf(ClientCard.class, clientGame.getOwnObjective());
+        assert (!clientGame.getOwnObjective().GUI_SPRITES.isEmpty());
+        assert (!clientGame.getOwnObjective().TUI_SPRITES.isEmpty());
 
-        assertInstanceOf(ClientCard[].class, client.getPlacedGolds());
-        assert (!Arrays.stream(client.getPlacedGolds()).toList().isEmpty());
+        assertInstanceOf(ClientCard[].class, clientGame.getPlacedGolds());
+        assert (!Arrays.stream(clientGame.getPlacedGolds()).toList().isEmpty());
 
-        assertInstanceOf(ClientCard[].class, client.getPlacedResources());
-        assert (!Arrays.stream(client.getPlacedResources()).toList().isEmpty());
+        assertInstanceOf(ClientCard[].class, clientGame.getPlacedResources());
+        assert (!Arrays.stream(clientGame.getPlacedResources()).toList().isEmpty());
 
-        assertInstanceOf(ClientCard[].class, client.getCommonObjectives());
-        assert (!Arrays.stream(client.getCommonObjectives()).toList().isEmpty());
+        assertInstanceOf(ClientCard[].class, clientGame.getCommonObjectives());
+        assert (!Arrays.stream(clientGame.getCommonObjectives()).toList().isEmpty());
 
-        client.setCurrentPlayerIndex(1);
-        assertEquals(1, client.getCurrentPlayerIndex());
+        clientGame.setCurrentPlayerIndex(1);
+        assertEquals(1, clientGame.getCurrentPlayerIndex());
 
-        client.addMessageToChatLog("ciao");
-        assert (!client.getChatLog().isEmpty());
+        clientGame.addMessageToChatLog("ciao");
+        assert (!clientGame.getChatLog().isEmpty());
 
-        assertInstanceOf(ClientCard.class, client.getTopDeckGoldCard());
-        assert (!client.getTopDeckGoldCard().GUI_SPRITES.isEmpty());
-        assert (!client.getTopDeckGoldCard().TUI_SPRITES.isEmpty());
+        assertInstanceOf(ClientCard.class, clientGame.getTopDeckGoldCard());
+        assert (!clientGame.getTopDeckGoldCard().GUI_SPRITES.isEmpty());
+        assert (!clientGame.getTopDeckGoldCard().TUI_SPRITES.isEmpty());
 
-        assertInstanceOf(ClientCard.class, client.getTopDeckResourceCard());
-        assert (!client.getTopDeckResourceCard().GUI_SPRITES.isEmpty());
-        assert (!client.getTopDeckResourceCard().TUI_SPRITES.isEmpty());
+        assertInstanceOf(ClientCard.class, clientGame.getTopDeckResourceCard());
+        assert (!clientGame.getTopDeckResourceCard().GUI_SPRITES.isEmpty());
+        assert (!clientGame.getTopDeckResourceCard().TUI_SPRITES.isEmpty());
 
         int roundNumberTest = 10;
-        client.setCurrentRound(roundNumberTest);
-        assertEquals(roundNumberTest, client.getCurrentRound());
+        clientGame.setCurrentRound(roundNumberTest);
+        assertEquals(roundNumberTest, clientGame.getCurrentRound());
 
-        assertEquals(2, client.getMaxPlayers());
-        assertEquals(1, client.getPlayersNumber());
+        assertEquals(2, clientGame.getMaxPlayers());
+        assertEquals(1, clientGame.getPlayersNumber());
     }
 
     @Test
     void setterTest() {
-        client = new ClientGame(game, game.getPlayers().getFirst());
+        clientGame = game.generateDTO(game.getCurrentPlayer());
         ClientCard card = new ClientCard(1, new HashMap<>(), new HashMap<>());
-        client.setCurrentRound(1);
-        assertEquals(1, client.getCurrentRound());
+        clientGame.setCurrentRound(1);
+        assertEquals(1, clientGame.getCurrentRound());
 
-        client.addCardToHand(new ClientCard(1, new HashMap<>(), new HashMap<>()));
-        assert (!client.getCardsInHand().isEmpty());
-        client.removeCardFromHand(new ClientCard(1, new HashMap<>(), new HashMap<>()));
-        assert (!client.getCardsInHand().contains(new ClientCard(1, new HashMap<>(), new HashMap<>())));
+        clientGame.addCardToHand(new ClientCard(1, new HashMap<>(), new HashMap<>()));
+        assert (!clientGame.getCardsInHand().isEmpty());
+        clientGame.removeCardFromHand(new ClientCard(1, new HashMap<>(), new HashMap<>()));
+        assert (!clientGame.getCardsInHand().contains(new ClientCard(1, new HashMap<>(), new HashMap<>())));
 
-        client.setPlacedResources(card, 1);
-        assertEquals(card, client.getPlacedResources()[1]);
+        clientGame.setPlacedResources(card, 1);
+        assertEquals(card, clientGame.getPlacedResources()[1]);
 
-        client.setPlacedGold(card, 1);
-        assertEquals(card, client.getPlacedGolds()[1]);
+        clientGame.setPlacedGold(card, 1);
+        assertEquals(card, clientGame.getPlacedGolds()[1]);
 
-        client.setCommonObjectives(card, 1);
-        assertEquals(card, client.getCommonObjectives()[1]);
+        clientGame.setCommonObjectives(card, 1);
+        assertEquals(card, clientGame.getCommonObjectives()[1]);
 
-        client.setTopDeckGoldCard(card);
-        assertEquals(card, client.getTopDeckGoldCard());
+        clientGame.setTopDeckGoldCard(card);
+        assertEquals(card, clientGame.getTopDeckGoldCard());
 
-        client.setTopDeckResourceCard(card);
-        assertEquals(card, client.getTopDeckResourceCard());
+        clientGame.setTopDeckResourceCard(card);
+        assertEquals(card, clientGame.getTopDeckResourceCard());
 
-        client.setOwnObjective(card);
-        assertEquals(card, client.getOwnObjective());
-
-
-
+        clientGame.setOwnObjective(card);
+        assertEquals(card, clientGame.getOwnObjective());
     }
 }

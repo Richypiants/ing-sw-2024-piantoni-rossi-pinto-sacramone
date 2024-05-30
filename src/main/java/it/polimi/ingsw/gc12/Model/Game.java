@@ -4,7 +4,9 @@ import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.GameState;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.*;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -305,7 +307,33 @@ public class Game extends GameLobby {
      */
 
     public ClientGame generateDTO(InGamePlayer receiver){
-        return new ClientGame(this, receiver);
+        Map<Integer, ClientCard> clientCards = ServerController.clientCardsList;
+        var players = this.getPlayers().stream()
+                .map((player) -> new ClientPlayer(player, player.getOpenCorners(), player.getOwnedResources(), player.getPoints()))
+                .toList();
+
+        return new ClientGame(
+                this.getMaxPlayers(),
+                players,
+                players.stream().filter((player) -> player.getNickname().equals(receiver.getNickname())).findAny().orElseThrow(),
+                receiver.getCardsInHand().stream()
+                        .map((card) -> clientCards.get(card.ID))
+                        .collect(Collectors.toCollection(ArrayList<ClientCard>::new)),
+                Arrays.stream(getPlacedResources())
+                        .map((card) -> clientCards.get(card.ID))
+                        .toArray(ClientCard[]::new),
+                Arrays.stream(getPlacedGolds())
+                        .map((card) -> clientCards.get(card.ID))
+                        .toArray(ClientCard[]::new),
+                Arrays.stream(getCommonObjectives())
+                        .map((card) -> card == null ? null : clientCards.get(card.ID))
+                        .toArray(ClientCard[]::new),
+                clientCards.get(peekFrom(getResourceCardsDeck()) == null ? -1 : peekFrom(getResourceCardsDeck()).ID),
+                clientCards.get(peekFrom(getGoldCardsDeck()) == null ? -1 : peekFrom(getGoldCardsDeck()).ID),
+                receiver.getSecretObjective() == null ? null : clientCards.get(receiver.getSecretObjective().ID),
+                getTurnNumber(),
+                getPlayers().indexOf(getCurrentPlayer())
+        );
     }
 
     /**

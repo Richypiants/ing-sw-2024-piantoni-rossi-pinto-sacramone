@@ -112,8 +112,11 @@ public class LobbyController extends ServerController {
             lobbiesAndGames.remove(lobbyUUID);
         }
 
-        if (isInactive)
+        if (isInactive){
+            disconnectionRoutine(sender);
             players.remove(sender);
+        }
+
 
         System.out.println("[SERVER]: sending UpdateLobbiesCommand to clients");
 

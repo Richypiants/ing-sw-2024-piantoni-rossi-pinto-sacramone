@@ -9,7 +9,7 @@ import it.polimi.ingsw.gc12.Model.InGamePlayer;
 public abstract class Card {
 
     /**
-     * A unique card identifier to facilitate the card's retrieval
+     * A unique card identifier to facilitate the card's retrieval.
      */
     public final int ID;
 

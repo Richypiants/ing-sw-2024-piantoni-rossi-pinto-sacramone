@@ -54,7 +54,7 @@ public abstract class ServerController implements ServerControllerInterface {
     }
 
     private static Map<Integer, ClientCard> loadClientCards() {
-        return JSONParser.clientCardsFromJSON("client_cards.json")
+        return JSONParser.generateClientCardsFromJSON("client_cards.json")
                 .stream().collect(Collectors.toMap((card) -> card.ID, (card) -> card));
     }
 
@@ -71,8 +71,6 @@ public abstract class ServerController implements ServerControllerInterface {
             //If communication is closed, the target has lost an update, so in case he reconnects, its game is inconsistent, we must send the update,
             //so the TimeoutTask routine has to be instantly executed.
             timeoutTasks.get(client).run();
-            timeoutTasks.get(client).cancel();
-            timeoutTasks.remove(client);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,7 +94,14 @@ public abstract class ServerController implements ServerControllerInterface {
         TimerTask timeoutTask = new TimerTask() {
             @Override
             public void run() {
-                disconnectionRoutine(target);
+                Player thisPlayer = players.get(target);
+                if (playersToControllers.containsKey(thisPlayer)) {
+                    ServerController thisController = playersToControllers.get(thisPlayer);
+                    if (thisController instanceof GameController)
+                        leaveGame(target);
+                    else
+                        leaveLobby(target, true);
+                }
             }
         };
         timer.schedule(timeoutTask, TIMEOUT_TASK_EXECUTION_AFTER);
@@ -115,18 +120,11 @@ public abstract class ServerController implements ServerControllerInterface {
         System.out.println("[CLIENT]: keepAlive command received from " + sender + ". Resetting timeout");
     }
 
-    private void disconnectionRoutine(VirtualClient target){
+    public void disconnectionRoutine(VirtualClient target){
         System.out.println("[SERVER] Removing the entry of " + target + " since it didn't send any keepAlive in " + TIMEOUT_TASK_EXECUTION_AFTER/1000
                 + " seconds or the game has sent an update and its state is inconsistent.");
-        Player thisPlayer = players.get(target);
-        if (playersToControllers.containsKey(thisPlayer)) {
-            ServerController thisController = playersToControllers.get(thisPlayer);
-            //FIXME: it'd be nice to have only one "leave" function (and command)...
-            if (thisController instanceof GameController)
-                leaveGame(target);
-            else
-                leaveLobby(target, true);
-        }
+        timeoutTasks.get(target).cancel();
+        timeoutTasks.remove(target);
     }
 
     protected void generatePlayer(VirtualClient sender, String nickname) {

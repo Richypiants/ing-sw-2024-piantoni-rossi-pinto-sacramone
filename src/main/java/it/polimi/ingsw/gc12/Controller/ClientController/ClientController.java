@@ -92,7 +92,7 @@ public class ClientController implements ClientControllerInterface {
 
     private Map<Integer, ClientCard> loadCards() {
         Map<Integer, ClientCard> tmp = new HashMap<>();
-        Objects.requireNonNull(JSONParser.clientCardsFromJSON("client_cards.json"))
+        Objects.requireNonNull(JSONParser.generateClientCardsFromJSON("client_cards.json"))
                 .forEach((card) -> tmp.put(card.ID, card));
         tmp.put(-1, new ClientCard(-1, null, null));
         return Collections.unmodifiableMap(tmp);

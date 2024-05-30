@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc12.Utilities;
 
 /**
-An enumeration of all the possible "resources" values in card corners and back-centers
+ * An enumeration of all the possible resource values that can appear in card corners and back-centers.
  */
 public enum Resource {
 
@@ -11,14 +11,24 @@ public enum Resource {
     INK("K", 94), QUILL("Q", 94),
     SCROLL("S", 94);
 
+    /**
+     * The symbol or the character representing the resource.
+     */
     public final String SYMBOL;
 
+    /**
+     * The ANSI color code for the resource.
+     * Note that the value (-1) is used as a placeholder to indicate a character which maintains the standard background of that view,
+     * or in others words nothing has to be done about the background.
+     */
     public final int ANSI_COLOR;
 
     /**
-     *  ANSI_COLOR: -1 is used as a placeholder swapped during the card rendering with the card background
-     *  */
-
+     * Constructs a Resource with the given symbol and ANSI color code.
+     *
+     * @param symbol The symbol representing the resource.
+     * @param ansiColor The ANSI color code for the resource.
+     */
     Resource(String symbol, int ansiColor){
         this.SYMBOL = symbol;
         this.ANSI_COLOR = ansiColor;

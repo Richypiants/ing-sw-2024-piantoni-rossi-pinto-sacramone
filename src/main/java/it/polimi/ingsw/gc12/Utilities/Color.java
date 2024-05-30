@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc12.Utilities;
 
 /**
- An enumeration of the possible players' colors (+ the first-player token's color)
+ An enumeration of the possible players' colors and the one which represents the player who plays first. (BLACK)
  */
 public enum Color {
     RED, YELLOW, GREEN, BLACK, BLUE, NO_COLOR;

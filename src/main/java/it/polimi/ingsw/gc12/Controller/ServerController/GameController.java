@@ -3,8 +3,6 @@ package it.polimi.ingsw.gc12.Controller.ServerController;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.*;
 import it.polimi.ingsw.gc12.Controller.Commands.SetNicknameCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.AwaitingReconnectionState;
-import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.GameState;
-import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Model.Cards.Card;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
@@ -25,11 +23,11 @@ public class GameController extends ServerController {
 
     private final Game CONTROLLED_GAME;
     //TODO: move gamestates in here instead of having them in Game (also move back currentPlayer and round in Game after this?)
-    private GameState currentGameState;
+    //private GameState currentGameState;
 
     public GameController(Game controlledGame) {
         this.CONTROLLED_GAME = controlledGame;
-        currentGameState = new SetupState(CONTROLLED_GAME);
+        //currentGameState = new SetupState(CONTROLLED_GAME);
     }
 
     private boolean invalidCard(VirtualClient sender, int cardID) {
@@ -271,6 +269,7 @@ public class GameController extends ServerController {
         }
     }
 
+
     @Override
     public void leaveGame(VirtualClient sender) {
         System.out.println("[CLIENT]: LeaveGameCommand received and being executed");
@@ -279,6 +278,7 @@ public class GameController extends ServerController {
         Game targetGame = ((GameController) playersToControllers.get(targetPlayer)).CONTROLLED_GAME;
 
         targetPlayer.toggleActive();
+        disconnectionRoutine(sender);
         players.remove(sender);
 
         /*Checking if the disconnection happened during the sender turn. If so:
