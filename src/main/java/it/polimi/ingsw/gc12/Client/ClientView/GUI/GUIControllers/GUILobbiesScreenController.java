@@ -18,7 +18,9 @@ public class GUILobbiesScreenController extends GUIView {
 
     static Parent sceneRoot = sceneRoots.get("lobby_menu");
 
-    static Label ownNicknameLabel = (Label) sceneRoot.lookup("#profile");
+    static VBox buttonsBox = (VBox) sceneRoot.lookup("#buttonsBox");
+
+    static Label ownNicknameLabel = (Label) sceneRoot.lookup("#ownNicknameLabel");
 
     static Button createLobbyButton = (Button) sceneRoot.lookup("#createGameButton");
 
@@ -48,8 +50,9 @@ public class GUILobbiesScreenController extends GUIView {
 
     public static void lobbiesScreen() {
         Platform.runLater(() -> {
+            buttonsBox.relocate(screenSizes.getX() * 12 / 100, screenSizes.getY() * 9 / 16);
+
             ownNicknameLabel.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
-            ownNicknameLabel.relocate(screenSizes.getX() * 15 / 100, screenSizes.getY() * 3 / 8);
 
             maxPlayersSelector.setItems(FXCollections.observableArrayList(2, 3, 4));
 
@@ -69,7 +72,6 @@ public class GUILobbiesScreenController extends GUIView {
                 lobbyCreationPopupBox.setVisible(true);
                 lobbyCreationPopup.centerOnScreen();
             });
-            createLobbyButton.relocate(screenSizes.getX() * 15 / 100, screenSizes.getY() / 2);
 
             nicknameButton.setOnMouseClicked(event -> {
                 OverlayPopup nicknameChangePopup = drawOverlayPopup(lobbyCreationPopupBox, true);
@@ -85,10 +87,8 @@ public class GUILobbiesScreenController extends GUIView {
                 lobbyCreationPopupBox.setVisible(true);
                 nicknameChangePopup.centerOnScreen();
             });
-            nicknameButton.relocate(screenSizes.getX() * 15 / 100, screenSizes.getY() * 5 / 8);
 
             backToTitleButton.setOnAction(event -> ClientController.getInstance().viewState.quit());
-            backToTitleButton.relocate(screenSizes.getX() * 15 / 100, screenSizes.getY() * 3 / 4);
 
             lobbiesPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             lobbiesPane.setPrefSize(screenSizes.getX() * 3 / 5, screenSizes.getY() * 13 / 16);

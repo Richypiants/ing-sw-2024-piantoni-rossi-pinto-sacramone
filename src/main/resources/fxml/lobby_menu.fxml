@@ -1,29 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
             fx:id="lobbiesMenuPane" stylesheets="/style.css">
-    <Button fx:id="createGameButton" styleClass="button" layoutX="51.0" layoutY="122.0" mnemonicParsing="false"
-            prefHeight="27.0" prefWidth="250.0" text="Create Game">
-        <font>
-            <Font name="Bell MT" size="14.0"/>
-        </font>
-    </Button>
-    <Button fx:id="nicknameButton" styleClass="button" layoutX="51.0" layoutY="200.0" mnemonicParsing="false"
-            prefHeight="27.0" prefWidth="250.0" text="Change Nickname">
-        <font>
-            <Font name="Bell MT" size="14.0"/>
-        </font>
-    </Button>
-    <Button fx:id="backToTitleButton" styleClass="button" layoutX="51.0" layoutY="278.0" mnemonicParsing="false"
-            prefHeight="27.0" prefWidth="250.0" text="Back to title screen">
-        <font>
-            <Font name="Bell MT" size="14.0"/>
-        </font>
-    </Button>
+    <VBox fx:id="buttonsBox">
+        <Label fx:id="ownNicknameLabel" styleClass="titleScreenLabel">
+            <font>
+                <Font name="Bell MT" size="14.0"/>
+            </font>
+        </Label>
+        <Button fx:id="createGameButton" styleClass="button" layoutX="51.0" layoutY="122.0" mnemonicParsing="false"
+                prefHeight="27.0" prefWidth="250.0" text="Create Game">
+            <font>
+                <Font name="Bell MT" size="14.0"/>
+            </font>
+        </Button>
+        <Button fx:id="nicknameButton" styleClass="button" layoutX="51.0" layoutY="200.0" mnemonicParsing="false"
+                prefHeight="27.0" prefWidth="250.0" text="Change Nickname">
+            <font>
+                <Font name="Bell MT" size="14.0"/>
+            </font>
+        </Button>
+        <Button fx:id="backToTitleButton" styleClass="button" layoutX="51.0" layoutY="278.0" mnemonicParsing="false"
+                prefHeight="27.0" prefWidth="250.0" text="Back to title screen">
+            <font>
+                <Font name="Bell MT" size="14.0"/>
+            </font>
+        </Button>
+    </VBox>
 
     <ScrollPane fx:id="lobbiesPane" layoutX="400.0" layoutY="30.0" prefHeight="800.0" prefWidth="800.0">
         <VBox fx:id="lobbiesList" minHeight="0.0" minWidth="0.0"/>
@@ -58,10 +64,4 @@
             </font>
         </Button>
     </VBox>
-
-    <Label fx:id="profile" styleClass="titleScreenLabel">
-        <font>
-            <Font name="Bell MT" size="14.0"/>
-        </font>
-    </Label>
 </AnchorPane>

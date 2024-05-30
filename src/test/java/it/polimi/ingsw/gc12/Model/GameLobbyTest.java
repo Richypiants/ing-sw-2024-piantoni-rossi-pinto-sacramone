@@ -59,7 +59,8 @@ class GameLobbyTest {
     @Test
     void toStringTest() {
         lobby = new GameLobby(player1, 2);
-        assertEquals("GameLobby{" + "maxPlayers=" + 2 + " [" + "[Sacri]" + "]}", lobby.toString());
+        assertEquals("GameLobby{" + "maxPlayers=" + 2 + " players=[" + "[Sacri, NO_COLOR]" +
+                "] availableColors=" + "[RED, YELLOW, GREEN, BLUE" + "]}", lobby.toString());
     }
 
     @Test

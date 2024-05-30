@@ -77,8 +77,10 @@ public class GameLobby implements Serializable {
      * @param player The player to be removed from the lobby.
      */
     public void removePlayer(Player player) {
-        if (!player.getColor().equals(Color.NO_COLOR))
+        if (!player.getColor().equals(Color.NO_COLOR)) {
             AVAILABLE_COLORS.add(player.getColor());
+            player.setColor(Color.NO_COLOR);
+        }
         LIST_OF_PLAYERS.remove(player);
     }
 
@@ -163,6 +165,7 @@ public class GameLobby implements Serializable {
      */
     @Override
     public String toString() {
-        return "GameLobby{" + "maxPlayers=" + maxPlayers + " [" + LIST_OF_PLAYERS + "] [" + AVAILABLE_COLORS + "]}";
+        return "GameLobby{" + "maxPlayers=" + maxPlayers +
+                " players=[" + LIST_OF_PLAYERS + "] availableColors=" + AVAILABLE_COLORS + "}";
     }
 }

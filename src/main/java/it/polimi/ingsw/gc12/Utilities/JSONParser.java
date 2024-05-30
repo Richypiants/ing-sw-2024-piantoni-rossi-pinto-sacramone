@@ -39,7 +39,7 @@ public class JSONParser {
      */
     public static <E extends Card> ArrayList<E> deckFromJSONConstructor(String filename, TypeToken<ArrayList<E>> type) {
         try{
-            return new ArrayList<>(GSON_CARD_BUILDER.fromJson(Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/Utilities/JSON_Files/" + filename)), type));
+            return new ArrayList<>(GSON_CARD_BUILDER.fromJson(Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/Utilities/json_files/" + filename)), type));
         }catch(Exception e){
             e.printStackTrace();
             return null;
@@ -137,7 +137,7 @@ public class JSONParser {
     public static ArrayList<ClientCard> clientCardsFromJSON(String filename) {
         try {
             return new ArrayList<>(CARD_IMAGE_RESOURCES_BUILDER.fromJson(
-                    Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/Utilities/JSON_Files/" + filename)),
+                    Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/Utilities/json_files/" + filename)),
                     new TypeToken<ArrayList<ClientCard>>(){}));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -199,7 +199,7 @@ public class JSONParser {
 
         try {
             new GsonBuilder().setPrettyPrinting().create().toJson(clientCards,
-                    new FileWriter("src/main/java/it/polimi/ingsw/gc12/Utilities/JSON_Files/client_cards.json")
+                    new FileWriter("src/main/java/it/polimi/ingsw/gc12/Utilities/json_files/client_cards.json")
             );
         } catch (IOException e) {
             throw new RuntimeException(e);
