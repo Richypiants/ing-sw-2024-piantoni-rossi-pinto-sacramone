@@ -4,13 +4,14 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseObjectiveCardsState;
+import it.polimi.ingsw.gc12.Listeners.Listener;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.*;
-import it.polimi.ingsw.gc12.Network.VirtualClient;
+import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.ForbiddenActionException;
 import it.polimi.ingsw.gc12.Utilities.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,11 +31,12 @@ class ServerControllerTest {
     Lobby lobby;
     Game game;
     ClientGame client;
-    VirtualClient client1;
-    VirtualClient client2;
+    NetworkSession client1;
+    NetworkSession client2;
     ChooseObjectiveCardsState state;
 
     ConnectionController controller = ConnectionController.getInstance();
+    GameController gameController;
     ClientControllerInterface Interface = new ClientControllerInterface() {
         @Override
         public void throwException(Exception e) {
@@ -140,19 +142,29 @@ class ServerControllerTest {
         objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {
         });
 
-        client1 = command -> {
-        };
-        client2 = command -> {
-
-        };
-
         UUID lobbyUUID = UUID.randomUUID();
-        ServerController.model.ROOMS.put(lobbyUUID, game);
-        ServerController.players.put(client1, game.getPlayers().getFirst());
-        ServerController.players.put(client2, game.getPlayers().getLast());
-        GameController gameController = new GameController(game);
-        ServerController.playersToControllers.put(game.getPlayers().getFirst(), gameController);
-        ServerController.playersToControllers.put(game.getPlayers().getLast(), gameController);
+
+        gameController = new GameController(game);
+        ServerController.model.GAME_CONTROLLERS.put(lobbyUUID, gameController);
+
+        client1 = new NetworkSession(gameController) {
+            @Override
+            protected Listener createListener() {
+                return new Listener(command -> {
+                });
+            }
+        };
+        client2 = new NetworkSession(gameController) {
+            @Override
+            protected Listener createListener() {
+                return new Listener(command -> {
+                });
+            }
+        };
+
+        ServerController.activePlayers.put(client1, game.getPlayers().get(0));
+        ServerController.activePlayers.put(client2, game.getPlayers().get(1));
+
         gameController.getCurrentState().transition();
 
         int i = 0;
@@ -190,9 +202,16 @@ class ServerControllerTest {
     @Test
     void placeCardTest() throws Exception {
 
-        client2 = command -> {
-            assertInstanceOf(ThrowExceptionCommand.class, command);
-            command.execute(Interface);
+        client2 = new NetworkSession(controller) {
+            @Override
+            protected Listener createListener() {
+                return new Listener(
+                        command -> {
+                            assertInstanceOf(ThrowExceptionCommand.class, command);
+                            command.execute(Interface);
+                        }
+                );
+            }
         };
 
         controller.placeCard(client2, new GenericPair<>(1, 1), 1, Side.FRONT);
@@ -202,9 +221,16 @@ class ServerControllerTest {
     @Test
     void leaveLobbyTest() throws Exception {
 
-        client2 = command -> {
-            assertInstanceOf(ThrowExceptionCommand.class, command);
-            command.execute(Interface);
+        client2 = new NetworkSession(controller) {
+            @Override
+            protected Listener createListener() {
+                return new Listener(
+                        command -> {
+                            assertInstanceOf(ThrowExceptionCommand.class, command);
+                            command.execute(Interface);
+                        }
+                );
+            }
         };
 
         controller.leaveLobby(client2, true);
@@ -213,9 +239,16 @@ class ServerControllerTest {
     @Test
     void pickObjectiveTest() throws Exception {
 
-        client2 = command -> {
-            assertInstanceOf(ThrowExceptionCommand.class, command);
-            command.execute(Interface);
+        client2 = new NetworkSession(controller) {
+            @Override
+            protected Listener createListener() {
+                return new Listener(
+                        command -> {
+                            assertInstanceOf(ThrowExceptionCommand.class, command);
+                            command.execute(Interface);
+                        }
+                );
+            }
         };
 
         controller.pickObjective(client2, 1);
@@ -224,9 +257,16 @@ class ServerControllerTest {
     @Test
     void drawFromDeckTest() throws Exception {
 
-        client2 = command -> {
-            assertInstanceOf(ThrowExceptionCommand.class, command);
-            command.execute(Interface);
+        client2 = new NetworkSession(controller) {
+            @Override
+            protected Listener createListener() {
+                return new Listener(
+                        command -> {
+                            assertInstanceOf(ThrowExceptionCommand.class, command);
+                            command.execute(Interface);
+                        }
+                );
+            }
         };
 
         controller.drawFromDeck(client2, "resource");
@@ -235,9 +275,16 @@ class ServerControllerTest {
     @Test
     void drawFromVisibleCardsTest() throws Exception {
 
-        client2 = command -> {
-            assertInstanceOf(ThrowExceptionCommand.class, command);
-            command.execute(Interface);
+        client2 = new NetworkSession(controller) {
+            @Override
+            protected Listener createListener() {
+                return new Listener(
+                        command -> {
+                            assertInstanceOf(ThrowExceptionCommand.class, command);
+                            command.execute(Interface);
+                        }
+                );
+            }
         };
 
         controller.drawFromVisibleCards(client2, "resource", 1);
@@ -246,9 +293,16 @@ class ServerControllerTest {
     @Test
     void leaveGameTest() throws Exception {
 
-        client2 = command -> {
-            assertInstanceOf(ThrowExceptionCommand.class, command);
-            command.execute(Interface);
+        client2 = new NetworkSession(controller) {
+            @Override
+            protected Listener createListener() {
+                return new Listener(
+                        command -> {
+                            assertInstanceOf(ThrowExceptionCommand.class, command);
+                            command.execute(Interface);
+                        }
+                );
+            }
         };
 
         controller.leaveGame(client2);
@@ -257,9 +311,16 @@ class ServerControllerTest {
     @Test
     void broadcastMessageTest() throws Exception {
 
-        client2 = command -> {
-            assertInstanceOf(ThrowExceptionCommand.class, command);
-            command.execute(Interface);
+        client2 = new NetworkSession(controller) {
+            @Override
+            protected Listener createListener() {
+                return new Listener(
+                        command -> {
+                            assertInstanceOf(ThrowExceptionCommand.class, command);
+                            command.execute(Interface);
+                        }
+                );
+            }
         };
 
         controller.broadcastMessage(client2, "HELLO");
@@ -268,9 +329,16 @@ class ServerControllerTest {
     @Test
     void directMessageTest() throws Exception {
 
-        client2 = command -> {
-            assertInstanceOf(ThrowExceptionCommand.class, command);
-            command.execute(Interface);
+        client2 = new NetworkSession(controller) {
+            @Override
+            protected Listener createListener() {
+                return new Listener(
+                        command -> {
+                            assertInstanceOf(ThrowExceptionCommand.class, command);
+                            command.execute(Interface);
+                        }
+                );
+            }
         };
 
         controller.directMessage(client2, "paolo", "HELLO");

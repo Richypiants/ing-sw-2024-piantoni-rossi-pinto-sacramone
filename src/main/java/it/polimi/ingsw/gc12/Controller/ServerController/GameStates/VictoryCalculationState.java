@@ -2,7 +2,9 @@ package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.EndGameCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.SetLobbiesCommand;
+import it.polimi.ingsw.gc12.Controller.ServerController.ConnectionController;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Lobby;
@@ -61,8 +63,7 @@ public class VictoryCalculationState extends GameState {
         try {
             // Sending leaderboard stats
             for (var target : GAME.getActivePlayers()) {
-                GameController.requestToClient(
-                        keyReverseLookup(GameController.players, target::equals),
+                keyReverseLookup(GameController.activePlayers, target::equals).getListener().notified(
                         new EndGameCommand(pointsStats, gameEndedDueToDisconnections));
             }
         } catch (Throwable t) {
@@ -124,11 +125,18 @@ public class VictoryCalculationState extends GameState {
         }**/
 
         //Clearing the mappings to the game
-        UUID lobbyUUID = keyReverseLookup(GameController.model.ROOMS, GAME::equals);
+
+        UUID lobbyUUID = keyReverseLookup(
+                GameController.model.GAME_CONTROLLERS,
+                (controller) -> controller.CONTROLLED_GAME.equals(GAME)
+        );
 
         //Removing all active and inactive players from the Map containing all the mappings.
         for (var player : GAME.getPlayers())
-            GameController.playersToControllers.remove(player);
+            if (player.isActive())
+                keyReverseLookup(ServerController.activePlayers, player::equals).setController(ConnectionController.getInstance());
+            else
+                GameController.inactiveSessions.remove(player.getNickname());
 
         //FIXME: Using a Lobby to convert the instances of InGamePlayer to Player and then discarding it. Better solutions?
         Lobby returnLobby = GAME.toLobby();
@@ -137,27 +145,27 @@ public class VictoryCalculationState extends GameState {
         int currentIndex = 0;
         for(var inGamePlayer : GAME.getActivePlayers()) {
             Player thisPlayer = returnLobby.getPlayers().get(currentIndex);
-            GameController.players.put(
-                    keyReverseLookup(GameController.players, inGamePlayer::equals),
+            GameController.activePlayers.put(
+                    keyReverseLookup(GameController.activePlayers, inGamePlayer::equals),
                     thisPlayer
             );
 
             // Sending lobbies list to players who were in this game (because they didn't have it updated)
             try {
-                GameController.requestToClient(
-                        keyReverseLookup(GameController.players, thisPlayer::equals),
+                keyReverseLookup(GameController.activePlayers, thisPlayer::equals).getListener().notified(
                         //TODO : Handle exceptions in the correct way and not like this
-                new SetLobbiesCommand(
-                        GameController.model.ROOMS.entrySet().stream()
-                        .filter((entry) -> !(entry.getValue() instanceof Game))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                ));
+                        new SetLobbiesCommand(
+                                GameController.model.LOBBY_CONTROLLERS.entrySet().stream()
+                                        .collect(Collectors.toMap(Map.Entry::getKey, (entry) -> entry.getValue().CONTROLLED_LOBBY))
+                        )
+                );
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             currentIndex++;
         }
 
-        GameController.model.ROOMS.remove(lobbyUUID);
+        //TODO: add players to a new lobby now that the game doesn't start until the colors are chosen?
+        GameController.model.GAME_CONTROLLERS.remove(lobbyUUID);
     }
 }

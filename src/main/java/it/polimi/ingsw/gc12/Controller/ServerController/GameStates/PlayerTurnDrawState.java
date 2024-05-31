@@ -8,7 +8,7 @@ import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Network.VirtualClient;
+import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidDeckPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
@@ -115,8 +115,7 @@ public class PlayerTurnDrawState extends GameState {
         for (var player : GAME.getActivePlayers()) {
             if (player.equals(target))
                 try {
-                    GameController.requestToClient(
-                            keyReverseLookup(GameController.players, target::equals),
+                    keyReverseLookup(GameController.activePlayers, target::equals).getListener().notified(
                             new ReceiveCardCommand(List.of(drawnCard.ID))
                     );
                 } catch (Exception e) {
@@ -124,8 +123,7 @@ public class PlayerTurnDrawState extends GameState {
                 }
 
             try {
-                GameController.requestToClient(
-                        keyReverseLookup(GameController.players, player::equals),
+                keyReverseLookup(GameController.activePlayers, player::equals).getListener().notified(
                         new ReplaceCardCommand(
                                 List.of(
                                         new Triplet<>(topDeck.ID, deck + "_deck", -1)
@@ -187,8 +185,7 @@ public class PlayerTurnDrawState extends GameState {
         for (var player : GAME.getActivePlayers()) {
             if (player.equals(target))
                 try {
-                    GameController.requestToClient(
-                            keyReverseLookup(GameController.players, target::equals),
+                    keyReverseLookup(GameController.activePlayers, target::equals).getListener().notified(
                             new ReceiveCardCommand(List.of(drawnCard.ID))
                     );
                 } catch (Exception e) {
@@ -196,17 +193,15 @@ public class PlayerTurnDrawState extends GameState {
                 }
 
             try {
-                VirtualClient receiver = keyReverseLookup(GameController.players, player::equals);
-                GameController.requestToClient(
-                        receiver,
+                NetworkSession receiver = keyReverseLookup(GameController.activePlayers, player::equals);
+                receiver.getListener().notified(
                         new ReplaceCardCommand(
                             List.of(
                                 new Triplet<>(replacingCard.ID, whichType + "_visible", position)
                             )
                         )
                 );
-                GameController.requestToClient(
-                        receiver,
+                receiver.getListener().notified(
                          new ReplaceCardCommand(
                             List.of(
                                 new Triplet<>(topDeck.ID, whichType + "_deck", -1)
@@ -258,10 +253,9 @@ public class PlayerTurnDrawState extends GameState {
             for (var player : GAME.getActivePlayers()) {
 
                 try {
-                    VirtualClient receiver = keyReverseLookup(GameController.players, player::equals);
+                    NetworkSession receiver = keyReverseLookup(GameController.activePlayers, player::equals);
                     if (replacingCard != null)
-                        GameController.requestToClient(
-                                receiver,
+                        receiver.getListener().notified(
                                 new ReplaceCardCommand(
                                         List.of(
                                                 new Triplet<>(replacingCard.ID, currentActionFormat.getY().STRING_MESSAGE + "_visible", currentActionFormat.getZ())
@@ -273,8 +267,7 @@ public class PlayerTurnDrawState extends GameState {
                             case Deck.RESOURCE, Deck.VISIBLE_RESOURCE -> new ResourceCard(-1,0, new HashMap<>(), new HashMap<>());
                             case Deck.GOLD, Deck.VISIBLE_GOLD -> new GoldCard(-1, 0, new HashMap<>(), new HashMap<>(), null, null);
                         };
-                    GameController.requestToClient(
-                            receiver,
+                    receiver.getListener().notified(
                             new ReplaceCardCommand(
                                     List.of(
                                             new Triplet<>(topDeck.ID, currentActionFormat.getY().STRING_MESSAGE + "_deck", -1)

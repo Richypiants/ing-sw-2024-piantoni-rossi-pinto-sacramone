@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Network;
 
 import it.polimi.ingsw.gc12.Controller.Commands.Command;
+import it.polimi.ingsw.gc12.Controller.ControllerInterface;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -8,14 +9,15 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public abstract class SocketHandler{
+public abstract class SocketHandler extends NetworkSession {
 
     private final Socket socket;
     private final ObjectInputStream objectInputStream;
     private final ObjectOutputStream objectOutputStream;
     private final LinkedBlockingQueue<Command> writeQueue;
 
-    public SocketHandler(Socket socket) throws IOException {
+    public SocketHandler(Socket socket, ControllerInterface controller) throws IOException {
+        super(controller);
         this.socket = socket;
         this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         this.objectInputStream = new ObjectInputStream(socket.getInputStream());

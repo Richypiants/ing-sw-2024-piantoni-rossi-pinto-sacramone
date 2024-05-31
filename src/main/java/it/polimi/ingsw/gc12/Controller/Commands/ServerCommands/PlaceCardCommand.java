@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc12.Controller.Commands.ServerCommands;
 
 import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
-import it.polimi.ingsw.gc12.Network.VirtualClient;
+import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
@@ -18,7 +18,7 @@ public class PlaceCardCommand implements ServerCommand {
     }
 
     @Override
-    public void execute(VirtualClient caller, ServerControllerInterface serverController) {
+    public void execute(NetworkSession caller, ServerControllerInterface serverController) {
         serverController.placeCard(caller, COORDINATES, CARD_ID, PLAYED_SIDE);
     }
 }

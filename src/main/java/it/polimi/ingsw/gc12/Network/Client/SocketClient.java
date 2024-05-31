@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc12.Network.Client;
 
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
-import it.polimi.ingsw.gc12.Network.VirtualClient;
 import it.polimi.ingsw.gc12.Network.VirtualServer;
 
 import java.io.IOException;
@@ -21,7 +20,7 @@ public class SocketClient implements VirtualServer {
         this.connectionExecutorsPool = Executors.newSingleThreadExecutor();
 
         Socket socket = new Socket(ClientController.getInstance().serverIPAddress, 5000);
-        serverHandler = new SocketServerHandler(socket);
+        serverHandler = new SocketServerHandler(socket, ClientController.getInstance());
 
         connectionExecutorsPool.submit(
                 () -> {
@@ -57,7 +56,7 @@ public class SocketClient implements VirtualServer {
     }
 
     @Override
-    public void requestToServer(VirtualClient caller, ServerCommand command) {
-        serverHandler.requestToServer(caller, command);
+    public void requestToServer(ServerCommand command) {
+        serverHandler.requestToServer(command);
     }
 }

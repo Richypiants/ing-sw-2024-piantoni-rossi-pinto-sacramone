@@ -3,7 +3,9 @@ package it.polimi.ingsw.gc12.Network.Server;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.Command;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
+import it.polimi.ingsw.gc12.Controller.ControllerInterface;
+import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
+import it.polimi.ingsw.gc12.Listeners.Listener;
 import it.polimi.ingsw.gc12.Network.SocketHandler;
 import it.polimi.ingsw.gc12.Network.VirtualClient;
 
@@ -13,8 +15,8 @@ import java.util.concurrent.RejectedExecutionException;
 
 public class SocketClientHandler extends SocketHandler implements VirtualClient {
 
-    public SocketClientHandler(Socket socket) throws IOException {
-        super(socket);
+    public SocketClientHandler(Socket socket, ControllerInterface controller) throws IOException {
+        super(socket, controller);
     }
 
     @Override
@@ -28,7 +30,7 @@ public class SocketClientHandler extends SocketHandler implements VirtualClient 
         try {
             Server.getInstance().commandExecutorsPool.submit(
                     () -> ((ServerCommand) receivedCommand).execute(
-                            this, ServerController.getAssociatedController(ServerController.players.get(this))
+                            this, (ServerControllerInterface) getController()
                     )
             );
         } catch (RejectedExecutionException e) {
@@ -39,5 +41,10 @@ public class SocketClientHandler extends SocketHandler implements VirtualClient 
     @Override
     public void printError(Exception e) {
         e.printStackTrace();
+    }
+
+    @Override
+    protected Listener createListener() {
+        return new Listener(this);
     }
 }

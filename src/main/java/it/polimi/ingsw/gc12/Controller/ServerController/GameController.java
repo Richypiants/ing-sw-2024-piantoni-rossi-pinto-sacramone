@@ -12,7 +12,7 @@ import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Model.ServerModel;
-import it.polimi.ingsw.gc12.Network.VirtualClient;
+import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -24,7 +24,7 @@ import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class GameController extends ServerController {
 
-    private final Game CONTROLLED_GAME;
+    public final Game CONTROLLED_GAME;
     private GameState currentGameState;
 
     public GameController(Game controlledGame) {
@@ -40,10 +40,9 @@ public class GameController extends ServerController {
         currentGameState = state;
     }
 
-    private boolean invalidCard(VirtualClient sender, int cardID) {
+    private boolean invalidCard(NetworkSession sender, int cardID) {
         if (!ServerModel.cardsList.containsKey(cardID)) {
-            requestToClient(
-                    sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new IllegalArgumentException("Provided cardID is not associated to an existing card")
                     )
@@ -54,39 +53,45 @@ public class GameController extends ServerController {
     }
 
     @Override
-    public void generatePlayer(VirtualClient sender, String nickname) {
+    public void generatePlayer(NetworkSession sender, String nickname) {
         System.out.println("[SERVER]: sending SetNicknameCommand and RestoreGameCommand to client " + sender);
-        requestToClient(sender, new SetNicknameCommand(nickname)); //setNickname();
+        sender.getListener().notified(new SetNicknameCommand(nickname)); //setNickname();
+
+        InGamePlayer targetPlayer = CONTROLLED_GAME.getPlayers().stream()
+                .filter((inGamePlayer -> inGamePlayer.getNickname().equals(nickname)))
+                .findAny()
+                .orElseThrow();
 
         if (currentGameState instanceof AwaitingReconnectionState)
             //If game was in AwaitingReconnectingState, you need to resume it before sending the DTO
             ((AwaitingReconnectionState) currentGameState).recoverGame();
 
-        requestToClient(sender, new RestoreGameCommand(
-                keyReverseLookup(model.ROOMS, CONTROLLED_GAME::equals),
-                CONTROLLED_GAME.generateDTO((InGamePlayer) players.get(sender)),
+        sender.getListener().notified(new RestoreGameCommand(
+                keyReverseLookup(model.GAME_CONTROLLERS, this::equals),
+                CONTROLLED_GAME.generateDTO(targetPlayer),
                 currentGameState.getStringEquivalent(), //To let the client understand in which state it has to be recovered to.
                 CONTROLLED_GAME.generateTemporaryFieldsToPlayers() //fields related to the players inGame.
         ));
 
         for (var player : CONTROLLED_GAME.getActivePlayers())
             if (player.isActive()) {
-                VirtualClient targetClient = keyReverseLookup(players, player::equals);
-                requestToClient(targetClient, new ToggleActiveCommand(nickname)); //toggleActive()
+                NetworkSession targetClient = keyReverseLookup(activePlayers, player::equals);
+                targetClient.getListener().notified(new ToggleActiveCommand(nickname)); //toggleActive()
             }
 
-        ((InGamePlayer) players.get(sender)).toggleActive();
+        inactiveSessions.remove(nickname);
+        activePlayers.put(sender, targetPlayer);
+        ((InGamePlayer) activePlayers.get(sender)).toggleActive();
         //FIXME: restoreGame va chiamata anche quando non c'è il gioco ma il file salvato perchè il server era crashato
     }
 
     @Override
-    public void placeCard(VirtualClient sender, GenericPair<Integer, Integer> coordinates, int cardID, Side playedSide) {
+    public void placeCard(NetworkSession sender, GenericPair<Integer, Integer> coordinates, int cardID, Side playedSide) {
         System.out.println("[CLIENT]: PlaceCardCommand received and being executed");
         if (invalidCard(sender, cardID)) return;
 
         if (Arrays.stream(Side.values()).noneMatch((side) -> side.equals(playedSide))) {
-            requestToClient(
-                    sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new IllegalArgumentException("Invalid card side")
                     )
@@ -94,34 +99,32 @@ public class GameController extends ServerController {
             return;
         }
 
-        InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
+        InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
         Card targetCard = ServerModel.cardsList.get(cardID);
 
         if (targetCard instanceof PlayableCard)
             try {
                 currentGameState.placeCard(targetPlayer, coordinates, (PlayableCard) targetCard, playedSide);
             } catch (ForbiddenActionException e) {
-                requestToClient(
-                        sender,
+                sender.getListener().notified(
                         new ThrowExceptionCommand(
                                 new ForbiddenActionException("Cannot place a card in this state")
                         )
                 );
             } catch (UnexpectedPlayerException e) {
-                requestToClient(
-                        sender,
+                sender.getListener().notified(
                         new ThrowExceptionCommand(
                                 new UnexpectedPlayerException("Not this player's turn")
                         )
                 );
             } catch (CardNotInHandException e) {
-                requestToClient(sender,
+                sender.getListener().notified(
                         new ThrowExceptionCommand(
                                 new CardNotInHandException("Card with provided cardID is not in player's hand")
                         )
                 );
             } catch (NotEnoughResourcesException e) {
-                requestToClient(sender,
+                sender.getListener().notified(
                         new ThrowExceptionCommand(
                                 new NotEnoughResourcesException(
                                         "Player doesn't own the required resources to play the provided card"
@@ -129,16 +132,14 @@ public class GameController extends ServerController {
                         )
                 );
             } catch (InvalidCardPositionException e) {
-                requestToClient(
-                        sender,
+                sender.getListener().notified(
                         new ThrowExceptionCommand(
                                 new InvalidCardPositionException("Provided coordinates are not valid for placing a card")
                         )
                 );
             }
         else {
-            requestToClient(
-                    sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new InvalidCardTypeException("Provided card is not of a playable type")
                     )
@@ -147,12 +148,12 @@ public class GameController extends ServerController {
     }
 
     @Override
-    public void pickObjective(VirtualClient sender, int cardID) {
+    public void pickObjective(NetworkSession sender, int cardID) {
         System.out.println("[CLIENT]: PickObjectiveCommand received and being executed");
 
         if (invalidCard(sender, cardID)) return;
 
-        InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
+        InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
         Card targetCard = ServerModel.cardsList.get(cardID);
 
         if (targetCard instanceof ObjectiveCard)
@@ -160,30 +161,26 @@ public class GameController extends ServerController {
                 currentGameState.pickObjective(targetPlayer, (ObjectiveCard) targetCard);
                 //TODO: maybe send a response back to the player?
             } catch (ForbiddenActionException e) {
-                requestToClient(
-                        sender,
+                sender.getListener().notified(
                         new ThrowExceptionCommand(
                                 new ForbiddenActionException("Cannot pick an objective card in this state")
                         )
                 );
             } catch (CardNotInHandException e) {
-                requestToClient(
-                        sender,
+                sender.getListener().notified(
                         new ThrowExceptionCommand(
                                 new CardNotInHandException("Card with provided cardID is not in player's hand")
                         )
                 );
             } catch (AlreadySetCardException e) {
-                requestToClient(
-                        sender,
+                sender.getListener().notified(
                         new ThrowExceptionCommand(
                                 new AlreadySetCardException("Secret objective already chosen")
                         )
                 );
             }
         else {
-            requestToClient(
-                    sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new InvalidCardTypeException("Card with provided cardID is not of type ObjectiveCard")
                     )
@@ -192,37 +189,33 @@ public class GameController extends ServerController {
     }
 
     @Override
-    public void drawFromDeck(VirtualClient sender, String deck) {
+    public void drawFromDeck(NetworkSession sender, String deck) {
         System.out.println("[CLIENT]: DrawFromDeckCommand received and being executed");
 
-        InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
+        InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
 
         try {
             currentGameState.drawFrom(targetPlayer, deck);
         } catch (ForbiddenActionException e) {
-            requestToClient(
-                    sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new ForbiddenActionException("Cannot draw a card from a deck in this state")
                     )
             );
         } catch (UnexpectedPlayerException e) {
-            requestToClient(
-                    sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new UnexpectedPlayerException("Not this player's turn")
                     )
             );
         } catch (UnknownStringException e) {
-            requestToClient(
-                    sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new UnknownStringException("No such deck exists")
                     )
             );
         } catch (EmptyDeckException e) {
-            requestToClient(
-                    sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new EmptyDeckException("Selected deck is empty")
                     )
@@ -231,43 +224,39 @@ public class GameController extends ServerController {
     }
 
     @Override
-    public void drawFromVisibleCards(VirtualClient sender, String deck, int position) {
+    public void drawFromVisibleCards(NetworkSession sender, String deck, int position) {
         System.out.println("[CLIENT]: DrawFromVisibleCardsCommand received and being executed");
 
-        InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
+        InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
 
         try {
             currentGameState.drawFrom(targetPlayer, deck, position);
         } catch (ForbiddenActionException e) {
-            requestToClient(
-                    sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new ForbiddenActionException("Cannot draw a visible card in this state")
                     )
             );
         } catch (UnexpectedPlayerException e) {
-            requestToClient(sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new UnexpectedPlayerException("Not this player's turn")
                     )
             );
         } catch (InvalidDeckPositionException e) {
-            requestToClient(
-                    sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new InvalidDeckPositionException("Cannot understand which card to draw")
                     )
             );
         } catch (UnknownStringException e) {
-            requestToClient(
-                    sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new UnknownStringException("No such placed cards exist")
                     )
             );
         } catch (EmptyDeckException e) {
-            requestToClient(
-                    sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new EmptyDeckException("No card in selected slot")
                     )
@@ -276,13 +265,14 @@ public class GameController extends ServerController {
     }
 
     @Override
-    public void leaveGame(VirtualClient sender) {
+    public void leaveGame(NetworkSession sender) {
         System.out.println("[CLIENT]: LeaveGameCommand received and being executed");
 
-        InGamePlayer targetPlayer = (InGamePlayer) players.get(sender);
+        InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
 
         targetPlayer.toggleActive();
-        players.remove(sender);
+        activePlayers.remove(sender);
+        inactiveSessions.put(targetPlayer.getNickname(), sender);
 
         /*Checking if the disconnection happened during the sender turn. If so:
          * 1. If it was during PlayerTurnPlayState,
@@ -303,50 +293,49 @@ public class GameController extends ServerController {
         System.out.println("[SERVER]: sending ToggleActiveCommand to clients");
 
         for (var player : CONTROLLED_GAME.getActivePlayers()) {
-            VirtualClient targetClient = keyReverseLookup(players, player::equals);
-            requestToClient(targetClient, new ToggleActiveCommand(player.getNickname()));
+            NetworkSession targetClient = keyReverseLookup(activePlayers, player::equals);
+            targetClient.getListener().notified(new ToggleActiveCommand(player.getNickname()));
         }
 
         int activePlayers = CONTROLLED_GAME.getActivePlayers().size();
         if (activePlayers == 1) {
             for (var player : CONTROLLED_GAME.getActivePlayers())
-                requestToClient(keyReverseLookup(players, player::equals), new PauseGameCommand());
+                keyReverseLookup(ServerController.activePlayers, player::equals).getListener().notified(new PauseGameCommand());
 
             currentGameState = new AwaitingReconnectionState(this, CONTROLLED_GAME);
             System.out.println("[SERVER]: Freezing " + CONTROLLED_GAME + " game");
         } else if (activePlayers == 0) {
             ((AwaitingReconnectionState) currentGameState).cancelTimerTask();
             for (var player : CONTROLLED_GAME.getPlayers())
-                playersToControllers.remove(player);
-            model.ROOMS.remove(CONTROLLED_GAME);
+                keyReverseLookup(ServerController.activePlayers, player::equals).setController(ConnectionController.getInstance());
+            model.GAME_CONTROLLERS.remove(keyReverseLookup(model.GAME_CONTROLLERS, this::equals));
         }
     }
 
     @Override
-    public void broadcastMessage(VirtualClient sender, String message) {
+    public void broadcastMessage(NetworkSession sender, String message) {
         System.out.println("[CLIENT]: BroadcastMessageCommand received and being executed");
 
-        InGamePlayer senderPlayer = (InGamePlayer) players.get(sender);
+        InGamePlayer senderPlayer = (InGamePlayer) activePlayers.get(sender);
 
         //Truncating max message length
         message = message.substring(0, Math.min(message.length(), 150));
 
         System.out.println("[SERVER]: sending AddChatMessageCommand to clients");
-        for (var inGamePlayer : ((GameController) playersToControllers.get(players.get(sender))).CONTROLLED_GAME.getPlayers())
+        for (var inGamePlayer : ((GameController) sender.getController()).CONTROLLED_GAME.getPlayers())
             if (inGamePlayer.isActive())
-                requestToClient(
-                        keyReverseLookup(players, inGamePlayer::equals),
+                keyReverseLookup(activePlayers, inGamePlayer::equals).getListener().notified(
                         new AddChatMessageCommand(senderPlayer.getNickname(), message, false)
                 );
     }
 
     @Override
-    public void directMessage(VirtualClient sender, String receiverNickname, String message) {
+    public void directMessage(NetworkSession sender, String receiverNickname, String message) {
         System.out.println("[CLIENT]: DirectMessageCommand received and being executed");
 
-        InGamePlayer senderPlayer = (InGamePlayer) players.get(sender);
+        InGamePlayer senderPlayer = (InGamePlayer) activePlayers.get(sender);
 
-        Optional<Player> selectedPlayer = players.values().stream()
+        Optional<Player> selectedPlayer = activePlayers.values().stream()
                 .filter((player) -> player.getNickname().equals(receiverNickname))
                 .findAny();
 
@@ -355,35 +344,30 @@ public class GameController extends ServerController {
 
         if (selectedPlayer.isPresent()) {
             Player receiverPlayer = selectedPlayer.get();
-            if (((GameController) playersToControllers.get(players.get(sender))).CONTROLLED_GAME
-                    .equals(((GameController) playersToControllers.get(receiverPlayer)).CONTROLLED_GAME)) {
+            if (((GameController) sender.getController()).CONTROLLED_GAME
+                    .equals(((GameController) keyReverseLookup(activePlayers, receiverPlayer::equals).getController()).CONTROLLED_GAME)) {
                 if (((InGamePlayer) receiverPlayer).isActive()) {
                     System.out.println("[SERVER]: sending AddChatMessageCommand to sender and target client");
-                    requestToClient(
-                            sender,
+                    sender.getListener().notified(
                             new AddChatMessageCommand(senderPlayer.getNickname(), message, true)
                     );
-                    requestToClient(
-                            keyReverseLookup(players, receiverPlayer::equals),
+                    keyReverseLookup(activePlayers, receiverPlayer::equals).getListener().notified(
                             new AddChatMessageCommand(senderPlayer.getNickname(), message, true)
                     );
                 } else
-                    requestToClient(
-                            sender,
+                    sender.getListener().notified(
                             new ThrowExceptionCommand(
                                     new UnexpectedPlayerException("Nickname provided has no active player associated in this game")
                             )
                     );
             } else
-                requestToClient(
-                        sender,
+                sender.getListener().notified(
                         new ThrowExceptionCommand(
                                 new NotExistingPlayerException("Nickname provided has no associated player in this game")
                         )
                 );
         } else
-            requestToClient(
-                    sender,
+            sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new NotExistingPlayerException("Nickname provided has no associated player registered")
                     )

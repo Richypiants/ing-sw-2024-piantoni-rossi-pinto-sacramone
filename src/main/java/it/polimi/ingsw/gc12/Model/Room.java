@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Model;
 
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Listeners.Listenable;
 import it.polimi.ingsw.gc12.Listeners.Listener;
 
@@ -13,6 +14,7 @@ public abstract class Room implements Serializable, Listenable {
      * The list of players who have already joined this lobby.
      */
     protected final List<Player> LIST_OF_PLAYERS;
+
     //FIXME: don't want to serialize these, how to remove from serialized GameLobby? is transient correct?
     private transient final List<Listener> ROOM_LISTENERS;
 
@@ -50,8 +52,8 @@ public abstract class Room implements Serializable, Listenable {
     }
 
     @Override
-    public void notifyListeners() {
+    public void notifyListeners(ClientCommand command) {
         for (var listener : ROOM_LISTENERS)
-            listener.notified();
+            listener.notified(command);
     }
 }

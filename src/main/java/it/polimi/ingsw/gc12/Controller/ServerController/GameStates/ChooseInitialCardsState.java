@@ -8,7 +8,7 @@ import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.ServerModel;
-import it.polimi.ingsw.gc12.Network.VirtualClient;
+import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
@@ -36,12 +36,9 @@ public class ChooseInitialCardsState extends GameState {
         target.placeCard(new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), playedSide);
 
         for (var player : GAME.getActivePlayers())
-            try {
-                GameController.requestToClient(keyReverseLookup(GameController.players, player::equals), new PlaceCardCommand(target.getNickname(), coordinates, card.ID, playedSide,
+            keyReverseLookup(GameController.activePlayers, player::equals).getListener().notified(
+                    new PlaceCardCommand(target.getNickname(), coordinates, card.ID, playedSide,
                                 target.getOwnedResources(), target.getOpenCorners(), target.getPoints()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
         if(GAME.getPlayers().stream()
                 .map((player) -> player.getPlacedCards().containsKey(new GenericPair<>(0, 0)))
@@ -77,19 +74,13 @@ public class ChooseInitialCardsState extends GameState {
 
         for (InGamePlayer target : GAME.getActivePlayers()) {
             System.out.println("[SERVER]: Sending cards in hand to active clients in " + GAME.toString());
-            //TODO: manage exceptions
-            try {
-                GameController.requestToClient(
-                        keyReverseLookup(GameController.players, target::equals),
+            keyReverseLookup(GameController.activePlayers, target::equals).getListener().notified(
                         new ReceiveCardCommand(
                                 target.getCardsInHand().stream()
                                         .map((card) -> card.ID)
                                         .toList()
                         )
                 );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
         CardDeck<ObjectiveCard> objectivesDeck = new CardDeck<>(ServerModel.cardsList.values().stream()
@@ -128,14 +119,13 @@ public class ChooseInitialCardsState extends GameState {
         for (var targetPlayer : GAME.getActivePlayers()) {
             //TODO: manage exceptions
             try {
-                VirtualClient target = keyReverseLookup(GameController.players, targetPlayer::equals);
+                NetworkSession target = keyReverseLookup(GameController.activePlayers, targetPlayer::equals);
                 //Sending the common objective cards and the Top of the Deck
-                GameController.requestToClient(target, new ReplaceCardCommand(topDeckAndObjectiveCardPlacements));
+                target.getListener().notified(new ReplaceCardCommand(topDeckAndObjectiveCardPlacements));
                 //Request view state transition to client
-                GameController.requestToClient(target, new GameTransitionCommand());
+                target.getListener().notified(new GameTransitionCommand());
                 //Sending the personal objective selection
-                GameController.requestToClient(
-                        target,
+                target.getListener().notified(
                         new ReceiveObjectiveChoice(
                                 objectivesSelection.get(targetPlayer).stream()
                                         .map((card) -> card.ID)

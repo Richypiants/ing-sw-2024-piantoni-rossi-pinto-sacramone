@@ -7,7 +7,7 @@ import it.polimi.ingsw.gc12.Network.VirtualClient;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public abstract class Listener {
+public class Listener {
 
     private final static ExecutorService LISTENERS_EXECUTORS_POOL = Executors.newCachedThreadPool(); //TODO: decidere come farla e se è necessaria;
 
@@ -17,9 +17,12 @@ public abstract class Listener {
         this.CLIENT = client;
     }
 
-    public abstract void notified();
+    public VirtualClient getVirtualClient() {
+        return CLIENT;
+    }
 
-    public void requestToClient(ClientCommand command) {
+    public void notified(ClientCommand command) {
         ServerController.requestToClient(CLIENT, command);
     }
+
 }

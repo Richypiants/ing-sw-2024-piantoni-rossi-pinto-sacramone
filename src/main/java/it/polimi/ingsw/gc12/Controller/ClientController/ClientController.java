@@ -16,7 +16,7 @@ import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Room;
 import it.polimi.ingsw.gc12.Network.Client.RMIClientSkeleton;
 import it.polimi.ingsw.gc12.Network.Client.SocketClient;
-import it.polimi.ingsw.gc12.Network.VirtualClient;
+import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Network.VirtualServer;
 import it.polimi.ingsw.gc12.Utilities.*;
 
@@ -36,7 +36,7 @@ public class ClientController implements ClientControllerInterface {
     public ViewState viewState;
     public String serverIPAddress = "localhost";
     public VirtualServer serverConnection;
-    public VirtualClient thisClient;
+    public NetworkSession thisClient;
     public Thread keepAlive;
     public ViewModel viewModel;
     public ErrorLogger errorLogger;
@@ -77,7 +77,7 @@ public class ClientController implements ClientControllerInterface {
     //Helper method to catch RemoteException (and eventually other ones) only one time
     public void requestToServer(ServerCommand command) {
         try {
-            serverConnection.requestToServer(thisClient, command);
+            serverConnection.requestToServer(command);
         } catch (Exception e) {
             errorLogger.log(e);
         }

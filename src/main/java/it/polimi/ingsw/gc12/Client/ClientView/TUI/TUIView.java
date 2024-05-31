@@ -215,7 +215,7 @@ public class TUIView extends View {
                             'createLobby <maxPlayers>' per creare una lobby,
                             'joinLobby <lobbyUUID>' per joinare una lobby esistente,
                             'setNickname <newNickname>' per cambiare il proprio nickname,
-                                    'selectColor <color> per scegliere un colore tra quelli disponibili,
+                                    'selectColor <color>' per scegliere un colore tra quelli disponibili,
                             'leaveLobby' per lasciare la lobby in cui si e' attualmente,
                             'quit' per ritornare alla schermata del titolo
                 """

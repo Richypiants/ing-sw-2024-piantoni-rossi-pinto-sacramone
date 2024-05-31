@@ -6,7 +6,7 @@ import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Network.VirtualClient;
+import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -66,10 +66,9 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
         for (var targetPlayer : activePlayers) {
             //TODO: manage exceptions
             try {
-                VirtualClient target = keyReverseLookup(GameController.players, targetPlayer::equals);
+                NetworkSession target = keyReverseLookup(GameController.activePlayers, targetPlayer::equals);
 
-                GameController.requestToClient(
-                        target,
+                target.getListener().notified(
                         new GameTransitionCommand(
                                 turnNumber,
                                 indexOfCurrentPlayer

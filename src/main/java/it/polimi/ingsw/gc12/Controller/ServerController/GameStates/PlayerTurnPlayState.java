@@ -33,8 +33,7 @@ public class PlayerTurnPlayState extends GameState {
         System.out.println("[SERVER]: Sending card placed by current player to clients in "+ GAME.toString());
         for (var player : GAME.getActivePlayers())
             try {
-                GameController.requestToClient(
-                        keyReverseLookup(GameController.players, player::equals),
+                keyReverseLookup(GameController.activePlayers, player::equals).getListener().notified(
                         new PlaceCardCommand(target.getNickname(), coordinates, card.ID, playedSide,
                                 target.getOwnedResources(), target.getOpenCorners(), target.getPoints()));
             } catch (Exception e) {

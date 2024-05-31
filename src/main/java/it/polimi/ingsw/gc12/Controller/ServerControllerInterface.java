@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Controller;
 
-import it.polimi.ingsw.gc12.Network.VirtualClient;
+import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.Color;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -9,31 +9,31 @@ import java.util.UUID;
 
 public interface ServerControllerInterface extends ControllerInterface {
 
-    void createPlayer(VirtualClient sender, String nickname);
+    void createPlayer(NetworkSession sender, String nickname);
 
-    void setNickname(VirtualClient sender, String nickname);
+    void setNickname(NetworkSession sender, String nickname);
 
-    void keepAlive(VirtualClient sender);
+    void keepAlive(NetworkSession sender);
 
-    void createLobby(VirtualClient sender, int maxPlayers);
+    void createLobby(NetworkSession sender, int maxPlayers);
 
-    void joinLobby(VirtualClient sender, UUID lobbyUUID);
+    void joinLobby(NetworkSession sender, UUID lobbyUUID);
 
-    void pickColor(VirtualClient sender, Color color);
+    void pickColor(NetworkSession sender, Color color);
 
-    void leaveLobby(VirtualClient sender, boolean isInactive);
+    void leaveLobby(NetworkSession sender, boolean isInactive);
 
-    void pickObjective(VirtualClient sender, int cardID);
+    void pickObjective(NetworkSession sender, int cardID);
 
-    void placeCard(VirtualClient sender, GenericPair<Integer, Integer> coordinates, int cardID, Side playedSide);
+    void placeCard(NetworkSession sender, GenericPair<Integer, Integer> coordinates, int cardID, Side playedSide);
 
-    void drawFromDeck(VirtualClient sender, String deck);
+    void drawFromDeck(NetworkSession sender, String deck);
 
-    void drawFromVisibleCards(VirtualClient sender, String deck, int position);
+    void drawFromVisibleCards(NetworkSession sender, String deck, int position);
 
-    void leaveGame(VirtualClient sender);
+    void leaveGame(NetworkSession sender);
 
-    void directMessage(VirtualClient sender, String receiverNickname, String message);
+    void directMessage(NetworkSession sender, String receiverNickname, String message);
 
-    void broadcastMessage(VirtualClient sender, String message);
+    void broadcastMessage(NetworkSession sender, String message);
 }

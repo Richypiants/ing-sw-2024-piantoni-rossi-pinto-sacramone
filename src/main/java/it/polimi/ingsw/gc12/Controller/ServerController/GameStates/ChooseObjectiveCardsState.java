@@ -39,8 +39,7 @@ public class ChooseObjectiveCardsState extends GameState {
 
         if(targetPlayer.isActive()) {
             try {
-                GameController.requestToClient(
-                        keyReverseLookup(GameController.players, targetPlayer::equals),
+                keyReverseLookup(GameController.activePlayers, targetPlayer::equals).getListener().notified(
                         new ConfirmSelectionCommand(objective.ID));
             } catch (Exception e) {
                 throw new RuntimeException(e);

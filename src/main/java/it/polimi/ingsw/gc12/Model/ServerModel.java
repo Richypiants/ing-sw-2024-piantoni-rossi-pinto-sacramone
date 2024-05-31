@@ -1,6 +1,9 @@
 package it.polimi.ingsw.gc12.Model;
 
 import com.google.gson.reflect.TypeToken;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
+import it.polimi.ingsw.gc12.Controller.ServerController.LobbyController;
 import it.polimi.ingsw.gc12.Listeners.Listenable;
 import it.polimi.ingsw.gc12.Listeners.Listener;
 import it.polimi.ingsw.gc12.Model.Cards.*;
@@ -15,12 +18,14 @@ public class ServerModel implements Listenable {
     public static final Map<Integer, Card> cardsList = loadModelCards();
     public static final Map<Integer, ClientCard> clientCardsList = loadClientCards();
 
-    public final Map<UUID, Room> ROOMS;
-    public final List<Listener> ROOMS_LISTENERS;
+    public final Map<UUID, LobbyController> LOBBY_CONTROLLERS;
+    public final Map<UUID, GameController> GAME_CONTROLLERS;
+    public final List<Listener> LOBBIES_LISTENERS;
 
     public ServerModel() {
-        ROOMS = new HashMap<>();
-        ROOMS_LISTENERS = new ArrayList<>();
+        LOBBY_CONTROLLERS = new HashMap<>();
+        GAME_CONTROLLERS = new HashMap<>();
+        LOBBIES_LISTENERS = new ArrayList<>();
     }
 
     private static Map<Integer, Card> loadModelCards() {
@@ -53,17 +58,17 @@ public class ServerModel implements Listenable {
 
     @Override
     public void addListener(Listener listener) {
-        ROOMS_LISTENERS.add(listener);
+        LOBBIES_LISTENERS.add(listener);
     }
 
     @Override
     public void removeListener(Listener listener) {
-        ROOMS_LISTENERS.remove(listener);
+        LOBBIES_LISTENERS.remove(listener);
     }
 
     @Override
-    public void notifyListeners() {
-        for (var listener : ROOMS_LISTENERS)
-            listener.notified();
+    public void notifyListeners(ClientCommand command) {
+        for (var listener : LOBBIES_LISTENERS)
+            listener.notified(command);
     }
 }

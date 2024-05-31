@@ -1,5 +1,10 @@
 package it.polimi.ingsw.gc12.Network.Server;
 
+import it.polimi.ingsw.gc12.Controller.ServerController.ConnectionController;
+import it.polimi.ingsw.gc12.Network.RMIMainServer;
+import it.polimi.ingsw.gc12.Network.RMIVirtualClient;
+import it.polimi.ingsw.gc12.Network.RMIVirtualServer;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -7,12 +12,13 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class Server implements Runnable {
+public class Server implements Runnable, RMIMainServer {
 
     private final static Server SINGLETON_SERVER = new Server();
     public final ExecutorService connectionExecutorsPool;
@@ -30,10 +36,11 @@ public class Server implements Runnable {
     public void run() {
         //RMI server setup
         System.setProperty("java.rmi.server.hostname", serverIPAddress);
-        Registry registry = null;
+        Registry registry;
         try {
             registry = LocateRegistry.createRegistry(5001);
-            registry.rebind("codex_naturalis_rmi", RMIServerStub.getInstance());
+            registry.rebind("codex_naturalis_rmi", this);
+            UnicastRemoteObject.exportObject(this, 5001);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -61,11 +68,10 @@ public class Server implements Runnable {
                         () -> {
                             SocketClientHandler clientHandler;
                             try {
-                                clientHandler = new SocketClientHandler(client);
+                                clientHandler = new SocketClientHandler(client, ConnectionController.getInstance());
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
-
 
                             while(true) {
                                 try {
@@ -88,5 +94,10 @@ public class Server implements Runnable {
 
     public static Server getInstance() {
         return SINGLETON_SERVER;
+    }
+
+    @Override
+    public RMIVirtualServer accept(RMIVirtualClient client) {
+        return new RMIServerStub(client, ConnectionController.getInstance());
     }
 }

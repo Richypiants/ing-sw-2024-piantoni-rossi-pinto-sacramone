@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 public interface RMIVirtualServer extends Remote, VirtualServer {
 
     @Override
-    void requestToServer(VirtualClient caller, ServerCommand command) throws RemoteException;
+    void requestToServer(ServerCommand command) throws RemoteException;
 
     //FIXME: useless for RMI, but it has to be here...
     @Override

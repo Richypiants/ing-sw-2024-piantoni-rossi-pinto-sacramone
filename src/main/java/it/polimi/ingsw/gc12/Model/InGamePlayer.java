@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc12.Model;
 
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveCardCommand;
 import it.polimi.ingsw.gc12.Listeners.Listenable;
 import it.polimi.ingsw.gc12.Listeners.Listener;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
@@ -212,6 +214,8 @@ public class InGamePlayer extends Player implements Listenable {
      */
     public void addCardToHand(PlayableCard pickedCard) {
         CARDS_IN_HAND.add(pickedCard);
+        for (var listener : PLAYER_LISTENERS)
+            listener.notified(new ReceiveCardCommand(List.of(pickedCard.ID)));
     }
 
     /**
@@ -282,16 +286,17 @@ public class InGamePlayer extends Player implements Listenable {
 
     @Override
     public void addListener(Listener listener) {
-
+        PLAYER_LISTENERS.add(listener);
     }
 
     @Override
     public void removeListener(Listener listener) {
-
+        PLAYER_LISTENERS.remove(listener);
     }
 
     @Override
-    public void notifyListeners() {
-
+    public void notifyListeners(ClientCommand command) {
+        for (var listener : PLAYER_LISTENERS)
+            listener.notified(command);
     }
 }

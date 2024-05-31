@@ -4,12 +4,13 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseObjectiveCardsState;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
+import it.polimi.ingsw.gc12.Listeners.Listener;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Model.*;
-import it.polimi.ingsw.gc12.Network.VirtualClient;
+import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -32,37 +33,48 @@ class ClientGameTest {
     Lobby lobby;
     Game game;
     ClientGame clientGame;
-    VirtualClient client1;
-    VirtualClient client2;
+    GameController gameController;
+    NetworkSession client1;
+    NetworkSession client2;
     ChooseObjectiveCardsState state;
 
 
     @BeforeEach
     void setGameParameters() throws Exception {
-        player1 = new Player("Sacri");
-        player2 = new Player("Piants");
-        lobby = new Lobby(player1, 2);
-        game = new Game(lobby);
 
         resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {});
         goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {});
         initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {});
         objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {});
 
-        client1 = command -> {
-        };
-        client2 = command -> {
-        };
-
-        model = new ServerModel();
+        player1 = new Player("giovanni");
+        player2 = new Player("paolo");
+        lobby = new Lobby(player1, 2);
+        lobby.addPlayer(player2);
+        game = new Game(lobby);
 
         UUID lobbyUUID = UUID.randomUUID();
-        model.ROOMS.put(lobbyUUID, game);
-        ServerController.players.put(client1, game.getPlayers().getFirst());
-        ServerController.players.put(client2, game.getPlayers().getLast());
-        GameController gameController = new GameController(game);
-        ServerController.playersToControllers.put(game.getPlayers().getFirst(), gameController);
-        ServerController.playersToControllers.put(game.getPlayers().getLast(), gameController);
+
+        gameController = new GameController(game);
+        ServerController.model.GAME_CONTROLLERS.put(lobbyUUID, gameController);
+
+        client1 = new NetworkSession(gameController) {
+            @Override
+            protected Listener createListener() {
+                return new Listener(command -> {
+                });
+            }
+        };
+        client2 = new NetworkSession(gameController) {
+            @Override
+            protected Listener createListener() {
+                return new Listener(command -> {
+                });
+            }
+        };
+
+        ServerController.activePlayers.put(client1, game.getPlayers().get(0));
+        ServerController.activePlayers.put(client2, game.getPlayers().get(1));
         gameController.getCurrentState().transition();
 
         int i = 0;
