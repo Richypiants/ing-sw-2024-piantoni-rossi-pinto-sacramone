@@ -111,10 +111,8 @@ public class LobbyController extends ServerController {
         }
 
         if (isInactive){
-            disconnectionRoutine(sender);
             activePlayers.remove(sender);
         }
-
 
         System.out.println("[SERVER]: sending UpdateLobbiesCommand to clients");
 

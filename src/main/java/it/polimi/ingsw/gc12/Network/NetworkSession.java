@@ -37,7 +37,7 @@ public abstract class NetworkSession implements Serializable {
         return timeoutTask;
     }
 
-    public void renewTimeoutTimerTask(TimerTask timeoutTask) {
+    public void scheduleTimeoutTimerTask(TimerTask timeoutTask) {
         this.timeoutTask = timeoutTask;
         Timer timer = new Timer(true);
         timer.schedule(timeoutTask, SESSION_TIMEOUT);

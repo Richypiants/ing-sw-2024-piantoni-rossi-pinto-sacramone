@@ -44,10 +44,12 @@ public abstract class ServerController implements ServerControllerInterface {
                         leaveGame(target);
                     else if (thisController instanceof LobbyController)
                         leaveLobby(target, true);
+
+                    cancel();
             }
         };
 
-        target.renewTimeoutTimerTask(timeoutTask);
+        target.scheduleTimeoutTimerTask(timeoutTask);
     }
 
     public void keepAlive(NetworkSession sender) {
@@ -56,10 +58,6 @@ public abstract class ServerController implements ServerControllerInterface {
         sender.getTimeoutTask().cancel();
         renewTimeoutTimerTask(sender);
         System.out.println("[CLIENT]: keepAlive command received from " + sender + ". Resetting timeout");
-    }
-
-    public void disconnectionRoutine(NetworkSession target) {
-        target.getTimeoutTask().cancel();
     }
 
     protected void generatePlayer(NetworkSession sender, String nickname) {

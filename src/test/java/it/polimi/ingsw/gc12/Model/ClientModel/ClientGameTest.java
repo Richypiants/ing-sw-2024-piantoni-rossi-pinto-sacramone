@@ -49,8 +49,10 @@ class ClientGameTest {
 
         player1 = new Player("giovanni");
         player2 = new Player("paolo");
+
         lobby = new Lobby(player1, 2);
         lobby.addPlayer(player2);
+
         game = new Game(lobby);
 
         UUID lobbyUUID = UUID.randomUUID();
@@ -147,7 +149,7 @@ class ClientGameTest {
         assertEquals(roundNumberTest, clientGame.getCurrentRound());
 
         assertEquals(2, clientGame.getMaxPlayers());
-        assertEquals(1, clientGame.getPlayersNumber());
+        assertEquals(2, clientGame.getPlayersNumber());
     }
 
     @Test

@@ -56,14 +56,14 @@ class VictoryCalculationStateTest {
 
     @BeforeEach
     void setGameParameters() throws Exception {
-        ObjectiveCard[] objectiveCards1 = new ObjectiveCard[]{objectiveCards.get(4), objectiveCards.get(5)};
-        game.setCommonObjectives(objectiveCards1);
-
         player1 = new Player("giovanni");
         player2 = new Player("paolo");
         lobby = new Lobby(player1, 2);
         lobby.addPlayer(player2);
         game = new Game(lobby);
+
+        ObjectiveCard[] objectiveCards1 = new ObjectiveCard[]{objectiveCards.get(4), objectiveCards.get(5)};
+        game.setCommonObjectives(objectiveCards1);
 
         UUID lobbyUUID = UUID.randomUUID();
 

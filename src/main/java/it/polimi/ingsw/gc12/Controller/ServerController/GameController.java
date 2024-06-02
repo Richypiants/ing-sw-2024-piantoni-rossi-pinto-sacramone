@@ -272,6 +272,7 @@ public class GameController extends ServerController {
 
         targetPlayer.toggleActive();
         activePlayers.remove(sender);
+        sender.getTimeoutTask().cancel();
         inactiveSessions.put(targetPlayer.getNickname(), sender);
 
         /*Checking if the disconnection happened during the sender turn. If so:
