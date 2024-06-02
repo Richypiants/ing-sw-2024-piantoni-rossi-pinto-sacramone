@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ConfirmSelectionCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Game;
@@ -10,8 +9,6 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 
 import java.util.ArrayList;
 import java.util.Map;
-
-import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class ChooseObjectiveCardsState extends GameState {
 
@@ -36,15 +33,6 @@ public class ChooseObjectiveCardsState extends GameState {
             targetPlayer.setSecretObjective(objective);
         else
             throw new AlreadySetCardException();
-
-        if(targetPlayer.isActive()) {
-            try {
-                keyReverseLookup(GameController.activePlayers, targetPlayer::equals).getListener().notified(
-                        new ConfirmSelectionCommand(objective.ID));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
 
         if(GAME.getPlayers().stream()
                 .map((player) -> player.getSecretObjective() != null)
@@ -71,6 +59,7 @@ public class ChooseObjectiveCardsState extends GameState {
     @Override
     public void transition() {
         System.out.println("[SERVER]: Sending GameTransitionCommand to active clients in "+ GAME.toString());
+        //FIXME: should we notify listeners for this too?
         GAME.increaseRound();
         GAME.nextPlayer();
         notifyTransition(GAME.getActivePlayers(), GAME.getRoundNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));

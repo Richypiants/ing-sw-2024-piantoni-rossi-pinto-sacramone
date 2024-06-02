@@ -60,15 +60,8 @@ public class VictoryCalculationState extends GameState {
 
         System.out.println("[SERVER]: Sending leaderboard stats to clients in "+ GAME.toString());
         //TODO : Handle exceptions in the correct way and not like this
-        try {
-            // Sending leaderboard stats
-            for (var target : GAME.getActivePlayers()) {
-                keyReverseLookup(GameController.activePlayers, target::equals).getListener().notified(
-                        new EndGameCommand(pointsStats, gameEndedDueToDisconnections));
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
+        // Sending leaderboard stats
+        GAME.notifyListeners(new EndGameCommand(pointsStats, gameEndedDueToDisconnections));
 
         //TODO: here we should destroy the file with the saved serialized data
 

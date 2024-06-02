@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveCardCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReplaceCardCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
@@ -113,26 +112,13 @@ public class PlayerTurnDrawState extends GameState {
 
         System.out.println("[SERVER]: Sending drawn card to current player and new top deck card to clients in "+ GAME.toString());
         for (var player : GAME.getActivePlayers()) {
-            if (player.equals(target))
-                try {
-                    keyReverseLookup(GameController.activePlayers, target::equals).getListener().notified(
-                            new ReceiveCardCommand(List.of(drawnCard.ID))
-                    );
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-
-            try {
-                keyReverseLookup(GameController.activePlayers, player::equals).getListener().notified(
-                        new ReplaceCardCommand(
-                                List.of(
-                                        new Triplet<>(topDeck.ID, deck + "_deck", -1)
-                                )
-                        )
-                );
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            keyReverseLookup(GameController.activePlayers, player::equals).getListener().notified(
+                    new ReplaceCardCommand(
+                            List.of(
+                                    new Triplet<>(topDeck.ID, deck + "_deck", -1)
+                            )
+                    )
+            );
         }
 
         transition();
@@ -183,34 +169,21 @@ public class PlayerTurnDrawState extends GameState {
 
         System.out.println("[SERVER]: Sending drawn card to current player and new visible card to clients in "+ GAME.toString());
         for (var player : GAME.getActivePlayers()) {
-            if (player.equals(target))
-                try {
-                    keyReverseLookup(GameController.activePlayers, target::equals).getListener().notified(
-                            new ReceiveCardCommand(List.of(drawnCard.ID))
-                    );
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-
-            try {
-                NetworkSession receiver = keyReverseLookup(GameController.activePlayers, player::equals);
-                receiver.getListener().notified(
-                        new ReplaceCardCommand(
+            NetworkSession receiver = keyReverseLookup(GameController.activePlayers, player::equals);
+            receiver.getListener().notified(
+                    new ReplaceCardCommand(
                             List.of(
-                                new Triplet<>(replacingCard.ID, whichType + "_visible", position)
+                                    new Triplet<>(replacingCard.ID, whichType + "_visible", position)
                             )
-                        )
-                );
-                receiver.getListener().notified(
-                         new ReplaceCardCommand(
+                    )
+            );
+            receiver.getListener().notified(
+                    new ReplaceCardCommand(
                             List.of(
-                                new Triplet<>(topDeck.ID, whichType + "_deck", -1)
+                                    new Triplet<>(topDeck.ID, whichType + "_deck", -1)
                             )
-                         )
-                );
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+                    )
+            );
         }
 
         transition();
@@ -251,32 +224,29 @@ public class PlayerTurnDrawState extends GameState {
         if(drawnCard != null) {
             //Sending the updated cards to clients and the new TopDeck Card if a drawnAction has been done
             for (var player : GAME.getActivePlayers()) {
-
-                try {
-                    NetworkSession receiver = keyReverseLookup(GameController.activePlayers, player::equals);
-                    if (replacingCard != null)
-                        receiver.getListener().notified(
-                                new ReplaceCardCommand(
-                                        List.of(
-                                                new Triplet<>(replacingCard.ID, currentActionFormat.getY().STRING_MESSAGE + "_visible", currentActionFormat.getZ())
-                                        )
-                                )
-                        );
-                    if (topDeck == null)
-                        topDeck = switch (currentActionFormat.getY()) {
-                            case Deck.RESOURCE, Deck.VISIBLE_RESOURCE -> new ResourceCard(-1,0, new HashMap<>(), new HashMap<>());
-                            case Deck.GOLD, Deck.VISIBLE_GOLD -> new GoldCard(-1, 0, new HashMap<>(), new HashMap<>(), null, null);
-                        };
+                NetworkSession receiver = keyReverseLookup(GameController.activePlayers, player::equals);
+                if (replacingCard != null)
                     receiver.getListener().notified(
                             new ReplaceCardCommand(
                                     List.of(
-                                            new Triplet<>(topDeck.ID, currentActionFormat.getY().STRING_MESSAGE + "_deck", -1)
+                                            new Triplet<>(replacingCard.ID, currentActionFormat.getY().STRING_MESSAGE + "_visible", currentActionFormat.getZ())
                                     )
                             )
                     );
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                if (topDeck == null)
+                    topDeck = switch (currentActionFormat.getY()) {
+                        case Deck.RESOURCE, Deck.VISIBLE_RESOURCE ->
+                                new ResourceCard(-1, 0, new HashMap<>(), new HashMap<>());
+                        case Deck.GOLD, Deck.VISIBLE_GOLD ->
+                                new GoldCard(-1, 0, new HashMap<>(), new HashMap<>(), null, null);
+                    };
+                receiver.getListener().notified(
+                        new ReplaceCardCommand(
+                                List.of(
+                                        new Triplet<>(topDeck.ID, currentActionFormat.getY().STRING_MESSAGE + "_deck", -1)
+                                )
+                        )
+                );
             }
         }
 

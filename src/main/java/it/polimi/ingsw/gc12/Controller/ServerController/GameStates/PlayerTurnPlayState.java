@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.PlaceCardCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
@@ -11,8 +10,6 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
-
-import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class PlayerTurnPlayState extends GameState {
 
@@ -28,17 +25,9 @@ public class PlayerTurnPlayState extends GameState {
         if (!target.equals(GAME.getCurrentPlayer()))
             throw new UnexpectedPlayerException();
 
-        target.placeCard(coordinates, card, playedSide);
+        GAME.placeCard(target, coordinates, card, playedSide);
 
         System.out.println("[SERVER]: Sending card placed by current player to clients in "+ GAME.toString());
-        for (var player : GAME.getActivePlayers())
-            try {
-                keyReverseLookup(GameController.activePlayers, player::equals).getListener().notified(
-                        new PlaceCardCommand(target.getNickname(), coordinates, card.ID, playedSide,
-                                target.getOwnedResources(), target.getOpenCorners(), target.getPoints()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
         transition();
         //FIXME: controllare che non si possa giocare due carte nello stesso turno! in teoria rendendo atomica

@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc12.Controller.Commands.Command;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
 import it.polimi.ingsw.gc12.Listeners.Listener;
+import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Network.SocketHandler;
 import it.polimi.ingsw.gc12.Network.VirtualServer;
 
@@ -41,7 +42,7 @@ public class SocketServerHandler extends SocketHandler implements VirtualServer 
     }
 
     @Override
-    protected Listener createListener() {
+    protected Listener createListener(NetworkSession session) {
         return null;
     }
 }

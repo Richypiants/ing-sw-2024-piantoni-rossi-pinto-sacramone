@@ -1,10 +1,14 @@
 package it.polimi.ingsw.gc12.Model;
 
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.PlaceCardCommand;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
@@ -280,6 +284,13 @@ public class Game extends Room {
         COMMON_OBJECTIVES[1] = objectives[1];
     }
 
+    public void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
+            throws InvalidCardPositionException, NotEnoughResourcesException, CardNotInHandException {
+        target.placeCard(coordinates, card, playedSide);
+        notifyListeners(new PlaceCardCommand(target.getNickname(), coordinates, card.ID, playedSide,
+                target.getOwnedResources(), target.getOpenCorners(), target.getPoints()));
+    }
+
     /**
      * Draws a card from the specified deck.
      *
@@ -345,7 +356,6 @@ public class Game extends Room {
      * @param receiver The player for whom the DTO is created. The relevant information in the DTO will pertain to this player.
      * @return A Client instance containing the necessary information for the specified player.
      */
-
     public ClientGame generateDTO(InGamePlayer receiver) {
         Map<Integer, ClientCard> clientCards = ServerModel.clientCardsList;
         var players = this.getPlayers().stream()

@@ -1,20 +1,17 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
 import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Model.ServerModel;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
-import it.polimi.ingsw.gc12.Network.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.Color;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.ForbiddenActionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotExistingPlayerException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
-import java.io.IOException;
 import java.util.*;
 
 /*TODO: In case of high traffic volumes on network, we can reduce it by sending the updates to lobby states (creation, updates) only to clients
@@ -25,23 +22,6 @@ public abstract class ServerController implements ServerControllerInterface {
 
     public static final Map<NetworkSession, Player> activePlayers = new HashMap<>();
     public static final Map<String, NetworkSession> inactiveSessions = new HashMap<>();
-    //TODO: need an inactiveGamePlayerSessions map to restoreGame after reconnections! or maybe a map to store all controllers...?
-
-    public static final Map<VirtualClient, TimerTask> timeoutTasks = new HashMap<>();
-    public static final long TIMEOUT_TASK_EXECUTION_AFTER = 30000;
-
-    //Helper method to catch RemoteException (and eventually other ones) only one time
-    public static void requestToClient(VirtualClient client, ClientCommand command) {
-        try {
-            client.requestToClient(command);
-        } catch (IOException e) {
-            //If communication is closed, the target has lost an update, so in case he reconnects, its game is inconsistent, we must send the update,
-            //so the TimeoutTask routine has to be instantly executed.
-            timeoutTasks.get(client).run();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     protected boolean hasNoPlayer(NetworkSession client) {
         if (!activePlayers.containsKey(client)) {
@@ -55,8 +35,7 @@ public abstract class ServerController implements ServerControllerInterface {
         return false;
     }
 
-    protected void renewTimeoutTimerTask(NetworkSession target) {
-        Timer timer = new Timer(true);
+    private void renewTimeoutTimerTask(NetworkSession target) {
         TimerTask timeoutTask = new TimerTask() {
             @Override
             public void run() {
@@ -67,27 +46,20 @@ public abstract class ServerController implements ServerControllerInterface {
                         leaveLobby(target, true);
             }
         };
-        timer.schedule(timeoutTask, TIMEOUT_TASK_EXECUTION_AFTER);
 
-        timeoutTasks.put(target.getListener().getVirtualClient(), timeoutTask);
+        target.renewTimeoutTimerTask(timeoutTask);
     }
 
     public void keepAlive(NetworkSession sender) {
         if (hasNoPlayer(sender)) return;
 
-        if (timeoutTasks.containsKey(sender.getListener().getVirtualClient())) {
-            timeoutTasks.get(sender.getListener().getVirtualClient()).cancel();
-            timeoutTasks.remove(sender.getListener().getVirtualClient());
-            renewTimeoutTimerTask(sender);
-        }
+        sender.getTimeoutTask().cancel();
+        renewTimeoutTimerTask(sender);
         System.out.println("[CLIENT]: keepAlive command received from " + sender + ". Resetting timeout");
     }
 
     public void disconnectionRoutine(NetworkSession target) {
-        System.out.println("[SERVER] Removing the entry of " + target + " since it didn't send any keepAlive in " + TIMEOUT_TASK_EXECUTION_AFTER/1000
-                + " seconds or the game has sent an update and its state is inconsistent.");
-        timeoutTasks.get(target.getListener().getVirtualClient()).cancel();
-        timeoutTasks.remove(target.getListener().getVirtualClient());
+        target.getTimeoutTask().cancel();
     }
 
     protected void generatePlayer(NetworkSession sender, String nickname) {

@@ -20,7 +20,7 @@ public class RMIServerStub extends NetworkSession implements RMIVirtualServer {
     public RMIServerStub(RMIVirtualClient client, ControllerInterface controller) {
         super(controller);
         this.CLIENT = client;
-        this.listener = createListener();
+        this.listener = createListener(this);
         try {
             UnicastRemoteObject.exportObject(this, 0);
         } catch (RemoteException e) {
@@ -29,8 +29,8 @@ public class RMIServerStub extends NetworkSession implements RMIVirtualServer {
     }
 
     @Override
-    protected Listener createListener() {
-        return new Listener(CLIENT);
+    protected Listener createListener(NetworkSession session) {
+        return new Listener(this, CLIENT);
     }
 
     @Override

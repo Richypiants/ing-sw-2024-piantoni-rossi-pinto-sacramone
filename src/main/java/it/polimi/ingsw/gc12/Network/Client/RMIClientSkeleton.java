@@ -47,7 +47,7 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
     }
 
     @Override
-    protected Listener createListener() {
+    protected Listener createListener(NetworkSession session) {
         //TODO: maybe set something here for this class too?
         return null;
     }

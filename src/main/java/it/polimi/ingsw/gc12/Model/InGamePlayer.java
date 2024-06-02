@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Model;
 
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ConfirmSelectionCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveCardCommand;
 import it.polimi.ingsw.gc12.Listeners.Listenable;
 import it.polimi.ingsw.gc12.Listeners.Listener;
@@ -214,8 +215,7 @@ public class InGamePlayer extends Player implements Listenable {
      */
     public void addCardToHand(PlayableCard pickedCard) {
         CARDS_IN_HAND.add(pickedCard);
-        for (var listener : PLAYER_LISTENERS)
-            listener.notified(new ReceiveCardCommand(List.of(pickedCard.ID)));
+        notifyListeners(new ReceiveCardCommand(List.of(pickedCard.ID)));
     }
 
     /**
@@ -271,6 +271,7 @@ public class InGamePlayer extends Player implements Listenable {
      */
     public void setSecretObjective(ObjectiveCard objectiveCard) {
         this.secretObjective = objectiveCard;
+        notifyListeners(new ConfirmSelectionCommand(objectiveCard.ID));
     }
 
 

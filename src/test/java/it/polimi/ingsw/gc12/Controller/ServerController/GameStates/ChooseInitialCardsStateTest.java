@@ -44,15 +44,15 @@ class ChooseInitialCardsStateTest {
 
         client1 = new NetworkSession(gameController) {
             @Override
-            protected Listener createListener() {
-                return new Listener(command -> {
+            protected Listener createListener(NetworkSession session) {
+                return new Listener(session, command -> {
                 });
             }
         };
         client2 = new NetworkSession(gameController) {
             @Override
-            protected Listener createListener() {
-                return new Listener(command -> {
+            protected Listener createListener(NetworkSession session) {
+                return new Listener(session, command -> {
                 });
             }
         };

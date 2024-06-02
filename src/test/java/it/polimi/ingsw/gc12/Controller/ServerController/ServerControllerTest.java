@@ -149,15 +149,15 @@ class ServerControllerTest {
 
         client1 = new NetworkSession(gameController) {
             @Override
-            protected Listener createListener() {
-                return new Listener(command -> {
+            protected Listener createListener(NetworkSession session) {
+                return new Listener(session, command -> {
                 });
             }
         };
         client2 = new NetworkSession(gameController) {
             @Override
-            protected Listener createListener() {
-                return new Listener(command -> {
+            protected Listener createListener(NetworkSession session) {
+                return new Listener(session, command -> {
                 });
             }
         };
@@ -204,8 +204,9 @@ class ServerControllerTest {
 
         client2 = new NetworkSession(controller) {
             @Override
-            protected Listener createListener() {
+            protected Listener createListener(NetworkSession session) {
                 return new Listener(
+                        session,
                         command -> {
                             assertInstanceOf(ThrowExceptionCommand.class, command);
                             command.execute(Interface);
@@ -223,8 +224,9 @@ class ServerControllerTest {
 
         client2 = new NetworkSession(controller) {
             @Override
-            protected Listener createListener() {
+            protected Listener createListener(NetworkSession session) {
                 return new Listener(
+                        session,
                         command -> {
                             assertInstanceOf(ThrowExceptionCommand.class, command);
                             command.execute(Interface);
@@ -241,8 +243,9 @@ class ServerControllerTest {
 
         client2 = new NetworkSession(controller) {
             @Override
-            protected Listener createListener() {
+            protected Listener createListener(NetworkSession session) {
                 return new Listener(
+                        session,
                         command -> {
                             assertInstanceOf(ThrowExceptionCommand.class, command);
                             command.execute(Interface);
@@ -259,8 +262,9 @@ class ServerControllerTest {
 
         client2 = new NetworkSession(controller) {
             @Override
-            protected Listener createListener() {
+            protected Listener createListener(NetworkSession session) {
                 return new Listener(
+                        session,
                         command -> {
                             assertInstanceOf(ThrowExceptionCommand.class, command);
                             command.execute(Interface);
@@ -277,8 +281,9 @@ class ServerControllerTest {
 
         client2 = new NetworkSession(controller) {
             @Override
-            protected Listener createListener() {
+            protected Listener createListener(NetworkSession session) {
                 return new Listener(
+                        session,
                         command -> {
                             assertInstanceOf(ThrowExceptionCommand.class, command);
                             command.execute(Interface);
@@ -295,8 +300,9 @@ class ServerControllerTest {
 
         client2 = new NetworkSession(controller) {
             @Override
-            protected Listener createListener() {
+            protected Listener createListener(NetworkSession session) {
                 return new Listener(
+                        session,
                         command -> {
                             assertInstanceOf(ThrowExceptionCommand.class, command);
                             command.execute(Interface);
@@ -313,8 +319,9 @@ class ServerControllerTest {
 
         client2 = new NetworkSession(controller) {
             @Override
-            protected Listener createListener() {
+            protected Listener createListener(NetworkSession session) {
                 return new Listener(
+                        session,
                         command -> {
                             assertInstanceOf(ThrowExceptionCommand.class, command);
                             command.execute(Interface);
@@ -331,8 +338,9 @@ class ServerControllerTest {
 
         client2 = new NetworkSession(controller) {
             @Override
-            protected Listener createListener() {
+            protected Listener createListener(NetworkSession session) {
                 return new Listener(
+                        session,
                         command -> {
                             assertInstanceOf(ThrowExceptionCommand.class, command);
                             command.execute(Interface);
