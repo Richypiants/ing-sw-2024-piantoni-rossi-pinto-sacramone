@@ -1,21 +1,18 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
-import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
-import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseObjectiveCardsState;
 import it.polimi.ingsw.gc12.Listeners.Listener;
-import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
-import it.polimi.ingsw.gc12.Model.*;
+import it.polimi.ingsw.gc12.Model.Lobby;
+import it.polimi.ingsw.gc12.Model.Room;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Network.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.*;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.ForbiddenActionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotExistingPlayerException;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -23,25 +20,18 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ServerControllerTest {
-    private static ArrayList<ResourceCard> resourceCards;
-    private static ArrayList<GoldCard> goldCards;
-    private static ArrayList<InitialCard> initialCards;
-    private static ArrayList<ObjectiveCard> objectiveCards;
-    Player player1;
-    Player player2;
-    Lobby lobby;
-    Game game;
-    ClientGame clientGame;
+
     static NetworkSession nonParticipantPlayer;
     static NetworkSession notExistingPlayer;
-    NetworkSession inTurnPlayer;
-    NetworkSession NotInTurnPlayer;
-    ChooseObjectiveCardsState state;
-
     static ConnectionController connectionController = ConnectionController.getInstance();
-    LobbyController lobbyController = new LobbyController(null);
-    GameController gameController;
 
+    LobbyController lobbyController = new LobbyController(null);
+    GameController gameController = new GameController(null);
+
+    /**
+     * A stub implementation of the ClientControllerInterface used for testing.
+     * It contains an attribute exposing the exception for checking its type during executions
+     */
     static class ClientControllerInterfaceImpl implements ClientControllerInterface {
 
         public Exception receivedException = null;
@@ -132,6 +122,9 @@ class ServerControllerTest {
         }
     };
 
+    /**
+     * A stub implementation of the VirtualClient used for testing.
+     */
     static class VirtualClientImpl implements VirtualClient {
 
         public ClientCommand receivedCommand = null;
@@ -146,100 +139,40 @@ class ServerControllerTest {
     static ClientControllerInterfaceImpl clientController = new ClientControllerInterfaceImpl();
     static VirtualClientImpl virtualClient = new VirtualClientImpl();
 
-    @BeforeAll
-    static void setCardsLists() {
-        resourceCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.RESOURCE_DECK_FILENAME, new TypeToken<>(){});
-        goldCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.GOLD_DECK_FILENAME, new TypeToken<>(){});
-        initialCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.INITIAL_DECK_FILENAME, new TypeToken<>(){});
-        objectiveCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.OBJECTIVE_DECK_FILENAME, new TypeToken<>(){});
-    }
-
-    public static <T extends ServerController> NetworkSession createNetworkSessionStub(T controller, VirtualClient redefinedVirtualClient){
+    /**
+     * Creates a NetworkSession stub for testing purposes.
+     *
+     * @param controller            the controller associated to the VirtualClient contained in the NetworkSession
+     * @param virtualClient         the virtual client to be used by the NetworkSession
+     * @return a new NetworkSession instance with a custom listener
+     */
+    public static <T extends ServerController> NetworkSession createNetworkSessionStub(T controller, VirtualClient virtualClient){
         return new NetworkSession(controller) {
             @Override
             protected Listener createListener(NetworkSession session) {
                 return new Listener(
                         session,
-                        redefinedVirtualClient
+                        virtualClient
                 );
             }
         };
     }
 
+    /**
+     * Initializes sessions of VirtualClients simulating players in different conditions before any tests are run.
+     */
     @BeforeAll
     static void initializingSessions(){
         nonParticipantPlayer = createNetworkSessionStub(connectionController, virtualClient);
         notExistingPlayer = createNetworkSessionStub(connectionController, virtualClient);
-    }
 
-    @BeforeEach
-    void setGameParameters() throws Exception {
-        player1 = new Player("Sacri");
-        player2 = new Player("Piants");
-        lobby = new Lobby(player1, 2);
-        lobby.addPlayer(player2);
-        game = new Game(lobby);
-        ConnectionController controller = ConnectionController.getInstance();
-        UUID lobbyUUID = UUID.randomUUID();
-
-        gameController = new GameController(game);
-        ServerController.model.GAME_CONTROLLERS.put(lobbyUUID, gameController);
-
-        inTurnPlayer = new NetworkSession(gameController) {
-            @Override
-            protected Listener createListener(NetworkSession session) {
-                return new Listener(session, command -> {
-                });
-            }
-        };
-        NotInTurnPlayer = new NetworkSession(gameController) {
-            @Override
-            protected Listener createListener(NetworkSession session) {
-                return new Listener(session, command -> {
-                });
-            }
-        };
-
-        ServerController.activePlayers.put(inTurnPlayer, game.getPlayers().get(0));
-        ServerController.activePlayers.put(NotInTurnPlayer, game.getPlayers().get(1));
-
-        gameController.getCurrentState().transition();
-
-        int i = 0;
-        for (var target : game.getPlayers()) {
-            target.placeCard(new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
-            target.addCardToHand(resourceCards.get(i));
-            i++;
-            target.addCardToHand(resourceCards.get(i));
-            target.addCardToHand(goldCards.get(i));
-            i++;
-        }
-
-        Map<InGamePlayer, ArrayList<ObjectiveCard>> objectivesMap = new HashMap<>();
-        ArrayList<ObjectiveCard> obj_a = new ArrayList<>();
-        obj_a.add(objectiveCards.getFirst());
-        obj_a.add(objectiveCards.get(1));
-
-        ArrayList<ObjectiveCard> obj_a2 = new ArrayList<>();
-        obj_a2.add(objectiveCards.get(2));
-        obj_a2.add(objectiveCards.get(3));
-
-        objectivesMap.put(game.getPlayers().getFirst(), obj_a);
-        objectivesMap.put(game.getPlayers().getLast(), obj_a2);
-
-        state = new ChooseObjectiveCardsState(gameController, game, objectivesMap);
-
-        for (var target : game.getPlayers()) {
-            state.pickObjective(target, objectivesMap.get(target).getFirst());
-        }
-
-        gameController.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
+        connectionController.generatePlayer(nonParticipantPlayer, "thePlayer");
     }
 
     /**
-     * hasPlayer() helper method
+     * Tests that a keepAlive call is successfully made by a correctly registered player and a new TimerTask is created and
+     * linked to his NetworkSession.
      */
-
     @Test
     void keepAliveSuccessfullyReceived(){
         NetworkSession correctlyRegisteredPlayer = createNetworkSessionStub(connectionController, virtualClient);
@@ -250,11 +183,18 @@ class ServerControllerTest {
         assertInstanceOf(TimerTask.class, correctlyRegisteredPlayer.getTimeoutTask());
     }
 
+    /**
+     * Tests that hasNoPlayer method returns false when the player is present.
+     */
     @Test
     void hasNoPlayerReturningFalse(){
-        assertFalse(gameController.hasNoPlayer(inTurnPlayer));
+        assertFalse(connectionController.hasNoPlayer(nonParticipantPlayer));
     }
 
+    /**
+     * Tests that hasNoPlayer method returns true when the player is not present
+     * and the related exceptions are sent to the VirtualClient.
+     */
     @Test
     void hasNoPlayerReturningTrue(){
         assertTrue(connectionController.hasNoPlayer(notExistingPlayer));
@@ -262,12 +202,16 @@ class ServerControllerTest {
         assertInstanceOf(NotExistingPlayerException.class, clientController.receivedException);
     }
 
-    /**
-     * Subgroup of test that verifies that it isn't possible
-     * to successfully execute the action implemented by the game controller while assigned to the connection controller
+    /*
+     * The following section contains
+     * tests that verifies that it isn't possible
+     * to successfully execute the action implemented by the game controller while assigned to the connection/lobby controller
+     * So, every following test is a call sent from a wrong controller and a negative response is expected.
      */
 
-
+    /**
+     * Tests that an invalid call to placeCard triggers a ForbiddenActionException.
+     */
     @Test
     void invalidCallToPlaceCard() {
         connectionController.placeCard(nonParticipantPlayer, new GenericPair<>(1, 1), 1, Side.FRONT);
@@ -275,6 +219,9 @@ class ServerControllerTest {
         assertInstanceOf(ForbiddenActionException.class, clientController.receivedException);
     }
 
+    /**
+     * Tests that an invalid call to leaveLobby triggers a ForbiddenActionException.
+     */
     @Test
     void invalidCallToLeaveLobby() {
         connectionController.leaveLobby(nonParticipantPlayer, true);
@@ -282,6 +229,9 @@ class ServerControllerTest {
         assertInstanceOf(ForbiddenActionException.class, clientController.receivedException);
     }
 
+    /**
+     * Tests that an invalid call to pickObjective triggers a ForbiddenActionException.
+     */
     @Test
     void invalidCallToPickObjective(){
         connectionController.pickObjective(nonParticipantPlayer, 1);
@@ -289,6 +239,9 @@ class ServerControllerTest {
         assertInstanceOf(ForbiddenActionException.class, clientController.receivedException);
     }
 
+    /**
+     * Tests that an invalid call to drawFromDeck triggers a ForbiddenActionException.
+     */
     @Test
     void invalidCallToDrawFromDeck() {
         connectionController.drawFromDeck(nonParticipantPlayer, "resource");
@@ -296,6 +249,9 @@ class ServerControllerTest {
         assertInstanceOf(ForbiddenActionException.class, clientController.receivedException);
     }
 
+    /**
+     * Tests that an invalid call to drawFromVisibleCards triggers a ForbiddenActionException.
+     */
     @Test
     void invalidCallToDrawFromVisibleCards() {
         connectionController.drawFromVisibleCards(nonParticipantPlayer, "resource", 1);
@@ -303,6 +259,9 @@ class ServerControllerTest {
         assertInstanceOf(ForbiddenActionException.class, clientController.receivedException);
     }
 
+    /**
+     * Tests that an invalid call to leaveGame triggers a ForbiddenActionException.
+     */
     @Test
     void invalidCallToLeaveGame(){
         connectionController.leaveGame(nonParticipantPlayer);
@@ -310,6 +269,9 @@ class ServerControllerTest {
         assertInstanceOf(ForbiddenActionException.class, clientController.receivedException);
     }
 
+    /**
+     * Tests that an invalid call to broadcastMessage triggers a ForbiddenActionException.
+     */
     @Test
     void invalidCallToBroadcastMessage() {
         connectionController.broadcastMessage(nonParticipantPlayer, "HELLO");
@@ -317,6 +279,9 @@ class ServerControllerTest {
         assertInstanceOf(ForbiddenActionException.class, clientController.receivedException);
     }
 
+    /**
+     * Tests that an invalid call to directMessage triggers a ForbiddenActionException.
+     */
     @Test
     void invalidCallToDirectMessage() {
         connectionController.directMessage(nonParticipantPlayer, "paolo", "HELLO");
@@ -325,10 +290,8 @@ class ServerControllerTest {
     }
 
     /**
-     * Subgroup of test that verifies that it isn't possible
-     * to successfully execute the action implemented by the connection controller while assigned to the game/lobby controller
+     * Tests that an invalid call to generatePlayer triggers a ForbiddenActionException.
      */
-
     @Test
     void invalidCallToGeneratePlayer() {
         lobbyController.generatePlayer(nonParticipantPlayer, "Username");
@@ -336,6 +299,9 @@ class ServerControllerTest {
         assertInstanceOf(ForbiddenActionException.class, clientController.receivedException);
     }
 
+    /**
+     * Tests that an invalid call to setNickname triggers a ForbiddenActionException.
+     */
     @Test
     void invalidCallToSetNickname() {
         gameController.setNickname(nonParticipantPlayer, "Username");
@@ -343,6 +309,9 @@ class ServerControllerTest {
         assertInstanceOf(ForbiddenActionException.class, clientController.receivedException);
     }
 
+    /**
+     * Tests that an invalid call to createLobby triggers a ForbiddenActionException.
+     */
     @Test
     void invalidCallToCreateLobby() {
         gameController.createLobby(nonParticipantPlayer, 4);
@@ -350,21 +319,32 @@ class ServerControllerTest {
         assertInstanceOf(ForbiddenActionException.class, clientController.receivedException);
     }
 
+    /**
+     * Tests that an invalid call to joinLobby triggers a ForbiddenActionException.
+     */
     @Test
     void invalidCallToJoinLobby() {
         gameController.joinLobby(nonParticipantPlayer, UUID.randomUUID());
         assertInstanceOf(ThrowExceptionCommand.class, virtualClient.receivedCommand);
         assertInstanceOf(ForbiddenActionException.class, clientController.receivedException);
     }
-    /**
-     * Subgroup of test that verifies that it isn't possible
-     * to successfully execute the action implemented by the lobby controller while assigned to the game/connection controller
+
+    /*
+     * The following section contains
+     * tests that verifies that it isn't possible
+     * to successfully execute the action implemented by the lobby controller while assigned to the connection/game controller
+     * So, every following test is a call sent from a wrong controller and a negative response is expected.
      */
 
+    /**
+     * Tests that an invalid call to pickColor triggers a ForbiddenActionException.
+     */
     @Test
     void invalidCallPickColor() {
         gameController.pickColor(nonParticipantPlayer, Color.RED);
         assertInstanceOf(ThrowExceptionCommand.class, virtualClient.receivedCommand);
         assertInstanceOf(ForbiddenActionException.class, clientController.receivedException);
     }
+
+    //TODO: Complete testing with the missing methods
 }

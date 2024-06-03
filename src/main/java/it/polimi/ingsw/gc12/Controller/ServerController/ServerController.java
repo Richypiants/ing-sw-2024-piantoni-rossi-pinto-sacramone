@@ -19,7 +19,6 @@ import java.util.*;
 public abstract class ServerController implements ServerControllerInterface {
 
     public static final ServerModel model = new ServerModel();
-
     public static final Map<NetworkSession, Player> activePlayers = new HashMap<>();
     public static final Map<String, NetworkSession> inactiveSessions = new HashMap<>();
 
