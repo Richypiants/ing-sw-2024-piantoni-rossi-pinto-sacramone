@@ -34,6 +34,7 @@ class ServerControllerTest {
      */
     static class ClientControllerInterfaceImpl implements ClientControllerInterface {
 
+        UUID receivedUUID;
         public Exception receivedException = null;
 
         @Override
@@ -63,7 +64,7 @@ class ServerControllerTest {
 
         @Override
         public void updateLobby(UUID lobbyUUID, Lobby lobby) {
-
+            receivedUUID = lobbyUUID;
         }
 
         @Override
@@ -345,6 +346,7 @@ class ServerControllerTest {
         assertInstanceOf(ThrowExceptionCommand.class, virtualClient.receivedCommand);
         assertInstanceOf(ForbiddenActionException.class, clientController.receivedException);
     }
+
 
     //TODO: Complete testing with the missing methods
 }
