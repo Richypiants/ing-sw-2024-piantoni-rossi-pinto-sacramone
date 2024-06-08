@@ -33,7 +33,7 @@ class ServerControllerTest {
      * It contains an attribute exposing the exception for checking its type during executions
      */
     static class ClientControllerInterfaceImpl implements ClientControllerInterface {
-
+        List<Integer> recivedObjectiveIDs;
         UUID receivedUUID;
         public Exception receivedException = null;
 
@@ -84,7 +84,7 @@ class ServerControllerTest {
 
         @Override
         public void receiveObjectiveChoice(List<Integer> cardIDs) {
-
+            recivedObjectiveIDs = cardIDs;
         }
 
         @Override
