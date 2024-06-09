@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc12.Model;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ConfirmSelectionCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveCardCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveObjectiveChoice;
 import it.polimi.ingsw.gc12.Listeners.Listenable;
 import it.polimi.ingsw.gc12.Listeners.Listener;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
@@ -149,7 +150,7 @@ public class InGamePlayer extends Player implements Listenable {
      * @throws NotEnoughResourcesException  if the player does not have enough resources to play a GoldCard.
      * @throws InvalidCardPositionException if the card cannot be placed at the specified coordinates.
      */
-    public void placeCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
+    protected void placeCard(GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
             throws CardNotInHandException, NotEnoughResourcesException, InvalidCardPositionException {
         if (!getCardsInHand().contains(card))
             throw new CardNotInHandException();
@@ -253,6 +254,13 @@ public class InGamePlayer extends Player implements Listenable {
      */
     public ArrayList<GenericPair<Integer, Integer>> getOpenCorners() {
         return OWN_FIELD.getOpenCorners();
+    }
+
+    public void setObjectivesSelection(ArrayList<ObjectiveCard> personalObjectiveCardsSelection) {
+        notifyListeners(new ReceiveObjectiveChoice(personalObjectiveCardsSelection.stream()
+                .map((card) -> card.ID)
+                .toList())
+        );
     }
 
     /**

@@ -13,16 +13,21 @@ import java.util.Stack;
  *
  * @param <T> The type of card in the deck, which must extend the {@link Card} class.
  */
-public class CardDeck<T extends Card>{
+public class CardDeck<T extends Card> {
 
     /**
      * The stack of cards that forms the deck.
      */
     private final Stack<T> DECK;
+    /**
+     * The label which identifies the type of cards this deck is made of.
+     */
+    private final String DECK_TYPE;
 
     /**
      * Constructs a deck of cards by copying the provided list of cards,
-     * shuffling them, and then pushing them into the stack.
+     * shuffling them, pushing them into the stack, and also inferring deckType from
+     * the card on top of the deck
      *
      * @param deck The list of cards to initialize the deck with.
      */
@@ -34,6 +39,10 @@ public class CardDeck<T extends Card>{
         while (!copy.isEmpty()) {
             this.push(copy.removeFirst());
         }
+
+        //FIXME: maybe use enums previously put inside the XYZCard classes?
+        String deckType = peek().toString().trim().toLowerCase();
+        DECK_TYPE = deckType.substring(1, deckType.indexOf("card"));
     }
 
     /**
@@ -41,7 +50,7 @@ public class CardDeck<T extends Card>{
      *
      * @param toInsert The card to be added to the deck.
      */
-    private void push(T toInsert){
+    private void push(T toInsert) {
         this.DECK.push(toInsert);
     }
 
@@ -63,9 +72,18 @@ public class CardDeck<T extends Card>{
      * @return The top card of the deck, or null if the deck is empty.
      */
     public T peek() {
-        if(DECK.isEmpty())
+        if (DECK.isEmpty())
             return null;
         return this.DECK.peek();
+    }
+
+    /**
+     * Retrieves the label identifying the type of cards contained in this deck
+     * 
+     * @return the associated label
+     */
+    public String getDeckType() {
+        return DECK_TYPE;
     }
 
     /**

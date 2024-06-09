@@ -51,13 +51,8 @@ public class LobbyController extends ServerController {
 
         UUID lobbyUUID = keyReverseLookup(model.LOBBY_CONTROLLERS, this::equals);
 
-        //TODO: startGame()... && add synchronization
         if (CONTROLLED_LOBBY.getAvailableColors().size() <= 4 - CONTROLLED_LOBBY.getMaxPlayers()) {
             Game newGame = new Game(CONTROLLED_LOBBY);
-            GameController controller = new GameController(newGame);
-
-            model.GAME_CONTROLLERS.put(lobbyUUID, controller);
-            model.LOBBY_CONTROLLERS.remove(lobbyUUID);
 
             System.out.println("[SERVER]: sending StartGameCommand to clients starting game");
             //TODO: estrarre la logica di evoluzione dei player da Game (altrimenti, fixare i get) E SINCRONIZZAREEEE
@@ -69,21 +64,23 @@ public class LobbyController extends ServerController {
                         .orElseThrow(); //TODO: strano... gestire?
 
                 activePlayers.put(targetClient, targetInGamePlayer);
-                targetClient.setController(controller);
 
                 newGame.addListener(targetClient.getListener());
                 targetInGamePlayer.addListener(targetClient.getListener());
                 targetClient.getListener().notified(new StartGameCommand(lobbyUUID, newGame.generateDTO(targetInGamePlayer)));
-
-                //FIXME: should clients inform that they are ready before? (ready() method call?)
-                //Calls to game creation, generateInitialCards ...
             }
-            controller.getCurrentState().transition();
+
+            GameController controller = new GameController(newGame);
+
+            for (var inGamePlayer : newGame.getPlayers())
+                keyReverseLookup(activePlayers, inGamePlayer::equals).setController(controller);
+
+            model.LOBBY_CONTROLLERS.remove(lobbyUUID);
+            model.GAME_CONTROLLERS.put(lobbyUUID, controller);
 
             //FIXME: a better solution? or does this get fixed by fixing constructors for Game & Lobby?
-            while (CONTROLLED_LOBBY.getPlayersNumber() > 0) {
+            while (CONTROLLED_LOBBY.getPlayersNumber() > 0)
                 CONTROLLED_LOBBY.removePlayer(CONTROLLED_LOBBY.getPlayers().getFirst());
-            }
         }
 
         for (var client : activePlayers.keySet())
@@ -104,6 +101,7 @@ public class LobbyController extends ServerController {
         // invariant holds
 
         CONTROLLED_LOBBY.removePlayer(target);
+        CONTROLLED_LOBBY.removeListener(sender.getListener());
         sender.setController(ConnectionController.getInstance());
 
         if (CONTROLLED_LOBBY.getPlayers().isEmpty()) {

@@ -11,11 +11,6 @@ public class GameTransitionCommand implements ClientCommand{
      */
     private final int CURRENT_PLAYER_INDEX;
 
-    public GameTransitionCommand() {
-        this.ROUND = 0;
-        this.CURRENT_PLAYER_INDEX = -1;
-    }
-
     public GameTransitionCommand(int round, int currentPlayerIndex){
         this.ROUND = round;
         this.CURRENT_PLAYER_INDEX = currentPlayerIndex;

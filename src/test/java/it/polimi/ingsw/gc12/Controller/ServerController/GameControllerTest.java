@@ -17,49 +17,36 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.createNetworkSessionStub;
-import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.virtualClient;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 class GameControllerTest {
     static NetworkSession inGamePlayer_1;
     static NetworkSession inGamePlayer_2;
-    static ConnectionController connectionController = ConnectionController.getInstance();
-    static ServerControllerTest.ClientControllerInterfaceImpl clientController = ServerControllerTest.clientController;
-    static ServerControllerTest.ClientControllerInterfaceImpl clientController_2 = ServerControllerTest.clientController;
+    static ConnectionController connectionController = ConnectionController.getInstance();;
 
     static GameController gameAssociatedController;
 
     @BeforeAll
     static void initializingSessions() {
-        inGamePlayer_1 = createNetworkSessionStub(connectionController, virtualClient);
-        inGamePlayer_2 = createNetworkSessionStub(connectionController, virtualClient);
+        inGamePlayer_1 = createNetworkSessionStub(connectionController);
+        inGamePlayer_2 = createNetworkSessionStub(connectionController);
 
         connectionController.generatePlayer(inGamePlayer_1, "thePlayer");
         connectionController.generatePlayer(inGamePlayer_2, "thePlayer_2");
 
         connectionController.createLobby(inGamePlayer_1, 2);
-        connectionController.joinLobby(inGamePlayer_2, clientController.receivedUUID);
+        connectionController.joinLobby(inGamePlayer_2, ((ServerControllerTest.VirtualClientImpl) inGamePlayer_2.getListener().getVirtualClient()).myClientController.receivedUUID);
 
         LobbyController associatedLobbyController = (LobbyController) inGamePlayer_1.getController();
         associatedLobbyController.pickColor(inGamePlayer_1, Color.RED);
         associatedLobbyController.pickColor(inGamePlayer_2, Color.GREEN);
 
         gameAssociatedController = (GameController) inGamePlayer_1.getController();
+        gameAssociatedController.placeCard(inGamePlayer_1, new GenericPair<>(0, 0), ((ServerControllerTest.VirtualClientImpl) inGamePlayer_1.getListener().getVirtualClient()).myClientController.lastReceivedCardIDs.getFirst(), Side.FRONT);
+        gameAssociatedController.placeCard(inGamePlayer_2, new GenericPair<>(0, 0), ((ServerControllerTest.VirtualClientImpl) inGamePlayer_2.getListener().getVirtualClient()).myClientController.lastReceivedCardIDs.getFirst(), Side.FRONT);
 
-        if (gameAssociatedController.CONTROLLED_GAME.getPlayers().getFirst().getNickname().equals("thePlayer")) {
-            gameAssociatedController.placeCard(inGamePlayer_1, new GenericPair<>(0, 0), gameAssociatedController.CONTROLLED_GAME.getPlayers().getFirst().getCardsInHand().getFirst().ID, Side.FRONT);
-        } else {
-            gameAssociatedController.placeCard(inGamePlayer_1, new GenericPair<>(0, 0), gameAssociatedController.CONTROLLED_GAME.getPlayers().getLast().getCardsInHand().getFirst().ID, Side.FRONT);
-        }
-
-        if (gameAssociatedController.CONTROLLED_GAME.getPlayers().getFirst().getNickname().equals("thePlayer2")) {
-            gameAssociatedController.placeCard(inGamePlayer_2, new GenericPair<>(0, 0), gameAssociatedController.CONTROLLED_GAME.getPlayers().getFirst().getCardsInHand().getFirst().ID, Side.FRONT);
-        } else {
-            gameAssociatedController.placeCard(inGamePlayer_2, new GenericPair<>(0, 0), gameAssociatedController.CONTROLLED_GAME.getPlayers().getLast().getCardsInHand().getFirst().ID, Side.FRONT);
-        }
-
-        gameAssociatedController.pickObjective(inGamePlayer_1, clientController.recivedObjectiveIDs.getFirst());
-        gameAssociatedController.pickObjective(inGamePlayer_2, clientController.recivedObjectiveIDs.getLast());
+        gameAssociatedController.pickObjective(inGamePlayer_1, ((ServerControllerTest.VirtualClientImpl) inGamePlayer_1.getListener().getVirtualClient()).myClientController.receivedObjectiveIDs.getFirst());
+        gameAssociatedController.pickObjective(inGamePlayer_2, ((ServerControllerTest.VirtualClientImpl) inGamePlayer_2.getListener().getVirtualClient()).myClientController.receivedObjectiveIDs.getLast());
 
     }
 
@@ -97,16 +84,16 @@ class GameControllerTest {
 
     @Test
     void correctCallToCardNotInHand() {
-        if (gameAssociatedController.CONTROLLED_GAME.getPlayers().getFirst().getNickname().equals("thePlayer")) {
-            gameAssociatedController.placeCard(inGamePlayer_1, new GenericPair<>(2, 2), gameAssociatedController.CONTROLLED_GAME.getPlayers().getFirst().getCardsInHand().getFirst().ID, Side.FRONT);
-        } else {
-            gameAssociatedController.placeCard(inGamePlayer_1, new GenericPair<>(2, 2), gameAssociatedController.CONTROLLED_GAME.getPlayers().getLast().getCardsInHand().getFirst().ID, Side.FRONT);
-        }
+        NetworkSession currentPlayerInTurn;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerInTurn = inGamePlayer_1;
+        else
+            currentPlayerInTurn = inGamePlayer_2;
 
-        assertInstanceOf(ThrowExceptionCommand.class, virtualClient.receivedCommand);
-        assertInstanceOf(InvalidCardPositionException.class, clientController.receivedException);
+        gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(2, 2), gameAssociatedController.CONTROLLED_GAME.getPlayers().getFirst().getCardsInHand().getFirst().ID, Side.BACK);
 
-
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(InvalidCardPositionException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
     }
 
 }

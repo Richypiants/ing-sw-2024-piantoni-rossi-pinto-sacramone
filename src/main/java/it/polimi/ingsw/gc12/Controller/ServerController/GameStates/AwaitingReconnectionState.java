@@ -37,8 +37,6 @@ public class AwaitingReconnectionState extends GameState {
         timer.cancel();
         terminateGame.cancel();
         GAME_CONTROLLER.setState(previousState);
-
-        notifyTransition(GAME.getActivePlayers(), GAME.getRoundNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
     }
 
     public void cancelTimerTask(){

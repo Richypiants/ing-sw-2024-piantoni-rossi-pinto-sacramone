@@ -15,37 +15,33 @@ class ConnectionControllerTest {
     static NetworkSession inLobbyPlayer2;
     static ConnectionController connectionController = ConnectionController.getInstance();
 
-    LobbyController lobbyController = new LobbyController(null);
-    GameController gameController = new GameController(null);
-
     @BeforeAll
     static void initializingSessions() {
-        inLobbyPlayer = createNetworkSessionStub(connectionController, virtualClient);
-        inLobbyPlayer2 = createNetworkSessionStub(connectionController, virtualClient);
+        inLobbyPlayer = createNetworkSessionStub(connectionController);
+        inLobbyPlayer2 = createNetworkSessionStub(connectionController);
 
         connectionController.generatePlayer(inLobbyPlayer, "thePlayer");
         connectionController.generatePlayer(inLobbyPlayer2, "thePlayer2");
-
     }
 
     @Test
     void alreadyTakenNickName() {
         connectionController.setNickname(inLobbyPlayer2, "thePlayer2");
-        assertInstanceOf(ThrowExceptionCommand.class, virtualClient.receivedCommand);
-        assertInstanceOf(IllegalArgumentException.class, clientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) inLobbyPlayer2.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(IllegalArgumentException.class, ((VirtualClientImpl) inLobbyPlayer2.getListener().getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
     void invalidRangeOfMaximumPlayer() {
         connectionController.createLobby(inLobbyPlayer, 5);
-        assertInstanceOf(ThrowExceptionCommand.class, virtualClient.receivedCommand);
-        assertInstanceOf(IllegalArgumentException.class, clientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) inLobbyPlayer.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(IllegalArgumentException.class, ((VirtualClientImpl) inLobbyPlayer.getListener().getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
     void notExistingUUID() {
         connectionController.joinLobby(inLobbyPlayer, new UUID(1, 1));
-        assertInstanceOf(ThrowExceptionCommand.class, virtualClient.receivedCommand);
-        assertInstanceOf(IllegalArgumentException.class, clientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) inLobbyPlayer.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(IllegalArgumentException.class, ((VirtualClientImpl) inLobbyPlayer.getListener().getVirtualClient()).myClientController.receivedException);
     }
 }

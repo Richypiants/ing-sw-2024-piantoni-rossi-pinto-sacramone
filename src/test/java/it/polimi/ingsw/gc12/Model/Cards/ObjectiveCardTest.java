@@ -57,13 +57,13 @@ class ObjectiveCardTest {
         playerGame.setSecretObjective(objectiveCards.get(15));
 
         playerGame.addCardToHand(initialCards.getFirst());
-        playerGame.placeCard(new GenericPair<>(0, 0), playerGame.getCardsInHand().getFirst(), Side.BACK);
+        game.placeCard(playerGame, new GenericPair<>(0, 0), playerGame.getCardsInHand().getFirst(), Side.BACK);
 
         playerGame.addCardToHand(resourceCards.get(4));
-        playerGame.placeCard(new GenericPair<>(1, -1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
+        game.placeCard(playerGame, new GenericPair<>(1, -1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
 
         playerGame.addCardToHand(goldCards.get(30));
-        playerGame.placeCard(new GenericPair<>(-1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
+        game.placeCard(playerGame, new GenericPair<>(-1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT);
 
         assertEquals(expectedAwardedPoints, playerGame.getSecretObjective().awardPoints(playerGame));
     }

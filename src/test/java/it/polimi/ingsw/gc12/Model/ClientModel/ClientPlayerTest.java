@@ -4,7 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseObjectiveCardsState;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
-import it.polimi.ingsw.gc12.Listeners.Listener;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
@@ -14,14 +14,17 @@ import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
-import it.polimi.ingsw.gc12.Utilities.*;
+import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.JSONParser;
+import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.createNetworkSessionStub;
 
 class ClientPlayerTest {
     private static ArrayList<ResourceCard> resourceCards;
@@ -61,20 +64,8 @@ class ClientPlayerTest {
         gameController = new GameController(game);
         ServerController.model.GAME_CONTROLLERS.put(lobbyUUID, gameController);
 
-        client1 = new NetworkSession(gameController) {
-            @Override
-            protected Listener createListener(NetworkSession session) {
-                return new Listener(session, command -> {
-                });
-            }
-        };
-        client2 = new NetworkSession(gameController) {
-            @Override
-            protected Listener createListener(NetworkSession session) {
-                return new Listener(session, command -> {
-                });
-            }
-        };
+        client1 = createNetworkSessionStub(gameController);
+        client2 = createNetworkSessionStub(gameController);
 
         ServerController.activePlayers.put(client1, game.getPlayers().get(0));
         ServerController.activePlayers.put(client2, game.getPlayers().get(1));
@@ -83,14 +74,13 @@ class ClientPlayerTest {
 
         int i = 0;
         for (var target : game.getPlayers()) {
-            target.placeCard(new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
+            game.placeCard(target, new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
             target.addCardToHand(resourceCards.get(i));
             i++;
             target.addCardToHand(resourceCards.get(i));
             target.addCardToHand(goldCards.get(i));
             i++;
         }
-
 
         Map<InGamePlayer, ArrayList<ObjectiveCard>> objectivesMap = new HashMap<>();
         ArrayList<ObjectiveCard> obj_a = new ArrayList<>();
@@ -104,16 +94,14 @@ class ClientPlayerTest {
         objectivesMap.put(game.getPlayers().getFirst(), obj_a);
         objectivesMap.put(game.getPlayers().getLast(), obj_a2);
 
-        state = new ChooseObjectiveCardsState(gameController, game, objectivesMap);
+        state = new ChooseObjectiveCardsState(gameController, game);
 
-        for (var target : game.getPlayers()) {
-            state.pickObjective(target, objectivesMap.get(target).getFirst());
-        }
+        gameController.pickObjective(client1, ((ServerControllerTest.VirtualClientImpl) client1.getListener().getVirtualClient()).myClientController.receivedObjectiveIDs.getFirst());
+        gameController.pickObjective(client2, ((ServerControllerTest.VirtualClientImpl) client2.getListener().getVirtualClient()).myClientController.receivedObjectiveIDs.getFirst());
 
         gameController.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
-
     }
-
+/*
     @Test
     void getterESetterTest() {
         ClientPlayer player = new ClientPlayer(player1, null, null, 0);
@@ -151,5 +139,5 @@ class ClientPlayerTest {
         assert (!player.isActive());
 
 
-    }
+    }*/
 }

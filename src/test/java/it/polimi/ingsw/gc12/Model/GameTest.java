@@ -106,13 +106,20 @@ class GameTest {
     @Test
     void setCommonObjectives(){
         ArrayList<ObjectiveCard> objectiveCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.OBJECTIVE_DECK_FILENAME, new TypeToken<>(){});
-        game.setCommonObjectives(new ObjectiveCard[]{
-                objectiveCards.getFirst(), objectiveCards.getLast()
-        });
+        game.setCommonObjectives(new ObjectiveCard[]{objectiveCards.getFirst(), objectiveCards.getLast()});
 
         assertEquals(game.getCommonObjectives().length, game.getCommonObjectives().length);
         assertEquals(objectiveCards.getFirst(), game.getCommonObjectives()[0]);
         assertEquals(objectiveCards.getLast(), game.getCommonObjectives()[1]);
+    }
+
+    @Test
+    void generateCommonObjectives(){
+        game.generateCommonObjectives();
+
+        assertEquals(game.getCommonObjectives().length, game.getCommonObjectives().length);
+        assertInstanceOf(ObjectiveCard.class, game.getCommonObjectives()[0]);
+        assertInstanceOf(ObjectiveCard.class, game.getCommonObjectives()[1]);
     }
 
     @Test

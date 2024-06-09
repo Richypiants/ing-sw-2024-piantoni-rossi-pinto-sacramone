@@ -58,13 +58,9 @@ public class VictoryCalculationState extends GameState {
             pointsStats.addFirst(foundEntry);
         }
 
-        System.out.println("[SERVER]: Sending leaderboard stats to clients in "+ GAME.toString());
-        //TODO : Handle exceptions in the correct way and not like this
+        System.out.println("[SERVER]: Sending leaderboard stats to clients in "+ GAME);
         // Sending leaderboard stats
         GAME.notifyListeners(new EndGameCommand(pointsStats, gameEndedDueToDisconnections));
-
-        //TODO: here we should destroy the file with the saved serialized data
-
 
         /**
          * OLD CODE that transforms the game into a lobby.
@@ -132,6 +128,7 @@ public class VictoryCalculationState extends GameState {
                 GameController.inactiveSessions.remove(player.getNickname());
 
         //FIXME: Using a Lobby to convert the instances of InGamePlayer to Player and then discarding it. Better solutions?
+        // If putting players back into lobby, remember to re-add listeners to the lobby
         Lobby returnLobby = GAME.toLobby();
 
         System.out.println("[SERVER]: Sending lobbies to clients previously in "+ GAME);
@@ -143,20 +140,15 @@ public class VictoryCalculationState extends GameState {
                     thisPlayer
             );
 
-            // Sending lobbies list to players who were in this game (because they didn't have it updated)
-            try {
-                keyReverseLookup(GameController.activePlayers, thisPlayer::equals).getListener().notified(
-                        //TODO : Handle exceptions in the correct way and not like this
-                        new SetLobbiesCommand(
-                                GameController.model.LOBBY_CONTROLLERS.entrySet().stream()
-                                        .collect(Collectors.toMap(Map.Entry::getKey, (entry) -> entry.getValue().CONTROLLED_LOBBY))
-                        )
-                );
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
             currentIndex++;
         }
+
+        GAME.notifyListeners(
+                new SetLobbiesCommand(
+                        GameController.model.LOBBY_CONTROLLERS.entrySet().stream()
+                                .collect(Collectors.toMap(Map.Entry::getKey, (entry) -> entry.getValue().CONTROLLED_LOBBY))
+                )
+        );
 
         //TODO: add players to a new lobby now that the game doesn't start until the colors are chosen?
         GameController.model.GAME_CONTROLLERS.remove(lobbyUUID);

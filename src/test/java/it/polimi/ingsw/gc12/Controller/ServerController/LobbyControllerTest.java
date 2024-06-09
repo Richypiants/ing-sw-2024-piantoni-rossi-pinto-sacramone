@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.createNetworkSessionStub;
-import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.virtualClient;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
@@ -19,15 +18,10 @@ class LobbyControllerTest {
     static NetworkSession inLobbyPlayer2;
     static ConnectionController connectionController = ConnectionController.getInstance();
 
-    LobbyController lobbyController = new LobbyController(null);
-    GameController gameController = new GameController(null);
-    ServerControllerTest.ClientControllerInterfaceImpl clientController = ServerControllerTest.clientController;
-
-
     @BeforeAll
     static void initializingSessions() {
-        inLobbyPlayer = createNetworkSessionStub(connectionController, virtualClient);
-        inLobbyPlayer2 = createNetworkSessionStub(connectionController, virtualClient);
+        inLobbyPlayer = createNetworkSessionStub(connectionController);
+        inLobbyPlayer2 = createNetworkSessionStub(connectionController);
 
         connectionController.generatePlayer(inLobbyPlayer, "thePlayer");
         connectionController.generatePlayer(inLobbyPlayer2, "thePlayer2");
@@ -38,27 +32,26 @@ class LobbyControllerTest {
     void illegalPickColorChoice() {
         LobbyController lobbyController_built = new LobbyController(new Lobby(new Player("creator"), 2));
         lobbyController_built.pickColor(inLobbyPlayer, Color.NO_COLOR);
-        assertInstanceOf(ThrowExceptionCommand.class, virtualClient.receivedCommand);
-        assertInstanceOf(UnavailableColorException.class, clientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) inLobbyPlayer.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(UnavailableColorException.class, ((ServerControllerTest.VirtualClientImpl) inLobbyPlayer.getListener().getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
     void correctLeaveLobby() {
-        NetworkSession passivePlayer = createNetworkSessionStub(connectionController, virtualClient);
-        NetworkSession lobbyCreatorPlayer = createNetworkSessionStub(connectionController, virtualClient);
-        NetworkSession joiningPlayer = createNetworkSessionStub(connectionController, virtualClient);
+        NetworkSession passivePlayer = createNetworkSessionStub(connectionController);
+        NetworkSession lobbyCreatorPlayer = createNetworkSessionStub(connectionController);
+        NetworkSession joiningPlayer = createNetworkSessionStub(connectionController);
 
         connectionController.generatePlayer(passivePlayer, "passivePlayer");
         connectionController.generatePlayer(lobbyCreatorPlayer, "lobbyCreatorPlayer");
         connectionController.generatePlayer(joiningPlayer, "joiningPlayer");
 
         connectionController.createLobby(lobbyCreatorPlayer, 2);
-        connectionController.joinLobby(joiningPlayer, clientController.receivedUUID);
+        connectionController.joinLobby(joiningPlayer, ((ServerControllerTest.VirtualClientImpl) joiningPlayer.getListener().getVirtualClient()).myClientController.receivedUUID);
 
         LobbyController associatedLobbyController = (LobbyController) lobbyCreatorPlayer.getController();
 
         associatedLobbyController.leaveLobby(lobbyCreatorPlayer, true);
         assertEquals(1, associatedLobbyController.CONTROLLED_LOBBY.getPlayersNumber());
-
     }
 }

@@ -296,7 +296,7 @@ class PatternConditionTest {
         InGamePlayer player1InGame = game.getPlayers().getFirst();
         for (var card : cardsToPlay) {
             player1InGame.addCardToHand(card.getY());
-            player1InGame.placeCard(card.getX(), card.getY(), card.getZ());
+            game.placeCard(player1InGame, card.getX(), card.getY(), card.getZ());
         }
 
         for(int i = 0 ; i < conditions.length; i++)

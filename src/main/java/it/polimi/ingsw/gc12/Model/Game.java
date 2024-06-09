@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Model;
 
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.PlaceCardCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReplaceCardCommand;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
@@ -11,6 +12,7 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
+import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +32,10 @@ public class Game extends Room {
      * The deck of Gold cards of this game.
      */
     private final CardDeck<GoldCard> GOLD_CARDS_DECK;
+    /**
+     * The deck of Objective cards of this game.
+     */
+    private final CardDeck<ObjectiveCard> OBJECTIVE_CARDS_DECK;
     /**
      * The two resource cards visible to all the players placed on the table.
      */
@@ -78,6 +84,10 @@ public class Game extends Room {
         this.GOLD_CARDS_DECK = new CardDeck<>(ServerModel.cardsList.values().stream()
                 .filter((card -> card instanceof GoldCard))
                 .map((card) -> (GoldCard) card)
+                .toList());
+        this.OBJECTIVE_CARDS_DECK = new CardDeck<>(ServerModel.cardsList.values().stream()
+                .filter((card -> card instanceof ObjectiveCard))
+                .map((card) -> (ObjectiveCard) card)
                 .toList());
 
         this.PLACED_RESOURCE_CARDS = new ResourceCard[2];
@@ -248,6 +258,15 @@ public class Game extends Room {
     }
 
     /**
+     * Retrieves the deck of ObjectiveCards placed on the table.
+     *
+     * @return The CardDeck of ObjectiveCard instances.
+     */
+    public CardDeck<ObjectiveCard> getObjectiveCardsDeck() {
+        return OBJECTIVE_CARDS_DECK;
+    }
+
+    /**
      * Retrieves the array of ResourceCards currently placed on the table.
      *
      * @return An array of ResourceCard instances.
@@ -275,13 +294,44 @@ public class Game extends Room {
     }
 
     /**
-     * Sets the common objective cards for the game.
-     *
-     * @param objectives An array of two ObjectiveCard instances.
+     * Draws and sets the common objective cards for the game.
      */
-    public void setCommonObjectives(ObjectiveCard[] objectives) {
-        COMMON_OBJECTIVES[0] = objectives[0];
-        COMMON_OBJECTIVES[1] = objectives[1];
+    public void generateCommonObjectives() {
+        try {
+            COMMON_OBJECTIVES[0] = OBJECTIVE_CARDS_DECK.draw();
+            COMMON_OBJECTIVES[1] = OBJECTIVE_CARDS_DECK.draw();
+        } catch (EmptyDeckException ignored) {}
+
+        notifyListeners(new ReplaceCardCommand(List.of(
+                new Triplet<>(COMMON_OBJECTIVES[0].ID, "objective_visible", 0),
+                new Triplet<>(COMMON_OBJECTIVES[1].ID, "objective_visible", 1)
+        )));
+    }
+
+    /**
+     * Sets the common objective cards for the game avoiding the randomness given by the shuffled deck.
+     *
+     * @param objectiveCards the desired objectiveCards to be set
+     */
+    public void setCommonObjectives(ObjectiveCard[] objectiveCards){
+        COMMON_OBJECTIVES[0] = objectiveCards[0];
+        COMMON_OBJECTIVES[1] = objectiveCards[1];
+    }
+
+    public Map<InGamePlayer, ArrayList<ObjectiveCard>> generateSecretObjectivesSelection() {
+        Map<InGamePlayer, ArrayList<ObjectiveCard>> objectivesSelection = new HashMap<>();
+
+        for (InGamePlayer target : getPlayers()) {
+            ArrayList<ObjectiveCard> personalObjectiveCardsSelection = new ArrayList<>();
+            try {
+                personalObjectiveCardsSelection.add(OBJECTIVE_CARDS_DECK.draw());
+                personalObjectiveCardsSelection.add(OBJECTIVE_CARDS_DECK.draw());
+            } catch (EmptyDeckException ignored) {} //FIXME: non viene mai lanciata, System.exit(-1)
+            objectivesSelection.put(target, personalObjectiveCardsSelection);
+            target.setObjectivesSelection(personalObjectiveCardsSelection);
+        }
+
+        return objectivesSelection;
     }
 
     public void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
@@ -311,27 +361,27 @@ public class Game extends Room {
      * @return The drawn card.
      * @throws EmptyDeckException if the deck is empty.
      */
-    public PlayableCard drawFrom(Card[] deck, int position) throws EmptyDeckException {
-        PlayableCard returnedCard = null;
+    public PlayableCard drawFrom(PlayableCard[] deck, int position) throws EmptyDeckException {
+        PlayableCard returnedCard;
+        PlayableCard replacingCard = null;
+        String deckType = "";
 
-        if (Arrays.equals(deck, PLACED_GOLD_CARDS)) {
-            returnedCard = PLACED_GOLD_CARDS[position];
-            try {
-                PLACED_GOLD_CARDS[position] = drawFrom(getGoldCardsDeck());
-            } catch (EmptyDeckException e) {
-                PLACED_GOLD_CARDS[position] = null;
+        returnedCard = deck[position];
+        try {
+            if (Arrays.equals(deck, PLACED_GOLD_CARDS)) {
+                deckType = "gold";
+                replacingCard = drawFrom(getGoldCardsDeck());
+            } else if (Arrays.equals(deck, PLACED_RESOURCE_CARDS)) {
+                deckType = "resource";
+                replacingCard = drawFrom(getResourceCardsDeck());
             }
-        } else if (Arrays.equals(deck, PLACED_RESOURCE_CARDS)) {
-            returnedCard = PLACED_RESOURCE_CARDS[position];
-            try {
-                PLACED_RESOURCE_CARDS[position] = drawFrom(getResourceCardsDeck());
-            } catch (EmptyDeckException e) {
-                PLACED_RESOURCE_CARDS[position] = null;
-            }
-        }
+        } catch (EmptyDeckException ignored) {} //Simply we do not care, as we are already assigning null value at declaration of replacingCard
+        deck[position] = replacingCard;
 
         if (returnedCard == null)
             throw new EmptyDeckException();
+
+        notifyListeners(new ReplaceCardCommand(List.of(new Triplet<>(replacingCard == null ? -1 : replacingCard.ID, deckType + "_visible", position))));
 
         return returnedCard;
     }
@@ -344,7 +394,10 @@ public class Game extends Room {
      * @return The top card of type T.
      */
     public <T extends Card> T peekFrom(CardDeck<T> deck){
-        return deck.peek();
+        T topDeckCard = deck.peek();
+        notifyListeners(new ReplaceCardCommand(List.of(new Triplet<>(topDeckCard == null ? -1 : topDeckCard.ID, deck.getDeckType() + "_deck", -1))));
+
+        return topDeckCard;
     }
 
     /**

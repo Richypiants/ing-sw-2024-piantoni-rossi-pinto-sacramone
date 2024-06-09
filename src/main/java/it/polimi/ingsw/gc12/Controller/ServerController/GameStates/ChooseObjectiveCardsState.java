@@ -11,22 +11,24 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class ChooseObjectiveCardsState extends GameState {
+    private Map<InGamePlayer, ArrayList<ObjectiveCard>> objectiveCardsToPlayers;
 
-    private final Map<InGamePlayer, ArrayList<ObjectiveCard>> objectivesMap;
-
-    public ChooseObjectiveCardsState(GameController controller, Game thisGame, Map<InGamePlayer, ArrayList<ObjectiveCard>> map) {
+    public ChooseObjectiveCardsState(GameController controller, Game thisGame) {
         super(controller, thisGame, "objectiveState");
-        this.objectivesMap = map;
 
         //Executing a Random Action for the players disconnected in the Initial State
-        for(InGamePlayer player : thisGame.getPlayers().stream().filter( player -> !(player.isActive())).toList())
+        for(InGamePlayer player : thisGame.getPlayers().stream().filter(player -> !(player.isActive())).toList())
             playerDisconnected(player);
+    }
+
+    protected void generateObjectivesChoice(){
+        objectiveCardsToPlayers = GAME.generateSecretObjectivesSelection();
     }
 
     @Override
     public synchronized void pickObjective(InGamePlayer targetPlayer, ObjectiveCard objective)
             throws CardNotInHandException, AlreadySetCardException {
-        if(!objectivesMap.get(targetPlayer).contains(objective))
+        if(!objectiveCardsToPlayers.get(targetPlayer).contains(objective))
             throw new CardNotInHandException();
 
         if (targetPlayer.getSecretObjective() == null)
@@ -48,7 +50,7 @@ public class ChooseObjectiveCardsState extends GameState {
 
         if(target.getSecretObjective() == null) {
             try {
-                pickObjective(target, objectivesMap.get(target).getFirst());
+                pickObjective(target, objectiveCardsToPlayers.get(target).getFirst());
             } catch (CardNotInHandException | AlreadySetCardException ignored) {
                 //The pickObjective for this player was already done, so the secretObjective is already set
                 //and the pickObjective throws AlreadySetCardException.
@@ -58,11 +60,10 @@ public class ChooseObjectiveCardsState extends GameState {
 
     @Override
     public void transition() {
-        System.out.println("[SERVER]: Sending GameTransitionCommand to active clients in "+ GAME.toString());
-        //FIXME: should we notify listeners for this too?
+        System.out.println("[SERVER]: Sending GameTransitionCommand to active clients in "+ GAME);
         GAME.increaseRound();
         GAME.nextPlayer();
-        notifyTransition(GAME.getActivePlayers(), GAME.getRoundNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
+        //FIXME: remove this, make setState notify players and get round and current player from inside setState
 
         GAME_CONTROLLER.setState(new PlayerTurnPlayState(GAME_CONTROLLER, GAME));
     }

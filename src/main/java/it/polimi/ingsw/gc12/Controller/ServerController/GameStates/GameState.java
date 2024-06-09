@@ -61,22 +61,4 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
     }
 
     public abstract void transition();
-
-    protected static void notifyTransition(ArrayList<InGamePlayer> activePlayers, int turnNumber, int indexOfCurrentPlayer) {
-        for (var targetPlayer : activePlayers) {
-            //TODO: manage exceptions
-            try {
-                NetworkSession target = keyReverseLookup(GameController.activePlayers, targetPlayer::equals);
-
-                target.getListener().notified(
-                        new GameTransitionCommand(
-                                turnNumber,
-                                indexOfCurrentPlayer
-                        )
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

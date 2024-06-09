@@ -1,86 +1,79 @@
 package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReplaceCardCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
-import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
-import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidDeckPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnknownStringException;
-import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
-
 public class PlayerTurnDrawState extends GameState {
-
-    private enum Deck {
-
-        GOLD("gold"), RESOURCE("resource"), VISIBLE_GOLD("gold"), VISIBLE_RESOURCE("resource");
-
-        private final String STRING_MESSAGE;
-
-        Deck(String message){
-            this.STRING_MESSAGE = message;
-        }
-    }
 
     /*
     * LAMBDA for doing the stated drawing action
-    * Deck: where the method tried to draw from
-    * Integer: optionalIndex in case it tried to draw from visibleCards
      */
-    List<Triplet<Supplier<PlayableCard>, Deck, Integer>> drawActionsRoutine = new ArrayList<>();
+    List<Supplier<PlayableCard>> drawActionsRoutine = new ArrayList<>();
 
     public PlayerTurnDrawState(GameController controller, Game thisGame) {
         super(controller, thisGame, "drawState");
 
-        this.drawActionsRoutine.add(new Triplet<>(() -> tryDraw(() -> {
-            try {
-                return GAME.getResourceCardsDeck().draw();
-            } catch (EmptyDeckException ignored) {}
-            return null;
-        }), Deck.RESOURCE, 0));
+        this.drawActionsRoutine.add(
+                () -> {
+                    try {
+                        PlayableCard drawnCard = GAME.drawFrom(GAME.getResourceCardsDeck());
+                        GAME.peekFrom(GAME.getResourceCardsDeck());
+                        return drawnCard;
+                    } catch (EmptyDeckException ignored) {}
+                    return null;
+                }
+        );
 
-        this.drawActionsRoutine.add(new Triplet<>(() -> tryDraw(() -> {
-            try {
-                return GAME.getGoldCardsDeck().draw();
-            } catch (EmptyDeckException ignored) {
-                return null;
-            }
-        }), Deck.GOLD, 0));
+        this.drawActionsRoutine.add(
+                () -> {
+                    try {
+                        PlayableCard drawnCard = GAME.drawFrom(GAME.getGoldCardsDeck());
+                        GAME.peekFrom(GAME.getGoldCardsDeck());
+                        return drawnCard;
+                    } catch (EmptyDeckException ignored) {}
+                    return null;
+                }
+        );
 
         // Add drawing actions for placed resources
         for (int i = 0; i < GAME.getPlacedResources().length; i++) {
             final int index = i;
-            this.drawActionsRoutine.add(new Triplet<>(() -> tryDraw(() -> {
-                try {
-                    return GAME.drawFrom(GAME.getPlacedResources(), index);
-                } catch (EmptyDeckException ignored) {
-                    return null;
-                }
-            }), Deck.VISIBLE_RESOURCE, index));
+            this.drawActionsRoutine.add(
+                    () -> {
+                        try {
+                            PlayableCard drawnCard = GAME.drawFrom(GAME.getPlacedResources(), index);
+                            GAME.peekFrom(GAME.getResourceCardsDeck());
+                            return drawnCard;
+                        } catch (EmptyDeckException ignored) {}
+                        return null;
+                    }
+            );
         }
 
         // Add drawing actions for placed golds
         for (int i = 0; i < GAME.getPlacedGolds().length; i++) {
             final int index = i;
-            this.drawActionsRoutine.add(new Triplet<>(() -> tryDraw(() -> {
-                try {
-                    return GAME.drawFrom(GAME.getPlacedGolds(), index);
-                } catch (EmptyDeckException ignored) {
-                    return null;
-                }
-            }), Deck.VISIBLE_GOLD, index));
+            this.drawActionsRoutine.add(
+                    () -> {
+                        try {
+                            PlayableCard drawnCard = GAME.drawFrom(GAME.getPlacedGolds(), index);
+                            GAME.peekFrom(GAME.getGoldCardsDeck());
+                            return drawnCard;
+                        } catch (EmptyDeckException ignored) {
+                            return null;
+                        }
+                    }
+            );
         }
     }
 
@@ -90,40 +83,25 @@ public class PlayerTurnDrawState extends GameState {
         if (!target.equals(GAME.getCurrentPlayer()))
             throw new UnexpectedPlayerException();
 
-        PlayableCard drawnCard = null;
-        PlayableCard topDeck = null;
+        PlayableCard drawnCard;
 
         if (deck.trim().equalsIgnoreCase("RESOURCE")) {
             drawnCard = GAME.drawFrom(GAME.getResourceCardsDeck());
-            topDeck = GAME.getResourceCardsDeck().peek();
-            if (topDeck == null) {
-                topDeck = new ResourceCard(-1,0, new HashMap<>(), new HashMap<>());
-            }
+            GAME.peekFrom(GAME.getResourceCardsDeck());
         } else if (deck.trim().equalsIgnoreCase("GOLD")) {
             drawnCard = GAME.drawFrom(GAME.getGoldCardsDeck());
-            topDeck = GAME.getGoldCardsDeck().peek();
-            if (topDeck == null) {
-                topDeck = new GoldCard(-1, 0, new HashMap<>(), new HashMap<>(), null, null);
-            }
+            GAME.peekFrom(GAME.getGoldCardsDeck());
         } else
             throw new UnknownStringException();
 
         target.addCardToHand(drawnCard);
 
-        System.out.println("[SERVER]: Sending drawn card to current player and new top deck card to clients in "+ GAME.toString());
-        for (var player : GAME.getActivePlayers()) {
-            keyReverseLookup(GameController.activePlayers, player::equals).getListener().notified(
-                    new ReplaceCardCommand(
-                            List.of(
-                                    new Triplet<>(topDeck.ID, deck + "_deck", -1)
-                            )
-                    )
-            );
-        }
+        //FIXME: after managing correctly placeholder cards, remove this
+        System.out.println("[SERVER]: Sending drawn card to current player and new top deck card to clients in "+ GAME);
 
         transition();
-        //FIXME: controllare che non si possa pescare due carte nello stesso turno! in teoria rendendo atomica
-        // questa intera funzione dovrebbe garantirlo
+        //FIXME: controllare che non si possa pescare due carte nello stesso turno! in teoria rendere atomica
+        // questa funzione dovrebbe garantirlo
         // N.B: in teoria quindi questi due metodi sono esclusivi
     }
 
@@ -139,52 +117,19 @@ public class PlayerTurnDrawState extends GameState {
         }
 
         PlayableCard drawnCard;
-        PlayableCard replacingCard;
-        PlayableCard topDeck;
 
         if (whichType.trim().equalsIgnoreCase("RESOURCE")) {
             drawnCard = GAME.drawFrom(GAME.getPlacedResources(), position);
-            replacingCard = GAME.getPlacedResources()[position];
-            if (replacingCard == null) {
-                replacingCard = new ResourceCard(-1,0, new HashMap<>(), new HashMap<>());
-            }
-            topDeck = GAME.getResourceCardsDeck().peek();
-            if (topDeck == null) {
-                topDeck = new ResourceCard(-1,0, new HashMap<>(), new HashMap<>());
-            }
+            GAME.peekFrom(GAME.getResourceCardsDeck());
         } else if (whichType.trim().equalsIgnoreCase("GOLD")) {
             drawnCard = GAME.drawFrom(GAME.getPlacedGolds(), position);
-            replacingCard = GAME.getPlacedGolds()[position];
-            if (replacingCard == null) {
-                replacingCard = new GoldCard(-1, 0, new HashMap<>(), new HashMap<>(), null, null);
-            }
-            topDeck = GAME.getGoldCardsDeck().peek();
-            if (topDeck == null) {
-                topDeck = new GoldCard(-1, 0, new HashMap<>(), new HashMap<>(), null, null);
-            }
+            GAME.peekFrom(GAME.getGoldCardsDeck());
         } else
             throw new UnknownStringException();
 
         target.addCardToHand(drawnCard);
 
-        System.out.println("[SERVER]: Sending drawn card to current player and new visible card to clients in "+ GAME.toString());
-        for (var player : GAME.getActivePlayers()) {
-            NetworkSession receiver = keyReverseLookup(GameController.activePlayers, player::equals);
-            receiver.getListener().notified(
-                    new ReplaceCardCommand(
-                            List.of(
-                                    new Triplet<>(replacingCard.ID, whichType + "_visible", position)
-                            )
-                    )
-            );
-            receiver.getListener().notified(
-                    new ReplaceCardCommand(
-                            List.of(
-                                    new Triplet<>(topDeck.ID, whichType + "_deck", -1)
-                            )
-                    )
-            );
-        }
+        System.out.println("[SERVER]: Sending drawn card to current player and new visible card to clients in "+ GAME);
 
         transition();
         //FIXME: controllare che non si possa giocare due carte nello stesso turno!
@@ -194,67 +139,17 @@ public class PlayerTurnDrawState extends GameState {
 
     @Override
     public void playerDisconnected(InGamePlayer target) {
-        PlayableCard drawnCard = null;
-        PlayableCard replacingCard = null;
-        PlayableCard topDeck = null;
-        Triplet<Supplier<PlayableCard>, Deck, Integer> currentActionFormat = null;
+        PlayableCard drawnCard;
 
-        for (Triplet<Supplier<PlayableCard>, Deck, Integer> actionFormat : this.drawActionsRoutine) {
-            currentActionFormat = actionFormat;
-            drawnCard = actionFormat.getX().get();
+        for (var actionFormat : this.drawActionsRoutine) {
+            drawnCard = actionFormat.get();
             if (drawnCard != null) {
                 target.addCardToHand(drawnCard);
-                replacingCard = switch(actionFormat.getY()){
-                    case Deck.VISIBLE_RESOURCE -> GAME.getPlacedResources()[actionFormat.getZ()];
-                    case Deck.VISIBLE_GOLD -> GAME.getPlacedGolds()[actionFormat.getZ()];
-                    default -> null;
-                };
-                topDeck = switch(actionFormat.getY()){
-                    case Deck.RESOURCE -> GAME.getResourceCardsDeck().peek();
-                    case Deck.GOLD -> GAME.getGoldCardsDeck().peek();
-                    case Deck.VISIBLE_RESOURCE -> GAME.getPlacedResources()[actionFormat.getZ()];
-                    case Deck.VISIBLE_GOLD -> GAME.getPlacedGolds()[actionFormat.getZ()];
-                };
-
                 break;
             }
         }
 
-        //If one of the previous action tried succeeded, you will have a drawnCard and so updates have to be sent
-        if(drawnCard != null) {
-            //Sending the updated cards to clients and the new TopDeck Card if a drawnAction has been done
-            for (var player : GAME.getActivePlayers()) {
-                NetworkSession receiver = keyReverseLookup(GameController.activePlayers, player::equals);
-                if (replacingCard != null)
-                    receiver.getListener().notified(
-                            new ReplaceCardCommand(
-                                    List.of(
-                                            new Triplet<>(replacingCard.ID, currentActionFormat.getY().STRING_MESSAGE + "_visible", currentActionFormat.getZ())
-                                    )
-                            )
-                    );
-                if (topDeck == null)
-                    topDeck = switch (currentActionFormat.getY()) {
-                        case Deck.RESOURCE, Deck.VISIBLE_RESOURCE ->
-                                new ResourceCard(-1, 0, new HashMap<>(), new HashMap<>());
-                        case Deck.GOLD, Deck.VISIBLE_GOLD ->
-                                new GoldCard(-1, 0, new HashMap<>(), new HashMap<>(), null, null);
-                    };
-                receiver.getListener().notified(
-                        new ReplaceCardCommand(
-                                List.of(
-                                        new Triplet<>(topDeck.ID, currentActionFormat.getY().STRING_MESSAGE + "_deck", -1)
-                                )
-                        )
-                );
-            }
-        }
-
         transition();
-    }
-
-    private PlayableCard tryDraw(Supplier<PlayableCard> drawAction) {
-        return drawAction.get();
     }
 
     @Override
@@ -280,8 +175,7 @@ public class PlayerTurnDrawState extends GameState {
             return;
         }
 
-        System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME.toString());
-        notifyTransition(GAME.getActivePlayers(), GAME.getRoundNumber(), GAME.getPlayers().indexOf(GAME.getCurrentPlayer()));
+        System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME);
 
         GAME_CONTROLLER.setState(new PlayerTurnPlayState(GAME_CONTROLLER, GAME));
     }

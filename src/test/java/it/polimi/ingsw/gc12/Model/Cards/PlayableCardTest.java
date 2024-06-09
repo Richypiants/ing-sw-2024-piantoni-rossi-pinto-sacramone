@@ -57,7 +57,7 @@ class PlayableCardTest {
 
         InGamePlayer target = game.getPlayers().getFirst();
         target.addCardToHand(targetPlacedCard);
-        assertDoesNotThrow(() -> target.placeCard(new GenericPair<>(0,0), target.getCardsInHand().getFirst(), Side.BACK));
+        assertDoesNotThrow(() -> game.placeCard(target, new GenericPair<>(0,0), target.getCardsInHand().getFirst(), Side.BACK));
         assertEquals(0, targetPlacedCard.awardPoints(target));
     }
 }

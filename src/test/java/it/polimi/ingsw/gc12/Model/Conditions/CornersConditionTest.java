@@ -105,7 +105,7 @@ class CornersConditionTest {
         for (int i = 0; i < numberOfTimesSatisfied.length; i++){
             Triplet<GenericPair<Integer, Integer>, PlayableCard, Side> cardPlacement = cardsToPlay[i];
             player1InGame.addCardToHand(cardPlacement.getY());
-            player1InGame.placeCard(cardPlacement.getX(), cardPlacement.getY(), cardPlacement.getZ());
+            game.placeCard(player1InGame, cardPlacement.getX(), cardPlacement.getY(), cardPlacement.getZ());
 
             assertEquals(numberOfTimesSatisfied[i], corner.numberOfTimesSatisfied(cardsToPlay[i].getY(), game.getPlayers().getFirst()));
         }

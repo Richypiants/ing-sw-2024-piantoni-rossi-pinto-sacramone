@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
-import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.*;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LeaderboardScreenState;
@@ -23,8 +22,6 @@ import it.polimi.ingsw.gc12.Utilities.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static org.fusesource.jansi.Ansi.ansi;
 
 public class ClientController implements ClientControllerInterface {
 
@@ -175,6 +172,13 @@ public class ClientController implements ClientControllerInterface {
         ((GameScreenState) viewState).restoreScreenState();
     }
 
+    public synchronized void receiveObjectiveChoice(List<Integer> cardIDs) {
+        for (var cardID : cardIDs)
+            ((ChooseObjectiveCardsState) viewState).objectivesSelection.add(cardsList.get(cardID));
+
+        view.showObjectiveCardsChoice();
+    }
+
     public void confirmObjectiveChoice(int cardID){
         viewModel.getGame().setOwnObjective(cardsList.get(cardID));
         view.gameScreen();
@@ -208,18 +212,9 @@ public class ClientController implements ClientControllerInterface {
         viewState.executeState();
     }
 
-    public synchronized void receiveObjectiveChoice(List<Integer> cardIDs) {
-        for (var cardID : cardIDs)
-            ((ChooseObjectiveCardsState) viewState).objectivesSelection.add(cardsList.get(cardID));
-
-        view.showObjectiveCardsChoice();
-    }
-
     public synchronized void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {
         for(var cardPlacement : cardPlacements) {
             ClientCard card = cardsList.get(cardPlacement.getX());
-            if(cardPlacement.getX() == -1)
-                TUIView.getInstance().printToPosition(ansi().cursor(1,1).a("Template card Received")); //TODO:REMOVE
             switch (cardPlacement.getY().trim().toLowerCase()) {
                 case "resource_deck" -> viewModel.getGame().setTopDeckResourceCard(card);
                 case "gold_deck" -> viewModel.getGame().setTopDeckGoldCard(card);
@@ -231,7 +226,7 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public synchronized void transition(int round, int currentPlayerIndex) {
-        if(round != 0 )
+        if(round != 0)
             viewModel.getGame().setCurrentRound(round);
         //if(currentPlayerIndex != -1 ) /*TODO: Should be deleted,since I'm currently updating this index every GameTransition*/
         viewModel.getGame().setCurrentPlayerIndex(currentPlayerIndex);

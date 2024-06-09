@@ -44,27 +44,27 @@ class CardTest {
     @Test
     void awardPoints() throws Throwable {
         game.getPlayers().getFirst().addCardToHand(initialCards.getFirst());
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(0, 0), initialCards.getFirst(), Side.BACK);
+        game.placeCard(game.getPlayers().getFirst(),new GenericPair<>(0, 0), initialCards.getFirst(), Side.BACK);
 
         assertEquals(0, goldCards.getFirst().awardPoints(game.getPlayers().getFirst()));
 
         game.getPlayers().getFirst().addCardToHand(resourceCards.get(0));
         game.getPlayers().getFirst().addCardToHand(resourceCards.get(2));
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(1, -1), resourceCards.get(0), Side.FRONT);
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(-1, 1), resourceCards.get(2), Side.FRONT);
+        game.placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, -1), resourceCards.get(0), Side.FRONT);
+        game.placeCard(game.getPlayers().getFirst(), new GenericPair<>(-1, 1), resourceCards.get(2), Side.FRONT);
 
         game.getPlayers().getFirst().addCardToHand(resourceCards.get(10));
         game.getPlayers().getFirst().addCardToHand(resourceCards.get(21));
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(2, 0), resourceCards.get(10), Side.FRONT);
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(-2, 2), resourceCards.get(21), Side.FRONT);
+        game.placeCard(game.getPlayers().getFirst(), new GenericPair<>(2, 0), resourceCards.get(10), Side.FRONT);
+        game.placeCard(game.getPlayers().getFirst(), new GenericPair<>(-2, 2), resourceCards.get(21), Side.FRONT);
 
         game.getPlayers().getFirst().addCardToHand(goldCards.get(7));
         game.getPlayers().getFirst().addCardToHand(goldCards.get(6));
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(-1, 3), goldCards.get(6), Side.FRONT);
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(3, 1), goldCards.get(7), Side.FRONT);
+        game.placeCard(game.getPlayers().getFirst(), new GenericPair<>(-1, 3), goldCards.get(6), Side.FRONT);
+        game.placeCard(game.getPlayers().getFirst(), new GenericPair<>(3, 1), goldCards.get(7), Side.FRONT);
 
         game.getPlayers().getFirst().addCardToHand(goldCards.get(0));
-        game.getPlayers().getFirst().placeCard(new GenericPair<>(4, 2), goldCards.get(0), Side.FRONT);
+        game.placeCard(game.getPlayers().getFirst(), new GenericPair<>(4, 2), goldCards.get(0), Side.FRONT);
 
         assertEquals(2, goldCards.getFirst().awardPoints(game.getPlayers().getFirst()));
     }

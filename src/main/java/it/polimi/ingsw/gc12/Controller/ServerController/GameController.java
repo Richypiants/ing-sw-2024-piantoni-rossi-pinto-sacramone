@@ -3,8 +3,8 @@ package it.polimi.ingsw.gc12.Controller.ServerController;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.*;
 import it.polimi.ingsw.gc12.Controller.Commands.SetNicknameCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.AwaitingReconnectionState;
+import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseInitialCardsState;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.GameState;
-import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.SetupState;
 import it.polimi.ingsw.gc12.Model.Cards.Card;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
@@ -29,7 +29,7 @@ public class GameController extends ServerController {
 
     public GameController(Game controlledGame) {
         this.CONTROLLED_GAME = controlledGame;
-        currentGameState = new SetupState(this, CONTROLLED_GAME);
+        currentGameState = new ChooseInitialCardsState(this, CONTROLLED_GAME);
     }
 
     public GameState getCurrentState() {
@@ -38,6 +38,7 @@ public class GameController extends ServerController {
 
     public void setState(GameState state) {
         currentGameState = state;
+        CONTROLLED_GAME.notifyListeners(new GameTransitionCommand(CONTROLLED_GAME.getRoundNumber(), CONTROLLED_GAME.getCurrentPlayerIndex()));
     }
 
     private boolean invalidCard(NetworkSession sender, int cardID) {
@@ -81,8 +82,9 @@ public class GameController extends ServerController {
 
         inactiveSessions.remove(nickname);
         activePlayers.put(sender, targetPlayer);
+        CONTROLLED_GAME.addListener(sender.getListener());
+        targetPlayer.addListener(sender.getListener());
         ((InGamePlayer) activePlayers.get(sender)).toggleActive();
-        //FIXME: restoreGame va chiamata anche quando non c'è il gioco ma il file salvato perchè il server era crashato
     }
 
     @Override
@@ -159,7 +161,6 @@ public class GameController extends ServerController {
         if (targetCard instanceof ObjectiveCard)
             try {
                 currentGameState.pickObjective(targetPlayer, (ObjectiveCard) targetCard);
-                //TODO: maybe send a response back to the player?
             } catch (ForbiddenActionException e) {
                 sender.getListener().notified(
                         new ThrowExceptionCommand(
@@ -268,11 +269,15 @@ public class GameController extends ServerController {
     public void leaveGame(NetworkSession sender) {
         System.out.println("[CLIENT]: LeaveGameCommand received and being executed");
 
+        sender.getTimeoutTask().cancel();
+        CONTROLLED_GAME.removeListener(sender.getListener());
+
         InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
+
+        targetPlayer.removeListener(sender.getListener());
 
         targetPlayer.toggleActive();
         activePlayers.remove(sender);
-        sender.getTimeoutTask().cancel();
         inactiveSessions.put(targetPlayer.getNickname(), sender);
 
         /*Checking if the disconnection happened during the sender turn. If so:

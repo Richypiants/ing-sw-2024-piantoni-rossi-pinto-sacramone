@@ -26,7 +26,7 @@ class ChooseInitialCardsStateTest {
     NetworkSession client2;
     ServerController server;
     GameController gameController;
-    SetupState state;
+    GameState state;
 
 
     @BeforeEach
@@ -60,8 +60,7 @@ class ChooseInitialCardsStateTest {
         ServerController.activePlayers.put(client1, game.getPlayers().get(0));
         ServerController.activePlayers.put(client2, game.getPlayers().get(1));
 
-        state = new SetupState(gameController, game);
-        state.transition();
+        state = new ChooseInitialCardsState(gameController, game);
     }
 
     @Test

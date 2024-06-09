@@ -100,13 +100,13 @@ class GoldCardTest{
         //Placed some starting cards to simulate a game initial configuration
         // and earn the necessary Resources to fulfill the GoldCard Condition for placing it.
         playerGame.addCardToHand(initialCards.getFirst());
-        assertDoesNotThrow(()-> playerGame.placeCard(new GenericPair<>(0, 0), playerGame.getCardsInHand().getFirst(), Side.BACK));
+        assertDoesNotThrow(()-> game.placeCard(playerGame, new GenericPair<>(0, 0), playerGame.getCardsInHand().getFirst(), Side.BACK));
         playerGame.addCardToHand(resourceCards.get(4));
-        assertDoesNotThrow(()-> playerGame.placeCard(new GenericPair<>(1, -1), playerGame.getCardsInHand().getFirst(), Side.FRONT));
+        assertDoesNotThrow(()-> game.placeCard(playerGame, new GenericPair<>(1, -1), playerGame.getCardsInHand().getFirst(), Side.FRONT));
 
         //The actual card that will be tested
         playerGame.addCardToHand(goldCards.get(30));
-        assertDoesNotThrow(()-> playerGame.placeCard(new GenericPair<>(-1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT));
+        assertDoesNotThrow(()-> game.placeCard(playerGame, new GenericPair<>(-1, 1), playerGame.getCardsInHand().getFirst(), Side.FRONT));
 
         assertEquals(expectedPointsEarned, playerGame.getPlacedCards().get(new GenericPair<>(-1, 1)).getX().awardPoints(playerGame));
     }
