@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 public class Listener {
 
-    private final static ExecutorService LISTENERS_EXECUTORS_POOL = Executors.newCachedThreadPool(); //TODO: decidere come farla e se è necessaria;
+    private final static ExecutorService LISTENERS_DISCONNECTION_EXECUTOR = Executors.newSingleThreadExecutor();
 
     //FIXME: not a generic listener if it has to know Session and Client...... maybe make abstract and then subclass in ServerModelUpdateListener?
     private final NetworkSession SESSION;
@@ -29,9 +29,10 @@ public class Listener {
         try {
             CLIENT.requestToClient(command);
         } catch (IOException e) {
-            //If communication is closed, the target has lost an update, so in case he reconnects, its game is inconsistent, we must send the update,
+            //If communication is closed, the target has lost an update, so in case he reconnects, its game is inconsistent.
+            //We must act to keep the game consistent
             //so the TimeoutTask routine has to be instantly executed.
-            SESSION.runTimeoutTimerTask();
+            LISTENERS_DISCONNECTION_EXECUTOR.submit(SESSION::runTimeoutTimerTask);
         } catch (Exception e) {
             e.printStackTrace();
         }

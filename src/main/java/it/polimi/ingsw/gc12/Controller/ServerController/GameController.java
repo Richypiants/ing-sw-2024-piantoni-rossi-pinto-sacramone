@@ -305,15 +305,20 @@ public class GameController extends ServerController {
 
         int activePlayers = CONTROLLED_GAME.getActivePlayers().size();
         if (activePlayers == 1) {
-            for (var player : CONTROLLED_GAME.getActivePlayers())
-                keyReverseLookup(ServerController.activePlayers, player::equals).getListener().notified(new PauseGameCommand());
+            synchronized(currentGameState) {
+                for (var player : CONTROLLED_GAME.getActivePlayers())
+                    keyReverseLookup(ServerController.activePlayers, player::equals).getListener().notified(new PauseGameCommand());
 
-            currentGameState = new AwaitingReconnectionState(this, CONTROLLED_GAME);
+                currentGameState = new AwaitingReconnectionState(this, CONTROLLED_GAME);
+            }
+
             System.out.println("[SERVER]: Freezing " + CONTROLLED_GAME + " game");
         } else if (activePlayers == 0) {
+            //FIXME: Class cast exception if someone times out during the execution of VictoryCalculationState
+            // but before the new Connection Controller is assigned to him
             ((AwaitingReconnectionState) currentGameState).cancelTimerTask();
             for (var player : CONTROLLED_GAME.getPlayers())
-                keyReverseLookup(ServerController.activePlayers, player::equals).setController(ConnectionController.getInstance());
+                inactiveSessions.remove(player.getNickname());
             model.GAME_CONTROLLERS.remove(keyReverseLookup(model.GAME_CONTROLLERS, this::equals));
         }
     }

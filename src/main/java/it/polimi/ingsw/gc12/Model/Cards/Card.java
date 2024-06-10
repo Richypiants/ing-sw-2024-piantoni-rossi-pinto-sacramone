@@ -49,4 +49,6 @@ public abstract class Card {
                 ", POINTS_GRANTED=" + POINTS_GRANTED +
                 '}';
     }
+
+
 }

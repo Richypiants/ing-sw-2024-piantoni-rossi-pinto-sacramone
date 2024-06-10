@@ -44,8 +44,6 @@ public abstract class NetworkSession implements Serializable {
     }
 
     public void runTimeoutTimerTask() {
-        System.out.println("[SERVER] " + listener.getVirtualClient() + " didn't send any keepAlive in " + SESSION_TIMEOUT / 1000
-                + " seconds or the game has sent an update and its state is inconsistent, disconnecting....");
         timeoutTask.run();
     }
 

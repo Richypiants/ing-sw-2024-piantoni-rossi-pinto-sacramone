@@ -24,9 +24,9 @@ public class ChooseObjectiveCardsState extends GameScreenState {
     }
 
     public void restoreScreenState(){
-        if(ClientController.getInstance().viewModel.getGame().getOwnObjective() != null) //This is only a safe check,
-            //This condition should always be satisfied
-            ClientController.getInstance().view.gameScreen();
+        ClientController.getInstance().view.gameScreen();
+        if(ClientController.getInstance().viewModel.getGame().getOwnObjective() == null)
+            ClientController.getInstance().view.showObjectiveCardsChoice();
     }
 
     @Override

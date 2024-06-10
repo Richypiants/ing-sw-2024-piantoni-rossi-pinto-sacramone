@@ -18,9 +18,7 @@ public class AwaitingReconnectionState extends GameState {
     public AwaitingReconnectionState(GameController controller, Game thisGame) {
         super(controller, thisGame, "awaitingReconnectionState");
 
-        synchronized (GAME_CONTROLLER.getCurrentState()) {
-            this.previousState = GAME_CONTROLLER.getCurrentState();
-        }
+        this.previousState = GAME_CONTROLLER.getCurrentState();
 
         timer = new Timer(true);
         timer.schedule(terminateGame = new TimerTask() {

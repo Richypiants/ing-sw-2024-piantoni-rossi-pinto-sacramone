@@ -27,7 +27,7 @@ public class PlayerTurnPlayState extends GameState {
 
         GAME.placeCard(target, coordinates, card, playedSide);
 
-        System.out.println("[SERVER]: Sending card placed by current player to clients in "+ GAME.toString());
+        System.out.println("[SERVER]: Sending card placed by current player to clients in "+ GAME);
 
         transition();
         //FIXME: controllare che non si possa giocare due carte nello stesso turno! in teoria rendendo atomica

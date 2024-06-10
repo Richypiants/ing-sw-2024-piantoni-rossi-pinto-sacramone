@@ -45,6 +45,14 @@ public class ClientCard implements Serializable {
      */
     public final Map<Side, ArrayList<ArrayList<Triplet<String, Integer[], Integer>>>> TUI_SPRITES;
 
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof ClientCard otherCard)) return false;
+        return (this.ID == otherCard.ID);
+    }
+
     /**
      * Constructs a new ClientCard with the specified ID, GUI sprites, and TUI sprites.
      *
