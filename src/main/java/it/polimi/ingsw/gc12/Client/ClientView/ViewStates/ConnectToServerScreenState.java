@@ -70,7 +70,7 @@ public class ConnectToServerScreenState extends ViewState {
             while (true) {
                 ClientController.getInstance().requestToServer(new KeepAliveCommand());
                 try {
-                    sleep(10000);
+                    sleep(5000);
                 } catch (Exception e) {
                     ClientController.getInstance().errorLogger.log(e);
                     break;

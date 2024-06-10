@@ -39,8 +39,8 @@ public abstract class ServerController implements ServerControllerInterface {
         TimerTask timeoutTask = new TimerTask() {
             @Override
             public void run() {
-                System.out.println("[SERVER]" + target + " didn't send any keepAlive in 30"
-                        + " seconds or the game has sent an update and its state is inconsistent, disconnecting....");
+                System.out.println("[SERVER]" + target + " didn't send any keepAlive in 15"
+                        + " seconds or the game has sent an update and its state is inconsistent, disconnecting...");
                 ControllerInterface thisController = target.getController();
                     if (thisController instanceof GameController)
                         leaveGame(target);

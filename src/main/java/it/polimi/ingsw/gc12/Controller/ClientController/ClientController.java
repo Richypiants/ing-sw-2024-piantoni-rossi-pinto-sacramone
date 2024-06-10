@@ -132,7 +132,7 @@ public class ClientController implements ClientControllerInterface {
             viewModel.joinLobbyOrGame(lobby);
         }
         //Se leaveLobby, cioè se noneMatch e c'ero dentro
-        else if (lobby.equals(viewModel.getCurrentLobby())) {
+        else if (lobby.getRoomUUID().equals(viewModel.getCurrentLobbyUUID())) {
             viewModel.leaveLobbyOrGame();
         }
 
@@ -247,8 +247,8 @@ public class ClientController implements ClientControllerInterface {
 
         targetPlayer.toggleActive();
         addChatMessage(
-                nickname,
-                "[SYSTEM] Player " + nickname + " has " + (targetPlayer.isActive() ? "reconnected" : "disconnected"),
+                "SYSTEM",
+                "Player " + nickname + " has " + (targetPlayer.isActive() ? "reconnected" : "disconnected"),
                 false
         );
     }

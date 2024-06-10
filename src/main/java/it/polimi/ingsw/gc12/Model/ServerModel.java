@@ -13,6 +13,7 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.FullLobbyException;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
@@ -25,14 +26,14 @@ public class ServerModel implements Listenable {
     public final ReentrantReadWriteLock GAME_CONTROLLERS_LOCK;
     private final Map<UUID, LobbyController> LOBBY_CONTROLLERS;
     private final Map<UUID, GameController> GAME_CONTROLLERS;
-    public final List<Listener> LOBBIES_LISTENERS;
+    public final CopyOnWriteArrayList<Listener> LOBBIES_LISTENERS;
 
     public ServerModel() {
         LOBBY_CONTROLLERS = new HashMap<>();
         LOBBY_CONTROLLERS_LOCK = new ReentrantReadWriteLock(true);
         GAME_CONTROLLERS = new HashMap<>();
         GAME_CONTROLLERS_LOCK = new ReentrantReadWriteLock(true);
-        LOBBIES_LISTENERS = new ArrayList<>();
+        LOBBIES_LISTENERS = new CopyOnWriteArrayList<>();
     }
 
     private static Map<Integer, Card> loadModelCards() {

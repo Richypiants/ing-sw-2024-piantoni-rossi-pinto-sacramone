@@ -12,14 +12,13 @@ import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.ServerModel;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
+import it.polimi.ingsw.gc12.Network.Server.Server;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.Arrays;
 import java.util.Optional;
-
-import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class GameController extends ServerController {
 
@@ -265,7 +264,7 @@ public class GameController extends ServerController {
     }
 
     @Override
-    public synchronized void leaveGame(NetworkSession sender) {
+    public void leaveGame(NetworkSession sender) {
         System.out.println("[CLIENT]: LeaveGameCommand received and being executed");
 
         sender.getTimeoutTask().cancel();
@@ -274,36 +273,46 @@ public class GameController extends ServerController {
         InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
         targetPlayer.removeListener(sender.getListener());
 
-        CONTROLLED_GAME.toggleActive(targetPlayer);
-        activePlayers.remove(sender);
-        inactiveSessions.put(targetPlayer.getNickname(), sender);
+        //It is needed: when we get here because a listener has failed to notify a game action, that same thread (which
+        // still holds the lock for this controller instance) needs to immediately remove that listener before any other
+        // action of the game (usually a GameTransitionCommand) is sent, but at the same time the switch to the
+        // AwaitingReconnectionState MUST happen after that GameTransition has gone to the next state, otherwise the
+        // wait state will be overwritten by the following state. We solve this problem by making the transition to
+        // AwaitingReconnectionState to another thread and forcing it to wait until the transition() function
+        // releases the lock.
+        Server.getInstance().commandExecutorsPool.submit(() -> {
+            synchronized (this) {
+                CONTROLLED_GAME.toggleActive(targetPlayer);
+                activePlayers.remove(sender);
+                inactiveSessions.put(targetPlayer.getNickname(), sender);
 
-        /*Checking if the disconnection happened during the sender turn. If so:
-         * 1. If it was during PlayerTurnPlayState,
-         *   the game will transition() to the PlayerTurnDrawState
-         *   that will check if the player is inactive and then transition as well.
-         *
-         * 2. If it was during PlayerTurnDrawState,
-         *    a card has to be drawn following a standard routine, if no card can be drawn, transition()
-         *    without giving any card.
-         *
-         * If the player disconnected in another player's turn, there's no problem
-         * because the players' activity is managed by the GameStates.
-         * */
+                /*Checking if the disconnection happened during the sender turn. If so:
+                 * 1. If it was during PlayerTurnPlayState,
+                 *   the game will transition() to the PlayerTurnDrawState
+                 *   that will check if the player is inactive and then transition as well.
+                 *
+                 * 2. If it was during PlayerTurnDrawState,
+                 *    a card has to be drawn following a standard routine, if no card can be drawn, transition()
+                 *    without giving any card.
+                 *
+                 * If the player disconnected in another player's turn, there's no problem
+                 * because the players' activity is managed by the GameStates.
+                 * */
 
-        if (CONTROLLED_GAME.getCurrentPlayer() == null || CONTROLLED_GAME.getCurrentPlayer().equals(targetPlayer))
-            currentGameState.playerDisconnected(targetPlayer);
+                if (CONTROLLED_GAME.getCurrentPlayer() == null || CONTROLLED_GAME.getCurrentPlayer().equals(targetPlayer))
+                    currentGameState.playerDisconnected(targetPlayer);
 
-        System.out.println("[SERVER]: sending ToggleActiveCommand to clients");
+                System.out.println("[SERVER]: sending ToggleActiveCommand to clients");
 
-        if (CONTROLLED_GAME.getActivePlayers().size() == 1) {
-            for (var player : CONTROLLED_GAME.getActivePlayers())
-                keyReverseLookup(ServerController.activePlayers, player::equals).getListener().notified(new PauseGameCommand());
+                if (CONTROLLED_GAME.getActivePlayers().size() == 1) {
+                    CONTROLLED_GAME.notifyListeners(new PauseGameCommand());
 
-            currentGameState = new AwaitingReconnectionState(this, CONTROLLED_GAME);
+                    currentGameState = new AwaitingReconnectionState(this, CONTROLLED_GAME);
 
-            System.out.println("[SERVER]: Freezing " + CONTROLLED_GAME + " game");
-        }
+                    System.out.println("[SERVER]: Freezing " + CONTROLLED_GAME + " game");
+                }
+            }
+        });
     }
 
     @Override

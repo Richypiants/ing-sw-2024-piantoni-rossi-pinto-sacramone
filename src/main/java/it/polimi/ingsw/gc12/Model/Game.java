@@ -16,6 +16,7 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
  */
 public class Game extends Room implements Listenable {
 
-    private final List<Listener> GAME_LISTENERS;
+    private final CopyOnWriteArrayList<Listener> GAME_LISTENERS;
     /**
      * The deck of Resource cards of this game.
      */
@@ -75,7 +76,7 @@ public class Game extends Room implements Listenable {
                 .map(InGamePlayer::new)
                 .collect(Collectors.toCollection(ArrayList::new)));
 
-        this.GAME_LISTENERS = new ArrayList<>();
+        this.GAME_LISTENERS = new CopyOnWriteArrayList<>();
 
         Collections.shuffle(LIST_OF_PLAYERS);
 

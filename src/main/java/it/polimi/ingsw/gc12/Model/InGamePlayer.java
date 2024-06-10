@@ -17,6 +17,7 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
  */
 public class InGamePlayer extends Player implements Listenable {
 
-    private final List<Listener> PLAYER_LISTENERS;
+    private final CopyOnWriteArrayList<Listener> PLAYER_LISTENERS;
 
     /**
      * The cards currently held in this player's hand.
@@ -67,7 +68,7 @@ public class InGamePlayer extends Player implements Listenable {
      */
     protected InGamePlayer(Player player) {
         super(player);
-        PLAYER_LISTENERS = new ArrayList<>();
+        PLAYER_LISTENERS = new CopyOnWriteArrayList<>();
         CARDS_IN_HAND = new ArrayList<>();
         OWNED_RESOURCES = new EnumMap<>(Resource.class);
         for (Resource r : Arrays.stream(Resource.values())

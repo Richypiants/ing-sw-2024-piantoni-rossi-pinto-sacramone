@@ -9,7 +9,7 @@ import java.util.TimerTask;
 
 public abstract class NetworkSession implements Serializable {
 
-    protected static final long SESSION_TIMEOUT = 30000;
+    protected static final long SESSION_TIMEOUT = 15000;
 
     //FIXME: this probably should not go here...
     protected transient Listener listener;
