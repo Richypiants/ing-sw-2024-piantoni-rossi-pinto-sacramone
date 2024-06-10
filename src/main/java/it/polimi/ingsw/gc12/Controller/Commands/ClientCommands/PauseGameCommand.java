@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc12.Controller.Commands.ClientCommands;
 
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
 
-public class PauseGameCommand  implements ClientCommand {
+public class PauseGameCommand implements ClientCommand {
 
     @Override
     public void execute(ClientControllerInterface clientController) {

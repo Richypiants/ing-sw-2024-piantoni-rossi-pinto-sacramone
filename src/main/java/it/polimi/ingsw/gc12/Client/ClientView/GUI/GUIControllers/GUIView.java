@@ -200,6 +200,10 @@ public class GUIView extends View {
     }
 
     @Override
+    public void moveField(GenericPair<Integer, Integer> centerOffset) {
+    }
+
+    @Override
     public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
         GUIGameScreenController.newShowLeaderboard(POINTS_STATS, gameEndedDueToDisconnections);
     }

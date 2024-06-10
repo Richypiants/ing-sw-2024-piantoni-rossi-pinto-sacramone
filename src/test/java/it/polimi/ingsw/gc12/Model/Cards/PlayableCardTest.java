@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,7 +52,7 @@ class PlayableCardTest {
     @Test
     void awardPointsOfCardPlacedOnBackTest(){
         Player player = new Player("TestPlayer");
-        Lobby lobby = new Lobby(player, 1);
+        Lobby lobby = new Lobby(UUID.randomUUID(), player, 1);
         Game game = new Game(lobby);
         PlayableCard targetPlacedCard = initialCards.getFirst();
 

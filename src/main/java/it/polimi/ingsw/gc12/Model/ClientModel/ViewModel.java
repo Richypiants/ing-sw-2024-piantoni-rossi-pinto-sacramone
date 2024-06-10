@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc12.Model.ClientModel;
 
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Room;
-import it.polimi.ingsw.gc12.Utilities.GenericPair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,12 +22,12 @@ public class ViewModel {
      * The map containing all the lobbies in which this client can join
      * since they aren't full.
      */
-    private Map<UUID, Room> lobbies;
+    private Map<UUID, Lobby> lobbies;
 
     /**
      * The pair containing the unique identifier and the lobby or game this client is currently in.
      */
-    private GenericPair<UUID, Room> currentLobbyOrGame;
+    private Room currentLobbyOrGame;
 
     /**
      * Constructs a new ViewModel with an empty nickname and no lobbies.
@@ -36,7 +35,7 @@ public class ViewModel {
     public ViewModel() {
         ownNickname = "";
         lobbies = new HashMap<>();
-        currentLobbyOrGame = new GenericPair<>(null, null);
+        currentLobbyOrGame = null;
     }
 
     /**
@@ -62,7 +61,7 @@ public class ViewModel {
      *
      * @return the map containing the lobbies
      */
-    public Map<UUID, Room> getLobbies() {
+    public Map<UUID, Lobby> getLobbies() {
         return lobbies;
     }
 
@@ -71,7 +70,7 @@ public class ViewModel {
      *
      * @param lobbies the new map of lobbies
      */
-    public void setLobbies(Map<UUID, Room> lobbies) {
+    public void setLobbies(Map<UUID, Lobby> lobbies) {
         this.lobbies = lobbies;
     }
 
@@ -100,7 +99,7 @@ public class ViewModel {
      * @return the UUID of the current lobby
      */
     public UUID getCurrentLobbyUUID() {
-        return currentLobbyOrGame.getX();
+        return currentLobbyOrGame.getRoomUUID();
     }
 
     /**
@@ -109,24 +108,23 @@ public class ViewModel {
      * @return true if the player is in a lobby or game, false otherwise
      */
     public boolean inLobbyOrGame() {
-        return currentLobbyOrGame.getY() != null;
+        return currentLobbyOrGame != null;
     }
 
     /**
      * Joins a lobby or game.
      *
-     * @param lobbyUUID the unique identifier of the lobby or game
-     * @param lobby the lobby or game to join
+     * @param room the lobby or game to join
      */
-    public void joinLobbyOrGame(UUID lobbyUUID, Lobby lobby) {
-        currentLobbyOrGame = new GenericPair<>(lobbyUUID, lobby);
+    public void joinLobbyOrGame(Room room) {
+        currentLobbyOrGame = room;
     }
 
     /**
      * Leaves the current lobby or game.
      */
     public void leaveLobbyOrGame() {
-        currentLobbyOrGame = new GenericPair<>(null, null);
+        currentLobbyOrGame = null;
     }
 
     /**
@@ -136,8 +134,8 @@ public class ViewModel {
      *
      * @return the current lobby in which the player is in
      */
-    public Room getCurrentLobby() {
-        return currentLobbyOrGame.getY();
+    public Lobby getCurrentLobby() {
+        return (Lobby) currentLobbyOrGame;
     }
 
     /**
@@ -148,6 +146,6 @@ public class ViewModel {
      * @return the current lobby in which the player is in
      */
     public ClientGame getGame() {
-        return (ClientGame) currentLobbyOrGame.getY();
+        return (ClientGame) currentLobbyOrGame;
     }
 }

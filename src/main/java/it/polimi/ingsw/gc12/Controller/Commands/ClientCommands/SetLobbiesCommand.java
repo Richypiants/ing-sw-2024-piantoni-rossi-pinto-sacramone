@@ -1,16 +1,16 @@
 package it.polimi.ingsw.gc12.Controller.Commands.ClientCommands;
 
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
-import it.polimi.ingsw.gc12.Model.Room;
+import it.polimi.ingsw.gc12.Model.Lobby;
 
 import java.util.Map;
 import java.util.UUID;
 
 public class SetLobbiesCommand implements ClientCommand {
 
-    private final Map<UUID, Room> LOBBIES;
+    private final Map<UUID, Lobby> LOBBIES;
 
-    public SetLobbiesCommand(Map<UUID, Room> lobbies) {
+    public SetLobbiesCommand(Map<UUID, Lobby> lobbies) {
         this.LOBBIES = lobbies;
     }
 

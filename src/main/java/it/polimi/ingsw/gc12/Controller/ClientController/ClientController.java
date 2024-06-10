@@ -12,7 +12,6 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.ClientModel.ViewModel;
 import it.polimi.ingsw.gc12.Model.Lobby;
-import it.polimi.ingsw.gc12.Model.Room;
 import it.polimi.ingsw.gc12.Network.Client.RMIClientSkeleton;
 import it.polimi.ingsw.gc12.Network.Client.SocketClient;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
@@ -114,7 +113,7 @@ public class ClientController implements ClientControllerInterface {
         viewState.updateNickname();
     }
 
-    public void setLobbies(Map<UUID, Room> lobbies) {
+    public void setLobbies(Map<UUID, Lobby> lobbies) {
         viewModel.setLobbies(lobbies);
         if(!(viewState instanceof LeaderboardScreenState)) {
             viewState = new LobbyScreenState();
@@ -122,18 +121,18 @@ public class ClientController implements ClientControllerInterface {
         }
     }
 
-    public void updateLobby(UUID lobbyUUID, Lobby lobby) {
+    public void updateLobby(Lobby lobby) {
         //The received lobbies with a playersNumber equal to zero or below are removed from the ClientModel
         if(lobby.getPlayersNumber() <= 0)
-            viewModel.removeLobby(lobbyUUID);
+            viewModel.removeLobby(lobby.getRoomUUID());
         else
-            viewModel.putLobby(lobbyUUID, lobby);
+            viewModel.putLobby(lobby.getRoomUUID(), lobby);
 
         if (lobby.getPlayers().stream().anyMatch((player) -> player.getNickname().equals(viewModel.getOwnNickname()))) {
-            viewModel.joinLobbyOrGame(lobbyUUID, lobby);
+            viewModel.joinLobbyOrGame(lobby);
         }
         //Se leaveLobby, cioè se noneMatch e c'ero dentro
-        else if (lobbyUUID.equals(viewModel.getCurrentLobbyUUID())) {
+        else if (lobby.equals(viewModel.getCurrentLobby())) {
             viewModel.leaveLobbyOrGame();
         }
 
@@ -142,16 +141,15 @@ public class ClientController implements ClientControllerInterface {
             viewState.executeState();
         }
     }
+
     //FIXME: da qui in poi i synchronized servono davvero oppure risolvendo la writePending e facendo una coda di comandi si risolve?
-    public synchronized void startGame(UUID lobbyUUID, ClientGame gameDTO) {
-        updateLobby(lobbyUUID, gameDTO);
-        viewModel.joinLobbyOrGame(lobbyUUID, gameDTO);
-        //FIXME: send clientGame directly?
+    public synchronized void startGame(ClientGame gameDTO) {
+        viewModel.joinLobbyOrGame(gameDTO);
 
         viewState = new ChooseInitialCardsState();
     }
 
-    public void restoreGame(UUID gameUUID, ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD){
+    public void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD) {
 
         for(var playerEntry : PLAYERS_FIELD.entrySet()) {
             var clientPlayerInstance = gameDTO.getPlayers().stream()
@@ -160,7 +158,7 @@ public class ClientController implements ClientControllerInterface {
             for (var fieldEntry : PLAYERS_FIELD.get(playerEntry.getKey()).sequencedEntrySet())
                 clientPlayerInstance.placeCard(fieldEntry.getKey(), cardsList.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
         }
-        viewModel.joinLobbyOrGame(gameUUID, gameDTO);
+        viewModel.joinLobbyOrGame(gameDTO);
 
         switch(currentState){
             case "initialState" -> viewState = new ChooseInitialCardsState();

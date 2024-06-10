@@ -2,18 +2,14 @@ package it.polimi.ingsw.gc12.Controller.ServerController;
 
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.SetLobbiesCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.UpdateLobbyCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.SetNicknameCommand;
-import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.ForbiddenActionException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.FullLobbyException;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class ConnectionController extends ServerController {
 
@@ -27,19 +23,18 @@ public class ConnectionController extends ServerController {
     }
 
     @Override
-    public void generatePlayer(NetworkSession sender, String nickname) {
+    protected void generatePlayer(NetworkSession sender, String nickname) {
         Player target = new Player(nickname);
-        activePlayers.put(sender, target);
+
         System.out.println("[SERVER]: sending SetNicknameCommand and SetLobbiesCommand to client " + sender);
-        sender.getListener().notified(new SetNicknameCommand(nickname)); //setNickname();
-        sender.getListener().notified(
-                new SetLobbiesCommand(
-                        model.LOBBY_CONTROLLERS.entrySet().stream()
-                                .collect(
-                                        Collectors.toMap(Map.Entry::getKey, (entry) -> (entry.getValue()).CONTROLLED_LOBBY)
-                                )
-                )
-        );
+        sender.getListener().notified(new SetNicknameCommand(nickname));
+
+        model.LOBBY_CONTROLLERS_LOCK.readLock().lock();
+        sender.getListener().notified(new SetLobbiesCommand(model.getLobbiesMap()));
+        model.LOBBY_CONTROLLERS_LOCK.readLock().unlock();
+
+        activePlayers.put(sender, target);
+        model.addListener(sender.getListener());
     }
 
     @Override
@@ -61,8 +56,6 @@ public class ConnectionController extends ServerController {
             activePlayers.get(sender).setNickname(nickname);
             System.out.println("[SERVER]: sending SetNicknameCommand to client " + sender);
             sender.getListener().notified(new SetNicknameCommand(nickname)); //setNickname();
-
-            //TODO: update to other players too!
         }
     }
 
@@ -70,7 +63,6 @@ public class ConnectionController extends ServerController {
     public void createLobby(NetworkSession sender, int maxPlayers) {
         System.out.println("[CLIENT]: CreateLobbyCommand received and being executed");
         if (hasNoPlayer(sender)) return;
-        //TODO: si potrebbe risolvere mettendo un GameState "NotStartedState o IdleState"...
 
         if (maxPlayers < 2 || maxPlayers > 4) {
             sender.getListener().notified(
@@ -82,22 +74,23 @@ public class ConnectionController extends ServerController {
         }
 
         Player target = activePlayers.get(sender);
-        Lobby lobby = new Lobby(target, maxPlayers);
         UUID lobbyUUID;
+        LobbyController controller;
 
-        do {
-            lobbyUUID = UUID.randomUUID();
-        } while (model.LOBBY_CONTROLLERS.containsKey(lobbyUUID));
-        //FIXME: remember, when (and if) putting a game back into lobbies, that if gameUUID is contained you must change it!
+        model.LOBBY_CONTROLLERS_LOCK.writeLock().lock();
+        try {
+            do {
+                lobbyUUID = UUID.randomUUID();
+            } while (model.getLobbyController(lobbyUUID) != null || model.getGameController(lobbyUUID) != null);
 
-        LobbyController controller = new LobbyController(lobby);
-        model.LOBBY_CONTROLLERS.put(lobbyUUID, controller);
+            Lobby lobby = new Lobby(lobbyUUID, target, maxPlayers);
+            controller = model.createLobbyController(lobby);
+        } finally {
+            model.LOBBY_CONTROLLERS_LOCK.writeLock().unlock();
+        }
         sender.setController(controller);
 
         System.out.println("[SERVER]: sending UpdateLobbyCommand to clients");
-        for (var client : activePlayers.keySet())
-            if (!(activePlayers.get(client) instanceof InGamePlayer))
-                client.getListener().notified(new UpdateLobbyCommand(lobbyUUID, lobby)); //updateLobby();
     }
 
     @Override
@@ -105,37 +98,26 @@ public class ConnectionController extends ServerController {
         System.out.println("[CLIENT]: JoinLobbyCommand received and being executed");
         if (hasNoPlayer(sender)) return;
 
-        if (!model.LOBBY_CONTROLLERS.containsKey(lobbyUUID)) {
+        Player target = activePlayers.get(sender);
+
+        try {
+            model.addPlayerToLobby(target, lobbyUUID);
+        } catch (IllegalArgumentException e) {
             sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new IllegalArgumentException("There's no lobby with the provided UUID")
                     )
             );
-            return;
-        }
-
-        LobbyController roomController = model.LOBBY_CONTROLLERS.get(lobbyUUID);
-
-        Lobby lobby = roomController.CONTROLLED_LOBBY;
-
-        if (lobby.getPlayersNumber() >= lobby.getMaxPlayers()) {
+        } catch (FullLobbyException e) {
             sender.getListener().notified(
                     new ThrowExceptionCommand(
-                            new ForbiddenActionException("Cannot join a full lobby")
+                            new FullLobbyException("Cannot join a full lobby")
                     )
             );
             return;
         }
-
-        Player target = activePlayers.get(sender);
-
-        lobby.addPlayer(target);
-        sender.setController(roomController);
+        sender.setController(model.getLobbyController(lobbyUUID));
 
         System.out.println("[SERVER]: sending UpdateLobbyCommand to clients");
-        //FIXME: risolvere SINCRONIZZANDO su un gameCreationLock
-        for (var client : activePlayers.keySet())
-            if (!(activePlayers.get(client) instanceof InGamePlayer))
-                client.getListener().notified(new UpdateLobbyCommand(lobbyUUID, lobby)); //updateLobby();
     }
 }

@@ -14,10 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,7 +37,7 @@ class GoldCardTest{
     @BeforeEach
     void setGameParameters() {
         player = new Player("TestPlayer");
-        lobby = new Lobby(player, 1);
+        lobby = new Lobby(UUID.randomUUID(), player, 1);
         game = new Game(lobby);
     }
 

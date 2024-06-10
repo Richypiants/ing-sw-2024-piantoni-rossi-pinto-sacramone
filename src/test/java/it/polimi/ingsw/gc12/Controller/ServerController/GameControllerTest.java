@@ -247,7 +247,7 @@ class GameControllerTest {
     }
 
     @Test
-    void correctCallToNotExistingPlayerInDirectMessage() throws Exception {
+    void correctCallToNotExistingPlayerInDirectMessage() {
         NetworkSession currentPlayerInTurn;
         if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
             currentPlayerInTurn = inGamePlayer_1;
@@ -262,13 +262,13 @@ class GameControllerTest {
     }
 
     @Test
-    void correctDirectMessageReceived() throws Exception {
+    void correctDirectMessageReceived() {
         NetworkSession currentPlayerInTurn;
         NetworkSession otherPlayer;
         if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer")) {
             currentPlayerInTurn = inGamePlayer_1;
             otherPlayer = inGamePlayer_2;
-            gameAssociatedController.directMessage(currentPlayerInTurn, "thePlayer2", "Test");
+            gameAssociatedController.directMessage(currentPlayerInTurn, "thePlayer_2", "Test");
         } else {
             currentPlayerInTurn = inGamePlayer_2;
             otherPlayer = inGamePlayer_1;
@@ -278,7 +278,7 @@ class GameControllerTest {
     }
 
     @Test
-    void correctBroadcastMessageReceived() throws Exception {
+    void correctBroadcastMessageReceived() {
         NetworkSession currentPlayerInTurn;
         NetworkSession otherPlayer;
         if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer")) {
@@ -296,7 +296,7 @@ class GameControllerTest {
     }
 
     @Test
-    void correctLeaveLobbyRoutine() throws Exception {
+    void correctLeaveLobbyRoutine() {
 
         assertEquals(2, gameAssociatedController.CONTROLLED_GAME.getActivePlayers().size());
         gameAssociatedController.leaveGame(inGamePlayer_1);
@@ -304,7 +304,7 @@ class GameControllerTest {
     }
 
     @Test
-    void correctRestoreGame() throws Exception {
+    void correctRestoreGame() {
         NetworkSession restoreGamePlayer = inGamePlayer_1;
         gameAssociatedController.leaveGame(inGamePlayer_1);
 
@@ -360,6 +360,9 @@ class GameControllerTest {
             this.thrownException = e;
         }
 
+        @Override
+        public void playerDisconnected(InGamePlayer target) {
+        }
 
         @Override
         public void transition() {

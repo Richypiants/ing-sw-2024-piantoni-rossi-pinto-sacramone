@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -78,7 +79,7 @@ public class CardDeckTest {
     @Test
     void correctDraw() {
         Player p1 = new Player("giovanni");
-        Lobby lobby = new Lobby(p1, 1);
+        Lobby lobby = new Lobby(UUID.randomUUID(), p1, 1);
         Game game = new Game(lobby);
         CardDeck<ResourceCard> resourceCardDeck = loadCardDeck(RESOURCE_DECK_FILENAME, new TypeToken<>(){});
 

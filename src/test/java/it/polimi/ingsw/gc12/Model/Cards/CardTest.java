@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -37,7 +38,7 @@ class CardTest {
     void setGameParameters() {
         player1 = new Player("testPlayer_1");
         player2 = new Player("testPlayer_2");
-        lobby = new Lobby(player1, 2);
+        lobby = new Lobby(UUID.randomUUID(), player1, 2);
         game = new Game(lobby);
     }
 

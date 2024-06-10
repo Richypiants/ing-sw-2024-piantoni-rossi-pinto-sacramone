@@ -18,7 +18,7 @@ public class PlayerTurnPlayState extends GameState {
     }
 
     @Override
-    public synchronized void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card,
+    public void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card,
                                        Side playedSide)
             throws UnexpectedPlayerException, CardNotInHandException, NotEnoughResourcesException,
             InvalidCardPositionException {
@@ -30,8 +30,6 @@ public class PlayerTurnPlayState extends GameState {
         System.out.println("[SERVER]: Sending card placed by current player to clients in "+ GAME);
 
         transition();
-        //FIXME: controllare che non si possa giocare due carte nello stesso turno! in teoria rendendo atomica
-        // questa intera funzione dovrebbe garantirlo
     }
 
     @Override

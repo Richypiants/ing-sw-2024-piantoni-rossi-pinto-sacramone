@@ -10,7 +10,6 @@ import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Model.ServerModel;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
@@ -54,7 +53,7 @@ public class GameController extends ServerController {
     }
 
     @Override
-    public void generatePlayer(NetworkSession sender, String nickname) {
+    public synchronized void generatePlayer(NetworkSession sender, String nickname) {
         System.out.println("[SERVER]: sending SetNicknameCommand and RestoreGameCommand to client " + sender);
         sender.getListener().notified(new SetNicknameCommand(nickname)); //setNickname();
 
@@ -65,26 +64,18 @@ public class GameController extends ServerController {
 
         if (currentGameState instanceof AwaitingReconnectionState)
             //If game was in AwaitingReconnectingState, you need to resume it before sending the DTO
-            ((AwaitingReconnectionState) currentGameState).recoverGame();
+            currentGameState.transition();
 
         sender.getListener().notified(new RestoreGameCommand(
-                keyReverseLookup(model.GAME_CONTROLLERS, this::equals),
                 CONTROLLED_GAME.generateDTO(targetPlayer),
                 currentGameState.getStringEquivalent(), //To let the client understand in which state it has to be recovered to.
                 CONTROLLED_GAME.generateTemporaryFieldsToPlayers() //fields related to the players inGame.
         ));
 
-        for (var player : CONTROLLED_GAME.getActivePlayers())
-            if (player.isActive()) {
-                NetworkSession targetClient = keyReverseLookup(activePlayers, player::equals);
-                targetClient.getListener().notified(new ToggleActiveCommand(nickname)); //toggleActive()
-            }
-
-        inactiveSessions.remove(nickname);
         activePlayers.put(sender, targetPlayer);
+        CONTROLLED_GAME.toggleActive(targetPlayer);
         CONTROLLED_GAME.addListener(sender.getListener());
         targetPlayer.addListener(sender.getListener());
-        ((InGamePlayer) activePlayers.get(sender)).toggleActive();
     }
 
     @Override
@@ -106,7 +97,9 @@ public class GameController extends ServerController {
 
         if (targetCard instanceof PlayableCard)
             try {
-                currentGameState.placeCard(targetPlayer, coordinates, (PlayableCard) targetCard, playedSide);
+                synchronized (this) {
+                    currentGameState.placeCard(targetPlayer, coordinates, (PlayableCard) targetCard, playedSide);
+                }
             } catch (ForbiddenActionException e) {
                 sender.getListener().notified(
                         new ThrowExceptionCommand(
@@ -160,7 +153,9 @@ public class GameController extends ServerController {
 
         if (targetCard instanceof ObjectiveCard)
             try {
-                currentGameState.pickObjective(targetPlayer, (ObjectiveCard) targetCard);
+                synchronized (this) {
+                    currentGameState.pickObjective(targetPlayer, (ObjectiveCard) targetCard);
+                }
             } catch (ForbiddenActionException e) {
                 sender.getListener().notified(
                         new ThrowExceptionCommand(
@@ -196,7 +191,9 @@ public class GameController extends ServerController {
         InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
 
         try {
-            currentGameState.drawFrom(targetPlayer, deck);
+            synchronized (this) {
+                currentGameState.drawFrom(targetPlayer, deck);
+            }
         } catch (ForbiddenActionException e) {
             sender.getListener().notified(
                     new ThrowExceptionCommand(
@@ -231,7 +228,9 @@ public class GameController extends ServerController {
         InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
 
         try {
-            currentGameState.drawFrom(targetPlayer, deck, position);
+            synchronized (this) {
+                currentGameState.drawFrom(targetPlayer, deck, position);
+            }
         } catch (ForbiddenActionException e) {
             sender.getListener().notified(
                     new ThrowExceptionCommand(
@@ -266,17 +265,16 @@ public class GameController extends ServerController {
     }
 
     @Override
-    public void leaveGame(NetworkSession sender) {
+    public synchronized void leaveGame(NetworkSession sender) {
         System.out.println("[CLIENT]: LeaveGameCommand received and being executed");
 
         sender.getTimeoutTask().cancel();
         CONTROLLED_GAME.removeListener(sender.getListener());
 
         InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
-
         targetPlayer.removeListener(sender.getListener());
 
-        targetPlayer.toggleActive();
+        CONTROLLED_GAME.toggleActive(targetPlayer);
         activePlayers.remove(sender);
         inactiveSessions.put(targetPlayer.getNickname(), sender);
 
@@ -298,28 +296,13 @@ public class GameController extends ServerController {
 
         System.out.println("[SERVER]: sending ToggleActiveCommand to clients");
 
-        for (var player : CONTROLLED_GAME.getActivePlayers()) {
-            NetworkSession targetClient = keyReverseLookup(activePlayers, player::equals);
-            targetClient.getListener().notified(new ToggleActiveCommand(player.getNickname()));
-        }
+        if (CONTROLLED_GAME.getActivePlayers().size() == 1) {
+            for (var player : CONTROLLED_GAME.getActivePlayers())
+                keyReverseLookup(ServerController.activePlayers, player::equals).getListener().notified(new PauseGameCommand());
 
-        int activePlayers = CONTROLLED_GAME.getActivePlayers().size();
-        if (activePlayers == 1) {
-            synchronized(currentGameState) {
-                for (var player : CONTROLLED_GAME.getActivePlayers())
-                    keyReverseLookup(ServerController.activePlayers, player::equals).getListener().notified(new PauseGameCommand());
-
-                currentGameState = new AwaitingReconnectionState(this, CONTROLLED_GAME);
-            }
+            currentGameState = new AwaitingReconnectionState(this, CONTROLLED_GAME);
 
             System.out.println("[SERVER]: Freezing " + CONTROLLED_GAME + " game");
-        } else if (activePlayers == 0) {
-            //FIXME: Class cast exception if someone times out during the execution of VictoryCalculationState
-            // but before the new Connection Controller is assigned to him
-            ((AwaitingReconnectionState) currentGameState).cancelTimerTask();
-            for (var player : CONTROLLED_GAME.getPlayers())
-                inactiveSessions.remove(player.getNickname());
-            model.GAME_CONTROLLERS.remove(keyReverseLookup(model.GAME_CONTROLLERS, this::equals));
         }
     }
 
@@ -333,11 +316,8 @@ public class GameController extends ServerController {
         message = message.substring(0, Math.min(message.length(), 150));
 
         System.out.println("[SERVER]: sending AddChatMessageCommand to clients");
-        for (var inGamePlayer : ((GameController) sender.getController()).CONTROLLED_GAME.getPlayers())
-            if (inGamePlayer.isActive())
-                keyReverseLookup(activePlayers, inGamePlayer::equals).getListener().notified(
-                        new AddChatMessageCommand(senderPlayer.getNickname(), message, false)
-                );
+        ((GameController) sender.getController()).CONTROLLED_GAME
+                .notifyListeners(new AddChatMessageCommand(senderPlayer.getNickname(), message, false));
     }
 
     @Override
@@ -346,7 +326,8 @@ public class GameController extends ServerController {
 
         InGamePlayer senderPlayer = (InGamePlayer) activePlayers.get(sender);
 
-        Optional<Player> selectedPlayer = activePlayers.values().stream()
+        Optional<InGamePlayer> selectedPlayer = ((GameController) sender.getController()).CONTROLLED_GAME
+                .getPlayers().stream()
                 .filter((player) -> player.getNickname().equals(receiverNickname))
                 .findAny();
 
@@ -354,33 +335,24 @@ public class GameController extends ServerController {
         message = message.substring(0, Math.min(message.length(), 150));
 
         if (selectedPlayer.isPresent()) {
-            Player receiverPlayer = selectedPlayer.get();
-            if (((GameController) sender.getController()).CONTROLLED_GAME
-                    .equals(((GameController) keyReverseLookup(activePlayers, receiverPlayer::equals).getController()).CONTROLLED_GAME)) {
-                if (((InGamePlayer) receiverPlayer).isActive()) {
-                    System.out.println("[SERVER]: sending AddChatMessageCommand to sender and target client");
-                    sender.getListener().notified(
-                            new AddChatMessageCommand(senderPlayer.getNickname(), message, true)
-                    );
-                    keyReverseLookup(activePlayers, receiverPlayer::equals).getListener().notified(
-                            new AddChatMessageCommand(senderPlayer.getNickname(), message, true)
-                    );
-                } else
-                    sender.getListener().notified(
-                            new ThrowExceptionCommand(
-                                    new UnexpectedPlayerException("Nickname provided has no active player associated in this game")
-                            )
-                    );
+            if (selectedPlayer.get().isActive()) {
+                System.out.println("[SERVER]: sending AddChatMessageCommand to sender and target client");
+                senderPlayer.notifyListeners(
+                        new AddChatMessageCommand(senderPlayer.getNickname(), message, true)
+                );
+                selectedPlayer.get().notifyListeners(
+                        new AddChatMessageCommand(senderPlayer.getNickname(), message, true)
+                );
             } else
                 sender.getListener().notified(
                         new ThrowExceptionCommand(
-                                new NotExistingPlayerException("Nickname provided has no associated player in this game")
+                                new UnexpectedPlayerException("Nickname provided has no active player associated in this game")
                         )
                 );
         } else
             sender.getListener().notified(
                     new ThrowExceptionCommand(
-                            new NotExistingPlayerException("Nickname provided has no associated player registered")
+                            new NotExistingPlayerException("Nickname provided has no associated player in this game")
                     )
             );
     }

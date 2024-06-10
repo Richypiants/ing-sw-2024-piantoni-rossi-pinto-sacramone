@@ -1,19 +1,13 @@
 package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.GameTransitionCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
-
-import java.util.ArrayList;
-
-import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public abstract class GameState { //TODO: make all exceptions extends RuntimeException so that you can cancel them from here
 
@@ -21,7 +15,6 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
     protected final Game GAME;
 
     protected String state;
-
 
     public GameState(GameController controller, Game thisGame, String state) {
         this.GAME_CONTROLLER = controller;
@@ -56,9 +49,7 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
         throw new ForbiddenActionException();
     }
 
-    public void playerDisconnected(InGamePlayer target){
-        //FIXME: NOTHING TO DO? Can become abstract! (What to do in AwaitingReconnectionState... empty method)
-    }
+    public abstract void playerDisconnected(InGamePlayer target);
 
     public abstract void transition();
 }

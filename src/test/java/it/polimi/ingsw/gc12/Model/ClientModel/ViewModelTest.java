@@ -54,14 +54,13 @@ class ViewModelTest {
 
         player1 = new Player("giovanni");
         player2 = new Player("paolo");
-        lobby = new Lobby(player1, 2);
-        lobby.addPlayer(player2);
-        game = new Game(lobby);
-
         UUID lobbyUUID = UUID.randomUUID();
 
-        gameController = new GameController(game);
-        ServerController.model.GAME_CONTROLLERS.put(lobbyUUID, gameController);
+        lobby = new Lobby(lobbyUUID, player1, 2);
+        lobby.addPlayer(player2);
+
+        game = new Game(lobby);
+        gameController = GameController.model.createGameController(game);
 
         client1 = createNetworkSessionStub(gameController);
         client2 = createNetworkSessionStub(gameController);

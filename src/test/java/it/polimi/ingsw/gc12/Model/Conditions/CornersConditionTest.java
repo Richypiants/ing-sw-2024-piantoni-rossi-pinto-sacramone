@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +44,7 @@ class CornersConditionTest {
     @BeforeEach
     void setGameParameters() {
         player = new Player("testPlayer");
-        lobby = new Lobby(player, 1);
+        lobby = new Lobby(UUID.randomUUID(), player, 1);
         game = new Game(lobby);
         corner = new CornersCondition();
     }

@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc12.Controller;
 
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.Lobby;
-import it.polimi.ingsw.gc12.Model.Room;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -18,13 +17,13 @@ public interface ClientControllerInterface extends ControllerInterface {
 
     void setNickname(String nickname);
 
-    void restoreGame(UUID gameUUID, ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD);
+    void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD);
 
-    void setLobbies(Map<UUID, Room> lobbies);
+    void setLobbies(Map<UUID, Lobby> lobbies);
 
-    void updateLobby(UUID lobbyUUID, Lobby lobby);
+    void updateLobby(Lobby lobby);
 
-    void startGame(UUID lobbyUUID, ClientGame gameDTO);
+    void startGame(ClientGame gameDTO);
 
     void confirmObjectiveChoice(int cardID);
 

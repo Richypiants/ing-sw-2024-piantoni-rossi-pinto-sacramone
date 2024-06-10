@@ -8,7 +8,6 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
-import it.polimi.ingsw.gc12.Model.Room;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Network.VirtualClient;
 import it.polimi.ingsw.gc12.Utilities.*;
@@ -28,7 +27,7 @@ public class ServerControllerTest {
     static ConnectionController connectionController = ConnectionController.getInstance();
 
     LobbyController lobbyController = new LobbyController(null);
-    GameController gameController = new GameController(new Game(new Lobby(new Player("creator"), 2)));
+    GameController gameController = new GameController(new Game(new Lobby(null, new Player("creator"), 2)));
 
         /**
      * Creates a NetworkSession stub for testing purposes.
@@ -100,22 +99,22 @@ public class ServerControllerTest {
         }
 
         @Override
-        public void restoreGame(UUID gameUUID, ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD) {
+        public void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD) {
 
         }
 
         @Override
-        public void setLobbies(Map<UUID, Room> lobbies) {
+        public void setLobbies(Map<UUID, Lobby> lobbies) {
 
         }
 
         @Override
-        public void updateLobby(UUID lobbyUUID, Lobby lobby) {
-            receivedUUID = lobbyUUID;
+        public void updateLobby(Lobby lobby) {
+            receivedUUID = lobby.getRoomUUID();
         }
 
         @Override
-        public void startGame(UUID lobbyUUID, ClientGame gameDTO) {
+        public void startGame(ClientGame gameDTO) {
 
         }
 

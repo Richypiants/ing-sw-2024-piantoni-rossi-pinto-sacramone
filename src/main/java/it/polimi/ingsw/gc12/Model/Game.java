@@ -1,15 +1,16 @@
 package it.polimi.ingsw.gc12.Model;
 
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.PlaceCardCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReplaceCardCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ToggleActiveCommand;
+import it.polimi.ingsw.gc12.Listeners.Listenable;
+import it.polimi.ingsw.gc12.Listeners.Listener;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
@@ -22,8 +23,9 @@ import java.util.stream.Collectors;
  * This class manages the decks of cards, the players' information related to the game, such as their hands, fields, and secret objectives,
  * and the current state of the game.
  */
-public class Game extends Room {
+public class Game extends Room implements Listenable {
 
+    private final List<Listener> GAME_LISTENERS;
     /**
      * The deck of Resource cards of this game.
      */
@@ -68,10 +70,12 @@ public class Game extends Room {
      * @param lobby The Lobby instance from which this game is created.
      */
     public Game(Lobby lobby) {
-        super(lobby.getPlayers()
+        super(lobby.getRoomUUID(), lobby.getPlayers()
                 .stream()
                 .map(InGamePlayer::new)
                 .collect(Collectors.toCollection(ArrayList::new)));
+
+        this.GAME_LISTENERS = new ArrayList<>();
 
         Collections.shuffle(LIST_OF_PLAYERS);
 
@@ -126,9 +130,13 @@ public class Game extends Room {
             }
         }
 
-        Lobby returnLobby = new Lobby(playersList.removeFirst(), playersList.size() + 1);
-        for(var player : playersList)
-            returnLobby.addPlayer(player);
+        Lobby returnLobby = new Lobby(getRoomUUID(), playersList.removeFirst(), playersList.size() + 1);
+        for (var player : playersList) {
+            try {
+                returnLobby.addPlayer(player);
+            } catch (FullLobbyException ignored) {
+            }
+        }
 
         return returnLobby;
     }
@@ -400,6 +408,34 @@ public class Game extends Room {
         return topDeckCard;
     }
 
+    public void toggleActive(InGamePlayer target) {
+        target.toggleActive();
+        notifyListeners(new ToggleActiveCommand(target.getNickname()));
+    }
+
+
+    @Override
+    public void addListener(Listener listener) {
+        synchronized (GAME_LISTENERS) {
+            GAME_LISTENERS.add(listener);
+        }
+    }
+
+    @Override
+    public void removeListener(Listener listener) {
+        synchronized (GAME_LISTENERS) {
+            GAME_LISTENERS.remove(listener);
+        }
+    }
+
+    @Override
+    public void notifyListeners(ClientCommand command) {
+        synchronized (GAME_LISTENERS) {
+            for (var listener : GAME_LISTENERS)
+                listener.notified(command);
+        }
+    }
+
     /**
      * Creates an instance of Client, which contains only the essential information
      * needed by a client to correctly create and manage its local instance of the game.
@@ -411,14 +447,14 @@ public class Game extends Room {
      */
     public ClientGame generateDTO(InGamePlayer receiver) {
         Map<Integer, ClientCard> clientCards = ServerModel.clientCardsList;
-        var players = this.getPlayers().stream()
+        List<Player> players = this.getPlayers().stream()
                 .map((player) -> new ClientPlayer(player, player.getOpenCorners(), player.getOwnedResources(), player.getPoints()))
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
 
         return new ClientGame(
-                this.getPlayersNumber(),
+                getRoomUUID(),
                 players,
-                players.stream().filter((player) -> player.getNickname().equals(receiver.getNickname())).findAny().orElseThrow(),
+                (ClientPlayer) players.stream().filter((player) -> player.getNickname().equals(receiver.getNickname())).findAny().orElseThrow(),
                 receiver.getCardsInHand().stream()
                         .map((card) -> clientCards.get(card.ID))
                         .collect(Collectors.toCollection(ArrayList<ClientCard>::new)),

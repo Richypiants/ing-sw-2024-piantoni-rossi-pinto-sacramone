@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -281,7 +282,7 @@ class PatternConditionTest {
     @BeforeEach
     void setGameParameters() {
         player1 = new Player("giovanni");
-        lobby = new Lobby(player1, 1);
+        lobby = new Lobby(UUID.randomUUID(), player1, 1);
         game = new Game(lobby);
     }
 

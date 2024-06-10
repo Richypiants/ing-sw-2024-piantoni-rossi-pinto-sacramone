@@ -64,10 +64,6 @@ public abstract class ViewState {
 
     }
 
-    public void placeCard(int inHandPosition) {
-
-    }
-
     public void drawFromDeck(String deck) {
 
     }
@@ -77,6 +73,10 @@ public abstract class ViewState {
     }
 
     public void showField(int opponentID){
+
+    }
+
+    public void moveField(GenericPair<Integer, Integer> centerOffset) {
 
     }
 

@@ -110,7 +110,11 @@ public class TUIListener {
                     );
                 }
                 case "showfield", "sf" -> currentState.showField(Integer.parseInt(tokens.removeFirst()));
-
+                //FIXME: this could be only a TUI function, consider extending this behavior to other functions
+                // exclusive to TUI or consider adding this to viewStates too
+                case "movefield", "mf" -> currentState.moveField(
+                        new GenericPair<>(Integer.parseInt(tokens.removeFirst()), Integer.parseInt(tokens.removeFirst()))
+                );
                 case "quit" -> currentState.quit();
                 case "ok" -> currentState.toLobbies();
                 default -> throw new IllegalArgumentException("Unknown command");

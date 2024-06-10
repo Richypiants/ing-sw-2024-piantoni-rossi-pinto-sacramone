@@ -30,7 +30,7 @@ class LobbyControllerTest {
 
     @Test
     void illegalPickColorChoice() {
-        LobbyController lobbyController_built = new LobbyController(new Lobby(new Player("creator"), 2));
+        LobbyController lobbyController_built = new LobbyController(new Lobby(null, new Player("creator"), 2));
         lobbyController_built.pickColor(inLobbyPlayer, Color.NO_COLOR);
         assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) inLobbyPlayer.getListener().getVirtualClient()).receivedCommand);
         assertInstanceOf(UnavailableColorException.class, ((ServerControllerTest.VirtualClientImpl) inLobbyPlayer.getListener().getVirtualClient()).myClientController.receivedException);

@@ -1,14 +1,18 @@
 package it.polimi.ingsw.gc12.Model;
 
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.UpdateLobbyCommand;
 import it.polimi.ingsw.gc12.Utilities.Color;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.FullLobbyException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnavailableColorException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static it.polimi.ingsw.gc12.Controller.ServerController.ServerController.model;
 
 /**
  * A game lobby where players wait for new games to start.
@@ -33,13 +37,13 @@ public class Lobby extends Room implements Serializable {
      * @param creatorPlayer The player who created the lobby.
      * @param maxPlayers The maximum number of players allowed in this lobby.
      */
-    public Lobby(Player creatorPlayer, int maxPlayers) {
-        super(new ArrayList<>());
+    public Lobby(UUID lobbyUUID, Player creatorPlayer, int maxPlayers) {
+        super(lobbyUUID, new ArrayList<>());
         this.AVAILABLE_COLORS = Arrays.stream(Color.values())
                 .filter((color) -> !(color.equals(Color.NO_COLOR) || color.equals(Color.BLACK)))
                 .collect(Collectors.toCollection(ArrayList::new));
         this.maxPlayers = maxPlayers;
-        addPlayer(creatorPlayer);
+        LIST_OF_PLAYERS.add(creatorPlayer);
     }
 
     /**
@@ -48,8 +52,8 @@ public class Lobby extends Room implements Serializable {
      * @param maxPlayers The maximum number of players allowed in this lobby.
      * @param players The list of players to be copied to this lobby.
      */
-    protected Lobby(int maxPlayers, List<? extends Player> players) {
-        super(new ArrayList<>(players));
+    protected Lobby(UUID lobbyUUID, int maxPlayers, List<? extends Player> players) {
+        super(lobbyUUID, new ArrayList<>(players));
         this.AVAILABLE_COLORS = List.of();
         this.maxPlayers = maxPlayers;
     }
@@ -59,10 +63,11 @@ public class Lobby extends Room implements Serializable {
      *
      * @param player The player to be added to the lobby.
      */
-    public void addPlayer(Player player) {
-        if(LIST_OF_PLAYERS.size() < maxPlayers) {
-            LIST_OF_PLAYERS.add(player);
-        }
+    public void addPlayer(Player player) throws FullLobbyException {
+        if (LIST_OF_PLAYERS.size() >= maxPlayers)
+            throw new FullLobbyException();
+
+        LIST_OF_PLAYERS.add(player);
     }
 
     /**
@@ -124,13 +129,8 @@ public class Lobby extends Room implements Serializable {
             AVAILABLE_COLORS.add(player.getColor());
         AVAILABLE_COLORS.remove(color);
         player.setColor(color);
-    }
 
-    /**
-     * Shuffles the players contained in the list.
-     */
-    public void shufflePlayers() {
-        Collections.shuffle(LIST_OF_PLAYERS);
+        model.notifyListeners(new UpdateLobbyCommand(this));
     }
 
     /**

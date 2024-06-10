@@ -41,10 +41,14 @@ public class PlayerTurnPlayState extends GameScreenState {
 
     public void showField(int playerID) {
         ClientGame game = ClientController.getInstance().viewModel.getGame();
-        if(playerID < 0 || playerID > game.getMaxPlayers())
+        if (playerID < 0 || playerID > game.getPlayersNumber())
             throw new IllegalArgumentException("The provided ID doesn't match to a player's ID in the game.");
 
         ClientController.getInstance().view.showField(game.getPlayers().get(playerID - 1));
+    }
+
+    public void moveField(GenericPair<Integer, Integer> centerOffset) {
+        ClientController.getInstance().view.moveField(centerOffset);
     }
 
     @Override

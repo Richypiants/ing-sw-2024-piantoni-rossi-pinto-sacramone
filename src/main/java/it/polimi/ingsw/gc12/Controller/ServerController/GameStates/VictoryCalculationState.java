@@ -9,10 +9,13 @@ import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
+import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
@@ -21,6 +24,12 @@ public class VictoryCalculationState extends GameState {
     public VictoryCalculationState(GameController controller, Game thisGame) {
         super(controller, thisGame, "victoryCalculationState");
     }
+
+    @Override
+    public void playerDisconnected(InGamePlayer target) {
+    }
+
+    ;
 
     //TODO: send steps in points calculation process for flavour?
     @Override
@@ -115,10 +124,6 @@ public class VictoryCalculationState extends GameState {
 
         //Clearing the mappings to the game
 
-        UUID lobbyUUID = keyReverseLookup(
-                GameController.model.GAME_CONTROLLERS,
-                (controller) -> controller.CONTROLLED_GAME.equals(GAME)
-        );
 
         //Removing all active and inactive players from the Map containing all the mappings.
         for (var player : GAME.getPlayers())
@@ -132,25 +137,24 @@ public class VictoryCalculationState extends GameState {
         Lobby returnLobby = GAME.toLobby();
 
         System.out.println("[SERVER]: Sending lobbies to clients previously in "+ GAME);
+
+        GameController.model.LOBBY_CONTROLLERS_LOCK.readLock().lock();
+        GAME.notifyListeners(new SetLobbiesCommand(GameController.model.getLobbiesMap()));
+        GameController.model.LOBBY_CONTROLLERS_LOCK.readLock().unlock();
+
         int currentIndex = 0;
         for(var inGamePlayer : GAME.getActivePlayers()) {
+            NetworkSession thisSession = keyReverseLookup(GameController.activePlayers, inGamePlayer::equals);
             Player thisPlayer = returnLobby.getPlayers().get(currentIndex);
-            GameController.activePlayers.put(
-                    keyReverseLookup(GameController.activePlayers, inGamePlayer::equals),
-                    thisPlayer
-            );
+            GameController.activePlayers.put(thisSession, thisPlayer);
+
+            GameController.model.addListener(thisSession.getListener());
 
             currentIndex++;
         }
 
-        GAME.notifyListeners(
-                new SetLobbiesCommand(
-                        GameController.model.LOBBY_CONTROLLERS.entrySet().stream()
-                                .collect(Collectors.toMap(Map.Entry::getKey, (entry) -> entry.getValue().CONTROLLED_LOBBY))
-                )
-        );
-
         //TODO: add players to a new lobby now that the game doesn't start until the colors are chosen?
-        GameController.model.GAME_CONTROLLERS.remove(lobbyUUID);
+        // and eventually move code above this instruction inside destroyGameController
+        GameController.model.destroyGameController(GAME_CONTROLLER);
     }
 }

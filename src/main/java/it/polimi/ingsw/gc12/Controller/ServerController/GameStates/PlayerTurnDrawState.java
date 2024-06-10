@@ -78,7 +78,7 @@ public class PlayerTurnDrawState extends GameState {
     }
 
     @Override
-    public synchronized void drawFrom(InGamePlayer target, String deck) throws UnexpectedPlayerException,
+    public void drawFrom(InGamePlayer target, String deck) throws UnexpectedPlayerException,
             UnknownStringException, EmptyDeckException {
         if (!target.equals(GAME.getCurrentPlayer()))
             throw new UnexpectedPlayerException();
@@ -100,14 +100,10 @@ public class PlayerTurnDrawState extends GameState {
         System.out.println("[SERVER]: Sending drawn card to current player and new top deck card to clients in "+ GAME);
 
         transition();
-        //FIXME: controllare che non si possa pescare due carte nello stesso turno! in teoria rendere atomica
-        // questa funzione dovrebbe garantirlo
-        // N.B: in teoria quindi questi due metodi sono esclusivi
     }
 
-    //FIXME: change in UML
     @Override
-    public synchronized void drawFrom(InGamePlayer target, String whichType, int position)
+    public void drawFrom(InGamePlayer target, String whichType, int position)
             throws UnexpectedPlayerException, InvalidDeckPositionException, UnknownStringException, EmptyDeckException {
         if (!target.equals(GAME.getCurrentPlayer()))
             throw new UnexpectedPlayerException();
@@ -132,9 +128,6 @@ public class PlayerTurnDrawState extends GameState {
         System.out.println("[SERVER]: Sending drawn card to current player and new visible card to clients in "+ GAME);
 
         transition();
-        //FIXME: controllare che non si possa giocare due carte nello stesso turno!
-        // Poiché il metodo è synchronized e successivamente chiama la transition, dovrebbe essere un'operazione atomica
-        // N.B: in teoria quindi questi due metodi sono esclusivi
     }
 
     @Override

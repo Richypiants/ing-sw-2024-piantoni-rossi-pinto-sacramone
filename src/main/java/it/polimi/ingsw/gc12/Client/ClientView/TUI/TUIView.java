@@ -43,6 +43,8 @@ public class TUIView extends View {
     private final GenericPair<Integer, Integer> CARD_SIZE = new GenericPair<>(13, 5);
     //Manually computed over examples
     private final GenericPair<Integer, Integer> CURSOR_OFFSET = new GenericPair<>(3, 11);
+    private GenericPair<Integer, Integer> dynamicFieldCenter = new GenericPair<>(0, 0);
+    private int currentShownPlayerIndex = -1;
 
     private TUIView() {
         AnsiConsole.systemInstall(
@@ -493,6 +495,19 @@ public class TUIView extends View {
 
     @Override
     public void showField(ClientPlayer player) {
+        dynamicFieldCenter = new GenericPair<>(0, 0);
+        currentShownPlayerIndex = ClientController.getInstance().viewModel.getGame().getPlayers().indexOf(player);
+        moveField(new GenericPair<>(0, 0));
+    }
+
+    public void moveField(GenericPair<Integer, Integer> dynamicFieldCenterOffset) {
+        dynamicFieldCenter = new GenericPair<>(
+                dynamicFieldCenter.getX() + dynamicFieldCenterOffset.getX(),
+                dynamicFieldCenter.getY() + dynamicFieldCenterOffset.getY()
+        );
+
+        ClientPlayer player = ClientController.getInstance().viewModel.getGame().getPlayers().get(currentShownPlayerIndex);
+
         //erasing field area
         int fieldStartingColumn = FIELD_TOP_LEFT.getY();
         for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
@@ -506,8 +521,8 @@ public class TUIView extends View {
 
         final GenericPair<Float, Float> fieldCenterOfGravity =
                 new GenericPair<>(
-                        ((float) minCoordinates.getY() + maxCoordinates.getY()) / 2,
-                        ((float) minCoordinates.getX() + maxCoordinates.getX()) / 2
+                        ((float) minCoordinates.getY() + maxCoordinates.getY()) / 2 + dynamicFieldCenter.getY(),
+                        ((float) minCoordinates.getX() + maxCoordinates.getX()) / 2 + dynamicFieldCenter.getX()
                 );
 
         final GenericPair<Integer, Integer> initialCardCenter = new GenericPair<>(
@@ -521,22 +536,85 @@ public class TUIView extends View {
         );
 
         player.getPlacedCards().sequencedEntrySet()
-                .forEach((entry) -> printToPosition(ansi().cursor(
-                                initialCardPosition.getX() - (entry.getKey().getY() * CURSOR_OFFSET.getX()),
-                                initialCardPosition.getY() + (entry.getKey().getX() * CURSOR_OFFSET.getY())
-                                ).a(standardAnsi(entry.getValue().getX(), entry.getValue().getY()))
-                        )
+                .forEach((entry) -> {
+                            int printRow = initialCardPosition.getX() - (entry.getKey().getY() * CURSOR_OFFSET.getX());
+                            int printColumn = initialCardPosition.getY() + (entry.getKey().getX() * CURSOR_OFFSET.getY());
+                            boolean outOfBounds = false;
+
+                            if (printRow < FIELD_TOP_LEFT.getX() + 3) {
+                                printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX(), FIELD_CENTER.getY())
+                                        .a("^").cursorMove(-1, 1).a("|"));
+                                outOfBounds = true;
+                            }
+
+                            if (printColumn < FIELD_TOP_LEFT.getY() + 3) {
+                                printToPosition(ansi().cursor(FIELD_CENTER.getX(), FIELD_TOP_LEFT.getY()).a("<-"));
+                                outOfBounds = true;
+                            }
+
+                            if (printRow > FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 1 - CURSOR_OFFSET.getX() - 1 - 3) {
+                                printToPosition(ansi().cursor(
+                                        FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 2,
+                                        FIELD_CENTER.getY()
+                                ).a("|").cursorMove(-1, 1).a("v"));
+                                outOfBounds = true;
+                            }
+
+                            if (printColumn > FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 1 - CURSOR_OFFSET.getY() - 1 - 3) {
+                                printToPosition(ansi().cursor(
+                                                FIELD_CENTER.getX(),
+                                                FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 2)
+                                        .a("->"));
+                                outOfBounds = true;
+                            }
+
+                            if (!outOfBounds)
+                                printToPosition(ansi().cursor(printRow, printColumn)
+                                        .a(standardAnsi(entry.getValue().getX(), entry.getValue().getY()))
+                                );
+                        }
                 );
 
         player.getOpenCorners()
-                .forEach((corner) -> printToPosition(ansi().cursor(
-                                                initialCardPosition.getX() - (corner.getY() * CURSOR_OFFSET.getX()) + 2,
-                                                initialCardPosition.getY() + (corner.getX() * CURSOR_OFFSET.getY()) + 5
-                                        )
+                .forEach((corner) -> {
+                            int printRow = initialCardPosition.getX() - (corner.getY() * CURSOR_OFFSET.getX()) + 2;
+                            int printColumn = initialCardPosition.getY() + (corner.getX() * CURSOR_OFFSET.getY()) + 5;
+                            boolean outOfBounds = false;
+
+                            if (printRow < FIELD_TOP_LEFT.getX() + 3) {
+                                printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX(), FIELD_CENTER.getY())
+                                        .a("^").cursorMove(-1, 1).a("|"));
+                                outOfBounds = true;
+                            }
+
+                            if (printColumn < FIELD_TOP_LEFT.getY() + 3) {
+                                printToPosition(ansi().cursor(FIELD_CENTER.getX(), FIELD_TOP_LEFT.getY()).a("<-"));
+                                outOfBounds = true;
+                            }
+
+                            if (printRow > FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 1 - CURSOR_OFFSET.getX() - 1 - 3) {
+                                printToPosition(ansi().cursor(
+                                        FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 2,
+                                        FIELD_CENTER.getY()
+                                ).a("|").cursorMove(-1, 1).a("v"));
+                                outOfBounds = true;
+                            }
+
+                            if (printColumn > FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 1 - CURSOR_OFFSET.getY() - 1 - 3) {
+                                printToPosition(ansi().cursor(
+                                                FIELD_CENTER.getX(),
+                                                FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 2)
+                                        .a("->"));
+                                outOfBounds = true;
+                            }
+
+                            if (!outOfBounds)
+                                printToPosition(ansi().cursor(printRow, printColumn)
                                         .cursorMove(-String.valueOf(corner.getX()).length(), 0)
                                         //.a(AnsiRenderer.renderCodes("faint", "blink_slow")) FIXME: perchè non funziona?
                                         .a("[" + corner.getX() + "," + corner.getY() + "]")
-                        )
+                                );
+                        }
                 );
     }
 

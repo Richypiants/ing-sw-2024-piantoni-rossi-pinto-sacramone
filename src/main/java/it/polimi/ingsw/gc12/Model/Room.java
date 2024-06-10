@@ -1,26 +1,25 @@
 package it.polimi.ingsw.gc12.Model;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
-import it.polimi.ingsw.gc12.Listeners.Listenable;
-import it.polimi.ingsw.gc12.Listeners.Listener;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-public abstract class Room implements Serializable, Listenable {
+public abstract class Room implements Serializable {
 
+    private final UUID ROOM_UUID;
     /**
      * The list of players who have already joined this lobby.
      */
     protected final List<Player> LIST_OF_PLAYERS;
 
-    //FIXME: don't want to serialize these, how to remove from serialized GameLobby? is transient correct?
-    private transient final List<Listener> ROOM_LISTENERS;
-
-    protected Room(List<Player> listOfPlayers) {
-        ROOM_LISTENERS = new ArrayList<>();
+    protected Room(UUID roomUUID, List<Player> listOfPlayers) {
+        this.ROOM_UUID = roomUUID;
         LIST_OF_PLAYERS = listOfPlayers;
+    }
+
+    public UUID getRoomUUID() {
+        return ROOM_UUID;
     }
 
     /**
@@ -39,21 +38,5 @@ public abstract class Room implements Serializable, Listenable {
      */
     public int getPlayersNumber() {
         return LIST_OF_PLAYERS.size();
-    }
-
-    @Override
-    public void addListener(Listener listener) {
-        ROOM_LISTENERS.add(listener);
-    }
-
-    @Override
-    public void removeListener(Listener listener) {
-        ROOM_LISTENERS.remove(listener);
-    }
-
-    @Override
-    public void notifyListeners(ClientCommand command) {
-        for (var listener : ROOM_LISTENERS)
-            listener.notified(command);
     }
 }

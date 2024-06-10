@@ -282,7 +282,6 @@ public class InGamePlayer extends Player implements Listenable {
         notifyListeners(new ConfirmSelectionCommand(objectiveCard.ID));
     }
 
-
     /**
      * Returns the coordinates of the specified card on this player's field.
      *
@@ -295,17 +294,23 @@ public class InGamePlayer extends Player implements Listenable {
 
     @Override
     public void addListener(Listener listener) {
-        PLAYER_LISTENERS.add(listener);
+        synchronized (PLAYER_LISTENERS) {
+            PLAYER_LISTENERS.add(listener);
+        }
     }
 
     @Override
     public void removeListener(Listener listener) {
-        PLAYER_LISTENERS.remove(listener);
+        synchronized (PLAYER_LISTENERS) {
+            PLAYER_LISTENERS.remove(listener);
+        }
     }
 
     @Override
     public void notifyListeners(ClientCommand command) {
-        for (var listener : PLAYER_LISTENERS)
-            listener.notified(command);
+        synchronized (PLAYER_LISTENERS) {
+            for (var listener : PLAYER_LISTENERS)
+                listener.notified(command);
+        }
     }
 }

@@ -1,11 +1,14 @@
 package it.polimi.ingsw.gc12.Model.ClientModel;
 
 import it.polimi.ingsw.gc12.Model.Lobby;
+import it.polimi.ingsw.gc12.Model.Player;
+import it.polimi.ingsw.gc12.Model.Room;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -13,7 +16,7 @@ import java.util.stream.Collectors;
  * This class handles the state of the game from the client's perspective.
  */
 //FIXME: is it correct that it extends Lobby and not Room?
-public class ClientGame extends Lobby implements Serializable {
+public class ClientGame extends Room implements Serializable {
 
     /**
      * The player associated to this client
@@ -63,7 +66,6 @@ public class ClientGame extends Lobby implements Serializable {
     /**
      * Constructs a new ClientGame with the specified parameters.
      *
-     * @param maxPlayers the maximum number of players in the game
      * @param players the list of players in the game
      * @param myself the player object representing the current client
      * @param ownHand the cards in the player's hand
@@ -77,8 +79,8 @@ public class ClientGame extends Lobby implements Serializable {
      * @param currentPlayerIndex the index of the player currently playing
      */
     public ClientGame(
-            int maxPlayers,
-            List<ClientPlayer> players,
+            UUID uuid,
+            List<Player> players,
             ClientPlayer myself,
             ArrayList<ClientCard> ownHand,
             ClientCard[] placedResourceCards,
@@ -90,7 +92,7 @@ public class ClientGame extends Lobby implements Serializable {
             int currentRound,
             int currentPlayerIndex
             ){
-        super(maxPlayers, players);
+        super(uuid, players);
         this.MYSELF = myself;
         this.OWN_HAND = ownHand;
         this.PLACED_RESOURCE_CARDS = placedResourceCards;

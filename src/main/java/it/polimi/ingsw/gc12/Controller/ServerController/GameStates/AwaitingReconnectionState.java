@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Model.Game;
+import it.polimi.ingsw.gc12.Model.InGamePlayer;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,19 +32,23 @@ public class AwaitingReconnectionState extends GameState {
         }, TIMEOUT_GAME_ENDED);
     }
 
-    public void recoverGame(){
-        timer.cancel();
-        terminateGame.cancel();
-        GAME_CONTROLLER.setState(previousState);
-    }
-
     public void cancelTimerTask(){
         timer.cancel();
         terminateGame.cancel();
     }
 
-    //FIXME: merge with recoverGame?
+    @Override
+    public void playerDisconnected(InGamePlayer target) {
+        cancelTimerTask();
+        for (var player : GAME.getPlayers())
+            GameController.inactiveSessions.remove(player.getNickname());
+        GameController.model.destroyGameController(GAME_CONTROLLER);
+    }
+
     @Override
     public void transition() {
+        timer.cancel();
+        terminateGame.cancel();
+        GAME_CONTROLLER.setState(previousState);
     }
 }

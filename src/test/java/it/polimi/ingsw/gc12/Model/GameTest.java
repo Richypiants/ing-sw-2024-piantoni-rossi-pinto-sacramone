@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.FullLobbyException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,8 +28,11 @@ class GameTest {
     void setGameParameters() {
         player1 = new Player("testPlayer_1");
         player2 = new Player("testPlayer_2");
-        lobby = new Lobby(player1, 2);
-        lobby.addPlayer(player2);
+        lobby = new Lobby(UUID.randomUUID(), player1, 2);
+        try {
+            lobby.addPlayer(player2);
+        } catch (FullLobbyException ignored) {
+        }
         game = new Game(lobby);
     }
 

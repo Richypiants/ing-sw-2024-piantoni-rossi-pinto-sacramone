@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -45,7 +46,7 @@ class ObjectiveCardTest {
     @BeforeEach
     void setGameParameters() {
         player = new Player("testPlayer");
-        lobby = new Lobby(player, 1);
+        lobby = new Lobby(UUID.randomUUID(), player, 1);
         game = new Game(lobby);
     }
 

@@ -13,6 +13,7 @@ import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /*TODO: In case of high traffic volumes on network, we can reduce it by sending the updates to lobby states (creation, updates) only to clients
         which aren't already in a lobby. */
@@ -20,7 +21,7 @@ public abstract class ServerController implements ServerControllerInterface {
 
     public static final ServerModel model = new ServerModel();
     public static final Map<NetworkSession, Player> activePlayers = new HashMap<>();
-    public static final Map<String, NetworkSession> inactiveSessions = new HashMap<>();
+    public static final ConcurrentHashMap<String, NetworkSession> inactiveSessions = new ConcurrentHashMap<>();
 
     protected boolean hasNoPlayer(NetworkSession client) {
         if (!activePlayers.containsKey(client)) {
@@ -45,6 +46,8 @@ public abstract class ServerController implements ServerControllerInterface {
                         leaveGame(target);
                     else if (thisController instanceof LobbyController)
                         leaveLobby(target, true);
+                    else if (thisController instanceof ConnectionController)
+                        activePlayers.remove(target);
 
                     cancel();
             }
@@ -88,16 +91,17 @@ public abstract class ServerController implements ServerControllerInterface {
             return;
         }
 
+        //Creating the timeoutRoutine that will be started in case the client doesn't send a keepAliveCommand in the 30 seconds span.
+        renewTimeoutTimerTask(sender);
+
         System.out.println("[CLIENT]: CreatePlayerCommand received and being executed");
         NetworkSession target = inactiveSessions.get(nickname);
-
-        if (target != null)
+        if (target != null) {
+            inactiveSessions.remove(nickname);
             sender.setController(target.getController());
+        }
 
         ((ServerController) sender.getController()).generatePlayer(sender, nickname);
-
-        //Creating the timeoutRoutine that will be started in case the client doesn't send a keepAliveCommand in the 60 seconds span.
-        renewTimeoutTimerTask(sender);
     }
 
     public void setNickname(NetworkSession sender, String nickname) {

@@ -26,7 +26,7 @@ public class ChooseObjectiveCardsState extends GameState {
     }
 
     @Override
-    public synchronized void pickObjective(InGamePlayer targetPlayer, ObjectiveCard objective)
+    public void pickObjective(InGamePlayer targetPlayer, ObjectiveCard objective)
             throws CardNotInHandException, AlreadySetCardException {
         if(!objectiveCardsToPlayers.get(targetPlayer).contains(objective))
             throw new CardNotInHandException();

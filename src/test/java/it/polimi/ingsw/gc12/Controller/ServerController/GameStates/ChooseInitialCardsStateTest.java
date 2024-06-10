@@ -33,14 +33,13 @@ class ChooseInitialCardsStateTest {
     void setGameParameters() throws Exception {
         player1 = new Player("giovanni");
         player2 = new Player("paolo");
-        lobby = new Lobby(player1, 2);
-        lobby.addPlayer(player2);
-        game = new Game(lobby);
-
         UUID lobbyUUID = UUID.randomUUID();
 
-        gameController = new GameController(game);
-        ServerController.model.GAME_CONTROLLERS.put(lobbyUUID, gameController);
+        lobby = new Lobby(lobbyUUID, player1, 2);
+        lobby.addPlayer(player2);
+
+        game = new Game(lobby);
+        gameController = GameController.model.createGameController(game);
 
         client1 = new NetworkSession(gameController) {
             @Override
@@ -70,7 +69,7 @@ class ChooseInitialCardsStateTest {
     }
 
     @Test
-    void transitionStartAfterAllcheck() throws Exception {
+    void transitionStartAfterAllCheck() throws Exception {
         for (var target : game.getPlayers()) {
             gameController.getCurrentState().placeCard(target, new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
             if (target != game.getPlayers().getLast()) {
