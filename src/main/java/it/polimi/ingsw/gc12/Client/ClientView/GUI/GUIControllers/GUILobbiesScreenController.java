@@ -74,17 +74,17 @@ public class GUILobbiesScreenController extends GUIView {
             });
 
             nicknameButton.setOnMouseClicked(event -> {
-                OverlayPopup nicknameChangePopup = drawOverlayPopup(lobbyCreationPopupBox, true);
+                OverlayPopup nicknameChangePopup = drawOverlayPopup(changeNicknamePopupBox, true);
                 nicknameChangePopup.setAutoFix(true);
 
-                confirmLobbyCreationButton.setOnAction(event2 -> {
+                confirmNicknameChangeButton.setOnAction(event2 -> {
                     ClientController.getInstance().viewState.setNickname(nicknameField.getText());
-                    lobbyCreationPopupBox.setVisible(false);
+                    changeNicknamePopupBox.setVisible(false);
                     nicknameChangePopup.hide();
                 });
 
                 nicknameChangePopup.show(stage);
-                lobbyCreationPopupBox.setVisible(true);
+                changeNicknamePopupBox.setVisible(true);
                 nicknameChangePopup.centerOnScreen();
             });
 

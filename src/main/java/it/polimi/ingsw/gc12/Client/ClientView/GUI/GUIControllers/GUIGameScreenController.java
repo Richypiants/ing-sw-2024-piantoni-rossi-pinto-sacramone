@@ -30,6 +30,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -110,7 +111,10 @@ public class GUIGameScreenController extends GUIView {
     private static void showScoreboard() {
         Platform.runLater(() -> {
             AnchorPane scoreboardPane = (AnchorPane) stage.getScene().lookup("#scoreboardPane");
-            scoreboardPane.setPrefSize(screenSizes.getY() * 50 / 100 / 2, screenSizes.getY() * 50 / 100);
+            //TODO: CAMBIARE LE DIMENSIONI SOLO PREVIA COMUNICAZIONE A SACRAMONE
+            scoreboardPane.setPrefSize(screenSizes.getX() * 0.1328125, screenSizes.getY() * 0.5);
+            // System.out.println("x: " + screenSizes.getX() + " y: " + screenSizes.getY());
+            // System.out.println("\n" + "x: " + scoreboardPane.getPrefWidth() + " y: " + scoreboardPane.getPrefHeight());
             scoreboardPane.setStyle("-fx-background-image: url('/images/scoreboard.png'); -fx-background-size: stretch;");
 
             Button hideScoreboardButton = (Button) scoreboardPane.lookup("#hideScoreboardButton");
@@ -136,50 +140,52 @@ public class GUIGameScreenController extends GUIView {
             //TODO: Find correct coordinates of each point cell
             ArrayList<GenericPair<Double, Double>> relativeOffsetScaleFactors = new ArrayList<>();
 
-            // relative coordinates
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.187, 0.8918)); // 0
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.8915)); // 1
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.658, 0.8915)); // 2
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.783)); // 3
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.783)); // 4
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.305, 0.783)); // 5
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.783)); // 6
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.6755)); // 7
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.303, 0.6755)); // 8
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.6755)); // 9
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.6755)); // 10
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.568)); // 11
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.568)); // 12
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.303, 0.568)); // 13
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.568)); // 14
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.4605)); // 15
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.303, 0.4605)); // 16
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.4605)); // 17
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.4605)); // 18
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.353)); // 19
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.30)); // 20
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.353)); // 21
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.245)); // 22
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.1375)); // 23
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.205, 0.05)); // 24
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.03)); // 25
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.639, 0.05)); // 26
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.1375)); // 27
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.245)); // 28
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.1623)); // 29
+            //TODO: CAMBIARE LE COORDINATE SOLO PREVIA COMUNICAZIONE A SACRAMONE
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.228, 0.8918)); // 0
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.505, 0.8915)); // 1
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.78, 0.8915)); // 2
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.783)); // 3
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.64, 0.783)); // 4
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.365, 0.783)); // 5
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.783)); // 6
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.6755)); // 7
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.365, 0.6755)); // 8
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.64, 0.6755)); // 9
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.6755)); // 10
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.568)); // 11
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.64, 0.568)); // 12
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.365, 0.568)); // 13
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.568)); // 14
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.4605)); // 15
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.365, 0.4605)); // 16
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.64, 0.4605)); // 17
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.4605)); // 18
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.353)); // 19
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.505, 0.30)); // 20
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.353)); // 21
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.245)); // 22
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.1375)); // 23
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.25, 0.05)); // 24
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.505, 0.03)); // 25
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.75, 0.05)); // 26
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.1375)); // 27
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.245)); // 28
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.505, 0.1623)); // 29
 
             ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
 
-            /*for(var player : thisGame.getPlayers().stream().sorted(Comparator.comparingInt(ClientPlayer::getPoints)).toList().reversed()) {
+            for (var player : thisGame.getPlayers().stream().sorted(Comparator.comparingInt(ClientPlayer::getPoints)).toList().reversed()) {
                 GenericPair<Double, Double> scaleFactor = relativeOffsetScaleFactors.get(player.getPoints());
                 ImageView token = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/" + player.getColor().name().toLowerCase())));
-                token.setFitHeight(240);
+                token.setFitHeight(scoreboardPane.getPrefWidth() * 0.16);
                 token.setPreserveRatio(true);
 
                 scoreboardPane.getChildren().add(token);
                 token.relocate(scoreboardPane.getPrefWidth() * scaleFactor.getX(),
-                         scoreboardPane.getPrefHeight() * scaleFactor.getY() + stackOffset * token.getFitHeight() / stdHeight);
-            }*/
+                        scoreboardPane.getPrefHeight() * scaleFactor.getY());
+
+                //TODO: Sovrapporre pedine se punteggi uguali
+            }
 
             /*
             GenericPair<Double, Double> scaleFactorCircle = relativeOffsetScaleFactors.get(0);
@@ -195,16 +201,18 @@ public class GUIGameScreenController extends GUIView {
             //FIXME: we need to clear all the previous token, but this also clears the hideScoreboardButton...
             //scoreboardPane.getChildren().clear();
 
-            for (int i = 1; i < 30; i++) {
+            /*
+            for (int i = 0; i < 30; i++) {
                 GenericPair<Double, Double> scaleFactor = relativeOffsetScaleFactors.get(i);
                 ImageView token = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/red.png")));
-                token.setFitWidth(248 * scoreboardPane.getPrefWidth() / 1575);
+                token.setFitWidth(scoreboardPane.getPrefWidth() * 0.16);
                 token.setPreserveRatio(true);
 
                 scoreboardPane.getChildren().add(token);
                 token.relocate(scoreboardPane.getPrefWidth() * scaleFactor.getX(),
                         scoreboardPane.getPrefHeight() * scaleFactor.getY());
             }
+            */
 
             scoreboardPane.setVisible(true);
             scoreboardPane.toFront();
@@ -382,11 +390,15 @@ public class GUIGameScreenController extends GUIView {
             opponentStats.setPrefSize(opponentData.getPrefWidth() / 10, opponentData.getPrefHeight());
             for (var resourceEntry : player.getOwnedResources().entrySet()) {
                 //TODO: dopo aggiungeremo le immaginette o le icone o le emoji che al momento non abbiamo
-                Label resourceInfo = new Label(resourceEntry.getKey().SYMBOL + " x " + resourceEntry.getValue());
-                resourceInfo.setAlignment(Pos.CENTER);
+                HBox oneData = new HBox(5);
+                ImageView image = new ImageView("/images/resources/" + resourceEntry.getKey().SYMBOL.toLowerCase() + ".png");
+                image.setFitWidth(30);
+                image.setPreserveRatio(true);
+                Label resourceInfo = new Label("" + resourceEntry.getValue());
                 resourceInfo.setPrefSize(opponentStats.getPrefWidth(), opponentStats.getPrefHeight());
                 resourceInfo.setStyle(style);
-                opponentStats.getChildren().add(resourceInfo);
+                oneData.getChildren().addAll(image, resourceInfo);
+                opponentStats.getChildren().add(oneData);
             }
 
             AnchorPane opponentField = new AnchorPane();
@@ -480,11 +492,11 @@ public class GUIGameScreenController extends GUIView {
             ArrayList<ClientCard> objectivesSelection = ((ChooseObjectiveCardsState) ClientController.getInstance()
                     .getCurrentState()).objectivesSelection;
 
-            OverlayPopup createdPopup = GUIView.getInstance().drawOverlayPopup(objectiveChoiceVBox, false);
+            OverlayPopup createdPopup = GUIView.drawOverlayPopup(objectiveChoiceVBox, false);
 
             for (int i = 0; i < objectivesSelection.size(); i++) {
                 ClientCard objectiveCard = objectivesSelection.get(i);
-                ImageView objectiveCardView = new ImageView(String.valueOf(objectiveCard.GUI_SPRITES.get(Side.FRONT)));
+                ImageView objectiveCardView = new ImageView(String.valueOf(GUIView.class.getResource(objectiveCard.GUI_SPRITES.get(Side.FRONT))));
 
                 objectiveCardView.setFitWidth(objectiveChoiceHBox.getPrefWidth() * 0.3);
                 objectiveCardView.setPreserveRatio(true);
@@ -522,7 +534,7 @@ public class GUIGameScreenController extends GUIView {
                 AnchorPane pane = new AnchorPane();
 
                 pane.setPrefSize(handPaneWidth / 3, handPaneHeight);  //FIXME: Diviso 3? (cardInHand.size()?)
-                pane.setStyle("-fx-background-color: darkorange;");
+                // pane.setStyle("-fx-background-color: darkorange;");
 
                 //FIXME: mappa anche per gli sprite GUI come sprite TUI? altrimenti card.XXX_SPRITE
                 ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.FRONT))));
@@ -551,7 +563,6 @@ public class GUIGameScreenController extends GUIView {
                 //FIXME: Refactor image/dragboard/imageview
                 frontCardView.setOnDragDetected((event) -> {
                     Dragboard cardDragboard = frontCardView.startDragAndDrop(TransferMode.MOVE);
-                    ImageView imageView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.FRONT))));
                     Image image = new Image(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.FRONT))), 100, 150, true, true);
                     cardDragboard.setDragView(image, cardSizes.getX() / 2, cardSizes.getY() / 2);
                     ClipboardContent cardClipboard = new ClipboardContent();
@@ -567,7 +578,8 @@ public class GUIGameScreenController extends GUIView {
 
                 backCardView.setOnDragDetected((event) -> {
                     Dragboard cardDragboard = backCardView.startDragAndDrop(TransferMode.MOVE);
-                    cardDragboard.setDragView(backCardView.getImage(), cardSizes.getX() / 2, cardSizes.getY() / 2);
+                    Image image = new Image(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.BACK))), 100, 150, true, true);
+                    cardDragboard.setDragView(image, cardSizes.getX() / 2, cardSizes.getY() / 2);
                     ClipboardContent cardClipboard = new ClipboardContent();
                     cardClipboard.put(placeCardDataFormat, new GenericPair<>(inHandPosition, Side.BACK));
                     cardDragboard.setContent(cardClipboard);
@@ -720,8 +732,53 @@ public class GUIGameScreenController extends GUIView {
     }
 
     public static void newShowLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
-        Platform.runLater(() ->
-        {
+        Platform.runLater(() -> {
+            double popupWidth = 720, popupHeight = 480;
+            String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
+
+            VBox leaderboardVBox = new VBox(30);
+            leaderboardVBox.getStyleClass().add("lobbyScreenPopupBox");
+            leaderboardVBox.setAlignment(Pos.CENTER);
+            leaderboardVBox.setPrefSize(popupWidth, popupHeight);
+            leaderboardVBox.setStyle(style);
+            Label leaderboardLabel = new Label("Leaderboard");
+            leaderboardLabel.getStyleClass().add("titleScreenLabel");
+
+            Button exitButton = new Button("Torna alla schermata delle lobby");
+            exitButton.getStyleClass().add("button");
+
+            leaderboardVBox.getChildren().add(leaderboardLabel);
+            OverlayPopup createdPopup = GUIView.drawOverlayPopup(leaderboardVBox, false);
+
+            exitButton.setOnMouseClicked((mouseEvent -> {
+                ClientController.getInstance().view.lobbyScreen();
+                createdPopup.hide();
+            }));
+
+
+            for (var row : POINTS_STATS) {
+                HBox playerHBox = new HBox(20);
+                playerHBox.getStyleClass().add("lobbyBox");
+
+                Label nameLabel = new Label(row.getX());
+                nameLabel.getStyleClass().add("titleScreenLabel");
+                Label pointsLabel = new Label("" + row.getY());
+                pointsLabel.getStyleClass().add("titleScreenLabel");
+                Label objectivePointsLabel = new Label("" + row.getZ());
+                objectivePointsLabel.getStyleClass().add("titleScreenLabel");
+
+                playerHBox.getChildren().addAll(nameLabel, pointsLabel, objectivePointsLabel);
+                leaderboardVBox.getChildren().add(playerHBox);
+            }
+
+            if (gameEndedDueToDisconnections) {
+                Label victoryByDisconnection = new Label(ClientController.getInstance().viewModel.getGame().getPlayers().getFirst() + "ha vinto");
+                leaderboardVBox.getChildren().add(victoryByDisconnection);
+            }
+
+            leaderboardVBox.getChildren().add(exitButton);
+
+            createdPopup.show(stage);
         });
     }
 
