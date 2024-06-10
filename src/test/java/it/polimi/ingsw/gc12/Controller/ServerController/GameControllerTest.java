@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.RestoreGameCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.GameState;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
@@ -7,16 +8,14 @@ import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.Color;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.createNetworkSessionStub;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 class GameControllerTest {
@@ -26,8 +25,8 @@ class GameControllerTest {
 
     static GameController gameAssociatedController;
 
-    @BeforeAll
-    static void initializingSessions() {
+    @BeforeEach
+    void initializingSessions() {
         inGamePlayer_1 = createNetworkSessionStub(connectionController);
         inGamePlayer_2 = createNetworkSessionStub(connectionController);
 
@@ -50,6 +49,273 @@ class GameControllerTest {
 
     }
 
+    @Test
+    void correctCallToCardNotInHand() {
+        NetworkSession currentPlayerInTurn;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerInTurn = inGamePlayer_1;
+        else
+            currentPlayerInTurn = inGamePlayer_2;
+
+        gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(1, 1), 84, Side.BACK);
+
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(CardNotInHandException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+    }
+
+    @Test
+    void correctCallToNotEnoughResources() {
+        NetworkSession currentPlayerInTurn;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerInTurn = inGamePlayer_1;
+        else
+            currentPlayerInTurn = inGamePlayer_2;
+
+        gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(1, 1), gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getCardsInHand().get(2).ID, Side.FRONT);
+
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(NotEnoughResourcesException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+    }
+
+    @Test
+    void correctCallToInvalidPosition() {
+        NetworkSession currentPlayerInTurn;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerInTurn = inGamePlayer_1;
+        else
+            currentPlayerInTurn = inGamePlayer_2;
+
+        gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(3, 3), gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getCardsInHand().getFirst().ID, Side.FRONT);
+
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(InvalidCardPositionException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+    }
+
+    @Test
+    void correctCallToUnexpectedPlayerPlay() {
+        NetworkSession currentPlayerNotInTurn;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerNotInTurn = inGamePlayer_2;
+        else
+            currentPlayerNotInTurn = inGamePlayer_1;
+
+        gameAssociatedController.placeCard(currentPlayerNotInTurn, new GenericPair<>(1, 1), gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getCardsInHand().getFirst().ID, Side.FRONT);
+
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerNotInTurn.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(UnexpectedPlayerException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerNotInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+    }
+
+    @Test
+    void correctCallToUnexpectedPlayerDrawDeck() {
+        NetworkSession currentPlayerInTurn;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerInTurn = inGamePlayer_1;
+        else
+            currentPlayerInTurn = inGamePlayer_2;
+
+        gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(1, 1), gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getCardsInHand().getFirst().ID, Side.FRONT);
+
+        NetworkSession currentPlayerNotInTurn;
+
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerNotInTurn = inGamePlayer_2;
+        else
+            currentPlayerNotInTurn = inGamePlayer_1;
+
+        gameAssociatedController.drawFromDeck(currentPlayerNotInTurn, "resource");
+
+
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerNotInTurn.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(UnexpectedPlayerException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerNotInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+    }
+
+    @Test
+    void correctCallToUnknownStringDeck() {
+        NetworkSession currentPlayerInTurn;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerInTurn = inGamePlayer_1;
+        else
+            currentPlayerInTurn = inGamePlayer_2;
+
+        gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(1, 1), gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getCardsInHand().getFirst().ID, Side.FRONT);
+
+        gameAssociatedController.drawFromDeck(currentPlayerInTurn, "Deck");
+
+
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(UnknownStringException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+    }
+
+    @Test
+    void correctCallToEmptyDeck() throws Exception {
+        NetworkSession currentPlayerInTurn;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerInTurn = inGamePlayer_1;
+        else
+            currentPlayerInTurn = inGamePlayer_2;
+
+        for (int i = 0; i < 34; i++) {
+            gameAssociatedController.CONTROLLED_GAME.getResourceCardsDeck().draw();
+        }
+        gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(1, 1), gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getCardsInHand().getFirst().ID, Side.FRONT);
+
+        gameAssociatedController.drawFromDeck(currentPlayerInTurn, "resource");
+
+
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(EmptyDeckException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+    }
+
+    @Test
+    void correctCallToUnknownStringVisibleCard() {
+        NetworkSession currentPlayerInTurn;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerInTurn = inGamePlayer_1;
+        else
+            currentPlayerInTurn = inGamePlayer_2;
+
+        gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(1, 1), gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getCardsInHand().getFirst().ID, Side.FRONT);
+
+        gameAssociatedController.drawFromVisibleCards(currentPlayerInTurn, "Deck", 1);
+
+
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(UnknownStringException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+    }
+
+    @Test
+    void correctCallToInvalidDeckPositionVisibleCard() {
+        NetworkSession currentPlayerInTurn;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerInTurn = inGamePlayer_1;
+        else
+            currentPlayerInTurn = inGamePlayer_2;
+
+        gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(1, 1), gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getCardsInHand().getFirst().ID, Side.FRONT);
+
+        gameAssociatedController.drawFromVisibleCards(currentPlayerInTurn, "resource", 3);
+
+
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(InvalidDeckPositionException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+    }
+
+    @Test
+    void correctCallToUnexpectedPlayerVisibleCard() {
+        NetworkSession currentPlayerInTurn;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerInTurn = inGamePlayer_1;
+        else
+            currentPlayerInTurn = inGamePlayer_2;
+
+        gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(1, 1), gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getCardsInHand().getFirst().ID, Side.FRONT);
+
+        NetworkSession currentPlayerNotInTurn;
+
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerNotInTurn = inGamePlayer_2;
+        else
+            currentPlayerNotInTurn = inGamePlayer_1;
+
+        gameAssociatedController.drawFromVisibleCards(currentPlayerNotInTurn, "resource", 2);
+
+
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerNotInTurn.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(UnexpectedPlayerException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerNotInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+    }
+
+    @Test
+    void correctCallToEmptyDeckVisibleCard() throws Exception {
+        NetworkSession currentPlayerInTurn;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerInTurn = inGamePlayer_1;
+        else
+            currentPlayerInTurn = inGamePlayer_2;
+
+        gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(1, 1), gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getCardsInHand().getFirst().ID, Side.FRONT);
+
+        for (int i = 0; i < 34; i++) {
+            gameAssociatedController.CONTROLLED_GAME.getResourceCardsDeck().draw();
+        }
+        gameAssociatedController.CONTROLLED_GAME.drawFrom(gameAssociatedController.CONTROLLED_GAME.getPlacedResources(), 1);
+
+        gameAssociatedController.drawFromVisibleCards(currentPlayerInTurn, "resource", 1);
+
+
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(EmptyDeckException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+    }
+
+    @Test
+    void correctCallToNotExistingPlayerInDirectMessage() throws Exception {
+        NetworkSession currentPlayerInTurn;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
+            currentPlayerInTurn = inGamePlayer_1;
+        else
+            currentPlayerInTurn = inGamePlayer_2;
+
+        gameAssociatedController.directMessage(currentPlayerInTurn, "PlayerNotCreated", "Test");
+
+
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(NotExistingPlayerException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+    }
+
+    @Test
+    void correctDirectMessageReceived() throws Exception {
+        NetworkSession currentPlayerInTurn;
+        NetworkSession otherPlayer;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer")) {
+            currentPlayerInTurn = inGamePlayer_1;
+            otherPlayer = inGamePlayer_2;
+            gameAssociatedController.directMessage(currentPlayerInTurn, "thePlayer2", "Test");
+        } else {
+            currentPlayerInTurn = inGamePlayer_2;
+            otherPlayer = inGamePlayer_1;
+            gameAssociatedController.directMessage(currentPlayerInTurn, "thePlayer", "Test");
+        }
+        assertEquals("Test", ((ServerControllerTest.VirtualClientImpl) otherPlayer.getListener().getVirtualClient()).myClientController.receivedMessage);
+    }
+
+    @Test
+    void correctBroadcastMessageReceived() throws Exception {
+        NetworkSession currentPlayerInTurn;
+        NetworkSession otherPlayer;
+        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer")) {
+            currentPlayerInTurn = inGamePlayer_1;
+            otherPlayer = inGamePlayer_2;
+        } else {
+            currentPlayerInTurn = inGamePlayer_2;
+            otherPlayer = inGamePlayer_1;
+        }
+
+        gameAssociatedController.broadcastMessage(currentPlayerInTurn, "Test");
+
+
+        assertEquals("Test", ((ServerControllerTest.VirtualClientImpl) otherPlayer.getListener().getVirtualClient()).myClientController.receivedMessage);
+    }
+
+    @Test
+    void correctLeaveLobbyRoutine() throws Exception {
+
+        assertEquals(2, gameAssociatedController.CONTROLLED_GAME.getActivePlayers().size());
+        gameAssociatedController.leaveGame(inGamePlayer_1);
+        assertEquals(1, gameAssociatedController.CONTROLLED_GAME.getActivePlayers().size());
+    }
+
+    @Test
+    void correctRestoreGame() throws Exception {
+        NetworkSession restoreGamePlayer = inGamePlayer_1;
+        gameAssociatedController.leaveGame(inGamePlayer_1);
+
+        assertEquals(1, gameAssociatedController.CONTROLLED_GAME.getActivePlayers().size());
+
+        gameAssociatedController.generatePlayer(restoreGamePlayer, "thePlayer");
+
+        assertEquals(2, gameAssociatedController.CONTROLLED_GAME.getActivePlayers().size());
+        assertInstanceOf(RestoreGameCommand.class, ((ServerControllerTest.VirtualClientImpl) inGamePlayer_1.getListener().getVirtualClient()).receivedCommand);
+    }
+
     static class GameStatesDriver extends GameState {
         public String thrownException;
 
@@ -69,6 +335,27 @@ class GameControllerTest {
             }
         }
 
+        public synchronized void drawFrom(InGamePlayer target, String deck) throws UnexpectedPlayerException,
+                UnknownStringException, EmptyDeckException {
+            switch (thrownException) {
+                case "EmptyDeckException" -> throw new EmptyDeckException();
+                case " UnknownStringException" -> throw new UnknownStringException();
+                case "UnexpectedPlayerException" -> throw new UnexpectedPlayerException();
+            }
+
+        }
+
+        public synchronized void drawFrom(InGamePlayer target, String whichType, int position)
+                throws UnexpectedPlayerException, InvalidDeckPositionException, UnknownStringException, EmptyDeckException {
+            switch (thrownException) {
+                case "EmptyDeckException" -> throw new EmptyDeckException();
+                case " UnknownStringException" -> throw new UnknownStringException();
+                case "UnexpectedPlayerException" -> throw new UnexpectedPlayerException();
+                case "InvalidDeckPositionException" -> throw new InvalidDeckPositionException();
+            }
+
+        }
+
         public void forceException(String e) {
             this.thrownException = e;
         }
@@ -82,18 +369,10 @@ class GameControllerTest {
 
     }
 
-    @Test
-    void correctCallToCardNotInHand() {
-        NetworkSession currentPlayerInTurn;
-        if (gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getNickname().equals("thePlayer"))
-            currentPlayerInTurn = inGamePlayer_1;
-        else
-            currentPlayerInTurn = inGamePlayer_2;
 
-        gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(2, 2), gameAssociatedController.CONTROLLED_GAME.getPlayers().getFirst().getCardsInHand().getFirst().ID, Side.BACK);
 
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(InvalidCardPositionException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
-    }
+
+
+
 
 }

@@ -30,7 +30,50 @@ public class ServerControllerTest {
     LobbyController lobbyController = new LobbyController(null);
     GameController gameController = new GameController(new Game(new Lobby(new Player("creator"), 2)));
 
+        /**
+     * Creates a NetworkSession stub for testing purposes.
+     *
+     * @param controller            the controller associated to the VirtualClient contained in the NetworkSession
+     * @return a new NetworkSession instance with a custom listener
+     */
+    public static <T extends ServerController> NetworkSession createNetworkSessionStub(T controller){
+        NetworkSession session = new NetworkSession(controller) {
+
+            @Override
+            protected Listener createListener(NetworkSession session) {
+                return new Listener(
+                        session,
+                        new VirtualClientImpl()
+                );
+            }
+        };
+        session.scheduleTimeoutTimerTask(new TimerTask() {
+            @Override
+            public void run() {
+            }
+
+            ;
+        });
+
+        return session;
+    };
+
     /**
+     * A stub implementation of the VirtualClient used for testing.
+     */
+    public static class VirtualClientImpl implements VirtualClient {
+
+        public ClientControllerInterfaceImpl myClientController = new ClientControllerInterfaceImpl();
+        public ClientCommand receivedCommand = null;
+
+        @Override
+        public void requestToClient(ClientCommand command) {
+            receivedCommand = command;
+            command.execute(myClientController);
+        }
+    }
+
+/**
      * A stub implementation of the ClientControllerInterface used for testing.
      * It contains an attribute exposing the exception for checking its type during executions
      */
@@ -39,6 +82,7 @@ public class ServerControllerTest {
         public UUID receivedUUID;
         public Exception receivedException = null;
         public List<Integer> lastReceivedCardIDs;
+        public String receivedMessage;
 
         @Override
         public void throwException(Exception e) {
@@ -120,42 +164,8 @@ public class ServerControllerTest {
 
         @Override
         public void addChatMessage(String senderNickname, String chatMessage, boolean isPrivate) {
-
+            receivedMessage = chatMessage;
         }
-    };
-
-    /**
-     * A stub implementation of the VirtualClient used for testing.
-     */
-    public static class VirtualClientImpl implements VirtualClient {
-
-        public ClientControllerInterfaceImpl myClientController = new ClientControllerInterfaceImpl();
-        public ClientCommand receivedCommand = null;
-
-        @Override
-        public void requestToClient(ClientCommand command) {
-            receivedCommand = command;
-            command.execute(myClientController);
-        }
-    }
-
-    /**
-     * Creates a NetworkSession stub for testing purposes.
-     *
-     * @param controller            the controller associated to the VirtualClient contained in the NetworkSession
-     * @return a new NetworkSession instance with a custom listener
-     */
-    public static <T extends ServerController> NetworkSession createNetworkSessionStub(T controller){
-        return new NetworkSession(controller) {
-
-            @Override
-            protected Listener createListener(NetworkSession session) {
-                return new Listener(
-                        session,
-                        new VirtualClientImpl()
-                );
-            }
-        };
     }
 
     /**
