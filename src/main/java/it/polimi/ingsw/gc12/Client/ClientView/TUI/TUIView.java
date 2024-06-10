@@ -7,7 +7,6 @@ import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
-import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
@@ -17,6 +16,7 @@ import org.fusesource.jansi.AnsiConsole;
 
 import java.io.Console;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,9 +47,7 @@ public class TUIView extends View {
     private int currentShownPlayerIndex = -1;
 
     private TUIView() {
-        AnsiConsole.systemInstall(
-
-        );
+        AnsiConsole.systemInstall();
         listener = TUIListener.getInstance();
         try {
             //FIXME: on Mac bash instead of cmd (on Linux too?)
@@ -363,11 +361,11 @@ public class TUIView extends View {
            you should call xxxCommand*/
 
         int playerIndex = 0;
-        var players = ClientController.getInstance().viewModel.getCurrentLobby().getPlayers();
+        ArrayList<ClientPlayer> players = ClientController.getInstance().viewModel.getGame().getPlayers();
         players.remove(ClientController.getInstance().viewModel.getGame().getThisPlayer());
-        for (Player player : players) {
+        for (var player : players) {
             LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> field =
-                    ((ClientPlayer) player).getPlacedCards();
+                    (player).getPlacedCards();
 
             for (var entry : field.sequencedEntrySet().stream()
                     .filter( (entry) ->

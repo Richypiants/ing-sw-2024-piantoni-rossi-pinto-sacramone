@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc12.Model.ClientModel;
 
-import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Model.Room;
 
@@ -12,7 +11,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Represents a client-side game that extends the {@link Lobby}.
+ * Represents a client-side game that extends the {@link Room}.
  * This class handles the state of the game from the client's perspective.
  */
 //FIXME: is it correct that it extends Lobby and not Room?

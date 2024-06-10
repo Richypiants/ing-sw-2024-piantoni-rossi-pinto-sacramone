@@ -150,7 +150,6 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD) {
-
         for(var playerEntry : PLAYERS_FIELD.entrySet()) {
             var clientPlayerInstance = gameDTO.getPlayers().stream()
                     .filter( (player) -> player.getNickname().equals(playerEntry.getKey())).findFirst().orElseThrow();
@@ -241,11 +240,17 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public void toggleActive(String nickname){
-        viewModel.getGame().getPlayers().stream()
+        ClientPlayer targetPlayer = viewModel.getGame().getPlayers().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
                 .findAny()
-                .orElseThrow()
-                .toggleActive();
+                .orElseThrow();
+
+        targetPlayer.toggleActive();
+        addChatMessage(
+                nickname,
+                "[SYSTEM] Player " + nickname + " has " + (targetPlayer.isActive() ? "reconnected" : "disconnected"),
+                false
+        );
     }
 
     public void endGame(List<Triplet<String, Integer, Integer>> pointsStats, boolean gameEndedDueToDisconnections) {
