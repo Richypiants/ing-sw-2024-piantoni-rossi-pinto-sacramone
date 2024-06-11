@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
 import it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers.GUIView;
-import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIView;
+import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIViews.TUIView;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.TitleScreenState;
 
 import java.util.Scanner;

@@ -1,6 +1,6 @@
-package it.polimi.ingsw.gc12.Client.ClientView.TUI;
+package it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIViews;
 
-import it.polimi.ingsw.gc12.Client.ClientView.View;
+import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIListener;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.AwaitingReconnectionState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
@@ -12,27 +12,18 @@ import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.AnsiConsole;
 
-import java.io.Console;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.ToIntBiFunction;
 
-import static java.lang.Thread.sleep;
-import static org.fusesource.jansi.Ansi.Erase;
 import static org.fusesource.jansi.Ansi.ansi;
 
-public class TUIView extends View {
+public class TUIGameView extends TUIView{
 
-    private static TUIView SINGLETON_TUI_INSTANCE = null;
-    private final TUIListener listener;
-    private static /*(?)*/ final Console console = System.console();
-
-    private final GenericPair<Integer, Integer> TERMINAL_SIZE = new GenericPair<>(49, 211); //x: rows, y:columns
+    private static TUIGameView gameView = null;
 
     private final GenericPair<Integer, Integer> FIELD_SIZE = new GenericPair<>(38, 105); //x: height, y: width
     private final GenericPair<Integer, Integer> FIELD_TOP_LEFT = new GenericPair<>(10, 105); //x: startingRow, y: startingColumn
@@ -46,190 +37,15 @@ public class TUIView extends View {
     private GenericPair<Integer, Integer> dynamicFieldCenter = new GenericPair<>(0, 0);
     private int currentShownPlayerIndex = -1;
 
-    private TUIView() {
-        AnsiConsole.systemInstall();
-        listener = TUIListener.getInstance();
-        try {
-            //FIXME: on Mac bash instead of cmd (on Linux too?)
-            new ProcessBuilder("cmd", "/c", "mode con:cols=" + TERMINAL_SIZE.getY() + " lines=" + TERMINAL_SIZE.getX())
-                    .inheritIO().start().waitFor();
-        } catch (InterruptedException | IOException e) {
-            throw new RuntimeException(e);
+    private TUIGameView() {
+        super();
+    }
+
+    public static TUIGameView getInstance() {
+        if (gameView == null) {
+            gameView = new TUIGameView();
         }
-    }
-
-    public static TUIView getInstance() {
-        if (SINGLETON_TUI_INSTANCE == null)
-            SINGLETON_TUI_INSTANCE = new TUIView();
-        return SINGLETON_TUI_INSTANCE;
-    }
-
-    public static void clearTerminal() {
-        System.out.print(ansi()
-                .saveCursorPosition()
-                .cursor(TUIListener.COMMAND_INPUT_ROW - 2, 1)
-                .eraseScreen(Erase.BACKWARD).eraseLine(Erase.FORWARD)
-                .cursorDownLine()
-                .a("------------------------------------------------------------------").eraseLine(Erase.FORWARD)
-                .cursorDownLine()
-                .a("> [" + ClientController.getInstance().viewModel.getOwnNickname() + "] ")
-                .restoreCursorPosition()
-                .eraseScreen(Erase.FORWARD)
-        );
-    }
-
-    @Override
-    public void printError(Throwable error) {
-        System.out.print(ansi().saveCursorPosition()
-                .cursor(TUIListener.EXCEPTIONS_ROW, 1)
-                .a(error.getMessage()).reset()
-                .restoreCursorPosition()
-        );
-        //FIXME: autoResetting... should keep it?
-    }
-
-    public void printToPosition(Ansi toPrint) {
-        System.out.print(ansi().saveCursorPosition()
-                .a(toPrint).reset()
-                .restoreCursorPosition()
-                .eraseScreen(Erase.FORWARD)
-        );
-        //FIXME: autoResetting... should keep it?
-    }
-
-    private String readUntil(Ansi prompt, List<String> validInput) {
-        String selection;
-        do {
-            clearTerminal();
-            System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN)
-                    .eraseLine(Erase.FORWARD)
-            );
-            printToPosition(ansi().a(prompt));
-            selection = console.readLine().trim().toLowerCase();
-        } while (!validInput.contains(selection));
-
-        return selection;
-    }
-
-    public void titleScreen() {
-        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().viewModel.getOwnNickname().length();
-        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN));
-        clearTerminal();
-
-        printToPosition(ansi().cursor(1, 1).a("Starting Codex Naturalis..."));
-        try {
-            sleep(500);
-        } catch (Exception e) {
-            ClientController.getInstance().errorLogger.log(e);
-        }
-        printToPosition(ansi().cursor(2, 1).a("Cranio Creations Logo"));
-        try {
-            sleep(500);
-        } catch (Exception e) {
-            ClientController.getInstance().errorLogger.log(e);
-        }
-        printToPosition(ansi().cursor(3, 1).a("Codex Naturalis Logo"));
-        printToPosition(ansi().cursor(4, 1));
-        printToPosition(ansi().cursor(5, 1).a("Premi Invio per iniziare..."));
-        console.readLine();
-        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
-
-        ClientController.getInstance().viewState.keyPressed();
-    }
-
-    public void connectionSetupScreen() {
-        clearTerminal();
-        /*String language = readUntil(
-                ansi().cursor(1, 1).a("Scegli la lingua (Italiano/IT - English/EN): "),
-                List.of("italiano", "english", "it", "en")
-        );
-        clearTerminal();
-         */
-        printToPosition(ansi().cursor(1, 1).a("Inserisci l'indirizzo IP del server (leave empty for 'localhost'): "));
-        String serverIPAddress = console.readLine();
-        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
-        clearTerminal();
-        String communicationTechnology = readUntil(
-                ansi().cursor(1, 1).a("Scegli la tecnologia di comunicazione (RMI-Socket): "),
-                List.of("rmi", "socket")
-        );
-        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
-        clearTerminal();
-
-        String nickname = "";
-        boolean lastInputWasInvalid = false;
-        final int MAX_NICK_LENGTH = 10;
-
-        do {
-            if(lastInputWasInvalid)
-                printToPosition(ansi().cursor(1, 1).a("Il nickname inserito possiede una lunghezza superiore a " + MAX_NICK_LENGTH + " caratteri oppure e' vuoto!"));
-            printToPosition(ansi().cursor(2, 1).a("Inserisci il tuo nickname [Max " + MAX_NICK_LENGTH + " caratteri]: "));
-            lastInputWasInvalid = false;
-            nickname = console.readLine().trim();
-            if(nickname.length() > MAX_NICK_LENGTH || nickname.isEmpty())
-                lastInputWasInvalid = true;
-            clearTerminal();
-            System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN)
-                    .eraseLine(Ansi.Erase.FORWARD)
-                    .cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN));
-        }while(lastInputWasInvalid);
-
-        printToPosition(ansi().cursor(2,1).a("Connessione al server in corso..."));
-
-        ClientController.getInstance().viewState.connect(serverIPAddress, communicationTechnology, nickname);
-    }
-
-    public void connectedConfirmation() {
-        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().viewModel.getOwnNickname().length();
-        printToPosition(ansi().cursor(3, 1).a("Connessione al server riuscita: nickname confermato!"));
-        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
-        listener.startReading();
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            ClientController.getInstance().errorLogger.log(e);
-        }
-    }
-
-    public void lobbiesScreen() {
-        clearTerminal();
-
-        int i = 1;
-        printToPosition(ansi().cursor(i++,1)
-                .fg(Ansi.Color.RED).bold()
-                .a("[PLAYER]: ").a(ClientController.getInstance().viewModel.getOwnNickname()));
-        printToPosition(ansi().cursor(i++, 1).a("[CURRENT LOBBY]: " + (
-                                ClientController.getInstance().viewModel.inLobbyOrGame() ?
-                                        ClientController.getInstance().viewModel.getCurrentLobby() : //TODO: stampare UUID?
-                                        "none"
-                        )
-                )
-        );
-        printToPosition(ansi().cursor(i++, 1).a("[ACTIVE LOBBIES] "));
-        for (var entry : ClientController.getInstance().viewModel.getLobbies().entrySet()) {
-            printToPosition(ansi().cursor(i++, 1).a(entry.getKey() + ": " + entry.getValue()));
-        }
-        printToPosition(ansi().cursor(i++, 1));
-        printToPosition(ansi().cursor(i, 1).a(
-                """
-                            'createLobby <maxPlayers>' per creare una lobby,
-                            'joinLobby <lobbyUUID>' per joinare una lobby esistente,
-                            'setNickname <newNickname>' per cambiare il proprio nickname,
-                                    'selectColor <color>' per scegliere un colore tra quelli disponibili,
-                            'leaveLobby' per lasciare la lobby in cui si e' attualmente,
-                            'quit' per ritornare alla schermata del titolo
-                """
-                //TODO: leaveLobby andrebbe promptato solo dopo
-        ));
-    }
-
-    public void showNickname() {
-        //FIXME: è così veloce che mi limiterei a richiamare lobbyScreen...
-        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().viewModel.getOwnNickname().length();
-        lobbiesScreen();
-        //printToPosition(ansi().cursor(1, 11).eraseLine(Erase.FORWARD).fg(Ansi.Color.RED).bold()
-        //        .a(ClientController.getInstance().ownNickname).eraseLine().reset());
-        //TODO: altrimenti: erasare il nickname dalla inputLine (va fatto dopo aver implementato che non si erasa l'inputLine)
+        return gameView;
     }
 
     public void gameScreen() {
@@ -275,7 +91,6 @@ public class TUIView extends View {
     }
 
     public void printStatsTable() {
-        //TODO: make a for cycle on Resource.values()?
         int i = 2;
         printToPosition(ansi().cursor(i++, 23)
                 .bold().a("Points | ").reset()
@@ -308,7 +123,7 @@ public class TUIView extends View {
     public void showCommonPlacedCards() {
         //erasing old placed cards
         for (int i = 12; i < 24; i++)
-            printToPosition(ansi().cursor(i, 53).eraseLine(Erase.BACKWARD));
+            printToPosition(ansi().cursor(i, 53).eraseLine(Ansi.Erase.BACKWARD));
 
         printToPosition(ansi().cursor(8, 23).bold().a("Common placed cards: ").reset());
 
@@ -343,7 +158,6 @@ public class TUIView extends View {
     public void printDecks() {
         printToPosition(ansi().cursor(8, 68).bold().a("Decks: "));
 
-        //FIXME: in realtà bisognerebbe farsi mandare solo i back delle carte e non tutto...
         ClientCard card = ClientController.getInstance().viewModel.getGame().getTopDeckResourceCard();
         printToPosition(ansi().cursor(10, 64).a(standardAnsi(card, Side.BACK)));
         card = ClientController.getInstance().viewModel.getGame().getTopDeckGoldCard();
@@ -373,7 +187,7 @@ public class TUIView extends View {
             for (var entry : field.sequencedEntrySet().stream()
                     .filter( (entry) ->
                             Math.abs(entry.getKey().getX()) <= REDUCED_FIELD_SIZE.getX()/2 &&
-                            Math.abs(entry.getKey().getY()) <= REDUCED_FIELD_SIZE.getY()/2)
+                                    Math.abs(entry.getKey().getY()) <= REDUCED_FIELD_SIZE.getY()/2)
                     .toList()) {
                 printToPosition(ansi().cursor(
                                 (playerIndex * FIELD_SPACING) + CENTER_REDUCED_FIELD.getX() - entry.getKey().getY(),
@@ -385,12 +199,11 @@ public class TUIView extends View {
         }
     }
 
-    //TODO: controllare che sia fixata la lunghezza massima del messaggio (70+80 = 150 caratteri vanno bene?)
     public void showChat() {
         List<String> chatLog = ClientController.getInstance().viewModel.getGame().getChatLog();
         printToPosition(ansi().cursor(2, 120).bold().a("Last chat messages: ").reset());
         for (int i = 0; i < 3; i++)
-            printToPosition(ansi().cursor(3 + i, 122).eraseLine(Erase.FORWARD)
+            printToPosition(ansi().cursor(3 + i, 122).eraseLine(Ansi.Erase.FORWARD)
                     .a((chatLog.size() >= 3 - i) ? chatLog.get(chatLog.size() - 3 + i) : "")
             );
     }
@@ -458,10 +271,10 @@ public class TUIView extends View {
         //erasing field area
         int fieldStartingColumn = FIELD_TOP_LEFT.getY();
         for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
-            printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Erase.FORWARD));
+            printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Ansi.Erase.FORWARD));
 
         ClientCard card = ClientController.getInstance().viewModel.getGame().getCardsInHand().getFirst();
-        printToPosition(ansi().cursor(15, 110).bold().eraseLine(Erase.FORWARD)
+        printToPosition(ansi().cursor(15, 110).bold().eraseLine(Ansi.Erase.FORWARD)
                 .a("Choose which side you want to play your assigned initial card on: ").reset());
         printToPosition(ansi().cursor(20, 110).a(upscaledAnsi(card, Side.FRONT)));
         printToPosition(ansi().cursor(20, 170).a(upscaledAnsi(card, Side.BACK)));
@@ -472,9 +285,9 @@ public class TUIView extends View {
         //erasing field area
         int fieldStartingColumn = FIELD_TOP_LEFT.getY();
         for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
-            printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Erase.FORWARD));
+            printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Ansi.Erase.FORWARD));
 
-        printToPosition(ansi().cursor(15, 110).bold().eraseLine(Erase.FORWARD)
+        printToPosition(ansi().cursor(15, 110).bold().eraseLine(Ansi.Erase.FORWARD)
                 .a("Choose which card you want to keep as your secret objective: ").reset());
         if (!((ChooseObjectiveCardsState) ClientController.getInstance().viewState).objectivesSelection.isEmpty()) {
             ClientCard card = ((ChooseObjectiveCardsState) ClientController.getInstance().viewState).objectivesSelection.getFirst();
@@ -512,10 +325,10 @@ public class TUIView extends View {
         //erasing field area
         int fieldStartingColumn = FIELD_TOP_LEFT.getY();
         for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
-            printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Erase.FORWARD));
+            printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Ansi.Erase.FORWARD));
 
         printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX() - 2, FIELD_TOP_LEFT.getY()).a("Field of: ")
-                .bold().a(player.getNickname()).eraseLine(Erase.FORWARD));
+                .bold().a(player.getNickname()).eraseLine(Ansi.Erase.FORWARD));
 
         GenericPair<Integer, Integer> maxCoordinates = findExtremeCoordinates(player, Math::max);
         GenericPair<Integer, Integer> minCoordinates = findExtremeCoordinates(player, Math::min);
@@ -540,36 +353,9 @@ public class TUIView extends View {
                 .forEach((entry) -> {
                             int printRow = initialCardPosition.getX() - (entry.getKey().getY() * CURSOR_OFFSET.getX());
                             int printColumn = initialCardPosition.getY() + (entry.getKey().getX() * CURSOR_OFFSET.getY());
-                            boolean outOfBounds = false;
+                    checkCardOutOfFieldBorder(printRow, printColumn);
 
-                            if (printRow < FIELD_TOP_LEFT.getX() + 3) {
-                                printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX(), FIELD_CENTER.getY())
-                                        .a("^").cursorMove(-1, 1).a("|"));
-                                outOfBounds = true;
-                            }
-
-                            if (printColumn < FIELD_TOP_LEFT.getY() + 3) {
-                                printToPosition(ansi().cursor(FIELD_CENTER.getX(), FIELD_TOP_LEFT.getY()).a("<-"));
-                                outOfBounds = true;
-                            }
-
-                            if (printRow > FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 1 - CURSOR_OFFSET.getX() - 1 - 3) {
-                                printToPosition(ansi().cursor(
-                                        FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 2,
-                                        FIELD_CENTER.getY()
-                                ).a("|").cursorMove(-1, 1).a("v"));
-                                outOfBounds = true;
-                            }
-
-                            if (printColumn > FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 1 - CURSOR_OFFSET.getY() - 1 - 3) {
-                                printToPosition(ansi().cursor(
-                                                FIELD_CENTER.getX(),
-                                                FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 2)
-                                        .a("->"));
-                                outOfBounds = true;
-                            }
-
-                            if (!outOfBounds)
+                    if (!checkCardOutOfFieldBorder(printRow, printColumn))
                                 printToPosition(ansi().cursor(printRow, printColumn)
                                         .a(standardAnsi(entry.getValue().getX(), entry.getValue().getY()))
                                 );
@@ -580,43 +366,48 @@ public class TUIView extends View {
                 .forEach((corner) -> {
                             int printRow = initialCardPosition.getX() - (corner.getY() * CURSOR_OFFSET.getX()) + 2;
                             int printColumn = initialCardPosition.getY() + (corner.getX() * CURSOR_OFFSET.getY()) + 5;
-                            boolean outOfBounds = false;
+                    checkCardOutOfFieldBorder(printRow, printColumn);
 
-                            if (printRow < FIELD_TOP_LEFT.getX() + 3) {
-                                printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX(), FIELD_CENTER.getY())
-                                        .a("^").cursorMove(-1, 1).a("|"));
-                                outOfBounds = true;
-                            }
-
-                            if (printColumn < FIELD_TOP_LEFT.getY() + 3) {
-                                printToPosition(ansi().cursor(FIELD_CENTER.getX(), FIELD_TOP_LEFT.getY()).a("<-"));
-                                outOfBounds = true;
-                            }
-
-                            if (printRow > FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 1 - CURSOR_OFFSET.getX() - 1 - 3) {
-                                printToPosition(ansi().cursor(
-                                        FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 2,
-                                        FIELD_CENTER.getY()
-                                ).a("|").cursorMove(-1, 1).a("v"));
-                                outOfBounds = true;
-                            }
-
-                            if (printColumn > FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 1 - CURSOR_OFFSET.getY() - 1 - 3) {
-                                printToPosition(ansi().cursor(
-                                                FIELD_CENTER.getX(),
-                                                FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 2)
-                                        .a("->"));
-                                outOfBounds = true;
-                            }
-
-                            if (!outOfBounds)
+                    if (!checkCardOutOfFieldBorder(printRow, printColumn))
                                 printToPosition(ansi().cursor(printRow, printColumn)
                                         .cursorMove(-String.valueOf(corner.getX()).length(), 0)
-                                        //.a(AnsiRenderer.renderCodes("faint", "blink_slow")) FIXME: perchè non funziona?
                                         .a("[" + corner.getX() + "," + corner.getY() + "]")
                                 );
                         }
                 );
+    }
+
+    private boolean checkCardOutOfFieldBorder(int printRow, int printColumn) {
+        boolean outOfBounds = false;
+
+        if (printRow < FIELD_TOP_LEFT.getX() + 3) {
+            printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX(), FIELD_CENTER.getY())
+                    .a("^").cursorMove(-1, 1).a("|"));
+            outOfBounds = true;
+        }
+
+        if (printColumn < FIELD_TOP_LEFT.getY() + 3) {
+            printToPosition(ansi().cursor(FIELD_CENTER.getX(), FIELD_TOP_LEFT.getY()).a("<-"));
+            outOfBounds = true;
+        }
+
+        if (printRow > FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 1 - CURSOR_OFFSET.getX() - 1 - 3) {
+            printToPosition(ansi().cursor(
+                    FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 2,
+                    FIELD_CENTER.getY()
+            ).a("|").cursorMove(-1, 1).a("v"));
+            outOfBounds = true;
+        }
+
+        if (printColumn > FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 1 - CURSOR_OFFSET.getY() - 1 - 3) {
+            printToPosition(ansi().cursor(
+                            FIELD_CENTER.getX(),
+                            FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 2)
+                    .a("->"));
+            outOfBounds = true;
+        }
+
+        return outOfBounds;
     }
 
     public void showLeaderboard(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
@@ -644,8 +435,8 @@ public class TUIView extends View {
             printToPosition(ansi()
                     .cursor(FIRST_ROW+(index*ROW_OFFSET),62).a("[#" + index + "]")
                     .cursor(FIRST_ROW+(index*ROW_OFFSET),72).a(row.getX())
-                    .cursor(FIRST_ROW + (index * ROW_OFFSET), 95).a(row.getY() != -1 ? row.getY() + " pt." : "N/A")
-                    .cursor(FIRST_ROW + (index * ROW_OFFSET), 124).a(row.getZ() != -1 ? row.getZ() + " pt." : "N/A")
+                    .cursor(FIRST_ROW+(index*ROW_OFFSET),95).a(row.getY() != -1 ? row.getY() + " pt." : "N/A")
+                    .cursor(FIRST_ROW+(index*ROW_OFFSET),124).a(row.getZ() != -1 ? row.getZ() + " pt.": "N/A")
             );
             index++;
         }
@@ -658,15 +449,13 @@ public class TUIView extends View {
 
         System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW - 2, 1).a("Type 'ok' to return to lobbies")
                 .cursorDownLine()
-                .a("------------------------------------------------------------------").eraseLine(Erase.FORWARD)
+                .a("------------------------------------------------------------------").eraseLine(Ansi.Erase.FORWARD)
                 .cursorDownLine()
                 .a("> [" + ClientController.getInstance().viewModel.getOwnNickname() + "] "));
     }
 
     @Override
     public void showHand() {
-        //FIXME: erase or overwrite old hand/cards? (is it needed or you always have at least 3 cards in hand?)
-
         int column = 10;
         printToPosition(ansi().cursor(28, 2).bold().a("Your hand: ").reset());
         printToPosition(ansi().cursor(32, 3).a("Front:"));

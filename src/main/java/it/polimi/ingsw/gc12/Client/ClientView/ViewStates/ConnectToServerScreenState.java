@@ -8,8 +8,7 @@ import static java.lang.Thread.sleep;
 
 public class ConnectToServerScreenState extends ViewState {
 
-    public ConnectToServerScreenState() {
-    }
+    public ConnectToServerScreenState() {}
 
     @Override
     public void executeState() {
