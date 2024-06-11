@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Controller.ServerController;
 
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
+import it.polimi.ingsw.gc12.Listeners.ServerListener;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
@@ -32,8 +33,8 @@ class LobbyControllerTest {
     void illegalPickColorChoice() {
         LobbyController lobbyController_built = new LobbyController(new Lobby(null, new Player("creator"), 2));
         lobbyController_built.pickColor(inLobbyPlayer, Color.NO_COLOR);
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) inLobbyPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(UnavailableColorException.class, ((ServerControllerTest.VirtualClientImpl) inLobbyPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inLobbyPlayer.getListener()).getVirtualClient()).receivedCommand);
+        assertInstanceOf(UnavailableColorException.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inLobbyPlayer.getListener()).getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
@@ -47,7 +48,7 @@ class LobbyControllerTest {
         connectionController.generatePlayer(joiningPlayer, "joiningPlayer");
 
         connectionController.createLobby(lobbyCreatorPlayer, 2);
-        connectionController.joinLobby(joiningPlayer, ((ServerControllerTest.VirtualClientImpl) joiningPlayer.getListener().getVirtualClient()).myClientController.receivedUUID);
+        connectionController.joinLobby(joiningPlayer, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) joiningPlayer.getListener()).getVirtualClient()).myClientController.receivedUUID);
 
         LobbyController associatedLobbyController = (LobbyController) lobbyCreatorPlayer.getController();
 

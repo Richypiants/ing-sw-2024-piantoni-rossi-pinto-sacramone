@@ -48,24 +48,24 @@ public class ServerModel implements Listenable {
     public static final Map<Integer, ClientCard> clientCardsList = loadClientCards();
 
     /**
-     * The lock used to ensure thread safety for lobby controllers.
-     */
-    public final ReentrantReadWriteLock LOBBY_CONTROLLERS_LOCK;
-
-    /**
-     * The lock used to ensure thread safety for game controllers.
-     */
-    public final ReentrantReadWriteLock GAME_CONTROLLERS_LOCK;
-
-    /**
      * The map of lobby controllers, indexed by lobby UUID.
      */
     private final Map<UUID, LobbyController> LOBBY_CONTROLLERS;
 
     /**
+     * The lock used to ensure thread safety for lobby controllers.
+     */
+    public final ReentrantReadWriteLock LOBBY_CONTROLLERS_LOCK;
+
+    /**
      * The map of game controllers, indexed by game UUID.
      */
     private final Map<UUID, GameController> GAME_CONTROLLERS;
+
+    /**
+     * The lock used to ensure thread safety for game controllers.
+     */
+    public final ReentrantReadWriteLock GAME_CONTROLLERS_LOCK;
 
     /**
      * The list of listeners for lobby updates.

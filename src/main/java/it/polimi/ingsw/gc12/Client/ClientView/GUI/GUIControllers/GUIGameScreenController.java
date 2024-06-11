@@ -518,7 +518,7 @@ public class GUIGameScreenController extends GUIView {
             initialChoiceHBox.getChildren().addAll(frontCardView, backCardView);
             initialCardsChoiceVBox.getChildren().addAll(cardLabel, initialChoiceHBox/*, aggiungere scritta "Scegli carta iniziale: "*/);
 
-            OverlayPopup createdPopup = GUIView.getInstance().drawOverlayPopup(initialCardsChoiceVBox, false);
+            OverlayPopup createdPopup = drawOverlayPopup(initialCardsChoiceVBox, false);
 
             frontCardView.setOnMouseClicked((event) -> {
                 ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 1, Side.FRONT);
@@ -553,7 +553,7 @@ public class GUIGameScreenController extends GUIView {
             ArrayList<ClientCard> objectivesSelection = ((ChooseObjectiveCardsState) ClientController.getInstance()
                     .getCurrentState()).objectivesSelection;
 
-            OverlayPopup createdPopup = GUIView.drawOverlayPopup(objectiveChoiceVBox, false);
+            OverlayPopup createdPopup = drawOverlayPopup(objectiveChoiceVBox, false);
 
             for (int i = 0; i < objectivesSelection.size(); i++) {
                 ClientCard objectiveCard = objectivesSelection.get(i);
@@ -619,7 +619,6 @@ public class GUIGameScreenController extends GUIView {
 
                 //TODO: Complete implementation of drag-and-drop of cards with all DragEvents specified, and this is horrible...
                 int inHandPosition = i + 1;
-
 
                 //FIXME: Refactor image/dragboard/imageview
                 frontCardView.setOnDragDetected((event) -> {
@@ -814,9 +813,9 @@ public class GUIGameScreenController extends GUIView {
 
                 Label nameLabel = new Label(row.getX());
                 nameLabel.getStyleClass().add("titleScreenLabel");
-                Label pointsLabel = new Label("" + row.getY());
+                Label pointsLabel = new Label(row.getY() != -1 ? "" + row.getY() : "N/A");
                 pointsLabel.getStyleClass().add("titleScreenLabel");
-                Label objectivePointsLabel = new Label("" + row.getZ());
+                Label objectivePointsLabel = new Label(row.getZ() != -1 ? "" + row.getZ() : "N/A");
                 objectivePointsLabel.getStyleClass().add("titleScreenLabel");
 
                 playerHBox.getChildren().addAll(nameLabel, pointsLabel, objectivePointsLabel);

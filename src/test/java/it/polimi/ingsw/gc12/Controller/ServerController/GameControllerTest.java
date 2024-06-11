@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc12.Controller.ServerController;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.RestoreGameCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.GameState;
+import it.polimi.ingsw.gc12.Listeners.ServerListener;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
@@ -34,18 +35,18 @@ class GameControllerTest {
         connectionController.generatePlayer(inGamePlayer_2, "thePlayer_2");
 
         connectionController.createLobby(inGamePlayer_1, 2);
-        connectionController.joinLobby(inGamePlayer_2, ((ServerControllerTest.VirtualClientImpl) inGamePlayer_2.getListener().getVirtualClient()).myClientController.receivedUUID);
+        connectionController.joinLobby(inGamePlayer_2, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_2.getListener()).getVirtualClient()).myClientController.receivedUUID);
 
         LobbyController associatedLobbyController = (LobbyController) inGamePlayer_1.getController();
         associatedLobbyController.pickColor(inGamePlayer_1, Color.RED);
         associatedLobbyController.pickColor(inGamePlayer_2, Color.GREEN);
 
         gameAssociatedController = (GameController) inGamePlayer_1.getController();
-        gameAssociatedController.placeCard(inGamePlayer_1, new GenericPair<>(0, 0), ((ServerControllerTest.VirtualClientImpl) inGamePlayer_1.getListener().getVirtualClient()).myClientController.lastReceivedCardIDs.getFirst(), Side.FRONT);
-        gameAssociatedController.placeCard(inGamePlayer_2, new GenericPair<>(0, 0), ((ServerControllerTest.VirtualClientImpl) inGamePlayer_2.getListener().getVirtualClient()).myClientController.lastReceivedCardIDs.getFirst(), Side.FRONT);
+        gameAssociatedController.placeCard(inGamePlayer_1, new GenericPair<>(0, 0), ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_1.getListener()).getVirtualClient()).myClientController.lastReceivedCardIDs.getFirst(), Side.FRONT);
+        gameAssociatedController.placeCard(inGamePlayer_2, new GenericPair<>(0, 0), ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_2.getListener()).getVirtualClient()).myClientController.lastReceivedCardIDs.getFirst(), Side.FRONT);
 
-        gameAssociatedController.pickObjective(inGamePlayer_1, ((ServerControllerTest.VirtualClientImpl) inGamePlayer_1.getListener().getVirtualClient()).myClientController.receivedObjectiveIDs.getFirst());
-        gameAssociatedController.pickObjective(inGamePlayer_2, ((ServerControllerTest.VirtualClientImpl) inGamePlayer_2.getListener().getVirtualClient()).myClientController.receivedObjectiveIDs.getLast());
+        gameAssociatedController.pickObjective(inGamePlayer_1, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_1.getListener()).getVirtualClient()).myClientController.receivedObjectiveIDs.getFirst());
+        gameAssociatedController.pickObjective(inGamePlayer_2, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_2.getListener()).getVirtualClient()).myClientController.receivedObjectiveIDs.getLast());
 
     }
 
@@ -59,8 +60,8 @@ class GameControllerTest {
 
         gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(1, 1), 84, Side.BACK);
 
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(CardNotInHandException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).receivedCommand);
+        assertInstanceOf(CardNotInHandException.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
@@ -73,8 +74,8 @@ class GameControllerTest {
 
         gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(1, 1), gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getCardsInHand().get(2).ID, Side.FRONT);
 
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(NotEnoughResourcesException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).receivedCommand);
+        assertInstanceOf(NotEnoughResourcesException.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
@@ -87,8 +88,8 @@ class GameControllerTest {
 
         gameAssociatedController.placeCard(currentPlayerInTurn, new GenericPair<>(3, 3), gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getCardsInHand().getFirst().ID, Side.FRONT);
 
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(InvalidCardPositionException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).receivedCommand);
+        assertInstanceOf(InvalidCardPositionException.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
@@ -101,8 +102,8 @@ class GameControllerTest {
 
         gameAssociatedController.placeCard(currentPlayerNotInTurn, new GenericPair<>(1, 1), gameAssociatedController.CONTROLLED_GAME.getCurrentPlayer().getCardsInHand().getFirst().ID, Side.FRONT);
 
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerNotInTurn.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(UnexpectedPlayerException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerNotInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerNotInTurn.getListener()).getVirtualClient()).receivedCommand);
+        assertInstanceOf(UnexpectedPlayerException.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerNotInTurn.getListener()).getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
@@ -125,8 +126,8 @@ class GameControllerTest {
         gameAssociatedController.drawFromDeck(currentPlayerNotInTurn, "resource");
 
 
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerNotInTurn.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(UnexpectedPlayerException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerNotInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerNotInTurn.getListener()).getVirtualClient()).receivedCommand);
+        assertInstanceOf(UnexpectedPlayerException.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerNotInTurn.getListener()).getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
@@ -142,8 +143,8 @@ class GameControllerTest {
         gameAssociatedController.drawFromDeck(currentPlayerInTurn, "Deck");
 
 
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(UnknownStringException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).receivedCommand);
+        assertInstanceOf(UnknownStringException.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
@@ -162,8 +163,8 @@ class GameControllerTest {
         gameAssociatedController.drawFromDeck(currentPlayerInTurn, "resource");
 
 
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(EmptyDeckException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).receivedCommand);
+        assertInstanceOf(EmptyDeckException.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
@@ -179,8 +180,8 @@ class GameControllerTest {
         gameAssociatedController.drawFromVisibleCards(currentPlayerInTurn, "Deck", 1);
 
 
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(UnknownStringException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).receivedCommand);
+        assertInstanceOf(UnknownStringException.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
@@ -196,8 +197,8 @@ class GameControllerTest {
         gameAssociatedController.drawFromVisibleCards(currentPlayerInTurn, "resource", 3);
 
 
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(InvalidDeckPositionException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).receivedCommand);
+        assertInstanceOf(InvalidDeckPositionException.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
@@ -220,8 +221,8 @@ class GameControllerTest {
         gameAssociatedController.drawFromVisibleCards(currentPlayerNotInTurn, "resource", 2);
 
 
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerNotInTurn.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(UnexpectedPlayerException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerNotInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerNotInTurn.getListener()).getVirtualClient()).receivedCommand);
+        assertInstanceOf(UnexpectedPlayerException.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerNotInTurn.getListener()).getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
@@ -242,8 +243,8 @@ class GameControllerTest {
         gameAssociatedController.drawFromVisibleCards(currentPlayerInTurn, "resource", 1);
 
 
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(EmptyDeckException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).receivedCommand);
+        assertInstanceOf(EmptyDeckException.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
@@ -257,8 +258,8 @@ class GameControllerTest {
         gameAssociatedController.directMessage(currentPlayerInTurn, "PlayerNotCreated", "Test");
 
 
-        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(NotExistingPlayerException.class, ((ServerControllerTest.VirtualClientImpl) currentPlayerInTurn.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).receivedCommand);
+        assertInstanceOf(NotExistingPlayerException.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) currentPlayerInTurn.getListener()).getVirtualClient()).myClientController.receivedException);
     }
 
     @Test
@@ -274,7 +275,7 @@ class GameControllerTest {
             otherPlayer = inGamePlayer_1;
             gameAssociatedController.directMessage(currentPlayerInTurn, "thePlayer", "Test");
         }
-        assertEquals("Test", ((ServerControllerTest.VirtualClientImpl) otherPlayer.getListener().getVirtualClient()).myClientController.receivedMessage);
+        assertEquals("Test", ((ServerControllerTest.VirtualClientImpl) ((ServerListener) otherPlayer.getListener()).getVirtualClient()).myClientController.receivedMessage);
     }
 
     @Test
@@ -292,7 +293,7 @@ class GameControllerTest {
         gameAssociatedController.broadcastMessage(currentPlayerInTurn, "Test");
 
 
-        assertEquals("Test", ((ServerControllerTest.VirtualClientImpl) otherPlayer.getListener().getVirtualClient()).myClientController.receivedMessage);
+        assertEquals("Test", ((ServerControllerTest.VirtualClientImpl) ((ServerListener) otherPlayer.getListener()).getVirtualClient()).myClientController.receivedMessage);
     }
 
     @Test
@@ -313,7 +314,7 @@ class GameControllerTest {
         gameAssociatedController.generatePlayer(restoreGamePlayer, "thePlayer");
 
         assertEquals(2, gameAssociatedController.CONTROLLED_GAME.getActivePlayers().size());
-        assertInstanceOf(RestoreGameCommand.class, ((ServerControllerTest.VirtualClientImpl) inGamePlayer_1.getListener().getVirtualClient()).receivedCommand);
+        assertInstanceOf(RestoreGameCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_1.getListener()).getVirtualClient()).receivedCommand);
     }
 
     static class GameStatesDriver extends GameState {

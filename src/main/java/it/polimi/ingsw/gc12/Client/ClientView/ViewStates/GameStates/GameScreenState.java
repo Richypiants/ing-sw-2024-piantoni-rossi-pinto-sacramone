@@ -18,7 +18,7 @@ public abstract class GameScreenState extends ViewState {
     public abstract void restoreScreenState();
 
     protected void sendCardToPlace(GenericPair<Integer, Integer> coordinates, int inHandPosition, Side playedSide) {
-        ClientCard card = null;
+        ClientCard card;
         try {
             card = ClientController.getInstance().viewModel.getGame().getCardsInHand().get(inHandPosition);
         } catch (IndexOutOfBoundsException e) {

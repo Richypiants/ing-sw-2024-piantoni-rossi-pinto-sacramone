@@ -3,7 +3,8 @@ package it.polimi.ingsw.gc12.Controller.ServerController;
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
-import it.polimi.ingsw.gc12.Listeners.Listener;
+import it.polimi.ingsw.gc12.Listeners.NetworkListener;
+import it.polimi.ingsw.gc12.Listeners.ServerListener;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.Lobby;
@@ -39,8 +40,8 @@ public class ServerControllerTest {
         NetworkSession session = new NetworkSession(controller) {
 
             @Override
-            protected Listener createListener(NetworkSession session) {
-                return new Listener(
+            protected NetworkListener createListener(NetworkSession session) {
+                return new ServerListener(
                         session,
                         new VirtualClientImpl()
                 );
@@ -202,8 +203,15 @@ public class ServerControllerTest {
     @Test
     void hasNoPlayerReturningTrue(){
         assertTrue(connectionController.hasNoPlayer(notExistingPlayer));
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) notExistingPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(NotExistingPlayerException.class, ((VirtualClientImpl) notExistingPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (notExistingPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                NotExistingPlayerException.class,
+                ((VirtualClientImpl) ((ServerListener) (notExistingPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
     /*
@@ -219,8 +227,15 @@ public class ServerControllerTest {
     @Test
     void invalidCallToPlaceCard() {
         connectionController.placeCard(nonParticipantPlayer, new GenericPair<>(1, 1), 1, Side.FRONT);
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(ForbiddenActionException.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                ForbiddenActionException.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
     /**
@@ -229,8 +244,15 @@ public class ServerControllerTest {
     @Test
     void invalidCallToLeaveLobby() {
         connectionController.leaveLobby(nonParticipantPlayer, true);
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(ForbiddenActionException.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                ForbiddenActionException.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
     /**
@@ -239,8 +261,15 @@ public class ServerControllerTest {
     @Test
     void invalidCallToPickObjective(){
         connectionController.pickObjective(nonParticipantPlayer, 1);
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(ForbiddenActionException.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                ForbiddenActionException.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
     /**
@@ -249,8 +278,15 @@ public class ServerControllerTest {
     @Test
     void invalidCallToDrawFromDeck() {
         connectionController.drawFromDeck(nonParticipantPlayer, "resource");
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(ForbiddenActionException.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                ForbiddenActionException.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
     /**
@@ -259,8 +295,15 @@ public class ServerControllerTest {
     @Test
     void invalidCallToDrawFromVisibleCards() {
         connectionController.drawFromVisibleCards(nonParticipantPlayer, "resource", 1);
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(ForbiddenActionException.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                ForbiddenActionException.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
     /**
@@ -269,8 +312,15 @@ public class ServerControllerTest {
     @Test
     void invalidCallToLeaveGame(){
         connectionController.leaveGame(nonParticipantPlayer);
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(ForbiddenActionException.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                ForbiddenActionException.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
     /**
@@ -279,8 +329,15 @@ public class ServerControllerTest {
     @Test
     void invalidCallToBroadcastMessage() {
         connectionController.broadcastMessage(nonParticipantPlayer, "HELLO");
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(ForbiddenActionException.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                ForbiddenActionException.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
     /**
@@ -289,8 +346,15 @@ public class ServerControllerTest {
     @Test
     void invalidCallToDirectMessage() {
         connectionController.directMessage(nonParticipantPlayer, "paolo", "HELLO");
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(ForbiddenActionException.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                ForbiddenActionException.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
     /**
@@ -299,8 +363,15 @@ public class ServerControllerTest {
     @Test
     void invalidCallToGeneratePlayer() {
         lobbyController.generatePlayer(nonParticipantPlayer, "Username");
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(ForbiddenActionException.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                ForbiddenActionException.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
     /**
@@ -309,8 +380,15 @@ public class ServerControllerTest {
     @Test
     void invalidCallToSetNickname() {
         gameController.setNickname(nonParticipantPlayer, "Username");
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(ForbiddenActionException.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                ForbiddenActionException.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
     /**
@@ -319,8 +397,15 @@ public class ServerControllerTest {
     @Test
     void invalidCallToCreateLobby() {
         gameController.createLobby(nonParticipantPlayer, 4);
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(ForbiddenActionException.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                ForbiddenActionException.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
     /**
@@ -329,8 +414,15 @@ public class ServerControllerTest {
     @Test
     void invalidCallToJoinLobby() {
         gameController.joinLobby(nonParticipantPlayer, UUID.randomUUID());
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(ForbiddenActionException.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                ForbiddenActionException.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
     /*
@@ -346,8 +438,15 @@ public class ServerControllerTest {
     @Test
     void invalidCallPickColor() {
         gameController.pickColor(nonParticipantPlayer, Color.RED);
-        assertInstanceOf(ThrowExceptionCommand.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).receivedCommand);
-        assertInstanceOf(ForbiddenActionException.class, ((VirtualClientImpl) nonParticipantPlayer.getListener().getVirtualClient()).myClientController.receivedException);
+        assertInstanceOf(
+                ThrowExceptionCommand.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient()).receivedCommand
+        );
+        assertInstanceOf(
+                ForbiddenActionException.class,
+                ((VirtualClientImpl) ((ServerListener) (nonParticipantPlayer.getListener())).getVirtualClient())
+                        .myClientController.receivedException
+        );
     }
 
 

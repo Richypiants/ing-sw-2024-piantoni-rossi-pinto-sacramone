@@ -99,7 +99,7 @@ public class ViewModel {
      * @return the UUID of the current lobby
      */
     public UUID getCurrentLobbyUUID() {
-        return currentLobbyOrGame.getRoomUUID();
+        return currentLobbyOrGame == null ? null : currentLobbyOrGame.getRoomUUID();
     }
 
     /**

@@ -54,6 +54,7 @@ public class LobbyController extends ServerController {
                             .orElseThrow(); //TODO: strano... gestire?
 
                     putActivePlayer(targetClient, targetInGamePlayer);
+                    targetClient.setPlayer(targetInGamePlayer);
 
                     MODEL.removeListener(targetClient.getListener());
                     newGame.addListener(targetClient.getListener());
@@ -77,9 +78,12 @@ public class LobbyController extends ServerController {
     public synchronized void leaveLobby(NetworkSession sender, boolean isInactive) {
         System.out.println("[CLIENT]: LeaveLobbyCommand received and being executed");
 
-        MODEL.removePlayerFromLobby(sender.getPlayer(), CONTROLLED_LOBBY);
-        if (CONTROLLED_LOBBY.getPlayersNumber() <= 0)
+        if (CONTROLLED_LOBBY.getPlayersNumber() == 1)
             MODEL.destroyLobbyController(this);
+        else
+            MODEL.removePlayerFromLobby(sender.getPlayer(), CONTROLLED_LOBBY);
+
+
         sender.setController(ConnectionController.getInstance());
 
         if (isInactive)

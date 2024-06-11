@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc12.Network;
 
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
-import it.polimi.ingsw.gc12.Listeners.Listener;
+import it.polimi.ingsw.gc12.Listeners.NetworkListener;
 import it.polimi.ingsw.gc12.Model.Player;
 
 import java.io.Serializable;
@@ -12,7 +12,7 @@ import java.util.TimerTask;
  * Represents a network session established between a client and the server.
  * <p>
  * This abstract class provides a framework for managing network sessions.
- * It includes functionality for associating a session with a controller, setting and retrieving a listener for the session,
+ * It includes functionality for associating a session with a controller, setting and retrieving a network listener for the session,
  * scheduling and anticipate running the task to execute when a connection timeout is detected.
  * </p>
  * <p>
@@ -31,9 +31,9 @@ public abstract class NetworkSession implements Serializable {
      */
     private transient ControllerInterface controller;
     /**
-     * The listener associated with the network session.
+     * The network listener associated with the network session.
      */
-    protected transient Listener listener;
+    protected transient NetworkListener listener;
     /**
      * The player associated with the network session.
      */
@@ -92,11 +92,11 @@ public abstract class NetworkSession implements Serializable {
     }
 
     /**
-     * Gets the listener associated with the network session.
+     * Gets the network listener associated with the network session.
      *
-     * @return The listener associated with the session.
+     * @return The network listener associated with the session.
      */
-    public Listener getListener() {
+    public NetworkListener getListener() {
         return listener;
     }
 
@@ -139,14 +139,14 @@ public abstract class NetworkSession implements Serializable {
     }
 
     /**
-     * Creates a listener for the network session.
+     * Creates a network listener for the network session.
      * <p>
-     * Subclasses should implement this method to create a listener specific to the objects and events they would like to listen on.
-     * This method is intended to be overridden by subclasses to provide custom listener implementations tailored to their needs.
+     * Subclasses should implement this method to create a network listener specific to the objects and events they would like to listen on.
+     * This method is intended to be overridden by subclasses to provide custom network listener implementations tailored to their needs.
      * </p>
      *
      * @param session The network session for which to create the listener.
      * @return The listener associated with the session.
      */
-    protected abstract Listener createListener(NetworkSession session);
+    protected abstract NetworkListener createListener(NetworkSession session);
 }

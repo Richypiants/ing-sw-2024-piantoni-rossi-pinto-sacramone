@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc12.Network.Client;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
-import it.polimi.ingsw.gc12.Listeners.Listener;
+import it.polimi.ingsw.gc12.Listeners.NetworkListener;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Network.RMIMainServer;
 import it.polimi.ingsw.gc12.Network.RMIVirtualClient;
@@ -69,7 +69,7 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
      * @return The listener associated with the session.
      */
     @Override
-    protected Listener createListener(NetworkSession session) {
+    protected NetworkListener createListener(NetworkSession session) {
         //TODO: maybe set something here for this class too?
         return null;
     }

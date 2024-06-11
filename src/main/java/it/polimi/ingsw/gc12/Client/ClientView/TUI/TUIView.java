@@ -644,8 +644,8 @@ public class TUIView extends View {
             printToPosition(ansi()
                     .cursor(FIRST_ROW+(index*ROW_OFFSET),62).a("[#" + index + "]")
                     .cursor(FIRST_ROW+(index*ROW_OFFSET),72).a(row.getX())
-                    .cursor(FIRST_ROW+(index*ROW_OFFSET),95).a(row.getY() != -1 ? row.getY() + " pt." : "NaN")
-                    .cursor(FIRST_ROW+(index*ROW_OFFSET),124).a(row.getZ() != -1 ? row.getZ() + " pt.": "NaN")
+                    .cursor(FIRST_ROW + (index * ROW_OFFSET), 95).a(row.getY() != -1 ? row.getY() + " pt." : "N/A")
+                    .cursor(FIRST_ROW + (index * ROW_OFFSET), 124).a(row.getZ() != -1 ? row.getZ() + " pt." : "N/A")
             );
             index++;
         }

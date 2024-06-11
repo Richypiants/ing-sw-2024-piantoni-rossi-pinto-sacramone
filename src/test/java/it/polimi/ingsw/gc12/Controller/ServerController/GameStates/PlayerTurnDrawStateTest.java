@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest;
+import it.polimi.ingsw.gc12.Listeners.ServerListener;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
@@ -80,8 +81,8 @@ class PlayerTurnDrawStateTest {
             i++;
         }
 
-        gameController.pickObjective(client1, ((ServerControllerTest.VirtualClientImpl) client1.getListener().getVirtualClient()).myClientController.receivedObjectiveIDs.getFirst());
-        gameController.pickObjective(client2, ((ServerControllerTest.VirtualClientImpl) client2.getListener().getVirtualClient()).myClientController.receivedObjectiveIDs.getFirst());
+        gameController.pickObjective(client1, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) client1.getListener()).getVirtualClient()).myClientController.receivedObjectiveIDs.getFirst());
+        gameController.pickObjective(client2, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) client2.getListener()).getVirtualClient()).myClientController.receivedObjectiveIDs.getFirst());
 
         gameController.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
     }

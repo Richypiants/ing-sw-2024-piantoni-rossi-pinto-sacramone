@@ -2,7 +2,8 @@ package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
-import it.polimi.ingsw.gc12.Listeners.Listener;
+import it.polimi.ingsw.gc12.Listeners.NetworkListener;
+import it.polimi.ingsw.gc12.Listeners.ServerListener;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
@@ -43,15 +44,15 @@ class ChooseInitialCardsStateTest {
 
         client1 = new NetworkSession(gameController) {
             @Override
-            protected Listener createListener(NetworkSession session) {
-                return new Listener(session, command -> {
+            protected NetworkListener createListener(NetworkSession session) {
+                return new ServerListener(session, command -> {
                 });
             }
         };
         client2 = new NetworkSession(gameController) {
             @Override
-            protected Listener createListener(NetworkSession session) {
-                return new Listener(session, command -> {
+            protected NetworkListener createListener(NetworkSession session) {
+                return new ServerListener(session, command -> {
                 });
             }
         };
