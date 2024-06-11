@@ -225,7 +225,7 @@ public class ClientController implements ClientControllerInterface {
     public synchronized void transition(int round, int currentPlayerIndex) {
         if(round != 0)
             viewModel.getGame().setCurrentRound(round);
-        //if(currentPlayerIndex != -1 ) /*TODO: Should be deleted,since I'm currently updating this index every GameTransition*/
+
         viewModel.getGame().setCurrentPlayerIndex(currentPlayerIndex);
 
         ((GameScreenState) viewState).transition();

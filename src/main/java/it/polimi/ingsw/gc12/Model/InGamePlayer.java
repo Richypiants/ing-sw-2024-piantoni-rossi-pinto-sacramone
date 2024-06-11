@@ -22,13 +22,22 @@ import java.util.stream.Collectors;
 
 /**
  * Represents a player who is currently in a game.
- * This class extends the basic Player class to include attributes and methods
- * specific to a player who is in a game. It maintains the player's hand
- * of cards, their owned resources, their field, their secret objective and their points.
- * Furthermore, it keeps track of the player activity or inactivity due to network or voluntary disconnections.
+ *
+ * This class extends the basic {@link Player} class to include attributes and methods
+ * specific to a player who is in a game. It maintains the player's hand of cards,
+ * their owned resources, their field, their secret objective, and their points.
+ * Additionally, it keeps track of the player's activity or inactivity due to
+ * network or voluntary disconnections.
+ *
+ * The class also implements the {@link Listenable} interface to allow for
+ * registering, removing, and notifying listeners about various in-game events
+ * such as card placements, addition of card in hand and secret objective related updates.
  */
 public class InGamePlayer extends Player implements Listenable {
 
+    /**
+     * The list containing all the listeners subscribed to this instance of InGamePlayer.
+     */
     private final CopyOnWriteArrayList<Listener> PLAYER_LISTENERS;
 
     /**
@@ -51,12 +60,12 @@ public class InGamePlayer extends Player implements Listenable {
      */
     private boolean active;
     /**
-     * The points currently accumulated by this player
+     * The points currently accumulated by this player.
      */
     private int points;
 
     /**
-     * The secret objective card chosen by this player
+     * The secret objective card chosen by this player.
      */
     private ObjectiveCard secretObjective;
 
@@ -213,6 +222,9 @@ public class InGamePlayer extends Player implements Listenable {
     /**
      * Adds the specified card to this player's hand.
      *
+     * This method adds the given card to the player's hand and
+     * notifies all registered listeners about the new card addition with a {@link ReceiveCardCommand}.
+     *
      * @param pickedCard The card to add to the player's hand.
      */
     public void addCardToHand(PlayableCard pickedCard) {
@@ -257,6 +269,14 @@ public class InGamePlayer extends Player implements Listenable {
         return OWN_FIELD.getOpenCorners();
     }
 
+    /**
+     * Sets the selection of objective cards for this player.
+     *
+     * This method assigns the given list of objective cards as the player's selection and
+     * notifies all registered listeners about the new objective choice with a {@link ReceiveObjectiveChoice}.
+     *
+     * @param personalObjectiveCardsSelection The list of Objective Cards selected for this player.
+     */
     public void setObjectivesSelection(ArrayList<ObjectiveCard> personalObjectiveCardsSelection) {
         notifyListeners(new ReceiveObjectiveChoice(personalObjectiveCardsSelection.stream()
                 .map((card) -> card.ID)
@@ -276,6 +296,9 @@ public class InGamePlayer extends Player implements Listenable {
     /**
      * Sets this player's secret Objective Card.
      *
+     * This method assigns the given Objective Card as the player's secret objective and
+     * notifies all registered listeners about the selection confirmation with a {@link ConfirmSelectionCommand}.
+     *
      * @param objectiveCard The Objective Card to set as this player's secret objective.
      */
     public void setSecretObjective(ObjectiveCard objectiveCard) {
@@ -293,6 +316,13 @@ public class InGamePlayer extends Player implements Listenable {
         return OWN_FIELD.getCardCoordinates(placedCard);
     }
 
+    /**
+     * Adds a listener to the list of this player's listeners.
+     *
+     * This method ensures thread-safe addition of listeners to the list.
+     *
+     * @param listener The listener to be added.
+     */
     @Override
     public void addListener(Listener listener) {
         synchronized (PLAYER_LISTENERS) {
@@ -300,6 +330,13 @@ public class InGamePlayer extends Player implements Listenable {
         }
     }
 
+    /**
+     * Removes a listener from the list of this player's listeners.
+     *
+     * This method ensures thread-safe removal of listeners from the list.
+     *
+     * @param listener The listener to be removed.
+     */
     @Override
     public void removeListener(Listener listener) {
         synchronized (PLAYER_LISTENERS) {
@@ -307,6 +344,13 @@ public class InGamePlayer extends Player implements Listenable {
         }
     }
 
+    /**
+     * Notifies all registered listeners with the specified command.
+     *
+     * This method ensures thread-safe iteration over the listeners list while notifying them.
+     *
+     * @param command The command to be sent to all listeners.
+     */
     @Override
     public void notifyListeners(ClientCommand command) {
         synchronized (PLAYER_LISTENERS) {

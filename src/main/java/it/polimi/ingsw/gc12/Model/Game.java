@@ -21,11 +21,20 @@ import java.util.stream.Collectors;
 
 /**
  * Represents a game session after it has started, keeping track of the players in the associated game lobby.
- * This class manages the decks of cards, the players' information related to the game, such as their hands, fields, and secret objectives,
- * and the current state of the game.
+ *
+ * This class extends the {@link Room} class and manages the state of the game after it has started.
+ * It tracks the players in the game lobby, manages decks of cards, and maintains players' information
+ * related to the game, such as their hands, fields, and secret objectives.
+ * Additionally, it oversees the current state of the game, including round information and active player status.
+ *
+ * As an implementation of the {@link Listenable} interface, this class supports listener registration,
+ * removal, and notification for various game events such as card placements and player actions.
  */
 public class Game extends Room implements Listenable {
 
+    /**
+     * The list containing all the listeners subscribed to this instance of game.
+     */
     private final CopyOnWriteArrayList<Listener> GAME_LISTENERS;
     /**
      * The deck of Resource cards of this game.
@@ -135,8 +144,7 @@ public class Game extends Room implements Listenable {
         for (var player : playersList) {
             try {
                 returnLobby.addPlayer(player);
-            } catch (FullLobbyException ignored) {
-            }
+            } catch (FullLobbyException ignored) {}
         }
 
         return returnLobby;
@@ -192,15 +200,13 @@ public class Game extends Room implements Listenable {
     public InGamePlayer getCurrentPlayer() {
         if (currentPlayer != -1)
             return getPlayers().get(currentPlayer);
-        //FIXME: Maybe not a null but something else?
         return null;
     }
 
-    //FIXME: check javadoc copypasted from gamestates when moving this field in here
 
     /**
-     * Increases the current player counter, making it point to the next player, and also increasing the currentRound
-     * value after everyone has played in the current round
+     * Handles the management of the current player index, looking for the next active player eligible to play.
+     * It also increased the current round value after everyone has played in the current round
      */
     public void nextPlayer() {
         if (currentPlayer == getPlayers().size() - 1)
@@ -327,6 +333,11 @@ public class Game extends Room implements Listenable {
         COMMON_OBJECTIVES[1] = objectiveCards[1];
     }
 
+    /**
+     * Generates a selection of two secret objective cards for each player in the game.
+     *
+     * @return A map where each player is associated with a list of two objective cards.
+     */
     public Map<InGamePlayer, ArrayList<ObjectiveCard>> generateSecretObjectivesSelection() {
         Map<InGamePlayer, ArrayList<ObjectiveCard>> objectivesSelection = new HashMap<>();
 
@@ -343,6 +354,17 @@ public class Game extends Room implements Listenable {
         return objectivesSelection;
     }
 
+    /**
+     * Places a card on the specified coordinates for the given player and notifies listeners with a {@link PlaceCardCommand}.
+     *
+     * @param target The player who is placing the card.
+     * @param coordinates The coordinates where the card is to be placed.
+     * @param card The card to be placed.
+     * @param playedSide The side of the card that is being played.
+     * @throws InvalidCardPositionException If the card cannot be placed at the specified coordinates.
+     * @throws NotEnoughResourcesException If the player does not have enough resources to place the card.
+     * @throws CardNotInHandException If the player does not have the specified card in their hand.
+     */
     public void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
             throws InvalidCardPositionException, NotEnoughResourcesException, CardNotInHandException {
         target.placeCard(coordinates, card, playedSide);
@@ -363,12 +385,15 @@ public class Game extends Room implements Listenable {
     }
 
     /**
-     * Draws a card from the specified deck at a given position and replaces it with a new card from the deck.
+     * Draws a card from the specified deck at a given position and replaces it with a new card from the appropriate deck.
+     * If the deck to draw from is empty, the position in the deck will be set to null.
      *
-     * @param deck     The array of cards from which to draw.
+     * Notifies all the listeners with a {@link ReplaceCardCommand}.
+     *
+     * @param deck     The array of visible cards from which to draw.
      * @param position The position of the card to draw.
      * @return The drawn card.
-     * @throws EmptyDeckException if the deck is empty.
+     * @throws EmptyDeckException if the specified position in the visible cards is empty.
      */
     public PlayableCard drawFrom(PlayableCard[] deck, int position) throws EmptyDeckException {
         PlayableCard returnedCard;
@@ -398,6 +423,8 @@ public class Game extends Room implements Listenable {
     /**
      * Peeks at the top card of the specified deck without removing it.
      *
+     * Notifies all the listeners with a {@link ReplaceCardCommand} showing the top card of the deck.
+     *
      * @param deck The deck to peek from.
      * @param <T>  The type of cards in the deck.
      * @return The top card of type T.
@@ -409,12 +436,26 @@ public class Game extends Room implements Listenable {
         return topDeckCard;
     }
 
+    /**
+     * Toggles the active status of the specified player.
+     *
+     * This method changes the player's active status to its opposite (active to inactive or inactive to active)
+     * and notifies listeners of this change with a {@link ToggleActiveCommand}.
+     *
+     * @param target The player whose active status is to be toggled.
+     */
     public void toggleActive(InGamePlayer target) {
         target.toggleActive();
         notifyListeners(new ToggleActiveCommand(target.getNickname()));
     }
 
-
+    /**
+     * Adds a listener to the list of game listeners.
+     *
+     * This method ensures thread-safe addition of listeners to the list.
+     *
+     * @param listener The listener to be added.
+     */
     @Override
     public void addListener(Listener listener) {
         synchronized (GAME_LISTENERS) {
@@ -422,6 +463,13 @@ public class Game extends Room implements Listenable {
         }
     }
 
+    /**
+     * Removes a listener from the list of game listeners.
+     *
+     * This method ensures thread-safe removal of listeners from the list.
+     *
+     * @param listener The listener to be removed.
+     */
     @Override
     public void removeListener(Listener listener) {
         synchronized (GAME_LISTENERS) {
@@ -429,6 +477,13 @@ public class Game extends Room implements Listenable {
         }
     }
 
+    /**
+     * Notifies all registered listeners with the specified command.
+     *
+     * This method ensures thread-safe iteration over the listeners list while notifying them.
+     *
+     * @param command The command to be sent to all listeners.
+     */
     @Override
     public void notifyListeners(ClientCommand command) {
         synchronized (GAME_LISTENERS) {

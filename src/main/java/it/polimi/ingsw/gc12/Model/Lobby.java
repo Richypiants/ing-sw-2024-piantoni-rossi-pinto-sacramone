@@ -15,8 +15,14 @@ import java.util.stream.Collectors;
 import static it.polimi.ingsw.gc12.Controller.ServerController.ServerController.model;
 
 /**
- * A game lobby where players wait for new games to start.
- * This class manages the list of players who have joined the lobby and keeps track of the maximum number of players allowed.
+ * Represents a game lobby where players wait for new games to start.
+ *
+ * This class extends the {@link Room} class and manages the list of players who have joined the lobby.
+ * It also handles the color management, showing their availability to the players and
+ * keeps track of the maximum number of players allowed in the lobby.
+ *
+ * As an implementation of the {@link Serializable} interface, instances of this class can be serialized,
+ * allowing for network transmission of lobby information.
  */
 public class Lobby extends Room implements Serializable {
 

@@ -9,20 +9,39 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Represents a client socket connection to a server in a networked environment.
+ * This class facilitates communication with the server by sending commands and receiving responses.
+ */
 public class SocketClient implements VirtualServer {
 
+    /**
+     * The singleton instance of the SocketClient.
+     * */
     private static SocketClient SINGLETON_SOCKET_CLIENT = null;
-    private static SocketServerHandler serverHandler = null;
-    public final ExecutorService connectionExecutorsPool;
 
+    /**
+     * The handler for server communication.
+     * */
+    private static SocketServerHandler serverHandler = null;
+
+    /**
+     * The executor service which performs continuous reads from the server.
+     * */
+    public final ExecutorService readerExecutor;
+
+    /**
+     * Constructs a new SocketClient, initializing the connection to the server and starts a thread to handle incoming messages.
+     *
+     * @throws IOException if an I/O error occurs while establishing the connection.
+     */
     private SocketClient() throws IOException {
-        //FIXME: how about the ip?
-        this.connectionExecutorsPool = Executors.newSingleThreadExecutor();
+        this.readerExecutor = Executors.newSingleThreadExecutor();
 
         Socket socket = new Socket(ClientController.getInstance().serverIPAddress, 5000);
         serverHandler = new SocketServerHandler(socket, ClientController.getInstance());
 
-        connectionExecutorsPool.submit(
+        readerExecutor.submit(
                 () -> {
                     while (true) {
                         try {
@@ -35,10 +54,14 @@ public class SocketClient implements VirtualServer {
                     }
                 }
         );
-        //FIXME: reference escaping?
         ClientController.getInstance().serverConnection = this;
     }
 
+    /**
+     * Returns the singleton instance of the SocketClient.
+     *
+     * @return The singleton instance of the SocketClient.
+     */
     public static SocketClient getInstance() { //TODO: sincronizzazione (serve?) ed eventualmente lazy
         if (SINGLETON_SOCKET_CLIENT == null) {
             try {
@@ -50,11 +73,19 @@ public class SocketClient implements VirtualServer {
         return SINGLETON_SOCKET_CLIENT;
     }
 
+    /**
+     * Closes the connection to the server.
+     */
     public void close() {
         SINGLETON_SOCKET_CLIENT = null;
         serverHandler.close();
     }
 
+    /**
+     * Sends a command to the server.
+     *
+     * @param command The command to be sent to the server.
+     */
     @Override
     public void requestToServer(ServerCommand command) {
         serverHandler.requestToServer(command);

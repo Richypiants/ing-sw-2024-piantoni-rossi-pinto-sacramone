@@ -14,10 +14,16 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+/**
+ * The {@code RMIClientSkeleton} class represent the skeleton that the Server must own for handling communication with a remote RMI client.
+ */
 public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClient {
 
-    private static RMIClientSkeleton SINGLETON_RMI_CLIENT = null;
-
+    /**
+     * Constructs a new {@code RMIClientSkeleton} instance.
+     *
+     * @param controller The controller interface for managing client operations.
+     */
     private RMIClientSkeleton(ControllerInterface controller) {
         super(controller);
         try {
@@ -33,19 +39,35 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
         ClientController.getInstance().thisClient = this;
     }
 
-    public static RMIClientSkeleton getInstance() { //TODO: sincronizzazione (serve?) ed eventualmente lazy
-        SINGLETON_RMI_CLIENT = new RMIClientSkeleton(ClientController.getInstance());
-        return SINGLETON_RMI_CLIENT;
+    /**
+     * Creates a new instance of RMIClientSkeleton containing the singleton instance of the ClientController of this client.
+     *
+     * @return The instance of RMIClientSkeleton.
+     */
+    public static RMIClientSkeleton getInstance() {
+        return new RMIClientSkeleton(ClientController.getInstance());
     }
 
+    /**
+     * Sends a command from the server to this client for execution.
+     *
+     * @param command The command to be executed by this client.
+     * @throws RemoteException if there is a communication-related exception.
+     */
     @Override
     public void requestToClient(ClientCommand command) throws RemoteException {
         ClientController.getInstance().commandExecutorsPool.submit(() -> command.execute(ClientController.getInstance()));
-
-        //The first parameter of the update message is interpreted, then the correct action will be applied on the corresponding class of the model
-        //TODO: The View has an observer over the model, which notifies incoming updates and then the view pulls the new infos and reloads the view.
     }
 
+    /**
+     * Creates a listener for the network session.
+     * <p>
+     * Subclasses should implement this method to create a listener specific to the objects and events they would like to listen on.
+     * </p>
+     *
+     * @param session The network session for which to create the listener.
+     * @return The listener associated with the session.
+     */
     @Override
     protected Listener createListener(NetworkSession session) {
         //TODO: maybe set something here for this class too?

@@ -26,10 +26,7 @@ public class VictoryCalculationState extends GameState {
     }
 
     @Override
-    public void playerDisconnected(InGamePlayer target) {
-    }
-
-    ;
+    public void playerDisconnected(InGamePlayer target) {}
 
     //TODO: send steps in points calculation process for flavour?
     @Override

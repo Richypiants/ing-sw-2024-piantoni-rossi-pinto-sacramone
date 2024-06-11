@@ -17,17 +17,66 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
+/**
+ * Represents the server-side model responsible for managing game and lobby controllers.
+ * This class provides methods to create, access, and destroy controllers for lobbies and games.
+ * It also maintains lists of listeners for lobby updates and ensures thread-safe operations
+ * for adding, removing, and notifying these listeners.
+ * <p>
+ * The {@code ServerModel} class encapsulates functionality related to server-side game and lobby management.
+ * It statically loads and maintains the lists of cards used in the game and provides methods to interact with lobby
+ * and game controllers.
+ * </p>
+ * <p>
+ * The class also implements the {@link Listenable} interface to allow for
+ * registering, removing, and notifying listeners about operations made on the lobbies.
+ * Additionally, it ensures thread safety when manipulating lists of listeners.
+ * </p>
+ */
 public class ServerModel implements Listenable {
 
+    /**
+     * The list of cards used to perform server-side operations in the game.
+     * Each card is mapped to its unique ID for easy access.
+     */
     public static final Map<Integer, Card> cardsList = loadModelCards();
+
+    /**
+     * The list of cards used to graphically represent them on the clients.
+     * Each client card is mapped to its unique ID for easy access.
+     */
     public static final Map<Integer, ClientCard> clientCardsList = loadClientCards();
 
+    /**
+     * The lock used to ensure thread safety for lobby controllers.
+     */
     public final ReentrantReadWriteLock LOBBY_CONTROLLERS_LOCK;
+
+    /**
+     * The lock used to ensure thread safety for game controllers.
+     */
     public final ReentrantReadWriteLock GAME_CONTROLLERS_LOCK;
+
+    /**
+     * The map of lobby controllers, indexed by lobby UUID.
+     */
     private final Map<UUID, LobbyController> LOBBY_CONTROLLERS;
+
+    /**
+     * The map of game controllers, indexed by game UUID.
+     */
     private final Map<UUID, GameController> GAME_CONTROLLERS;
+
+    /**
+     * The list of listeners for lobby updates.
+     * This list allows thread-safe addition and removal of listeners.
+     */
     public final CopyOnWriteArrayList<Listener> LOBBIES_LISTENERS;
 
+    /**
+     * Constructs a new instance of {@code ServerModel}.
+     * Initializes the lobby and game controllers maps and the list of lobby listeners.
+     */
     public ServerModel() {
         LOBBY_CONTROLLERS = new HashMap<>();
         LOBBY_CONTROLLERS_LOCK = new ReentrantReadWriteLock(true);
@@ -36,8 +85,12 @@ public class ServerModel implements Listenable {
         LOBBIES_LISTENERS = new CopyOnWriteArrayList<>();
     }
 
+    /**
+     * Loads the different classes constituting the model cards from JSON files.
+     *
+     * @return A map of card IDs to cards.
+     */
     private static Map<Integer, Card> loadModelCards() {
-        //TODO: map of maps?
         Map<Integer, Card> tmp = new HashMap<>();
         Objects.requireNonNull(JSONParser.deckFromJSONConstructor("resource_cards.json",
                         new TypeToken<ArrayList<ResourceCard>>() {
@@ -59,11 +112,22 @@ public class ServerModel implements Listenable {
         return Collections.unmodifiableMap(tmp);
     }
 
+    /**
+     * Loads the client cards from JSON files.
+     *
+     * @return A map of client card IDs to client cards.
+     */
     private static Map<Integer, ClientCard> loadClientCards() {
         return JSONParser.generateClientCardsFromJSON("client_cards.json")
                 .stream().collect(Collectors.toMap((card) -> card.ID, (card) -> card));
     }
 
+    /**
+     * Retrieves the lobby controller associated with the specified lobby UUID.
+     *
+     * @param lobbyUUID The UUID of the lobby.
+     * @return The lobby controller associated with the specified UUID, or {@code null} if not found.
+     */
     public LobbyController getLobbyController(UUID lobbyUUID) {
         LOBBY_CONTROLLERS_LOCK.readLock().lock();
         try {
@@ -73,6 +137,11 @@ public class ServerModel implements Listenable {
         }
     }
 
+    /**
+     * Retrieves the map of lobby UUIDs to their corresponding lobbies.
+     *
+     * @return A map of lobby UUIDs to lobbies.
+     */
     public Map<UUID, Lobby> getLobbiesMap() {
         LOBBY_CONTROLLERS_LOCK.readLock().lock();
         try {
@@ -83,6 +152,13 @@ public class ServerModel implements Listenable {
         }
     }
 
+    /**
+     * Creates a new lobby controller for the specified lobby.
+     * This method notifies all registered listeners about the creation of the associated lobby with am {@link UpdateLobbyCommand}.
+     *
+     * @param lobby The lobby for which to create the controller.
+     * @return The created lobby controller.
+     */
     public LobbyController createLobbyController(Lobby lobby) {
         LobbyController createdController = new LobbyController(lobby);
         LOBBY_CONTROLLERS_LOCK.writeLock().lock();
@@ -95,6 +171,13 @@ public class ServerModel implements Listenable {
         }
     }
 
+    /**
+     * Destroys the given lobby controller associated with its managed lobby.
+     * It also removes all the players currently into the lobby.
+     * This method notifies all registered listeners about the deletion of the associated lobby with am {@link UpdateLobbyCommand}.
+     *
+     * @param controller The lobby controller to destroy.
+     */
     public void destroyLobbyController(LobbyController controller) {
         LOBBY_CONTROLLERS_LOCK.writeLock().lock();
         try {
@@ -110,6 +193,14 @@ public class ServerModel implements Listenable {
         }
     }
 
+    /**
+     * Adds a player to the specified lobby.
+     * This method notifies all registered listeners about the status change of the associated lobby with an {@link UpdateLobbyCommand}.
+     *
+     * @param target   The player to be added to the lobby.
+     * @param lobbyUUID The UUID of the lobby.
+     * @throws FullLobbyException if the lobby is full.
+     */
     public void addPlayerToLobby(Player target, UUID lobbyUUID) throws FullLobbyException {
         LOBBY_CONTROLLERS_LOCK.readLock().lock();
         try {
@@ -122,6 +213,13 @@ public class ServerModel implements Listenable {
         }
     }
 
+    /**
+     * Removes a player from the specified lobby.
+     * This method notifies all registered listeners about the status change of the associated lobby with an {@link UpdateLobbyCommand}.
+     *
+     * @param target The player to remove from the lobby.
+     * @param lobby  The lobby from which to remove the player.
+     */
     public void removePlayerFromLobby(Player target, Lobby lobby) {
         LOBBY_CONTROLLERS_LOCK.readLock().lock();
         try {
@@ -132,6 +230,12 @@ public class ServerModel implements Listenable {
         }
     }
 
+    /**
+     * Retrieves the game controller associated with the specified game UUID.
+     *
+     * @param gameUUID The UUID of the game.
+     * @return The game controller associated with the specified UUID, or {@code null} if not found.
+     */
     public GameController getGameController(UUID gameUUID) {
         GAME_CONTROLLERS_LOCK.readLock().lock();
         try {
@@ -141,6 +245,12 @@ public class ServerModel implements Listenable {
         }
     }
 
+    /**
+     * Creates a new game controller for the specified game.
+     *
+     * @param game The game for which to create the controller.
+     * @return The created game controller.
+     */
     public GameController createGameController(Game game) {
         GameController createdController = new GameController(game);
         GAME_CONTROLLERS_LOCK.writeLock().lock();
@@ -152,6 +262,11 @@ public class ServerModel implements Listenable {
         }
     }
 
+    /**
+     * Destroys the game controller associated with the specified game controller.
+     *
+     * @param controller The game controller to destroy.
+     */
     public void destroyGameController(GameController controller) {
         GAME_CONTROLLERS_LOCK.writeLock().lock();
         try {
@@ -161,6 +276,13 @@ public class ServerModel implements Listenable {
         }
     }
 
+    /**
+     * Adds a listener to the list of the ones registered to lobbies updates, both inside or outside one.
+     *
+     * This method ensures thread-safe addition of listeners to the list.
+     *
+     * @param listener The listener to be added.
+     */
     @Override
     public void addListener(Listener listener) {
         synchronized (LOBBIES_LISTENERS) {
@@ -168,6 +290,13 @@ public class ServerModel implements Listenable {
         }
     }
 
+    /**
+     * Removes a listener from the list of the ones registered to lobbies updates, both inside or outside one.
+     *
+     * This method ensures thread-safe removal of listeners from the list.
+     *
+     * @param listener The listener to be removed.
+     */
     @Override
     public void removeListener(Listener listener) {
         synchronized (LOBBIES_LISTENERS) {
@@ -175,6 +304,13 @@ public class ServerModel implements Listenable {
         }
     }
 
+    /**
+     * Notifies all registered listeners with the specified command.
+     *
+     * This method ensures thread-safe iteration over the listeners list while notifying them.
+     *
+     * @param command The command to be sent to all listeners.
+     */
     @Override
     public void notifyListeners(ClientCommand command) {
         synchronized (LOBBIES_LISTENERS) {

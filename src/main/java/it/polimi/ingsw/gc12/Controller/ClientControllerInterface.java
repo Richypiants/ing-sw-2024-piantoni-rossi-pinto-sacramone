@@ -13,8 +13,6 @@ public interface ClientControllerInterface extends ControllerInterface {
 
     void throwException(Exception e);
 
-    void keepAlive();
-
     void setNickname(String nickname);
 
     void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD);

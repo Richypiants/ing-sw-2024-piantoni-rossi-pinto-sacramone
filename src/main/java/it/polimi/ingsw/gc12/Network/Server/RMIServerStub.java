@@ -13,10 +13,23 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.RejectedExecutionException;
 
+/**
+ * The {@code RMIServerStub} class represents the stub that the client must own for handling communication with a remote RMI Server.
+ * It extends {@link NetworkSession} and implements {@link RMIVirtualServer}.
+ */
 public class RMIServerStub extends NetworkSession implements RMIVirtualServer {
 
+    /**
+     * The RMI virtual client associated with this server stub.
+     */
     public final RMIVirtualClient CLIENT;
 
+    /**
+     * Constructs a new RMIServerStub instance.
+     *
+     * @param client     The RMI virtual client connected to the server.
+     * @param controller The controller interface for managing server operations.
+     */
     public RMIServerStub(RMIVirtualClient client, ControllerInterface controller) {
         super(controller);
         this.CLIENT = client;
@@ -28,11 +41,23 @@ public class RMIServerStub extends NetworkSession implements RMIVirtualServer {
         }
     }
 
+    /**
+     * Creates a listener for the network session.
+     *
+     * @param session The network session for which to create the listener.
+     * @return The listener associated with the session.
+     */
     @Override
     protected Listener createListener(NetworkSession session) {
         return new Listener(this, CLIENT);
     }
 
+    /**
+     * Sends a command from the client to the server.
+     *
+     * @param command The command to be sent to the server.
+     * @throws RemoteException if there is a communication-related exception.
+     */
     @Override
     public void requestToServer(ServerCommand command) throws RemoteException {
         System.out.println("[RMI][CLIENT]: Request from " + CLIENT);
@@ -43,7 +68,7 @@ public class RMIServerStub extends NetworkSession implements RMIVirtualServer {
         } catch (RejectedExecutionException e) {
             try {
                 this.getListener().notified(new ThrowExceptionCommand(
-                        //FIXME: not ideal to shut connection down... maybe don't accept more than a predecided number of connections?
+                        //FIXME: not ideal to shut connection down... maybe don't accept more than a predefined number of connections?
                         new RejectedExecutionException("This server is currently busy, shutting down connection: try again later..."))
                 );
             } catch (Exception ex) {
@@ -52,6 +77,13 @@ public class RMIServerStub extends NetworkSession implements RMIVirtualServer {
         }
     }
 
+    /**
+     * Closes the communication over the RMI channel.
+     * <p>
+     * Due to the internal implementation of RMI, a channel cannot be directly closed, but this method has to be implemented
+     * to guarantee consistency and adherence with the {@code RMIVirtualServer} interface contract.
+     * <\p>
+     */
     @Override
     public void close() {
     }

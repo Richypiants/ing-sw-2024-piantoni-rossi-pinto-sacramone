@@ -9,7 +9,6 @@ import it.polimi.ingsw.gc12.Model.InGamePlayer;
  */
 public final class ObjectiveCard extends Card {
 
-
     /**
      * The condition evaluated to determine the total points granted upon playing this card.
      */

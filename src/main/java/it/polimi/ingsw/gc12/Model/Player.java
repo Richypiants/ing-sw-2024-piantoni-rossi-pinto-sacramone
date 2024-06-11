@@ -6,26 +6,22 @@ import java.io.Serializable;
 
 /**
  * Represents a player outside of games, typically in a lobby.
- * <p>
+ *
  * This class stores basic information about a player such as their nickname and color.
  * It implements {@link Serializable} to allow player instances to be serialized.
- * </p>
  */
 public class Player implements Serializable {
 
     /**
-     * This player's nickname
+     * This player's nickname.
      */
     private String nickname;
 
     /**
      * This player's color.
-     * <p>
-     * The default color is set to {@link Color#NO_COLOR}. Color selection logic should be implemented
-     * to assign a specific color to a player.
-     * </p>
+     * The default color is set to be {@link Color#NO_COLOR}.
      */
-    private Color color = Color.NO_COLOR; //TODO: implement color selection logic
+    private Color color = Color.NO_COLOR;
 
     /**
      * Constructs a Player with the specified nickname.
@@ -84,8 +80,6 @@ public class Player implements Serializable {
         this.color = color;
     }
 
-
-    //TODO: Add Color in toString when implemented
     /**
      * Returns a string representation of this player
      * The string representation is the player's nickname, along with the eventually assigned color.

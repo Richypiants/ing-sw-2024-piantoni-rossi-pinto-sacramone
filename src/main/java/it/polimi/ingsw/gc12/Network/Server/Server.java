@@ -18,21 +18,45 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The {@code Server} class represents a server in a client-server communication setup.
+ * It implements {@link Runnable} and {@link RMIMainServer}.
+ */
 public class Server implements Runnable, RMIMainServer {
 
+    /**
+     * The singleton instance of the server.
+     */
     private final static Server SINGLETON_SERVER = new Server();
+
+    /**
+     * The executor service for handling new client connections.
+     */
     public final ExecutorService connectionExecutorsPool;
+
+    /**
+     * The executor service for handling all the received commands from the clients.
+     */
     public final ExecutorService commandExecutorsPool;
+
+    /**
+     * The IP address of the server.
+     */
     private String serverIPAddress = "localhost";
 
+    /**
+     * Constructs a new Server instance, initializing the executors pools and asking for the server IP address.
+     */
     private Server() {
-        //TODO: check the correct types of queues
         connectionExecutorsPool = new ThreadPoolExecutor(100, 120, Integer.MAX_VALUE, TimeUnit.MINUTES, new SynchronousQueue<>());
         commandExecutorsPool = new ThreadPoolExecutor(100, 120, Integer.MAX_VALUE, TimeUnit.MINUTES, new SynchronousQueue<>());
         System.out.println("Inserisci l'indirizzo IP del server (leave empty for 'localhost'): ");
         serverIPAddress = System.console().readLine();
     }
 
+    /**
+     * Starts the server, initializing RMI and socket servers.
+     */
     public void run() {
         //RMI server setup
         System.setProperty("java.rmi.server.hostname", serverIPAddress);
@@ -50,15 +74,9 @@ public class Server implements Runnable, RMIMainServer {
         //Socket server setup
         try (
                 ServerSocket serverSocket = new ServerSocket();
-                //ExecutorService executorsPool = Executors.newCachedThreadPool(/*thread factory here to change default
-                //keepAlive timeout and set maximum number of Threads*/)
-                //FIXME: how about the ip?
         ) {
-            serverSocket.bind(new InetSocketAddress(serverIPAddress/*"codexnaturalis.polimi.it"*/, 5000));
+            serverSocket.bind(new InetSocketAddress(serverIPAddress, 5000));
             System.out.println("[SOCKET]: Server listening on {" + serverSocket.getInetAddress() + "}");
-
-            //TODO: choose behaviour (direct handoff vs unbounded vs bounded): currently chosen bounded
-            //BlockingQueue<> clientsAwaitingConnection = new ArrayBlockingQueue<>(/*capacity here*/); // this is a bounded queue
 
             while (true) {
                 Socket client = serverSocket.accept();
@@ -92,10 +110,21 @@ public class Server implements Runnable, RMIMainServer {
         }
     }
 
+    /**
+     * Retrieves the singleton instance of the server.
+     *
+     * @return The singleton instance of the server.
+     */
     public static Server getInstance() {
         return SINGLETON_SERVER;
     }
 
+    /**
+     * Accepts a connection from an RMI virtual client and returns a stub for future communications between the client-server.
+     *
+     * @param client The RMI virtual client requesting the connection.
+     * @return A stub for the RMI server.
+     */
     @Override
     public RMIVirtualServer accept(RMIVirtualClient client) {
         return new RMIServerStub(client, ConnectionController.getInstance());
