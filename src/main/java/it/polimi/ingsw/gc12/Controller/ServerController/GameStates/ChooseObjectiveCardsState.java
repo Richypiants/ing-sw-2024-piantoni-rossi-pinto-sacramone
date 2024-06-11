@@ -15,14 +15,14 @@ public class ChooseObjectiveCardsState extends GameState {
 
     public ChooseObjectiveCardsState(GameController controller, Game thisGame) {
         super(controller, thisGame, "objectiveState");
-
-        //Executing a Random Action for the players disconnected in the Initial State
-        for(InGamePlayer player : thisGame.getPlayers().stream().filter(player -> !(player.isActive())).toList())
-            playerDisconnected(player);
     }
 
     protected void generateObjectivesChoice(){
         objectiveCardsToPlayers = GAME.generateSecretObjectivesSelection();
+
+        //Executing a Random Action for the players disconnected in the Initial State
+        for (InGamePlayer player : GAME.getPlayers().stream().filter(player -> !(player.isActive())).toList())
+            playerDisconnected(player);
     }
 
     @Override

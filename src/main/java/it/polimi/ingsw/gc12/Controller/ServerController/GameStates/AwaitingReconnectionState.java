@@ -23,7 +23,6 @@ public class AwaitingReconnectionState extends GameState {
 
         timer = new Timer(true);
         timer.schedule(terminateGame = new TimerTask() {
-
             @Override
             public void run() {
                 GAME_CONTROLLER.setState(new VictoryCalculationState(GAME_CONTROLLER, GAME));
@@ -41,8 +40,8 @@ public class AwaitingReconnectionState extends GameState {
     public void playerDisconnected(InGamePlayer target) {
         cancelTimerTask();
         for (var player : GAME.getPlayers())
-            GameController.inactiveSessions.remove(player.getNickname());
-        GameController.model.destroyGameController(GAME_CONTROLLER);
+            GameController.INACTIVE_SESSIONS.remove(player.getNickname());
+        GameController.MODEL.destroyGameController(GAME_CONTROLLER);
     }
 
     @Override

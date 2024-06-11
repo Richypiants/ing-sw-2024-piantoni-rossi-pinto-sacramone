@@ -13,7 +13,7 @@ public class ConnectToServerScreenState extends ViewState {
 
     @Override
     public void executeState() {
-        ClientController.getInstance().view.connectToServerScreen();
+        ClientController.getInstance().view.connectionSetupScreen();
     }
 
     @Override

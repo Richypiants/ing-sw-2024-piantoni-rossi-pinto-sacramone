@@ -89,11 +89,6 @@ public class ServerControllerTest {
         }
 
         @Override
-        public void keepAlive() {
-
-        }
-
-        @Override
         public void setNickname(String nickname) {
 
         }

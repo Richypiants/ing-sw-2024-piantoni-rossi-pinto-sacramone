@@ -12,15 +12,17 @@ public abstract class View { //FIXME: turn into interface maybe?
 
     public abstract void titleScreen();
 
-    public abstract void connectToServerScreen();
+    public abstract void connectionSetupScreen();
 
-    public abstract void lobbyScreen();
+    public abstract void lobbiesScreen();
 
     public abstract void gameScreen();
 
+    public abstract void awaitingScreen();
+
     public abstract void connectedConfirmation();
 
-    public abstract void updateNickname();
+    public abstract void showNickname();
 
     public abstract void showChat();
 

@@ -17,7 +17,7 @@ public class LobbyScreenState extends ViewState {
 
     @Override
     public void executeState() {
-        ClientController.getInstance().view.lobbyScreen();
+        ClientController.getInstance().view.lobbiesScreen();
     }
 
     @Override
@@ -27,7 +27,7 @@ public class LobbyScreenState extends ViewState {
 
     @Override
     public void updateNickname() {
-        ClientController.getInstance().view.updateNickname();
+        ClientController.getInstance().view.showNickname();
     }
 
     @Override

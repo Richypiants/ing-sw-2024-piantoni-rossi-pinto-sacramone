@@ -14,17 +14,48 @@ import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 /*TODO: In case of high traffic volumes on network, we can reduce it by sending the updates to lobby states (creation, updates) only to clients
         which aren't already in a lobby. */
 public abstract class ServerController implements ServerControllerInterface {
 
-    public static final ServerModel model = new ServerModel();
-    public static final Map<NetworkSession, Player> activePlayers = new HashMap<>();
-    public static final ConcurrentHashMap<String, NetworkSession> inactiveSessions = new ConcurrentHashMap<>();
+    public static final ServerModel MODEL = new ServerModel();
+    public static final ConcurrentHashMap<String, NetworkSession> INACTIVE_SESSIONS = new ConcurrentHashMap<>();
+    protected static final Map<NetworkSession, Player> ACTIVE_PLAYERS = new HashMap<>();
+    protected static final ReentrantReadWriteLock ACTIVE_PLAYERS_LOCK = new ReentrantReadWriteLock();
+
+    public void putActivePlayer(NetworkSession session, Player player) {
+        ACTIVE_PLAYERS_LOCK.writeLock().lock();
+        try {
+            ACTIVE_PLAYERS.put(session, player);
+        } finally {
+            ACTIVE_PLAYERS_LOCK.writeLock().unlock();
+        }
+    }
+
+    public NetworkSession getSessionFromActivePlayer(Player player) {
+        ACTIVE_PLAYERS_LOCK.readLock().lock();
+        try {
+            return keyReverseLookup(ServerController.ACTIVE_PLAYERS, player::equals);
+        } finally {
+            ACTIVE_PLAYERS_LOCK.readLock().unlock();
+        }
+    }
+
+    protected void removeActivePlayer(NetworkSession session) {
+        ACTIVE_PLAYERS_LOCK.writeLock().lock();
+        try {
+            ACTIVE_PLAYERS.remove(session);
+        } finally {
+            ACTIVE_PLAYERS_LOCK.writeLock().unlock();
+        }
+    }
 
     protected boolean hasNoPlayer(NetworkSession client) {
-        if (!activePlayers.containsKey(client)) {
+        if (client.getPlayer() == null) {
             client.getListener().notified(
                     new ThrowExceptionCommand(
                             new NotExistingPlayerException("Unregistered client")
@@ -47,7 +78,7 @@ public abstract class ServerController implements ServerControllerInterface {
                     else if (thisController instanceof LobbyController)
                         leaveLobby(target, true);
                     else if (thisController instanceof ConnectionController)
-                        activePlayers.remove(target);
+                        removeActivePlayer(target);
 
                     cancel();
             }
@@ -57,8 +88,6 @@ public abstract class ServerController implements ServerControllerInterface {
     }
 
     public void keepAlive(NetworkSession sender) {
-        if (hasNoPlayer(sender)) return;
-
         sender.getTimeoutTask().cancel();
         renewTimeoutTimerTask(sender);
         System.out.println("[CLIENT]: keepAlive command received from " + sender + ". Resetting timeout");
@@ -68,7 +97,7 @@ public abstract class ServerController implements ServerControllerInterface {
     }
 
     public void createPlayer(NetworkSession sender, String nickname) {
-        if (activePlayers.containsKey(sender)) {
+        if (sender.getPlayer() != null) {
             sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new ForbiddenActionException("Client already registered")
@@ -77,31 +106,36 @@ public abstract class ServerController implements ServerControllerInterface {
             return;
         }
 
-        Optional<Player> selectedPlayer = activePlayers.values().stream()
-                .filter((player) -> player.getNickname().equals(nickname))
-                .findAny();
+        ACTIVE_PLAYERS_LOCK.writeLock().lock();
+        try {
+            Optional<Player> selectedPlayer = ACTIVE_PLAYERS.values().stream()
+                    .filter((player) -> player.getNickname().equals(nickname))
+                    .findAny();
 
-        if (selectedPlayer.isPresent()) {
-            System.out.println("[SERVER]: sending an Exception while trying to log in to " + sender);
-            sender.getListener().notified(
-                    new ThrowExceptionCommand(
-                            new IllegalArgumentException("Provided nickname is already taken")
-                    )
-            );
-            return;
+            if (selectedPlayer.isPresent()) {
+                System.out.println("[SERVER]: sending an Exception while trying to log in to " + sender);
+                sender.getListener().notified(
+                        new ThrowExceptionCommand(
+                                new IllegalArgumentException("Provided nickname is already taken")
+                        )
+                );
+                return;
+            }
+
+            //Creating the timeoutRoutine that will be started in case the client doesn't send a keepAliveCommand in the 30 seconds span.
+            renewTimeoutTimerTask(sender);
+
+            System.out.println("[CLIENT]: CreatePlayerCommand received and being executed");
+            NetworkSession target = INACTIVE_SESSIONS.get(nickname);
+            if (target != null) {
+                INACTIVE_SESSIONS.remove(nickname);
+                sender.setController(target.getController());
+            }
+
+            ((ServerController) sender.getController()).generatePlayer(sender, nickname);
+        } finally {
+            ACTIVE_PLAYERS_LOCK.writeLock().unlock();
         }
-
-        //Creating the timeoutRoutine that will be started in case the client doesn't send a keepAliveCommand in the 30 seconds span.
-        renewTimeoutTimerTask(sender);
-
-        System.out.println("[CLIENT]: CreatePlayerCommand received and being executed");
-        NetworkSession target = inactiveSessions.get(nickname);
-        if (target != null) {
-            inactiveSessions.remove(nickname);
-            sender.setController(target.getController());
-        }
-
-        ((ServerController) sender.getController()).generatePlayer(sender, nickname);
     }
 
     public void setNickname(NetworkSession sender, String nickname) {

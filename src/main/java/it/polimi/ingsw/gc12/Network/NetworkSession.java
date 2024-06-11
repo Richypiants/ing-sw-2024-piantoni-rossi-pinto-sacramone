@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.Network;
 
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
 import it.polimi.ingsw.gc12.Listeners.Listener;
+import it.polimi.ingsw.gc12.Model.Player;
 
 import java.io.Serializable;
 import java.util.Timer;
@@ -26,15 +27,17 @@ public abstract class NetworkSession implements Serializable {
     protected static final long SESSION_TIMEOUT = 15000;
 
     /**
-     * The listener associated with the network session.
-     */
-    //FIXME: this probably should not go here...
-    protected transient Listener listener;
-
-    /**
      * The controller interface associated with the network session.
      */
     private transient ControllerInterface controller;
+    /**
+     * The listener associated with the network session.
+     */
+    protected transient Listener listener;
+    /**
+     * The player associated with the network session.
+     */
+    private transient Player player;
 
     /**
      * The timer task for session timeout.
@@ -48,6 +51,7 @@ public abstract class NetworkSession implements Serializable {
      */
     public NetworkSession(ControllerInterface controller) {
         this.controller = controller;
+        this.player = null;
         this.listener = createListener(this);
     }
 
@@ -67,6 +71,24 @@ public abstract class NetworkSession implements Serializable {
      */
     public void setController(ControllerInterface controller) {
         this.controller = controller;
+    }
+
+    /**
+     * Gets the player associated with the network session.
+     *
+     * @return The player associated with the session.
+     */
+    public Player getPlayer() {
+        return player;
+    }
+
+    /**
+     * Sets the player associated with the network session.
+     *
+     * @param player The player to set.
+     */
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
     /**

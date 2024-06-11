@@ -137,7 +137,7 @@ public class TUIView extends View {
         ClientController.getInstance().viewState.keyPressed();
     }
 
-    public void connectToServerScreen() {
+    public void connectionSetupScreen() {
         clearTerminal();
         /*String language = readUntil(
                 ansi().cursor(1, 1).a("Scegli la lingua (Italiano/IT - English/EN): "),
@@ -191,7 +191,7 @@ public class TUIView extends View {
         }
     }
 
-    public void lobbyScreen() {
+    public void lobbiesScreen() {
         clearTerminal();
 
         int i = 1;
@@ -223,10 +223,10 @@ public class TUIView extends View {
         ));
     }
 
-    public void updateNickname(){
+    public void showNickname() {
         //FIXME: è così veloce che mi limiterei a richiamare lobbyScreen...
         TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().viewModel.getOwnNickname().length();
-        lobbyScreen();
+        lobbiesScreen();
         //printToPosition(ansi().cursor(1, 11).eraseLine(Erase.FORWARD).fg(Ansi.Color.RED).bold()
         //        .a(ClientController.getInstance().ownNickname).eraseLine().reset());
         //TODO: altrimenti: erasare il nickname dalla inputLine (va fatto dopo aver implementato che non si erasa l'inputLine)
@@ -248,7 +248,10 @@ public class TUIView extends View {
         //FIXME: al momento comandi filtrati per stato di gioco, replicati in ogni viewState, orribile anche perchè alla GUI non servono...
         // però forse possiamo avere una lista di prompt e caricare quelli da mostrare a seconda di TUI o GUI?
         // (per esempio, trascina una carta per posizionarla)
+    }
 
+    public void awaitingScreen() {
+        gameScreen();
     }
 
     public void printStateCommandInfo(){
@@ -258,7 +261,7 @@ public class TUIView extends View {
         Ansi printedMessage = thisGame.getCurrentPlayerIndex() != -1 ?
                 ansi().cursor(i++, 2).bold().a("It is ").fg(9).a(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname()).reset().bold().a("'s turn! Your available commands are: ") :
                 ClientController.getInstance().viewState instanceof AwaitingReconnectionState ?
-                        ansi().cursor(i++, 2).bold().a("[GAME PAUSED] Awaiting for Reconnection ...") :
+                        ansi().cursor(i++, 2).bold().a("[GAME PAUSED] Awaiting for reconnection of other players...") :
                         ansi().cursor(i++, 2).bold().a("[SETUP PHASE] Every player needs to do an action! Your available commands are: ");
 
         printToPosition(printedMessage);

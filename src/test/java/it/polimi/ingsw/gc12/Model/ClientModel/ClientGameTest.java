@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc12.Model.ClientModel;
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseObjectiveCardsState;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
@@ -57,13 +56,13 @@ class ClientGameTest {
         lobby.addPlayer(player2);
 
         game = new Game(lobby);
-        gameController = GameController.model.createGameController(game);
+        gameController = GameController.MODEL.createGameController(game);
 
         client1 = createNetworkSessionStub(gameController);
         client2 = createNetworkSessionStub(gameController);
 
-        ServerController.activePlayers.put(client1, game.getPlayers().get(0));
-        ServerController.activePlayers.put(client2, game.getPlayers().get(1));
+        gameController.putActivePlayer(client1, game.getPlayers().get(0));
+        gameController.putActivePlayer(client2, game.getPlayers().get(1));
         gameController.getCurrentState().transition();
 
         int i = 0;

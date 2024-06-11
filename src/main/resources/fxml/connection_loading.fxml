@@ -4,7 +4,7 @@
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.layout.AnchorPane?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
-            fx:id="awaitingConnectionPane" stylesheets="/style.css">
+            fx:id="connectionLoadingPane" stylesheets="/style.css">
     <ProgressIndicator fx:id="progress" prefWidth="50.0"/>
     <Label fx:id="download" styleClass="titleScreenLabel" prefWidth="500.0" prefHeight="20.0"
            text="Aprendo il Codex Naturalis...">

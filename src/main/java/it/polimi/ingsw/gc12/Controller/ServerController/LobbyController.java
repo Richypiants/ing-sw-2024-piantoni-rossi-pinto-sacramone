@@ -5,14 +5,11 @@ import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCom
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Lobby;
-import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.Color;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnavailableColorException;
 
 import java.util.Arrays;
-
-import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class LobbyController extends ServerController {
 
@@ -31,10 +28,8 @@ public class LobbyController extends ServerController {
                     new ThrowExceptionCommand(new IllegalArgumentException("The specified color doesn't exist"))
             );
 
-        Player target = activePlayers.get(sender);
-
         try {
-            CONTROLLED_LOBBY.assignColor(target, color);
+            CONTROLLED_LOBBY.assignColor(sender.getPlayer(), color);
         } catch (UnavailableColorException e) {
             sender.getListener().notified(
                     new ThrowExceptionCommand(
@@ -45,31 +40,36 @@ public class LobbyController extends ServerController {
         }
 
         if (CONTROLLED_LOBBY.getAvailableColors().size() <= 4 - CONTROLLED_LOBBY.getMaxPlayers()) {
-            Game newGame = new Game(CONTROLLED_LOBBY);
+            ACTIVE_PLAYERS_LOCK.writeLock().lock();
+            try {
+                Game newGame = new Game(CONTROLLED_LOBBY);
 
-            System.out.println("[SERVER]: sending StartGameCommand to clients starting game");
-            //TODO: estrarre la logica di evoluzione dei player da Game (altrimenti, fixare i get) E SINCRONIZZAREEEE
-            for (var player : CONTROLLED_LOBBY.getPlayers()) {
-                NetworkSession targetClient = keyReverseLookup(activePlayers, player::equals);
-                InGamePlayer targetInGamePlayer = newGame.getPlayers().stream()
-                        .filter((inGamePlayer) -> inGamePlayer.getNickname().equals(player.getNickname()))
-                        .findFirst()
-                        .orElseThrow(); //TODO: strano... gestire?
+                System.out.println("[SERVER]: sending StartGameCommand to clients starting game");
+                //TODO: estrarre la logica di evoluzione dei player da Game (altrimenti, fixare i get) E SINCRONIZZAREEEE
+                for (var player : CONTROLLED_LOBBY.getPlayers()) {
+                    NetworkSession targetClient = getSessionFromActivePlayer(player);
+                    InGamePlayer targetInGamePlayer = newGame.getPlayers().stream()
+                            .filter((inGamePlayer) -> inGamePlayer.getNickname().equals(player.getNickname()))
+                            .findFirst()
+                            .orElseThrow(); //TODO: strano... gestire?
 
-                activePlayers.put(targetClient, targetInGamePlayer);
+                    putActivePlayer(targetClient, targetInGamePlayer);
 
-                model.removeListener(targetClient.getListener());
-                newGame.addListener(targetClient.getListener());
-                targetInGamePlayer.addListener(targetClient.getListener());
-                //FIXME: remove all the UUIDs in commands
-                targetClient.getListener().notified(new StartGameCommand(newGame.generateDTO(targetInGamePlayer)));
+                    MODEL.removeListener(targetClient.getListener());
+                    newGame.addListener(targetClient.getListener());
+                    targetInGamePlayer.addListener(targetClient.getListener());
+                    //FIXME: remove all the UUIDs in commands
+                    targetClient.getListener().notified(new StartGameCommand(newGame.generateDTO(targetInGamePlayer)));
+                }
+
+                MODEL.destroyLobbyController(this);
+                GameController controller = MODEL.createGameController(newGame);
+
+                for (var inGamePlayer : newGame.getPlayers())
+                    getSessionFromActivePlayer(inGamePlayer).setController(controller);
+            } finally {
+                ACTIVE_PLAYERS_LOCK.writeLock().unlock();
             }
-
-            model.destroyLobbyController(this);
-            GameController controller = model.createGameController(newGame);
-
-            for (var inGamePlayer : newGame.getPlayers())
-                keyReverseLookup(activePlayers, inGamePlayer::equals).setController(controller);
         }
     }
 
@@ -77,14 +77,13 @@ public class LobbyController extends ServerController {
     public synchronized void leaveLobby(NetworkSession sender, boolean isInactive) {
         System.out.println("[CLIENT]: LeaveLobbyCommand received and being executed");
 
-        Player target = activePlayers.get(sender);
-
-        model.removePlayerFromLobby(target, CONTROLLED_LOBBY);
+        MODEL.removePlayerFromLobby(sender.getPlayer(), CONTROLLED_LOBBY);
+        if (CONTROLLED_LOBBY.getPlayersNumber() <= 0)
+            MODEL.destroyLobbyController(this);
         sender.setController(ConnectionController.getInstance());
 
-        if (isInactive){
-            activePlayers.remove(sender);
-        }
+        if (isInactive)
+            removeActivePlayer(sender);
 
         System.out.println("[SERVER]: sending UpdateLobbiesCommand to clients");
     }

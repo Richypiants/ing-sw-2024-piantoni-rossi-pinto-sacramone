@@ -22,6 +22,7 @@ public class LeaderboardScreenState extends ViewState {
 
     @Override
     public void toLobbies() {
+        ClientController.getInstance().viewModel.leaveLobbyOrGame();
         ClientController.getInstance().viewState = new LobbyScreenState();
         ClientController.getInstance().viewState.executeState();
     }

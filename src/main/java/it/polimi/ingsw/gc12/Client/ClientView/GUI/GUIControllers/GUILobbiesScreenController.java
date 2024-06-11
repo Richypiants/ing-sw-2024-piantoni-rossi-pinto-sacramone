@@ -6,119 +6,138 @@ import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Utilities.Color;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.util.UUID;
 
 public class GUILobbiesScreenController extends GUIView {
 
-    static Parent sceneRoot = sceneRoots.get("lobby_menu");
+    private static GUILobbiesScreenController lobbiesScreenController = null;
+    private final Parent SCENE_ROOT;
+    private final VBox MENU_BUTTONS_BOX;
+    private final Label OWN_NICKNAME_LABEL;
+    private final Button CREATE_LOBBY_BUTTON;
+    private final Button CHANGE_NICKNAME_BUTTON;
+    private final Button BACK_TO_TITLE_SCREEN_BUTTON;
+    private final VBox LOBBY_CREATION_POPUP_BOX;
+    private final Label PLAYERS_NUMBER_PROMPT;
+    private final ComboBox<Integer> PLAYERS_NUMBER_SELECTOR;
+    private final Button CONFIRM_LOBBY_CREATION_BUTTON;
+    private final VBox CHANGE_NICKNAME_POPUP_BOX;
+    private final Label CHANGE_NICKNAME_PROMPT;
+    private final TextField CHANGE_NICKNAME_TEXTFIELD;
+    private final Button CONFIRM_NICKNAME_CHANGE_BUTTON;
+    private final ScrollPane LOBBIES_PANE;
+    private final VBox LOBBIES_LIST;
 
-    static VBox buttonsBox = (VBox) sceneRoot.lookup("#buttonsBox");
+    private GUILobbiesScreenController() {
+        try {
+            SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/fxml/lobby_menu.fxml")).load();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        MENU_BUTTONS_BOX = (VBox) SCENE_ROOT.lookup("#buttonsBox");
+        OWN_NICKNAME_LABEL = (Label) SCENE_ROOT.lookup("#ownNicknameLabel");
+        CREATE_LOBBY_BUTTON = (Button) SCENE_ROOT.lookup("#createGameButton");
+        CHANGE_NICKNAME_BUTTON = (Button) SCENE_ROOT.lookup("#nicknameButton");
+        BACK_TO_TITLE_SCREEN_BUTTON = (Button) SCENE_ROOT.lookup("#backToTitleButton");
+        LOBBY_CREATION_POPUP_BOX = (VBox) SCENE_ROOT.lookup("#lobbyCreationPopupBox");
+        PLAYERS_NUMBER_PROMPT = (Label) SCENE_ROOT.lookup("#playersNumberPrompt");
+        PLAYERS_NUMBER_SELECTOR = (ComboBox<Integer>) SCENE_ROOT.lookup("#maxPlayersSelector");
+        CONFIRM_LOBBY_CREATION_BUTTON = (Button) SCENE_ROOT.lookup("#confirmLobbyCreationButton");
+        CHANGE_NICKNAME_POPUP_BOX = (VBox) SCENE_ROOT.lookup("#changeNicknamePopupBox");
+        CHANGE_NICKNAME_PROMPT = (Label) SCENE_ROOT.lookup("#nicknamePrompt");
+        CHANGE_NICKNAME_TEXTFIELD = (TextField) SCENE_ROOT.lookup("#nicknameField");
+        CONFIRM_NICKNAME_CHANGE_BUTTON = (Button) SCENE_ROOT.lookup("#confirmNicknameChangeButton");
+        LOBBIES_PANE = (ScrollPane) SCENE_ROOT.lookup("#lobbiesPane");
+        LOBBIES_LIST = (VBox) LOBBIES_PANE.getContent();
+    }
 
-    static Label ownNicknameLabel = (Label) sceneRoot.lookup("#ownNicknameLabel");
+    public static GUILobbiesScreenController getInstance() {
+        if (lobbiesScreenController == null) {
+            lobbiesScreenController = new GUILobbiesScreenController();
+        }
+        return lobbiesScreenController;
+    }
 
-    static Button createLobbyButton = (Button) sceneRoot.lookup("#createGameButton");
-
-    static Button nicknameButton = (Button) sceneRoot.lookup("#nicknameButton");
-
-    static Button backToTitleButton = (Button) sceneRoot.lookup("#backToTitleButton");
-
-    static VBox lobbyCreationPopupBox = (VBox) sceneRoot.lookup("#lobbyCreationPopupBox");
-
-    static Label playersNumberPrompt = (Label) sceneRoot.lookup("#playersNumberPrompt");
-
-    static ComboBox<Integer> maxPlayersSelector = (ComboBox<Integer>) sceneRoot.lookup("#maxPlayersSelector");
-
-    static Button confirmLobbyCreationButton = (Button) sceneRoot.lookup("#confirmLobbyCreationButton");
-
-    static VBox changeNicknamePopupBox = (VBox) sceneRoot.lookup("#changeNicknamePopupBox");
-
-    static Label nicknamePrompt = (Label) sceneRoot.lookup("#nicknamePrompt");
-
-    static TextField nicknameField = (TextField) sceneRoot.lookup("#nicknameField");
-
-    static Button confirmNicknameChangeButton = (Button) sceneRoot.lookup("#confirmNicknameChangeButton");
-
-    static ScrollPane lobbiesPane = (ScrollPane) sceneRoot.lookup("#lobbiesPane");
-
-    static VBox lobbiesList = (VBox) lobbiesPane.getContent();
-
-    public static void lobbiesScreen() {
+    @Override
+    public void lobbiesScreen() {
         Platform.runLater(() -> {
-            buttonsBox.relocate(screenSizes.getX() * 12 / 100, screenSizes.getY() * 9 / 16);
+            MENU_BUTTONS_BOX.relocate(screenSizes.getX() * 12 / 100, screenSizes.getY() * 9 / 16);
 
-            ownNicknameLabel.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
+            OWN_NICKNAME_LABEL.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
 
-            maxPlayersSelector.setItems(FXCollections.observableArrayList(2, 3, 4));
+            PLAYERS_NUMBER_SELECTOR.setItems(FXCollections.observableArrayList(2, 3, 4));
 
-            createLobbyButton.setOnMouseClicked(event -> {
-                maxPlayersSelector.setValue(2);
+            CREATE_LOBBY_BUTTON.setOnMouseClicked(event -> {
+                PLAYERS_NUMBER_SELECTOR.setValue(2);
 
-                OverlayPopup lobbyCreationPopup = drawOverlayPopup(lobbyCreationPopupBox, true);
+                OverlayPopup lobbyCreationPopup = drawOverlayPopup(LOBBY_CREATION_POPUP_BOX, true);
                 lobbyCreationPopup.setAutoFix(true);
 
-                confirmLobbyCreationButton.setOnAction(event2 -> {
-                    ClientController.getInstance().viewState.createLobby(maxPlayersSelector.getValue());
-                    lobbyCreationPopupBox.setVisible(false);
+                CONFIRM_LOBBY_CREATION_BUTTON.setOnAction(event2 -> {
+                    ClientController.getInstance().viewState.createLobby(PLAYERS_NUMBER_SELECTOR.getValue());
+                    LOBBY_CREATION_POPUP_BOX.setVisible(false);
                     lobbyCreationPopup.hide();
                 });
 
                 lobbyCreationPopup.show(stage);
-                lobbyCreationPopupBox.setVisible(true);
+                LOBBY_CREATION_POPUP_BOX.setVisible(true);
                 lobbyCreationPopup.centerOnScreen();
             });
 
-            nicknameButton.setOnMouseClicked(event -> {
-                OverlayPopup nicknameChangePopup = drawOverlayPopup(changeNicknamePopupBox, true);
+            CHANGE_NICKNAME_BUTTON.setOnMouseClicked(event -> {
+                OverlayPopup nicknameChangePopup = drawOverlayPopup(CHANGE_NICKNAME_POPUP_BOX, true);
                 nicknameChangePopup.setAutoFix(true);
 
-                confirmNicknameChangeButton.setOnAction(event2 -> {
-                    ClientController.getInstance().viewState.setNickname(nicknameField.getText());
-                    changeNicknamePopupBox.setVisible(false);
+                CONFIRM_NICKNAME_CHANGE_BUTTON.setOnAction(event2 -> {
+                    ClientController.getInstance().viewState.setNickname(CHANGE_NICKNAME_TEXTFIELD.getText());
+                    CHANGE_NICKNAME_POPUP_BOX.setVisible(false);
                     nicknameChangePopup.hide();
                 });
 
                 nicknameChangePopup.show(stage);
-                changeNicknamePopupBox.setVisible(true);
+                CHANGE_NICKNAME_POPUP_BOX.setVisible(true);
                 nicknameChangePopup.centerOnScreen();
             });
 
-            backToTitleButton.setOnAction(event -> ClientController.getInstance().viewState.quit());
+            BACK_TO_TITLE_SCREEN_BUTTON.setOnAction(event -> ClientController.getInstance().viewState.quit());
 
-            lobbiesPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-            lobbiesPane.setPrefSize(screenSizes.getX() * 3 / 5, screenSizes.getY() * 13 / 16);
-            lobbiesPane.relocate(screenSizes.getX() * 3 / 10, (screenSizes.getY() - lobbiesPane.getPrefHeight()) / 2);
+            LOBBIES_PANE.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            LOBBIES_PANE.setPrefSize(screenSizes.getX() * 3 / 5, screenSizes.getY() * 13 / 16);
+            LOBBIES_PANE.relocate(screenSizes.getX() * 3 / 10, (screenSizes.getY() - LOBBIES_PANE.getPrefHeight()) / 2);
 
-            lobbiesList.setMinHeight(lobbiesPane.getPrefHeight() * 98 / 100);
-            lobbiesList.setPrefWidth(lobbiesPane.getPrefWidth() * 98 / 100);
-            lobbiesList.getChildren().clear();
+            LOBBIES_LIST.setMinHeight(LOBBIES_PANE.getPrefHeight() * 98 / 100);
+            LOBBIES_LIST.setPrefWidth(LOBBIES_PANE.getPrefWidth() * 98 / 100);
+            LOBBIES_LIST.getChildren().clear();
 
             //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
             for (var lobby : ClientController.getInstance().viewModel.getLobbies().entrySet()) {
-                lobbiesList.getChildren().add(GUILobbiesScreenController.createLobbyListElement(lobby.getKey(), (Lobby) lobby.getValue()));
+                LOBBIES_LIST.getChildren().add(createLobbyListElement(lobby.getKey(), lobby.getValue()));
             }
 
-            stage.getScene().setRoot(sceneRoot);
+            stage.getScene().setRoot(SCENE_ROOT);
         });
     }
 
-    public static void showNickname() {
+    @Override
+    public void showNickname() {
         Platform.runLater(() -> {
-            Label profile = (Label) sceneRoots.get("lobby_menu").lookup("#profile");
-            profile.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
+            OWN_NICKNAME_LABEL.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
         });
     }
 
-    private static HBox createLobbyListElement(UUID lobbyUUID, Lobby lobby) {
+    private HBox createLobbyListElement(UUID lobbyUUID, Lobby lobby) {
         // Box
         HBox lobbyBox = new HBox(100);
         lobbyBox.getStyleClass().add("lobbyBox");
-        lobbyBox.setPrefSize(lobbiesList.getPrefWidth() - 10, 10);
+        lobbyBox.setPrefSize(LOBBIES_LIST.getPrefWidth() - 10, 10);
 
         HBox nicknamesBox = new HBox(10);
         nicknamesBox.getStyleClass().add("lobbyBox");

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static it.polimi.ingsw.gc12.Controller.ServerController.ServerController.model;
+import static it.polimi.ingsw.gc12.Controller.ServerController.ServerController.MODEL;
 
 /**
  * Represents a game lobby where players wait for new games to start.
@@ -136,7 +136,7 @@ public class Lobby extends Room implements Serializable {
         AVAILABLE_COLORS.remove(color);
         player.setColor(color);
 
-        model.notifyListeners(new UpdateLobbyCommand(this));
+        MODEL.notifyListeners(new UpdateLobbyCommand(this));
     }
 
     /**

@@ -71,7 +71,8 @@ public class GameController extends ServerController {
                 CONTROLLED_GAME.generateTemporaryFieldsToPlayers() //fields related to the players inGame.
         ));
 
-        activePlayers.put(sender, targetPlayer);
+        sender.setPlayer(targetPlayer);
+        putActivePlayer(sender, targetPlayer);
         CONTROLLED_GAME.toggleActive(targetPlayer);
         CONTROLLED_GAME.addListener(sender.getListener());
         targetPlayer.addListener(sender.getListener());
@@ -91,7 +92,7 @@ public class GameController extends ServerController {
             return;
         }
 
-        InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
+        InGamePlayer targetPlayer = (InGamePlayer) sender.getPlayer();
         Card targetCard = ServerModel.cardsList.get(cardID);
 
         if (targetCard instanceof PlayableCard)
@@ -147,7 +148,7 @@ public class GameController extends ServerController {
 
         if (invalidCard(sender, cardID)) return;
 
-        InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
+        InGamePlayer targetPlayer = (InGamePlayer) sender.getPlayer();
         Card targetCard = ServerModel.cardsList.get(cardID);
 
         if (targetCard instanceof ObjectiveCard)
@@ -187,7 +188,7 @@ public class GameController extends ServerController {
     public void drawFromDeck(NetworkSession sender, String deck) {
         System.out.println("[CLIENT]: DrawFromDeckCommand received and being executed");
 
-        InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
+        InGamePlayer targetPlayer = (InGamePlayer) sender.getPlayer();
 
         try {
             synchronized (this) {
@@ -224,7 +225,7 @@ public class GameController extends ServerController {
     public void drawFromVisibleCards(NetworkSession sender, String deck, int position) {
         System.out.println("[CLIENT]: DrawFromVisibleCardsCommand received and being executed");
 
-        InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
+        InGamePlayer targetPlayer = (InGamePlayer) sender.getPlayer();
 
         try {
             synchronized (this) {
@@ -270,7 +271,7 @@ public class GameController extends ServerController {
         sender.getTimeoutTask().cancel();
         CONTROLLED_GAME.removeListener(sender.getListener());
 
-        InGamePlayer targetPlayer = (InGamePlayer) activePlayers.get(sender);
+        InGamePlayer targetPlayer = (InGamePlayer) sender.getPlayer();
         targetPlayer.removeListener(sender.getListener());
 
         //It is needed: when we get here because a listener has failed to notify a game action, that same thread (which
@@ -283,8 +284,8 @@ public class GameController extends ServerController {
         Server.getInstance().commandExecutorsPool.submit(() -> {
             synchronized (this) {
                 CONTROLLED_GAME.toggleActive(targetPlayer);
-                activePlayers.remove(sender);
-                inactiveSessions.put(targetPlayer.getNickname(), sender);
+                removeActivePlayer(sender);
+                INACTIVE_SESSIONS.put(targetPlayer.getNickname(), sender);
 
                 /*Checking if the disconnection happened during the sender turn. If so:
                  * 1. If it was during PlayerTurnPlayState,
@@ -319,7 +320,7 @@ public class GameController extends ServerController {
     public void broadcastMessage(NetworkSession sender, String message) {
         System.out.println("[CLIENT]: BroadcastMessageCommand received and being executed");
 
-        InGamePlayer senderPlayer = (InGamePlayer) activePlayers.get(sender);
+        InGamePlayer senderPlayer = (InGamePlayer) sender.getPlayer();
 
         //Truncating max message length
         message = message.substring(0, Math.min(message.length(), 150));
@@ -333,7 +334,7 @@ public class GameController extends ServerController {
     public void directMessage(NetworkSession sender, String receiverNickname, String message) {
         System.out.println("[CLIENT]: DirectMessageCommand received and being executed");
 
-        InGamePlayer senderPlayer = (InGamePlayer) activePlayers.get(sender);
+        InGamePlayer senderPlayer = (InGamePlayer) sender.getPlayer();
 
         Optional<InGamePlayer> selectedPlayer = ((GameController) sender.getController()).CONTROLLED_GAME
                 .getPlayers().stream()

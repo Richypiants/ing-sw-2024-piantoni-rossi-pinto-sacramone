@@ -72,4 +72,13 @@
             </VBox>
         </HBox>
     </AnchorPane>
+
+    <VBox fx:id="awaitingStateMessageBox" styleClass="awaitingStateMessageBox" visible="false">
+        <Label fx:id="awaitingPrompt" alignment="CENTER"
+               text="[GAME PAUSED] Awaiting for reconnection of other players...">
+            <font>
+                <Font name="Bell MT" size="30.0"/>
+            </font>
+        </Label>
+    </VBox>
 </AnchorPane>

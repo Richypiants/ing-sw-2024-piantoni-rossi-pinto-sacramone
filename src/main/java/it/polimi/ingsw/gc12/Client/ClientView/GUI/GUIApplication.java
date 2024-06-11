@@ -59,5 +59,7 @@ public class GUIApplication extends Application {
 
         //FIXME: non funziona il requestFocus()...
         //stage.requestFocus();
+
+        GUIView.setScreenSizes();
     }
 }

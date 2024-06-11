@@ -255,7 +255,6 @@ public class ClientController implements ClientControllerInterface {
 
     public void endGame(List<Triplet<String, Integer, Integer>> pointsStats, boolean gameEndedDueToDisconnections) {
         viewState = new LeaderboardScreenState(pointsStats, gameEndedDueToDisconnections);
-        viewModel.leaveLobbyOrGame();
         viewState.executeState();
     }
 

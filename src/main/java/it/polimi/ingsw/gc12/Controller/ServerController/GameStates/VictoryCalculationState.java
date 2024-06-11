@@ -4,7 +4,6 @@ import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.EndGameCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.SetLobbiesCommand;
 import it.polimi.ingsw.gc12.Controller.ServerController.ConnectionController;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Lobby;
@@ -16,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-
-import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
 public class VictoryCalculationState extends GameState {
 
@@ -125,9 +122,9 @@ public class VictoryCalculationState extends GameState {
         //Removing all active and inactive players from the Map containing all the mappings.
         for (var player : GAME.getPlayers())
             if (player.isActive())
-                keyReverseLookup(ServerController.activePlayers, player::equals).setController(ConnectionController.getInstance());
+                GAME_CONTROLLER.getSessionFromActivePlayer(player).setController(ConnectionController.getInstance());
             else
-                GameController.inactiveSessions.remove(player.getNickname());
+                GameController.INACTIVE_SESSIONS.remove(player.getNickname());
 
         //FIXME: Using a Lobby to convert the instances of InGamePlayer to Player and then discarding it. Better solutions?
         // If putting players back into lobby, remember to re-add listeners to the lobby
@@ -135,23 +132,25 @@ public class VictoryCalculationState extends GameState {
 
         System.out.println("[SERVER]: Sending lobbies to clients previously in "+ GAME);
 
-        GameController.model.LOBBY_CONTROLLERS_LOCK.readLock().lock();
-        GAME.notifyListeners(new SetLobbiesCommand(GameController.model.getLobbiesMap()));
-        GameController.model.LOBBY_CONTROLLERS_LOCK.readLock().unlock();
+        GameController.MODEL.LOBBY_CONTROLLERS_LOCK.readLock().lock();
+        GAME.notifyListeners(new SetLobbiesCommand(GameController.MODEL.getLobbiesMap()));
+        GameController.MODEL.LOBBY_CONTROLLERS_LOCK.readLock().unlock();
 
         int currentIndex = 0;
-        for(var inGamePlayer : GAME.getActivePlayers()) {
-            NetworkSession thisSession = keyReverseLookup(GameController.activePlayers, inGamePlayer::equals);
-            Player thisPlayer = returnLobby.getPlayers().get(currentIndex);
-            GameController.activePlayers.put(thisSession, thisPlayer);
+        synchronized (GAME_CONTROLLER) {
+            for (var inGamePlayer : GAME.getActivePlayers()) {
+                Player thisPlayer = returnLobby.getPlayers().get(currentIndex);
+                NetworkSession thisSession = GAME_CONTROLLER.getSessionFromActivePlayer(inGamePlayer);
+                GAME_CONTROLLER.putActivePlayer(thisSession, thisPlayer);
 
-            GameController.model.addListener(thisSession.getListener());
+                GameController.MODEL.addListener(thisSession.getListener());
 
-            currentIndex++;
+                currentIndex++;
+            }
         }
 
         //TODO: add players to a new lobby now that the game doesn't start until the colors are chosen?
         // and eventually move code above this instruction inside destroyGameController
-        GameController.model.destroyGameController(GAME_CONTROLLER);
+        GameController.MODEL.destroyGameController(GAME_CONTROLLER);
     }
 }

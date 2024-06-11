@@ -39,7 +39,7 @@ class ChooseInitialCardsStateTest {
         lobby.addPlayer(player2);
 
         game = new Game(lobby);
-        gameController = GameController.model.createGameController(game);
+        gameController = GameController.MODEL.createGameController(game);
 
         client1 = new NetworkSession(gameController) {
             @Override
@@ -56,8 +56,8 @@ class ChooseInitialCardsStateTest {
             }
         };
 
-        ServerController.activePlayers.put(client1, game.getPlayers().get(0));
-        ServerController.activePlayers.put(client2, game.getPlayers().get(1));
+        gameController.putActivePlayer(client1, game.getPlayers().get(0));
+        gameController.putActivePlayer(client2, game.getPlayers().get(1));
 
         state = new ChooseInitialCardsState(gameController, game);
     }

@@ -8,9 +8,7 @@ import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -20,10 +18,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 //FIXME: consider removing some Platform.runLater() and restricting some of them to necessary actions only
 public class GUIView extends View {
@@ -31,7 +26,6 @@ public class GUIView extends View {
     private static GUIView SINGLETON_GUI_INSTANCE = null;
 
     public static Stage stage;
-    static Map<String, Parent> sceneRoots; //screenName to associated loader
 
     static GenericPair<Double, Double> screenSizes;
 
@@ -39,43 +33,25 @@ public class GUIView extends View {
     static GenericPair<Double, Double> clippedPaneCenter = null;
     static GenericPair<Double, Double> cornerScaleFactor = new GenericPair<>(2.0 / 9, 2.0 / 5);
 
-    //FIXME: make private...
     public GUIView() {
-        //FIXME: is there a thread problem here in scene initialization?
-        new Thread(() -> Application.launch(GUIApplication.class)).start(); //starting the GUI thread
-
-        //Precaricamento di tutti i nodi root di tutte i file fxml
-        Map<String, Parent> tmp = new HashMap<>();
-        List<String> fxmlFiles = List.of(
-                "title_screen",
-                "connection_setup",
-                "waiting_for_connection",
-                "lobby_menu",
-                "game_screen"
-        );
-        FXMLLoader sceneRootLoader;
-
-        for (var fxmlFile : fxmlFiles) {
-            sceneRootLoader = new FXMLLoader(GUIView.class.getResource("/fxml/" + fxmlFile + ".fxml"));
-            try {
-                tmp.put(fxmlFile, sceneRootLoader.load());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        sceneRoots = Map.copyOf(tmp);
-
-        setScreenSizes();
     }
 
     public static GUIView getInstance() {
-        if (SINGLETON_GUI_INSTANCE == null)
+        if (SINGLETON_GUI_INSTANCE == null) {
+            new Thread(() -> Application.launch(GUIApplication.class)).start(); //starting the GUI thread
+
+            GUITitleScreenController.getInstance();
+            GUIConnectionSetupController.getInstance();
+            GUIConnectionLoadingController.getInstance();
+            GUILobbiesScreenController.getInstance();
+            GUIGameScreenController.getInstance();
+
             SINGLETON_GUI_INSTANCE = new GUIView();
+        }
         return SINGLETON_GUI_INSTANCE;
     }
 
-    private void setScreenSizes() {
+    public static void setScreenSizes() {
         screenSizes = new GenericPair<>(stage.getWidth(), stage.getHeight());
     }
 
@@ -112,18 +88,18 @@ public class GUIView extends View {
         });
     }
 
-    protected static void waitingForConnection() {
-        GUIConnectionLoadingScreen.connectionLoadingScreen();
+    protected void connectionLoadingScreen() {
+        GUIConnectionLoadingController.getInstance().connectionLoadingScreen();
     }
 
     @Override
     public void titleScreen() {
-        GUITitleScreenController.newTitleScreen();
+        GUITitleScreenController.getInstance().titleScreen();
     }
 
     @Override
-    public void connectToServerScreen() {
-        GUIConnectionSetupController.connectionSetupScreen();
+    public void connectionSetupScreen() {
+        GUIConnectionSetupController.getInstance().connectionSetupScreen();
     }
 
     @Override
@@ -132,19 +108,23 @@ public class GUIView extends View {
     }
 
     @Override
-    public void lobbyScreen() {
-        GUILobbiesScreenController.lobbiesScreen();
+    public void lobbiesScreen() {
+        GUILobbiesScreenController.getInstance().lobbiesScreen();
     }
 
     @Override
-    public void updateNickname() {
-        GUILobbiesScreenController.showNickname();
+    public void showNickname() {
+        GUILobbiesScreenController.getInstance().showNickname();
     }
-
 
     @Override
     public void gameScreen() {
-        GUIGameScreenController.newGameScreen();
+        GUIGameScreenController.getInstance().gameScreen();
+    }
+
+    @Override
+    public void awaitingScreen() {
+        GUIGameScreenController.getInstance().awaitingScreen();
     }
 
     public static OverlayPopup drawOverlayPopup(Pane popupContent, boolean isCloseable) {
@@ -171,32 +151,32 @@ public class GUIView extends View {
 
     @Override
     public void showChat() {
-        GUIGameScreenController.newShowChat();
+        GUIGameScreenController.getInstance().showChat();
     }
 
     @Override
     public void showInitialCardsChoice() {
-        GUIGameScreenController.newShowInitialCardsChoice();
+        GUIGameScreenController.getInstance().showInitialCardsChoice();
     }
 
     @Override
     public void showObjectiveCardsChoice() {
-        GUIGameScreenController.newShowObjectiveCardsChoice();
+        GUIGameScreenController.getInstance().showObjectiveCardsChoice();
     }
 
     @Override
     public void showHand() {
-        GUIGameScreenController.newShowHand();
+        GUIGameScreenController.getInstance().showHand();
     }
 
     @Override
     public void showCommonPlacedCards() {
-        GUIGameScreenController.newShowCommonPlacedCards();
+        GUIGameScreenController.getInstance().showCommonPlacedCards();
     }
 
     @Override
     public void showField(ClientPlayer player) {
-        GUIGameScreenController.newShowField(player);
+        GUIGameScreenController.getInstance().showField(player);
     }
 
     @Override
@@ -205,7 +185,7 @@ public class GUIView extends View {
 
     @Override
     public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
-        GUIGameScreenController.newShowLeaderboard(POINTS_STATS, gameEndedDueToDisconnections);
+        GUIGameScreenController.getInstance().showLeaderboard(POINTS_STATS, gameEndedDueToDisconnections);
     }
 
 }

@@ -29,12 +29,13 @@ public class ConnectionController extends ServerController {
         System.out.println("[SERVER]: sending SetNicknameCommand and SetLobbiesCommand to client " + sender);
         sender.getListener().notified(new SetNicknameCommand(nickname));
 
-        model.LOBBY_CONTROLLERS_LOCK.readLock().lock();
-        sender.getListener().notified(new SetLobbiesCommand(model.getLobbiesMap()));
-        model.LOBBY_CONTROLLERS_LOCK.readLock().unlock();
+        MODEL.LOBBY_CONTROLLERS_LOCK.readLock().lock();
+        sender.getListener().notified(new SetLobbiesCommand(MODEL.getLobbiesMap()));
+        MODEL.LOBBY_CONTROLLERS_LOCK.readLock().unlock();
 
-        activePlayers.put(sender, target);
-        model.addListener(sender.getListener());
+        sender.setPlayer(target);
+        putActivePlayer(sender, target);
+        MODEL.addListener(sender.getListener());
     }
 
     @Override
@@ -42,20 +43,25 @@ public class ConnectionController extends ServerController {
         System.out.println("[CLIENT]: SetNicknameCommand received and being executed");
         if (hasNoPlayer(sender)) return;
 
-        Optional<Player> selectedPlayer = activePlayers.values().stream()
-                .filter((player) -> player.getNickname().equals(nickname))
-                .findAny();
+        ACTIVE_PLAYERS_LOCK.readLock().lock();
+        try {
+            Optional<Player> selectedPlayer = ACTIVE_PLAYERS.values().stream()
+                    .filter((player) -> player.getNickname().equals(nickname))
+                    .findAny();
 
-        if (selectedPlayer.isPresent()) {
-            sender.getListener().notified(
-                    new ThrowExceptionCommand(
-                            new IllegalArgumentException("Provided nickname is already taken")
-                    )
-            );
-        } else {
-            activePlayers.get(sender).setNickname(nickname);
-            System.out.println("[SERVER]: sending SetNicknameCommand to client " + sender);
-            sender.getListener().notified(new SetNicknameCommand(nickname)); //setNickname();
+            if (selectedPlayer.isPresent()) {
+                sender.getListener().notified(
+                        new ThrowExceptionCommand(
+                                new IllegalArgumentException("Provided nickname is already taken")
+                        )
+                );
+            } else {
+                sender.getPlayer().setNickname(nickname);
+                System.out.println("[SERVER]: sending SetNicknameCommand to client " + sender);
+                sender.getListener().notified(new SetNicknameCommand(nickname)); //setNickname();
+            }
+        } finally {
+            ACTIVE_PLAYERS_LOCK.readLock().unlock();
         }
     }
 
@@ -73,20 +79,19 @@ public class ConnectionController extends ServerController {
             return;
         }
 
-        Player target = activePlayers.get(sender);
         UUID lobbyUUID;
         LobbyController controller;
 
-        model.LOBBY_CONTROLLERS_LOCK.writeLock().lock();
+        MODEL.LOBBY_CONTROLLERS_LOCK.writeLock().lock();
         try {
             do {
                 lobbyUUID = UUID.randomUUID();
-            } while (model.getLobbyController(lobbyUUID) != null || model.getGameController(lobbyUUID) != null);
+            } while (MODEL.getLobbyController(lobbyUUID) != null || MODEL.getGameController(lobbyUUID) != null);
 
-            Lobby lobby = new Lobby(lobbyUUID, target, maxPlayers);
-            controller = model.createLobbyController(lobby);
+            Lobby lobby = new Lobby(lobbyUUID, sender.getPlayer(), maxPlayers);
+            controller = MODEL.createLobbyController(lobby);
         } finally {
-            model.LOBBY_CONTROLLERS_LOCK.writeLock().unlock();
+            MODEL.LOBBY_CONTROLLERS_LOCK.writeLock().unlock();
         }
         sender.setController(controller);
 
@@ -98,10 +103,8 @@ public class ConnectionController extends ServerController {
         System.out.println("[CLIENT]: JoinLobbyCommand received and being executed");
         if (hasNoPlayer(sender)) return;
 
-        Player target = activePlayers.get(sender);
-
         try {
-            model.addPlayerToLobby(target, lobbyUUID);
+            MODEL.addPlayerToLobby(sender.getPlayer(), lobbyUUID);
         } catch (IllegalArgumentException e) {
             sender.getListener().notified(
                     new ThrowExceptionCommand(
@@ -116,7 +119,7 @@ public class ConnectionController extends ServerController {
             );
             return;
         }
-        sender.setController(model.getLobbyController(lobbyUUID));
+        sender.setController(MODEL.getLobbyController(lobbyUUID));
 
         System.out.println("[SERVER]: sending UpdateLobbyCommand to clients");
     }

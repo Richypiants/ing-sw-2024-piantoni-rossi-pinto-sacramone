@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers;
 
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
@@ -9,13 +10,32 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
-public class GUIConnectionLoadingScreen extends GUIView {
+import java.io.IOException;
 
-    static Parent sceneRoot = sceneRoots.get("waiting_for_connection");
+public class GUIConnectionLoadingController extends GUIView {
+
+    private static GUIConnectionLoadingController connectionLoadingScreenController = null;
 
     //static VBox connectionSetupBox = (VBox) sceneRoot.lookup("#connectionSetupBox");
+    private final Parent SCENE_ROOT;
 
-    public static void connectionLoadingScreen() {
+    private GUIConnectionLoadingController() {
+        try {
+            SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/fxml/connection_loading.fxml")).load();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static GUIConnectionLoadingController getInstance() {
+        if (connectionLoadingScreenController == null) {
+            connectionLoadingScreenController = new GUIConnectionLoadingController();
+        }
+        return connectionLoadingScreenController;
+    }
+
+    @Override
+    protected void connectionLoadingScreen() {
         AnchorPane titleScreenPane = (AnchorPane) stage.getScene().getRoot().lookup("#connectionPane");
         VBox connectionSetupBox = (VBox) titleScreenPane.lookup("#connectionSetupBox");
 
@@ -32,10 +52,10 @@ public class GUIConnectionLoadingScreen extends GUIView {
             addressField.setText("localhost");
         }
 
-        stage.getScene().setRoot(sceneRoot);
+        stage.getScene().setRoot(SCENE_ROOT);
 
-        Label downloadLabel = (Label) sceneRoot.lookup("#download");
-        ProgressIndicator progressIndicator = (ProgressIndicator) sceneRoot.lookup("#progress");
+        Label downloadLabel = (Label) SCENE_ROOT.lookup("#download");
+        ProgressIndicator progressIndicator = (ProgressIndicator) SCENE_ROOT.lookup("#progress");
         downloadLabel.setStyle("-fx-font-size: 30");
 
         downloadLabel.relocate((screenSizes.getX() - downloadLabel.getPrefWidth()) / 2, screenSizes.getY() * 0.45);
@@ -43,7 +63,9 @@ public class GUIConnectionLoadingScreen extends GUIView {
 
         // Before changing scene, we notify the chosen comm technology to the controller so that it initializes it
         new Thread(() -> ClientController.getInstance().viewState.connect(
-                addressField.getText(), ((RadioButton) GUIConnectionSetupController.connection.getSelectedToggle()).getText(), nicknameField.getText())
-        ).start();
+                addressField.getText(),
+                ((RadioButton) GUIConnectionSetupController.getInstance().getConnectionChoice().getSelectedToggle()).getText(),
+                nicknameField.getText()
+        )).start();
     }
 }
