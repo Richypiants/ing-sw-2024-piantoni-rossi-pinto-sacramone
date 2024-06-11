@@ -1,24 +1,23 @@
 package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
-import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
+import it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest;
+import it.polimi.ingsw.gc12.Listeners.ServerListener;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
-import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.Lobby;
-import it.polimi.ingsw.gc12.Model.Player;
+import it.polimi.ingsw.gc12.Model.*;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.AlreadySetCardException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.createNetworkSessionStub;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ChooseObjectiveCardsStateTest {
 
@@ -30,12 +29,9 @@ class ChooseObjectiveCardsStateTest {
     NetworkSession client2;
     ServerController server;
     GameController gameController;
-    private static ArrayList<ObjectiveCard> objectiveCards;
 
     @BeforeEach
     void setGameParameters() throws Exception {
-        objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {
-        });
         player1 = new Player("giovanni");
         player2 = new Player("paolo");
         UUID lobbyUUID = UUID.randomUUID();
@@ -61,4 +57,60 @@ class ChooseObjectiveCardsStateTest {
         gameController.getCurrentState().transition();
         assertInstanceOf(PlayerTurnPlayState.class, gameController.getCurrentState());
     }
+
+    @Test
+    void successfulPickObjective(){
+        InGamePlayer target = game.getPlayers().getFirst();
+        target.addListener(client1.getListener());
+
+        gameController.setState(new ChooseInitialCardsState(gameController, game));
+        gameController.getCurrentState().transition();
+
+        int receivedObjectiveCardID = ((ServerControllerTest.VirtualClientImpl)
+                ((ServerListener) client1.getListener()).getVirtualClient()).myClientController
+                .receivedObjectiveIDs.getFirst();
+        assertDoesNotThrow(() -> gameController.getCurrentState().pickObjective( target,
+                (ObjectiveCard) ServerModel.cardsList.get(receivedObjectiveCardID)));
+        assertNotNull(target.getSecretObjective());
+    }
+
+    @Test
+    void attemptToPickObjectiveWithoutOwningTheCard(){
+        InGamePlayer target = game.getPlayers().getFirst();
+        target.addListener(client1.getListener());
+
+        gameController.setState(new ChooseInitialCardsState(gameController, game));
+        gameController.getCurrentState().transition();
+
+        assertThrows(CardNotInHandException.class, () -> gameController.getCurrentState().pickObjective( target,
+                (ObjectiveCard) ServerModel.cardsList.get(0)));
+
+        assertNull(target.getSecretObjective());
+    }
+
+    @Test
+    void attemptToPickObjectiveTwice(){
+        InGamePlayer target = game.getPlayers().getFirst();
+        target.addListener(client1.getListener());
+
+        gameController.setState(new ChooseInitialCardsState(gameController, game));
+        gameController.getCurrentState().transition();
+
+        int firstChoiceID = ((ServerControllerTest.VirtualClientImpl)
+                ((ServerListener) client1.getListener()).getVirtualClient()).myClientController
+                .receivedObjectiveIDs.getFirst();
+        int secondChoiceID = ((ServerControllerTest.VirtualClientImpl)
+                ((ServerListener) client1.getListener()).getVirtualClient()).myClientController
+                .receivedObjectiveIDs.get(1);
+        assertDoesNotThrow( () -> gameController.getCurrentState().pickObjective( target,
+                (ObjectiveCard) ServerModel.cardsList.get(firstChoiceID)));
+
+        assertThrows(AlreadySetCardException.class , () -> gameController.getCurrentState().pickObjective( target,
+                (ObjectiveCard) ServerModel.cardsList.get(secondChoiceID)));
+
+        assertNotNull(target.getSecretObjective());
+    }
+
+
+
 }
