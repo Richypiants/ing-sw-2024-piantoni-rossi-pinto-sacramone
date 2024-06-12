@@ -62,7 +62,7 @@ public class GUIGameView extends GUIView {
     private final Button SEND_MESSAGE_BUTTON;
     private final HBox OPPONENTS_FIELDS_PANE;
     private final HBox OWN_HAND_PANE;
-    private final VBox DECK_AND_VISIBLE_CARDS_PANE;
+    private final AnchorPane DECK_AND_VISIBLE_CARDS_PANE;
     private final HBox RESOURCE_HBOX;
     private final HBox GOLD_HBOX;
     private final HBox OBJECTIVE_HBOX;
@@ -96,7 +96,7 @@ public class GUIGameView extends GUIView {
         SEND_MESSAGE_BUTTON = (Button) CHAT_PANE.lookup("#sendButton");
         OPPONENTS_FIELDS_PANE = (HBox) SCENE_ROOT.lookup("#opponentsFieldsPane");
         OWN_HAND_PANE = (HBox) SCENE_ROOT.lookup("#handPane");
-        DECK_AND_VISIBLE_CARDS_PANE = (VBox) SCENE_ROOT.lookup("#deckAndVisiblePane");
+        DECK_AND_VISIBLE_CARDS_PANE = (AnchorPane) SCENE_ROOT.lookup("#deckAndVisiblePane");
         RESOURCE_HBOX = (HBox) DECK_AND_VISIBLE_CARDS_PANE.lookup("#resourceHBox");
         GOLD_HBOX = (HBox) DECK_AND_VISIBLE_CARDS_PANE.lookup("#goldHBox");
         OBJECTIVE_HBOX = (HBox) DECK_AND_VISIBLE_CARDS_PANE.lookup("#objectiveHBox");
@@ -132,11 +132,20 @@ public class GUIGameView extends GUIView {
             STATS_BOX.setPrefSize(OWN_FIELD_PANE.getPrefWidth() / 10, OWN_FIELD_PANE.getPrefHeight());
             for (var resourceEntry : thisPlayer.getOwnedResources().entrySet()) {
                 //TODO: dopo aggiungeremo le immaginette o le icone o le emoji che al momento non abbiamo
-                Label resourceInfo = new Label(resourceEntry.getKey().SYMBOL + " x " + resourceEntry.getValue());
-                resourceInfo.setAlignment(Pos.CENTER);
+                HBox oneData = new HBox(5);
+                ImageView image = new ImageView(String.valueOf(GUIView.class.getResource("/images/icons/res/" + resourceEntry.getKey().SYMBOL.toLowerCase() + ".png")));
+                image.setFitWidth(50);
+                image.setPreserveRatio(true);
+                Label resourceInfo = new Label("" + resourceEntry.getValue());
                 resourceInfo.setPrefSize(STATS_BOX.getPrefWidth(), STATS_BOX.getPrefHeight());
                 resourceInfo.setStyle("-fx-font-size: 15px; -fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
-                STATS_BOX.getChildren().add(resourceInfo);
+                oneData.getChildren().addAll(image, resourceInfo);
+                STATS_BOX.getChildren().add(oneData);
+//                Label resourceInfo = new Label(resourceEntry.getKey().SYMBOL + " x " + resourceEntry.getValue());
+//                resourceInfo.setAlignment(Pos.CENTER);
+//                resourceInfo.setPrefSize(STATS_BOX.getPrefWidth(), STATS_BOX.getPrefHeight());
+//                resourceInfo.setStyle("-fx-font-size: 15px; -fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+//                STATS_BOX.getChildren().add(resourceInfo);
             }
 
             OWN_FIELD_SCROLL_PANE.setPannable(true);
@@ -157,16 +166,28 @@ public class GUIGameView extends GUIView {
             CENTER_OWN_FIELD_BUTTON.relocate(OWN_FIELD_PANE.getPrefWidth() - 50, 60);
             showOpponentsFieldsMiniaturized();
 
+            ImageView scoreboardImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/scoreboard.png")));
+            scoreboardImage.setFitHeight(30);
+            scoreboardImage.setPreserveRatio(true);
+            SHOW_SCOREBOARD_BUTTON.setGraphic(scoreboardImage);
             SHOW_SCOREBOARD_BUTTON.setOnMouseClicked((event) -> showScoreboard());
-            SHOW_SCOREBOARD_BUTTON.relocate(screenSizes.getX() * 10 / 100, screenSizes.getY() * 10 / 100);
+            SHOW_SCOREBOARD_BUTTON.relocate(screenSizes.getX() * 2 / 100, screenSizes.getY() * 90 / 100);
             SHOW_SCOREBOARD_BUTTON.toFront();
 
+            ImageView leaveImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/leaveGame.png")));
+            leaveImage.setFitHeight(30);
+            leaveImage.setPreserveRatio(true);
+            LEAVE_BUTTON.setGraphic(leaveImage);
             LEAVE_BUTTON.setOnMouseClicked((event) -> ViewState.getCurrentState().quit());
-            LEAVE_BUTTON.relocate(screenSizes.getX() * 90 / 100, screenSizes.getY() * 90 / 100);
+            LEAVE_BUTTON.relocate(screenSizes.getX() * 95 / 100, screenSizes.getY() * 90 / 100);
             LEAVE_BUTTON.toFront();
 
+            ImageView chatImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/chat.png")));
+            chatImage.setFitHeight(30);
+            chatImage.setPreserveRatio(true);
+            CHAT_BUTTON.setGraphic(chatImage);
             CHAT_BUTTON.setOnMouseClicked((event) -> GUIView.getInstance().showChat()); //FIXME: make toggleChat()?
-            CHAT_BUTTON.relocate(screenSizes.getX() * 95 / 100, screenSizes.getY() * 95 / 100);
+            CHAT_BUTTON.relocate(screenSizes.getX() * 90 / 100, screenSizes.getY() * 90 / 100);
             CHAT_BUTTON.toFront();
         });
     }
@@ -214,38 +235,41 @@ public class GUIGameView extends GUIView {
             ArrayList<GenericPair<Double, Double>> relativeOffsetScaleFactors = new ArrayList<>();
 
             //TODO: CAMBIARE LE COORDINATE SOLO PREVIA COMUNICAZIONE A SACRAMONE
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.228, 0.8918)); // 0
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.505, 0.8915)); // 1
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.78, 0.8915)); // 2
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.783)); // 3
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.64, 0.783)); // 4
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.365, 0.783)); // 5
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.783)); // 6
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.6755)); // 7
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.365, 0.6755)); // 8
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.64, 0.6755)); // 9
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.6755)); // 10
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.568)); // 11
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.64, 0.568)); // 12
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.365, 0.568)); // 13
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.568)); // 14
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.4605)); // 15
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.365, 0.4605)); // 16
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.64, 0.4605)); // 17
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.4605)); // 18
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.353)); // 19
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.505, 0.30)); // 20
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.353)); // 21
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.245)); // 22
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.095, 0.1375)); // 23
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.25, 0.05)); // 24
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.505, 0.03)); // 25
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.75, 0.05)); // 26
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.1375)); // 27
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.245)); // 28
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.505, 0.1623)); // 29
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.187, 0.8918)); // 0
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.8915)); // 1
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.658, 0.8915)); // 2
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.783)); // 3
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.783)); // 4
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.305, 0.783)); // 5
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.783)); // 6
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.6755)); // 7
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.303, 0.6755)); // 8
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.6755)); // 9
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.6755)); // 10
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.568)); // 11
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.568)); // 12
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.303, 0.568)); // 13
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.568)); // 14
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.4605)); // 15
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.303, 0.4605)); // 16
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.4605)); // 17
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.4605)); // 18
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.353)); // 19
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.30)); // 20
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.353)); // 21
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.245)); // 22
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.1375)); // 23
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.205, 0.05)); // 24
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.03)); // 25
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.639, 0.05)); // 26
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.1375)); // 27
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.245)); // 28
+            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.1623)); // 29
+
 
             ClientGame thisGame = ClientController.getInstance().VIEWMODEL.getCurrentGame();
+
+            SCOREBOARD_PANE.getChildren().clear();
 
             for (var player : thisGame.getPlayers().stream().sorted(Comparator.comparingInt(ClientPlayer::getPoints)).toList().reversed()) {
                 GenericPair<Double, Double> scaleFactor = relativeOffsetScaleFactors.get(player.getPoints());
@@ -274,18 +298,18 @@ public class GUIGameView extends GUIView {
             //FIXME: we need to clear all the previous token, but this also clears the hideScoreboardButton...
             //scoreboardPane.getChildren().clear();
 
-            /*
-            for (int i = 0; i < 30; i++) {
+            /* for (int i = 0; i < 30; i++) {
                 GenericPair<Double, Double> scaleFactor = relativeOffsetScaleFactors.get(i);
                 ImageView token = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/red.png")));
-                token.setFitWidth(scoreboardPane.getPrefWidth() * 0.16);
+                token.setFitWidth(SCOREBOARD_PANE.getPrefWidth() * 0.16);
                 token.setPreserveRatio(true);
 
-                scoreboardPane.getChildren().add(token);
-                token.relocate(scoreboardPane.getPrefWidth() * scaleFactor.getX(),
-                        scoreboardPane.getPrefHeight() * scaleFactor.getY());
+                SCOREBOARD_PANE.getChildren().add(token);
+                token.relocate(SCOREBOARD_PANE.getPrefWidth() * scaleFactor.getX(),
+                        SCOREBOARD_PANE.getPrefHeight() * scaleFactor.getY());
             }
             */
+
 
             SCOREBOARD_PANE.setVisible(true);
             SCOREBOARD_PANE.toFront();
@@ -426,8 +450,8 @@ public class GUIGameView extends GUIView {
 
     //TODO: centrare l'opponentField sulla carta nuova appena piazzata?
     private void showOpponentsFieldsMiniaturized() {
-        OPPONENTS_FIELDS_PANE.setPrefSize(screenSizes.getX() * 75 / 100, screenSizes.getY() * 35 / 100);
-        OPPONENTS_FIELDS_PANE.relocate(screenSizes.getX() * 25 / 100, 0);
+        OPPONENTS_FIELDS_PANE.setPrefSize(screenSizes.getX(), screenSizes.getY() * 35 / 100);
+        OPPONENTS_FIELDS_PANE.relocate(0, 0);
 
         ClientGame thisGame = ClientController.getInstance().VIEWMODEL.getCurrentGame();
 
@@ -454,9 +478,8 @@ public class GUIGameView extends GUIView {
             opponentStats.setAlignment(Pos.CENTER);
             opponentStats.setPrefSize(opponentData.getPrefWidth() / 10, opponentData.getPrefHeight());
             for (var resourceEntry : player.getOwnedResources().entrySet()) {
-                //TODO: dopo aggiungeremo le immaginette o le icone o le emoji che al momento non abbiamo
                 HBox oneData = new HBox(5);
-                ImageView image = new ImageView(String.valueOf(GUIView.class.getResource("/images/resources/" + resourceEntry.getKey().SYMBOL.toLowerCase() + ".png")));
+                ImageView image = new ImageView(String.valueOf(GUIView.class.getResource("/images/icons/res/" + resourceEntry.getKey().SYMBOL.toLowerCase() + ".png")));
                 image.setFitWidth(30);
                 image.setPreserveRatio(true);
                 Label resourceInfo = new Label("" + resourceEntry.getValue());
@@ -663,12 +686,40 @@ public class GUIGameView extends GUIView {
     public void showCommonPlacedCards() {
         Platform.runLater(() -> {
             //TODO: maybe GridPane and padding?
-            DECK_AND_VISIBLE_CARDS_PANE.setPrefSize(screenSizes.getX() * 25 / 100, screenSizes.getY() * 25 / 100);
-            DECK_AND_VISIBLE_CARDS_PANE.relocate(0, screenSizes.getY() * 75 / 100);
+            DECK_AND_VISIBLE_CARDS_PANE.setPrefSize(screenSizes.getX() * 25 / 100, screenSizes.getY() * 65 / 100);
+            DECK_AND_VISIBLE_CARDS_PANE.relocate(0, screenSizes.getY() * 35 / 100);
 
             ClientGame thisGame = ClientController.getInstance().VIEWMODEL.getCurrentGame();
 
-            RESOURCE_HBOX.setPrefSize(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() / 3);
+            Label resourcesLabel = new Label("Resources");
+            DECK_AND_VISIBLE_CARDS_PANE.getChildren().add(resourcesLabel);
+            resourcesLabel.relocate(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 5 / 100, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 5 / 100);
+            RESOURCE_HBOX.setPrefSize(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
+            RESOURCE_HBOX.relocate(0, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 7.5 / 100);
+
+            Label goldsLabel = new Label("Golds");
+            DECK_AND_VISIBLE_CARDS_PANE.getChildren().add(goldsLabel);
+            goldsLabel.relocate(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 5 / 100, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 30 / 100);
+            GOLD_HBOX.setPrefSize(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
+            GOLD_HBOX.relocate(0, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 32.5 / 100);
+
+            Label commonObjectivesLabel = new Label("Common Objectives");
+            DECK_AND_VISIBLE_CARDS_PANE.getChildren().add(commonObjectivesLabel);
+            commonObjectivesLabel.relocate(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 37.5 / 100, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 55 / 100);
+            OBJECTIVE_HBOX.setPrefSize(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
+            OBJECTIVE_HBOX.relocate(0, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 57.5 / 100);
+
+            Label secretObjectiveLabel = new Label("Secret Objective");
+            DECK_AND_VISIBLE_CARDS_PANE.getChildren().add(secretObjectiveLabel);
+            secretObjectiveLabel.relocate(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 55 / 100, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 87.5 / 100);
+            if (thisGame.getOwnObjective() != null) {
+                ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getOwnObjective().GUI_SPRITES.get(Side.FRONT))));
+                secretObjective.setFitWidth(cardSizes.getX());
+                secretObjective.setPreserveRatio(true);
+
+                DECK_AND_VISIBLE_CARDS_PANE.getChildren().add(secretObjective);
+                secretObjective.relocate(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 80 / 100, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 82.5 / 100);
+            }
 
             //TODO. make imageView static and clear and avoid clearing children and refresh only the content
             RESOURCE_HBOX.getChildren().clear();
@@ -697,8 +748,6 @@ public class GUIGameView extends GUIView {
                 }
             }
 
-            GOLD_HBOX.setPrefSize(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() / 3);
-
             //TODO. make imageView static and clear and avoid clearing children and refresh only the content
             GOLD_HBOX.getChildren().clear();
 
@@ -724,8 +773,6 @@ public class GUIGameView extends GUIView {
                 }
             }
 
-            OBJECTIVE_HBOX.setPrefSize(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() / 3);
-
             //TODO. make imageView static and clear and avoid clearing children and refresh only the content
             OBJECTIVE_HBOX.getChildren().clear();
 
@@ -737,14 +784,6 @@ public class GUIGameView extends GUIView {
 
                     OBJECTIVE_HBOX.getChildren().add(commonObjective);
                 }
-            }
-
-            if (thisGame.getOwnObjective() != null) {
-                ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getOwnObjective().GUI_SPRITES.get(Side.FRONT))));
-                secretObjective.setFitWidth(cardSizes.getX());
-                secretObjective.setPreserveRatio(true);
-
-                OBJECTIVE_HBOX.getChildren().add(secretObjective);
             }
         });
     }
