@@ -15,11 +15,11 @@ import it.polimi.ingsw.gc12.Model.Conditions.ResourcesCondition;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Utility class to handle JSON parsing and serialization for various card types and conditions.
@@ -45,7 +45,9 @@ public class JSONParser {
      */
     public static <E extends Card> ArrayList<E> deckFromJSONConstructor(String filename, TypeToken<ArrayList<E>> type) {
         try{
-            return new ArrayList<>(GSON_CARD_BUILDER.fromJson(Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/Utilities/json_files/" + filename)), type));
+            return new ArrayList<>(GSON_CARD_BUILDER.fromJson(
+                    new InputStreamReader(Objects.requireNonNull(JSONParser.class.getResourceAsStream(filename))), type)
+            );
         }catch(Exception e){
             e.printStackTrace();
             return null;
@@ -151,22 +153,32 @@ public class JSONParser {
      * @return An ArrayList of ClientCard objects.
      */
     public static ArrayList<ClientCard> generateClientCardsFromJSON(String filename) {
-        try {
-            return new ArrayList<>(CARD_IMAGE_RESOURCES_BUILDER.fromJson(
-                    Files.newBufferedReader(Paths.get("src/main/java/it/polimi/ingsw/gc12/Utilities/json_files/" + filename)),
-                    new TypeToken<ArrayList<ClientCard>>(){}));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return new ArrayList<>(CARD_IMAGE_RESOURCES_BUILDER.fromJson(
+                new InputStreamReader(Objects.requireNonNull(JSONParser.class.getResourceAsStream(filename))),
+                new TypeToken<ArrayList<ClientCard>>() {
+                })
+        );
     }
 
     /**
      * Generates a JSON file containing only the playable ClientCard objects.
      */
     public static void generateClientCardsJSONPlayableOnly() {
-        ArrayList<ResourceCard> rc = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>(){});
-        ArrayList<GoldCard> gc = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>(){});
-        ArrayList<InitialCard> ic = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>(){});
+        ArrayList<ResourceCard> rc = JSONParser.deckFromJSONConstructor(
+                "/jsonFiles/resource_cards.json",
+                new TypeToken<>() {
+                }
+        );
+        ArrayList<GoldCard> gc = JSONParser.deckFromJSONConstructor(
+                "/jsonFiles/gold_cards.json",
+                new TypeToken<>() {
+                }
+        );
+        ArrayList<InitialCard> ic = JSONParser.deckFromJSONConstructor(
+                "/jsonFiles/initial_cards.json",
+                new TypeToken<>() {
+                }
+        );
         //ArrayList<ObjectiveCard> oc = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>(){});
 
         ArrayList<ClientCard> clientCards = new ArrayList<>();
@@ -218,7 +230,7 @@ public class JSONParser {
 
         try {
             new GsonBuilder().setPrettyPrinting().create().toJson(clientCards,
-                    new FileWriter("src/main/java/it/polimi/ingsw/gc12/Utilities/json_files/client_cards.json")
+                    new FileWriter("src/main/java/it/polimi/ingsw/gc12/Utilities/jsonFiles/client_cards.json")
             );
         } catch (IOException e) {
             throw new RuntimeException(e);
