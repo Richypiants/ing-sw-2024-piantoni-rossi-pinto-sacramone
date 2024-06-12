@@ -7,7 +7,8 @@ import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Controller.ServerController.LobbyController;
 import it.polimi.ingsw.gc12.Listeners.Listenable;
 import it.polimi.ingsw.gc12.Listeners.Listener;
-import it.polimi.ingsw.gc12.Model.Cards.*;
+import it.polimi.ingsw.gc12.Model.Cards.Card;
+import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.FullLobbyException;
 import it.polimi.ingsw.gc12.Utilities.JSONParser;
@@ -92,22 +93,34 @@ public class ServerModel implements Listenable {
      */
     private static Map<Integer, Card> loadModelCards() {
         Map<Integer, Card> tmp = new HashMap<>();
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("resource_cards.json",
+        Objects.requireNonNull(
+                JSONParser.deckFromJSONConstructor(
+                        "/jsonFiles/resource_cards.json",
                         new TypeToken<ArrayList<ResourceCard>>() {
-                        }))
-                .forEach((card) -> tmp.put(card.ID, card));
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("gold_cards.json",
-                        new TypeToken<ArrayList<GoldCard>>() {
-                        }))
-                .forEach((card) -> tmp.put(card.ID, card));
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("initial_cards.json",
-                        new TypeToken<ArrayList<InitialCard>>() {
-                        }))
-                .forEach((card) -> tmp.put(card.ID, card));
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("objective_cards.json",
-                        new TypeToken<ArrayList<ObjectiveCard>>() {
-                        }))
-                .forEach((card) -> tmp.put(card.ID, card));
+                        }
+                )
+        ).forEach((card) -> tmp.put(card.ID, card));
+        Objects.requireNonNull(
+                JSONParser.deckFromJSONConstructor(
+                        "/jsonFiles/gold_cards.json",
+                        new TypeToken<ArrayList<ResourceCard>>() {
+                        }
+                )
+        ).forEach((card) -> tmp.put(card.ID, card));
+        Objects.requireNonNull(
+                JSONParser.deckFromJSONConstructor(
+                        "/jsonFiles/initial_cards.json",
+                        new TypeToken<ArrayList<ResourceCard>>() {
+                        }
+                )
+        ).forEach((card) -> tmp.put(card.ID, card));
+        Objects.requireNonNull(
+                JSONParser.deckFromJSONConstructor(
+                        "/jsonFiles/objective_cards.json",
+                        new TypeToken<ArrayList<ResourceCard>>() {
+                        }
+                )
+        ).forEach((card) -> tmp.put(card.ID, card));
 
         return Collections.unmodifiableMap(tmp);
     }
@@ -118,7 +131,7 @@ public class ServerModel implements Listenable {
      * @return A map of client card IDs to client cards.
      */
     private static Map<Integer, ClientCard> loadClientCards() {
-        return JSONParser.generateClientCardsFromJSON("client_cards.json")
+        return JSONParser.generateClientCardsFromJSON("/jsonFiles/client_cards.json")
                 .stream().collect(Collectors.toMap((card) -> card.ID, (card) -> card));
     }
 
