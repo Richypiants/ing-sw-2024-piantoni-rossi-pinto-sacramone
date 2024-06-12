@@ -38,6 +38,15 @@ public abstract class Card {
      */
     public abstract int awardPoints(InGamePlayer target);
 
+    /*
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof Card otherCard)) return false;
+        return (this.ID == otherCard.ID);
+    }*/
+
     /**
      * Returns a string representation of the card, including its ID and points granted.
      *

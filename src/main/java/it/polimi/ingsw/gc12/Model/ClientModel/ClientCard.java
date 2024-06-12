@@ -45,6 +45,13 @@ public class ClientCard implements Serializable {
      */
     public final Map<Side, ArrayList<ArrayList<Triplet<String, Integer[], Integer>>>> TUI_SPRITES;
 
+
+    /**
+     * Overrides the {@code equals} method to provide custom equality logic for {@code ClientCard} objects.
+     *
+     * @param other The object to compare with this {@code ClientCard}.
+     * @return {@code true} if the given object has the same ID of this {@code ClientCard}, {@code false} otherwise.
+     */
     @Override
     public boolean equals(Object other) {
         if (other == null) return false;
