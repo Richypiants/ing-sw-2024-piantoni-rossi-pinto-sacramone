@@ -298,7 +298,6 @@ class GameControllerTest {
 
     @Test
     void correctLeaveLobbyRoutine() {
-
         assertEquals(2, gameAssociatedController.CONTROLLED_GAME.getActivePlayers().size());
         gameAssociatedController.leaveGame(inGamePlayer_1);
         assertEquals(1, gameAssociatedController.CONTROLLED_GAME.getActivePlayers().size());

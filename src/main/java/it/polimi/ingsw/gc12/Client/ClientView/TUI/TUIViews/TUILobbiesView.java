@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIViews;
 
-import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIListener;
+import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIParser;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import org.fusesource.jansi.Ansi;
 
@@ -27,18 +27,23 @@ public class TUILobbiesView extends TUIView{
         int i = 1;
         printToPosition(ansi().cursor(i++,1)
                 .fg(Ansi.Color.RED).bold()
-                .a("[PLAYER]: ").a(ClientController.getInstance().viewModel.getOwnNickname()));
+                .a("[PLAYER]: ").a(ClientController.getInstance().VIEWMODEL.getOwnNickname()));
         printToPosition(ansi().cursor(i++, 1).a("[CURRENT LOBBY]: " + (
-                                ClientController.getInstance().viewModel.inLobbyOrGame() ?
-                                        ClientController.getInstance().viewModel.getCurrentLobby() : //TODO: stampare UUID?
+                        ClientController.getInstance().VIEWMODEL.inRoom() ?
+                                ClientController.getInstance().VIEWMODEL.getCurrentLobby() : //TODO: stampare UUID?
                                         "none"
                         )
                 )
         );
-        printToPosition(ansi().cursor(i++, 1).a("[ACTIVE LOBBIES] "));
-        for (var entry : ClientController.getInstance().viewModel.getLobbies().entrySet()) {
-            printToPosition(ansi().cursor(i++, 1).a(entry.getKey() + ": " + entry.getValue()));
-        }
+        i++;
+        printToPosition(ansi().cursor(i++, 1).a("[OTHER ACTIVE LOBBIES]: "));
+        if (ClientController.getInstance().VIEWMODEL.getLobbies().isEmpty())
+            printToPosition(ansi().cursor(--i, 25).a("none").cursor(i++, 1));
+        else
+            for (var lobby : ClientController.getInstance().VIEWMODEL.getLobbies().entrySet())
+                if (!lobby.getValue().equals(ClientController.getInstance().VIEWMODEL.getCurrentLobby()))
+                    printToPosition(ansi().cursor(i++, 1).a(lobby.getKey() + ": " + lobby.getValue()));
+
         printToPosition(ansi().cursor(i++, 1));
         printToPosition(ansi().cursor(i, 1).a(
                 """
@@ -54,7 +59,7 @@ public class TUILobbiesView extends TUIView{
     }
 
     public void showNickname() {
-        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().viewModel.getOwnNickname().length();
+        TUIParser.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().VIEWMODEL.getOwnNickname().length();
         lobbiesScreen();
         //printToPosition(ansi().cursor(1, 11).eraseLine(Erase.FORWARD).fg(Ansi.Color.RED).bold()
         //        .a(ClientController.getInstance().ownNickname).eraseLine().reset());

@@ -12,19 +12,19 @@ import java.util.*;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
-public class TUIListener {
+public class TUIParser {
 
-    private static TUIListener SINGLETON_TUI_LISTENER;
+    private static TUIParser SINGLETON_TUI_LISTENER;
     public static int COMMAND_INPUT_ROW = 48;
     public static int COMMAND_INPUT_COLUMN = 6;
     public static int EXCEPTIONS_ROW = 49;
 
-    private TUIListener() {
+    private TUIParser() {
     }
 
-    public static TUIListener getInstance() {
+    public static TUIParser getInstance() {
         if (SINGLETON_TUI_LISTENER == null)
-            SINGLETON_TUI_LISTENER = new TUIListener();
+            SINGLETON_TUI_LISTENER = new TUIParser();
         return SINGLETON_TUI_LISTENER;
     }
 
@@ -48,7 +48,7 @@ public class TUIListener {
 
     private void runCommand(ArrayList<String> tokens) {
 
-        ViewState currentState = ClientController.getInstance().viewState;
+        ViewState currentState = ViewState.getCurrentState();
         String errorMessage = "";
         String command;
 
@@ -120,10 +120,10 @@ public class TUIListener {
                 default -> throw new IllegalArgumentException("Unknown command");
             }
         } catch (NoSuchElementException e) {
-            ClientController.getInstance().errorLogger.log(new NoSuchElementException("Formato del comando fornito non valido: parametri forniti insufficienti"));
+            ClientController.getInstance().ERROR_LOGGER.log(new NoSuchElementException("Formato del comando fornito non valido: parametri forniti insufficienti"));
         } catch (IllegalArgumentException e) {
             if(!e.getMessage().isEmpty()) errorMessage = e.getMessage();
-            ClientController.getInstance().errorLogger.log(new IllegalArgumentException("Parametri forniti invalidi: " + errorMessage));
+            ClientController.getInstance().ERROR_LOGGER.log(new IllegalArgumentException("Parametri forniti invalidi: " + errorMessage));
         }
     }
 

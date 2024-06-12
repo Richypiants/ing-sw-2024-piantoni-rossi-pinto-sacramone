@@ -1,7 +1,5 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-
 public class TitleScreenState extends ViewState {
 
     public TitleScreenState() {
@@ -9,13 +7,13 @@ public class TitleScreenState extends ViewState {
 
     @Override
     public void executeState() {
-        ClientController.getInstance().view.titleScreen();
+        selectedView.titleScreen();
     }
 
     @Override
     public void keyPressed() {
-        ClientController.getInstance().viewState = new ConnectToServerScreenState();
-        ClientController.getInstance().viewState.executeState();
+        currentState = new ConnectionSetupState();
+        currentState.executeState();
     }
 
     //TODO: quit anche qui?

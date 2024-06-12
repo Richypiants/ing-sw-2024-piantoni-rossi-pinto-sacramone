@@ -29,14 +29,13 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
         try {
             //System.setProperty("java.rmi.server.hostname", ipClient);
 
-            Registry registry = LocateRegistry.getRegistry(ClientController.getInstance().serverIPAddress, 5001);
+            Registry registry = LocateRegistry.getRegistry(Client.getClientInstance().serverIPAddress, 5001);
             UnicastRemoteObject.exportObject(this, 0);
-            ClientController.getInstance().serverConnection =
+            Client.getClientInstance().serverConnection =
                     ((RMIMainServer) registry.lookup("codex_naturalis_rmi")).accept(this);
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
         }
-        ClientController.getInstance().thisClient = this;
     }
 
     /**
@@ -56,7 +55,7 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
      */
     @Override
     public void requestToClient(ClientCommand command) throws RemoteException {
-        ClientController.getInstance().commandExecutorsPool.submit(() -> command.execute(ClientController.getInstance()));
+        Client.getClientInstance().commandsReceivedExecutor.submit(() -> command.execute(ClientController.getInstance()));
     }
 
     /**

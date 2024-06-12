@@ -1,9 +1,11 @@
 package it.polimi.ingsw.gc12.Client.ClientView;
 
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class View { //FIXME: turn into interface maybe?
@@ -13,6 +15,8 @@ public abstract class View { //FIXME: turn into interface maybe?
     public abstract void titleScreen();
 
     public abstract void connectionSetupScreen();
+
+    public abstract void quittingScreen();
 
     public abstract void lobbiesScreen();
 
@@ -28,7 +32,7 @@ public abstract class View { //FIXME: turn into interface maybe?
 
     public abstract void showInitialCardsChoice();
 
-    public abstract void showObjectiveCardsChoice();
+    public abstract void showObjectiveCardsChoice(ArrayList<ClientCard> objectivesSelection);
 
     public abstract void showCommonPlacedCards();
 

@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates;
 
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.util.List;
@@ -17,13 +16,13 @@ public class LeaderboardScreenState extends ViewState {
 
     @Override
     public void executeState() {
-        ClientController.getInstance().view.showLeaderboard(POINTS_STATS, GAME_ENDED_DUE_TO_DISCONNECTIONS);
+        selectedView.showLeaderboard(POINTS_STATS, GAME_ENDED_DUE_TO_DISCONNECTIONS);
     }
 
     @Override
     public void toLobbies() {
-        ClientController.getInstance().viewModel.leaveLobbyOrGame();
-        ClientController.getInstance().viewState = new LobbyScreenState();
-        ClientController.getInstance().viewState.executeState();
+        CLIENT_CONTROLLER.VIEWMODEL.leaveRoom();
+        currentState = new LobbyScreenState();
+        currentState.executeState();
     }
 }

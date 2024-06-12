@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Utilities;
 
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -60,7 +60,8 @@ public class ErrorLogger {
         String timestamp = formatter.format(new Date());
         err.print("[" + timestamp + "] " + error.getMessage() + "\n" + Arrays.toString(error.getStackTrace()).replaceAll(" ", "\n") + "\n");
 
-        ClientController.getInstance().view.printError(error);
+        //FIXME: non dovremmo però stampare tutti gli errori... giusto?
+        ViewState.getCurrentState().printError(error);
     }
 }
 

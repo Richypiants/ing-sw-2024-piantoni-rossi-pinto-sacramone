@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIViews;
 
-import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIListener;
+import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIParser;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import org.fusesource.jansi.Ansi;
 
@@ -23,19 +24,19 @@ public class TUITitleView extends TUIView{
     }
 
     public void titleScreen() {
-        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().viewModel.getOwnNickname().length();
-        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN));
+        TUIParser.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().VIEWMODEL.getOwnNickname().length();
+        System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN));
         clearTerminal();
 
         printToPosition(ansi().cursor(1, 1).a("Starting Codex Naturalis..."));
         try {
             sleep(500);
         } catch (Exception e) {
-            ClientController.getInstance().errorLogger.log(e);
+            ClientController.getInstance().ERROR_LOGGER.log(e);
         }
 
         printToPosition(ansi()
-                .cursor(1, 1).a("                                                                                                                     ")
+                .cursor(1, 50).a("                                                                                                                     ")
                 .cursorMove(-117, 1).a("                                                         ###########                                                 ")
                 .cursorMove(-117, 1).a("                                                          #############                                              ")
                 .cursorMove(-117, 1).a("                                                  #######   ##############                                           ")
@@ -89,7 +90,7 @@ public class TUITitleView extends TUIView{
         try {
             sleep(500);
         } catch (Exception e) {
-            ClientController.getInstance().errorLogger.log(e);
+            ClientController.getInstance().ERROR_LOGGER.log(e);
         }
         clearTerminal();
         printToPosition(ansi().cursor(1, 150).a("""
@@ -146,8 +147,8 @@ public class TUITitleView extends TUIView{
         printToPosition(ansi().cursor(49, 1));
         printToPosition(ansi().cursor(50, 1).a("Premi Invio per iniziare..."));
         console.readLine();
-        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
+        System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
 
-        ClientController.getInstance().viewState.keyPressed();
+        ViewState.getCurrentState().keyPressed();
     }
 }

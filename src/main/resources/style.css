@@ -1,3 +1,7 @@
+.root {
+
+}
+
 #titleScreenPane {
     /*-fx-background-color: black;*/
     -fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");

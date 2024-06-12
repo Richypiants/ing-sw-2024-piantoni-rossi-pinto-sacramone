@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers;
+package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIViews;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -20,9 +20,9 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.util.Objects;
 
-public class GUIConnectionSetupController extends GUIView {
+public class GUIConnectionSetupView extends GUIView {
 
-    private static GUIConnectionSetupController connectionSetupController = null;
+    private static GUIConnectionSetupView connectionSetupController = null;
     private final Parent SCENE_ROOT;
     private final AnchorPane CONNECTION_TITLE_SCREEN_BOX;
     private final ImageView CONNECTION_TITLE_SCREEN_GAME_LOGO;
@@ -34,7 +34,7 @@ public class GUIConnectionSetupController extends GUIView {
     private Button CONNECTION_SETUP_SEND_BUTTON;
     private ToggleGroup connection;
 
-    private GUIConnectionSetupController() {
+    private GUIConnectionSetupView() {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/fxml/connection_setup.fxml")).load();
         } catch (IOException e) {
@@ -49,9 +49,9 @@ public class GUIConnectionSetupController extends GUIView {
         APPEARING_LOGO = (ImageView) CONNECTION_TITLE_SCREEN_BOX.lookup("#appearingLogo");
     }
 
-    public static GUIConnectionSetupController getInstance() {
+    public static GUIConnectionSetupView getInstance() {
         if (connectionSetupController == null) {
-            connectionSetupController = new GUIConnectionSetupController();
+            connectionSetupController = new GUIConnectionSetupView();
         }
         return connectionSetupController;
     }

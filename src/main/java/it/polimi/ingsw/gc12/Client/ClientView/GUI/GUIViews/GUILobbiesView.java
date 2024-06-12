@@ -1,6 +1,7 @@
-package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers;
+package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIViews;
 
 import it.polimi.ingsw.gc12.Client.ClientView.GUI.OverlayPopup;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Utilities.Color;
@@ -16,9 +17,9 @@ import javafx.scene.layout.VBox;
 import java.io.IOException;
 import java.util.UUID;
 
-public class GUILobbiesScreenController extends GUIView {
+public class GUILobbiesView extends GUIView {
 
-    private static GUILobbiesScreenController lobbiesScreenController = null;
+    private static GUILobbiesView lobbiesScreenController = null;
     private final Parent SCENE_ROOT;
     private final VBox MENU_BUTTONS_BOX;
     private final Label OWN_NICKNAME_LABEL;
@@ -36,7 +37,7 @@ public class GUILobbiesScreenController extends GUIView {
     private final ScrollPane LOBBIES_PANE;
     private final VBox LOBBIES_LIST;
 
-    private GUILobbiesScreenController() {
+    private GUILobbiesView() {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/fxml/lobby_menu.fxml")).load();
         } catch (IOException e) {
@@ -59,9 +60,9 @@ public class GUILobbiesScreenController extends GUIView {
         LOBBIES_LIST = (VBox) LOBBIES_PANE.getContent();
     }
 
-    public static GUILobbiesScreenController getInstance() {
+    public static GUILobbiesView getInstance() {
         if (lobbiesScreenController == null) {
-            lobbiesScreenController = new GUILobbiesScreenController();
+            lobbiesScreenController = new GUILobbiesView();
         }
         return lobbiesScreenController;
     }
@@ -71,7 +72,7 @@ public class GUILobbiesScreenController extends GUIView {
         Platform.runLater(() -> {
             MENU_BUTTONS_BOX.relocate(screenSizes.getX() * 12 / 100, screenSizes.getY() * 9 / 16);
 
-            OWN_NICKNAME_LABEL.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
+            OWN_NICKNAME_LABEL.setText("Profile: " + ClientController.getInstance().VIEWMODEL.getOwnNickname());
 
             PLAYERS_NUMBER_SELECTOR.setItems(FXCollections.observableArrayList(2, 3, 4));
 
@@ -82,7 +83,7 @@ public class GUILobbiesScreenController extends GUIView {
                 lobbyCreationPopup.setAutoFix(true);
 
                 CONFIRM_LOBBY_CREATION_BUTTON.setOnAction(event2 -> {
-                    ClientController.getInstance().viewState.createLobby(PLAYERS_NUMBER_SELECTOR.getValue());
+                    ViewState.getCurrentState().createLobby(PLAYERS_NUMBER_SELECTOR.getValue());
                     LOBBY_CREATION_POPUP_BOX.setVisible(false);
                     lobbyCreationPopup.hide();
                 });
@@ -97,7 +98,7 @@ public class GUILobbiesScreenController extends GUIView {
                 nicknameChangePopup.setAutoFix(true);
 
                 CONFIRM_NICKNAME_CHANGE_BUTTON.setOnAction(event2 -> {
-                    ClientController.getInstance().viewState.setNickname(CHANGE_NICKNAME_TEXTFIELD.getText());
+                    ViewState.getCurrentState().setNickname(CHANGE_NICKNAME_TEXTFIELD.getText());
                     CHANGE_NICKNAME_POPUP_BOX.setVisible(false);
                     nicknameChangePopup.hide();
                 });
@@ -107,7 +108,7 @@ public class GUILobbiesScreenController extends GUIView {
                 nicknameChangePopup.centerOnScreen();
             });
 
-            BACK_TO_TITLE_SCREEN_BUTTON.setOnAction(event -> ClientController.getInstance().viewState.quit());
+            BACK_TO_TITLE_SCREEN_BUTTON.setOnAction(event -> ViewState.getCurrentState().quit());
 
             LOBBIES_PANE.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             LOBBIES_PANE.setPrefSize(screenSizes.getX() * 3 / 5, screenSizes.getY() * 13 / 16);
@@ -117,9 +118,17 @@ public class GUILobbiesScreenController extends GUIView {
             LOBBIES_LIST.setPrefWidth(LOBBIES_PANE.getPrefWidth() * 98 / 100);
             LOBBIES_LIST.getChildren().clear();
 
+            if (ClientController.getInstance().VIEWMODEL.inRoom())
+                LOBBIES_LIST.getChildren().add(createLobbyListElement(
+                                ClientController.getInstance().VIEWMODEL.getCurrentRoomUUID(),
+                                ClientController.getInstance().VIEWMODEL.getCurrentLobby()
+                        )
+                );
+
             //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
-            for (var lobby : ClientController.getInstance().viewModel.getLobbies().entrySet()) {
-                LOBBIES_LIST.getChildren().add(createLobbyListElement(lobby.getKey(), lobby.getValue()));
+            for (var lobby : ClientController.getInstance().VIEWMODEL.getLobbies().entrySet()) {
+                if (!lobby.getValue().equals(ClientController.getInstance().VIEWMODEL.getCurrentLobby()))
+                    LOBBIES_LIST.getChildren().add(createLobbyListElement(lobby.getKey(), lobby.getValue()));
             }
 
             stage.getScene().setRoot(SCENE_ROOT);
@@ -129,7 +138,7 @@ public class GUILobbiesScreenController extends GUIView {
     @Override
     public void showNickname() {
         Platform.runLater(() -> {
-            OWN_NICKNAME_LABEL.setText("Profile: " + ClientController.getInstance().viewModel.getOwnNickname());
+            OWN_NICKNAME_LABEL.setText("Profile: " + ClientController.getInstance().VIEWMODEL.getOwnNickname());
         });
     }
 
@@ -163,9 +172,9 @@ public class GUILobbiesScreenController extends GUIView {
             colorToken.setPreserveRatio(true);
             colorToken.setSmooth(true);
 
-            if (lobby.equals(ClientController.getInstance().viewModel.getCurrentLobby()))
+            if (lobby.equals(ClientController.getInstance().VIEWMODEL.getCurrentLobby()))
                 colorToken.setOnMouseClicked((event) -> {
-                    ClientController.getInstance().viewState.selectColor(color);
+                    ViewState.getCurrentState().selectColor(color);
                 });
 
             availableColorsBox.getChildren().add(colorToken);
@@ -173,21 +182,14 @@ public class GUILobbiesScreenController extends GUIView {
 
         lobbyBox.getChildren().addAll(nicknamesBox, playerCount, availableColorsBox);
 
-        if (ClientController.getInstance().viewModel.getCurrentLobby() == null && lobby.getPlayersNumber() < lobby.getMaxPlayers()) {
+        if (ClientController.getInstance().VIEWMODEL.getCurrentLobby() == null && lobby.getPlayersNumber() < lobby.getMaxPlayers()) {
             Button joinButton = new Button("JOIN");
-            joinButton.setOnAction(e ->
-                    {
-                        ClientController.getInstance().viewState.joinLobby(lobbyUUID);
-                    }
-            );
+            joinButton.setOnAction(e -> ViewState.getCurrentState().joinLobby(lobbyUUID));
             lobbyBox.getChildren().add(joinButton);
         } else {
-            if (ClientController.getInstance().viewModel.getCurrentLobby().equals(lobby)) {
+            if (ClientController.getInstance().VIEWMODEL.getCurrentLobby().equals(lobby)) {
                 Button leaveButton = new Button("LEAVE");
-                leaveButton.setOnAction(e ->
-                        {
-                            ClientController.getInstance().viewState.leaveLobby();
-                        }
+                leaveButton.setOnAction(e -> ViewState.getCurrentState().leaveLobby()
                 );
                 lobbyBox.getChildren().add(leaveButton);
             }

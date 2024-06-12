@@ -13,7 +13,7 @@ import java.util.Map;
  * Represents a Gold Card in the game's card set, which grants points based on particular conditions
  * and requires resources to be played.
  */
-public class GoldCard extends PlayableCard {
+public final class GoldCard extends PlayableCard {
     /**
      * The condition evaluated to determine the total points granted upon playing this card.
      */

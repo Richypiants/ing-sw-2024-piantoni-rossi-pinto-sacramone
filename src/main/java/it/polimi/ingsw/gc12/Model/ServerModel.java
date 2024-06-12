@@ -36,16 +36,16 @@ import java.util.stream.Collectors;
 public class ServerModel implements Listenable {
 
     /**
-     * The list of cards used to perform server-side operations in the game.
+     * The map of cards used to perform server-side operations in the game.
      * Each card is mapped to its unique ID for easy access.
      */
-    public static final Map<Integer, Card> cardsList = loadModelCards();
+    public static final Map<Integer, Card> CARDS_LIST = loadModelCards();
 
     /**
-     * The list of cards used to graphically represent them on the clients.
+     * The map of cards used to graphically represent them on the clients.
      * Each client card is mapped to its unique ID for easy access.
      */
-    public static final Map<Integer, ClientCard> clientCardsList = loadClientCards();
+    public static final Map<Integer, ClientCard> CLIENTS_CARDS_LIST = loadClientCards();
 
     /**
      * The map of lobby controllers, indexed by lobby UUID.

@@ -38,7 +38,7 @@ public class SocketClient implements VirtualServer {
     private SocketClient() throws IOException {
         this.readerExecutor = Executors.newSingleThreadExecutor();
 
-        Socket socket = new Socket(ClientController.getInstance().serverIPAddress, 5000);
+        Socket socket = new Socket(Client.getClientInstance().serverIPAddress, 5000);
         serverHandler = new SocketServerHandler(socket, ClientController.getInstance());
 
         readerExecutor.submit(
@@ -48,13 +48,12 @@ public class SocketClient implements VirtualServer {
                             serverHandler.read();
                         } catch (IOException e) {
                             close();
-                            e.printStackTrace();
+                            ClientController.getInstance().ERROR_LOGGER.log(e);
                             break;
                         }
                     }
                 }
         );
-        ClientController.getInstance().serverConnection = this;
     }
 
     /**
@@ -67,7 +66,7 @@ public class SocketClient implements VirtualServer {
             try {
                 SINGLETON_SOCKET_CLIENT = new SocketClient();
             } catch (IOException e) {
-                ClientController.getInstance().errorLogger.log(e);
+                ClientController.getInstance().ERROR_LOGGER.log(e);
             }
         }
         return SINGLETON_SOCKET_CLIENT;

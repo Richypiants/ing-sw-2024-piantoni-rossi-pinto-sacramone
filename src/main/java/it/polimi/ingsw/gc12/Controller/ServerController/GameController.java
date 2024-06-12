@@ -40,7 +40,7 @@ public class GameController extends ServerController {
     }
 
     private boolean invalidCard(NetworkSession sender, int cardID) {
-        if (!ServerModel.cardsList.containsKey(cardID)) {
+        if (!ServerModel.CARDS_LIST.containsKey(cardID)) {
             sender.getListener().notified(
                     new ThrowExceptionCommand(
                             new IllegalArgumentException("Provided cardID is not associated to an existing card")
@@ -93,7 +93,7 @@ public class GameController extends ServerController {
         }
 
         InGamePlayer targetPlayer = (InGamePlayer) sender.getPlayer();
-        Card targetCard = ServerModel.cardsList.get(cardID);
+        Card targetCard = ServerModel.CARDS_LIST.get(cardID);
 
         if (targetCard instanceof PlayableCard)
             try {
@@ -149,7 +149,7 @@ public class GameController extends ServerController {
         if (invalidCard(sender, cardID)) return;
 
         InGamePlayer targetPlayer = (InGamePlayer) sender.getPlayer();
-        Card targetCard = ServerModel.cardsList.get(cardID);
+        Card targetCard = ServerModel.CARDS_LIST.get(cardID);
 
         if (targetCard instanceof ObjectiveCard)
             try {

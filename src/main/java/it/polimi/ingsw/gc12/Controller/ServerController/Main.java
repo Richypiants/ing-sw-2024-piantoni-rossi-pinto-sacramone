@@ -5,9 +5,9 @@ import it.polimi.ingsw.gc12.Network.Server.Server;
 public class Main {
 
     public static void main(String[] args) {
-        Thread serverThread = new Thread(Server.getInstance());
+        Server serverThread = Server.getInstance();
         serverThread.setDaemon(true);
-        serverThread.start(); //FIXME: rendere il server un vero e proprio thread o tenere Runnable?
+        serverThread.start();
 
         String interrupt;
         do {

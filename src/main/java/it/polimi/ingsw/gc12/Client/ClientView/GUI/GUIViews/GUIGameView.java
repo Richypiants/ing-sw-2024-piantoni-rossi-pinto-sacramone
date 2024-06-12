@@ -1,7 +1,7 @@
-package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers;
+package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIViews;
 
 import it.polimi.ingsw.gc12.Client.ClientView.GUI.OverlayPopup;
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.ChooseObjectiveCardsState;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
@@ -37,11 +37,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-public class GUIGameScreenController extends GUIView {
+public class GUIGameView extends GUIView {
 
     //FIXME: this is probably not the correct MIME type syntax for the data we want to pass...
     private static final DataFormat PLACE_CARD_DATA_FORMAT = new DataFormat("text/genericpair<integer,side>");
-    private static GUIGameScreenController gameScreenController = null;
+    private static GUIGameView gameScreenController = null;
     private final Parent SCENE_ROOT;
     private final AnchorPane OWN_FIELD_PANE;
     private final VBox STATS_BOX;
@@ -67,8 +67,11 @@ public class GUIGameScreenController extends GUIView {
     private final HBox GOLD_HBOX;
     private final HBox OBJECTIVE_HBOX;
     private final VBox AWAITING_STATE_MESSAGE_BOX;
+    private final VBox LEADERBOARD_VBOX;
+    private final Label LEADERBOARD_LABEL;
+    private final Label WINNING_PLAYER_LABEL;
 
-    private GUIGameScreenController() {
+    private GUIGameView() {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/fxml/game_screen.fxml")).load();
         } catch (IOException e) {
@@ -86,7 +89,7 @@ public class GUIGameScreenController extends GUIView {
         HIDE_SCOREBOARD_BUTTON = (Button) SCOREBOARD_PANE.lookup("#hideScoreboardButton");
         CHAT_PANE = (AnchorPane) SCENE_ROOT.lookup("#chatPane");
         CHAT_SCROLL_PANE = (ScrollPane) SCENE_ROOT.lookup("#chatScrollPane");
-        MESSAGES_BOX = (VBox) CHAT_PANE.lookup("#messagesBox");
+        MESSAGES_BOX = (VBox) CHAT_SCROLL_PANE.lookup("#messagesBox");
         RECEIVER_NICKNAME_SELECTOR = (ComboBox<String>) CHAT_PANE.lookup("#receiverSelector");
         MESSAGE_TEXTFIELD = (TextField) CHAT_PANE.lookup("#messageText");
         HIDE_CHAT_BUTTON = (Button) CHAT_PANE.lookup("#hideChatButton");
@@ -98,11 +101,14 @@ public class GUIGameScreenController extends GUIView {
         GOLD_HBOX = (HBox) DECK_AND_VISIBLE_CARDS_PANE.lookup("#goldHBox");
         OBJECTIVE_HBOX = (HBox) DECK_AND_VISIBLE_CARDS_PANE.lookup("#objectiveHBox");
         AWAITING_STATE_MESSAGE_BOX = (VBox) SCENE_ROOT.lookup("#awaitingStateMessageBox");
+        LEADERBOARD_VBOX = (VBox) SCENE_ROOT.lookup("#leaderboardVBox");
+        LEADERBOARD_LABEL = (Label) SCENE_ROOT.lookup("#leaderboardLabel");
+        WINNING_PLAYER_LABEL = (Label) SCENE_ROOT.lookup("#winningPlayerLabel");
     }
 
-    public static GUIGameScreenController getInstance() {
+    public static GUIGameView getInstance() {
         if (gameScreenController == null) {
-            gameScreenController = new GUIGameScreenController();
+            gameScreenController = new GUIGameView();
         }
         return gameScreenController;
     }
@@ -112,7 +118,7 @@ public class GUIGameScreenController extends GUIView {
         Platform.runLater(() -> {
             stage.getScene().setRoot(SCENE_ROOT);
 
-            ClientPlayer thisPlayer = ClientController.getInstance().viewModel.getGame().getThisPlayer();
+            ClientPlayer thisPlayer = ClientController.getInstance().VIEWMODEL.getCurrentGame().getThisPlayer();
 
             GUIView.getInstance().showHand();
             GUIView.getInstance().showCommonPlacedCards();
@@ -155,7 +161,7 @@ public class GUIGameScreenController extends GUIView {
             SHOW_SCOREBOARD_BUTTON.relocate(screenSizes.getX() * 10 / 100, screenSizes.getY() * 10 / 100);
             SHOW_SCOREBOARD_BUTTON.toFront();
 
-            LEAVE_BUTTON.setOnMouseClicked((event) -> ClientController.getInstance().viewState.quit());
+            LEAVE_BUTTON.setOnMouseClicked((event) -> ViewState.getCurrentState().quit());
             LEAVE_BUTTON.relocate(screenSizes.getX() * 90 / 100, screenSizes.getY() * 90 / 100);
             LEAVE_BUTTON.toFront();
 
@@ -239,7 +245,7 @@ public class GUIGameScreenController extends GUIView {
             relativeOffsetScaleFactors.add(new GenericPair<>(0.92, 0.245)); // 28
             relativeOffsetScaleFactors.add(new GenericPair<>(0.505, 0.1623)); // 29
 
-            ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
+            ClientGame thisGame = ClientController.getInstance().VIEWMODEL.getCurrentGame();
 
             for (var player : thisGame.getPlayers().stream().sorted(Comparator.comparingInt(ClientPlayer::getPoints)).toList().reversed()) {
                 GenericPair<Double, Double> scaleFactor = relativeOffsetScaleFactors.get(player.getPoints());
@@ -339,7 +345,7 @@ public class GUIGameScreenController extends GUIView {
                 openCornerShape.setOnDragDropped((event) -> {
                     if (event.getTransferMode() == TransferMode.MOVE) {
                         GenericPair<Integer, Side> placeCardData = (GenericPair<Integer, Side>) event.getDragboard().getContent(PLACE_CARD_DATA_FORMAT);
-                        ClientController.getInstance().viewState.placeCard(
+                        ViewState.getCurrentState().placeCard(
                                 openCornerShape.COORDINATES,
                                 placeCardData.getX(),
                                 placeCardData.getY()
@@ -382,7 +388,7 @@ public class GUIGameScreenController extends GUIView {
                 CHAT_PANE.relocate(event.getScreenX() + xOffset.get(), event.getScreenY() + yOffset.get());
             });
 
-            ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
+            ClientGame thisGame = ClientController.getInstance().VIEWMODEL.getCurrentGame();
 
             MESSAGES_BOX.getChildren().clear();
 
@@ -395,7 +401,7 @@ public class GUIGameScreenController extends GUIView {
 
             List<String> nicknames = thisGame.getPlayers().stream().map(Player::getNickname).collect(Collectors.toCollection(ArrayList::new));
             nicknames.addFirst("everyone");
-            nicknames.remove(ClientController.getInstance().viewModel.getOwnNickname());
+            nicknames.remove(ClientController.getInstance().VIEWMODEL.getOwnNickname());
             ObservableList<String> receiverNicknames = FXCollections.observableList(nicknames);
             RECEIVER_NICKNAME_SELECTOR.setItems(receiverNicknames);
             RECEIVER_NICKNAME_SELECTOR.getSelectionModel().selectFirst();
@@ -408,9 +414,9 @@ public class GUIGameScreenController extends GUIView {
 
                 //FIXME: aggiungere lunghezza massima e substring anche qui? Magari aggiungerle ma più di 150 chars?
                 if (receiver.equals("everyone"))
-                    ClientController.getInstance().viewState.broadcastMessage(message);
+                    ViewState.getCurrentState().broadcastMessage(message);
                 else
-                    ClientController.getInstance().viewState.directMessage(receiver, message);
+                    ViewState.getCurrentState().directMessage(receiver, message);
             });
 
             CHAT_PANE.setVisible(true);
@@ -423,14 +429,14 @@ public class GUIGameScreenController extends GUIView {
         OPPONENTS_FIELDS_PANE.setPrefSize(screenSizes.getX() * 75 / 100, screenSizes.getY() * 35 / 100);
         OPPONENTS_FIELDS_PANE.relocate(screenSizes.getX() * 25 / 100, 0);
 
-        ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
+        ClientGame thisGame = ClientController.getInstance().VIEWMODEL.getCurrentGame();
 
         String style = "-fx-font-size: 15px; -fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;";
 
         OPPONENTS_FIELDS_PANE.getChildren().clear();
 
         for (var player : thisGame.getPlayers().stream()
-                .filter((player) -> !(player.getNickname().equals(ClientController.getInstance().viewModel.getOwnNickname()))).toList()) {
+                .filter((player) -> !(player.getNickname().equals(ClientController.getInstance().VIEWMODEL.getOwnNickname()))).toList()) {
             VBox opponentInfo = new VBox(5);
             opponentInfo.setAlignment(Pos.CENTER);
             opponentInfo.setPrefSize(OPPONENTS_FIELDS_PANE.getPrefWidth() / (thisGame.getPlayersNumber() - 1), OPPONENTS_FIELDS_PANE.getPrefHeight());
@@ -505,7 +511,7 @@ public class GUIGameScreenController extends GUIView {
             initialChoiceHBox.setAlignment(Pos.CENTER);
             initialChoiceHBox.setPrefSize(initialCardsChoiceVBox.getPrefWidth(), initialCardsChoiceVBox.getPrefHeight() * 0.9);
 
-            ClientCard initialCard = ClientController.getInstance().viewModel.getGame().getCardsInHand().getFirst();
+            ClientCard initialCard = ClientController.getInstance().VIEWMODEL.getCurrentGame().getCardsInHand().getFirst();
 
             ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.FRONT))));
             ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.BACK))));
@@ -521,12 +527,12 @@ public class GUIGameScreenController extends GUIView {
             OverlayPopup createdPopup = drawOverlayPopup(initialCardsChoiceVBox, false);
 
             frontCardView.setOnMouseClicked((event) -> {
-                ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 1, Side.FRONT);
+                ViewState.getCurrentState().placeCard(new GenericPair<>(0, 0), 1, Side.FRONT);
                 createdPopup.hide();
             });
 
             backCardView.setOnMouseClicked((event) -> {
-                ClientController.getInstance().viewState.placeCard(new GenericPair<>(0, 0), 1, Side.BACK);
+                ViewState.getCurrentState().placeCard(new GenericPair<>(0, 0), 1, Side.BACK);
                 createdPopup.hide();
             });
 
@@ -535,7 +541,7 @@ public class GUIGameScreenController extends GUIView {
     }
 
     @Override
-    public void showObjectiveCardsChoice() {
+    public void showObjectiveCardsChoice(ArrayList<ClientCard> objectivesSelection) {
         Platform.runLater(() -> {
             double popupWidth = 720, popupHeight = 480;
             String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
@@ -550,9 +556,6 @@ public class GUIGameScreenController extends GUIView {
             objectiveChoiceHBox.setAlignment(Pos.CENTER);
             objectiveChoiceHBox.setPrefSize(objectiveChoiceVBox.getPrefWidth(), objectiveChoiceVBox.getPrefHeight() * 0.9);
 
-            ArrayList<ClientCard> objectivesSelection = ((ChooseObjectiveCardsState) ClientController.getInstance()
-                    .getCurrentState()).objectivesSelection;
-
             OverlayPopup createdPopup = drawOverlayPopup(objectiveChoiceVBox, false);
 
             for (int i = 0; i < objectivesSelection.size(); i++) {
@@ -564,7 +567,7 @@ public class GUIGameScreenController extends GUIView {
 
                 int cardPosition = i;
                 objectiveCardView.setOnMouseClicked((event) -> {
-                    ClientController.getInstance().viewState.pickObjective(cardPosition + 1);
+                    ViewState.getCurrentState().pickObjective(cardPosition + 1);
                     createdPopup.hide();
                 });
 
@@ -586,7 +589,7 @@ public class GUIGameScreenController extends GUIView {
 
             double handPaneHeight = OWN_HAND_PANE.getPrefHeight();
             double handPaneWidth = OWN_HAND_PANE.getPrefWidth();
-            List<ClientCard> cardsInHand = ClientController.getInstance().viewModel.getGame().getCardsInHand();
+            List<ClientCard> cardsInHand = ClientController.getInstance().VIEWMODEL.getCurrentGame().getCardsInHand();
 
             OWN_HAND_PANE.getChildren().clear();
 
@@ -663,7 +666,7 @@ public class GUIGameScreenController extends GUIView {
             DECK_AND_VISIBLE_CARDS_PANE.setPrefSize(screenSizes.getX() * 25 / 100, screenSizes.getY() * 25 / 100);
             DECK_AND_VISIBLE_CARDS_PANE.relocate(0, screenSizes.getY() * 75 / 100);
 
-            ClientGame thisGame = ClientController.getInstance().viewModel.getGame();
+            ClientGame thisGame = ClientController.getInstance().VIEWMODEL.getCurrentGame();
 
             RESOURCE_HBOX.setPrefSize(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() / 3);
 
@@ -675,7 +678,7 @@ public class GUIGameScreenController extends GUIView {
             resourceDeck.setFitWidth(cardSizes.getX());
             resourceDeck.setPreserveRatio(true);
             resourceDeck.setOnMouseClicked((event) ->
-                    ClientController.getInstance().viewState.drawFromDeck("Resource")
+                    ViewState.getCurrentState().drawFromDeck("Resource")
             );
             RESOURCE_HBOX.getChildren().add(resourceDeck);
 
@@ -687,7 +690,7 @@ public class GUIGameScreenController extends GUIView {
 
                     int finalI = i + 1;
                     resource.setOnMouseClicked((event) ->
-                            ClientController.getInstance().viewState.drawFromVisibleCards("Resource", finalI)
+                            ViewState.getCurrentState().drawFromVisibleCards("Resource", finalI)
                     );
 
                     RESOURCE_HBOX.getChildren().add(resource);
@@ -703,9 +706,7 @@ public class GUIGameScreenController extends GUIView {
 
             goldDeck.setFitWidth(cardSizes.getX());
             goldDeck.setPreserveRatio(true);
-            goldDeck.setOnMouseClicked((event) ->
-                    ClientController.getInstance().viewState.drawFromDeck("Gold")
-            );
+            goldDeck.setOnMouseClicked((event) -> ViewState.getCurrentState().drawFromDeck("Gold"));
             GOLD_HBOX.getChildren().add(goldDeck);
 
             for (int i = 0; i < thisGame.getPlacedGolds().length; i++) {
@@ -716,7 +717,7 @@ public class GUIGameScreenController extends GUIView {
 
                     int finalI = i + 1;
                     gold.setOnMouseClicked((event) ->
-                            ClientController.getInstance().viewState.drawFromVisibleCards("Gold", finalI)
+                            ViewState.getCurrentState().drawFromVisibleCards("Gold", finalI)
                     );
 
                     GOLD_HBOX.getChildren().add(gold);
@@ -786,26 +787,11 @@ public class GUIGameScreenController extends GUIView {
     public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
         Platform.runLater(() -> {
             double popupWidth = 720, popupHeight = 480;
-            String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
 
-            VBox leaderboardVBox = new VBox(30);
-            leaderboardVBox.getStyleClass().add("lobbyScreenPopupBox");
-            leaderboardVBox.setAlignment(Pos.CENTER);
-            leaderboardVBox.setPrefSize(popupWidth, popupHeight);
-            leaderboardVBox.setStyle(style);
-            Label leaderboardLabel = new Label("Leaderboard");
-            leaderboardLabel.getStyleClass().add("titleScreenLabel");
+            LEADERBOARD_VBOX.setPrefSize(popupWidth, popupHeight);
 
             Button exitButton = new Button("Torna alla schermata delle lobby");
             exitButton.getStyleClass().add("button");
-
-            leaderboardVBox.getChildren().add(leaderboardLabel);
-            OverlayPopup createdPopup = GUIView.drawOverlayPopup(leaderboardVBox, false);
-
-            exitButton.setOnMouseClicked((mouseEvent -> {
-                ClientController.getInstance().viewState.toLobbies();
-                createdPopup.hide();
-            }));
 
             for (var row : POINTS_STATS) {
                 HBox playerHBox = new HBox(20);
@@ -819,17 +805,26 @@ public class GUIGameScreenController extends GUIView {
                 objectivePointsLabel.getStyleClass().add("titleScreenLabel");
 
                 playerHBox.getChildren().addAll(nameLabel, pointsLabel, objectivePointsLabel);
-                leaderboardVBox.getChildren().add(playerHBox);
+                LEADERBOARD_VBOX.getChildren().add(playerHBox);
             }
 
-            Label winningPlayerLabel = new Label(
-                    ClientController.getInstance().viewModel.getGame().getPlayers().getFirst().getNickname() + " won" +
-                            (gameEndedDueToDisconnections ? " as the only player left" : "") + "!");
-            leaderboardVBox.getChildren().add(winningPlayerLabel);
+            WINNING_PLAYER_LABEL.setText(
+                    ClientController.getInstance().VIEWMODEL.getCurrentGame().getPlayers().getFirst().getNickname() + " won" +
+                            (gameEndedDueToDisconnections ? " as the only player left" : "") + "!"
+            );
 
-            leaderboardVBox.getChildren().add(exitButton);
+            LEADERBOARD_VBOX.getChildren().add(exitButton);
+
+            OverlayPopup createdPopup = drawOverlayPopup(LEADERBOARD_VBOX, false);
+
+            exitButton.setOnMouseClicked((mouseEvent -> {
+                ViewState.getCurrentState().toLobbies();
+                LEADERBOARD_VBOX.setVisible(false);
+                createdPopup.hide();
+            }));
 
             AWAITING_STATE_MESSAGE_BOX.setVisible(false);
+            LEADERBOARD_VBOX.setVisible(true);
             createdPopup.show(stage);
         });
     }
