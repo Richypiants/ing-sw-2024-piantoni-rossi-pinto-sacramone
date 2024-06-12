@@ -2,8 +2,6 @@ package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
-import it.polimi.ingsw.gc12.Listeners.NetworkListener;
-import it.polimi.ingsw.gc12.Listeners.ServerListener;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
@@ -15,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
+import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.createNetworkSessionStub;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 class ChooseInitialCardsStateTest {
@@ -27,8 +26,6 @@ class ChooseInitialCardsStateTest {
     NetworkSession client2;
     ServerController server;
     GameController gameController;
-    GameState state;
-
 
     @BeforeEach
     void setGameParameters() throws Exception {
@@ -42,25 +39,11 @@ class ChooseInitialCardsStateTest {
         game = new Game(lobby);
         gameController = GameController.MODEL.createGameController(game);
 
-        client1 = new NetworkSession(gameController) {
-            @Override
-            protected NetworkListener createListener(NetworkSession session) {
-                return new ServerListener(session, command -> {
-                });
-            }
-        };
-        client2 = new NetworkSession(gameController) {
-            @Override
-            protected NetworkListener createListener(NetworkSession session) {
-                return new ServerListener(session, command -> {
-                });
-            }
-        };
+        client1 = createNetworkSessionStub(gameController);
+        client2 = createNetworkSessionStub(gameController);
 
         gameController.putActivePlayer(client1, game.getPlayers().get(0));
         gameController.putActivePlayer(client2, game.getPlayers().get(1));
-
-        state = new ChooseInitialCardsState(gameController, game);
     }
 
     @Test
@@ -81,4 +64,14 @@ class ChooseInitialCardsStateTest {
         }
 
     }
+
+    @Test
+    void correctPlaceCardIfPlayerDisconnected() throws Exception {
+        gameController.CONTROLLED_GAME.getPlayers().getFirst().addListener(client1.getListener());
+        gameController.CONTROLLED_GAME.getPlayers().getLast().addListener(client2.getListener());
+
+        gameController.getCurrentState().playerDisconnected(game.getPlayers().getFirst());
+        assert (!gameController.CONTROLLED_GAME.getPlayers().getFirst().getPlacedCards().isEmpty());
+    }
+
 }
