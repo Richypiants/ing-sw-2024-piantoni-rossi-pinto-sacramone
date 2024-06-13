@@ -16,7 +16,7 @@
         <Label fx:id="resourcesLabel" alignment="CENTER"
                text="Resource cards">
             <font>
-                <Font name="Bell MT" size="30.0"/>
+                <Font name="Bell MT" size="24.0"/>
             </font>
         </Label>
         <HBox fx:id="resourceHBox" alignment="CENTER" spacing="10">
@@ -25,7 +25,7 @@
         <Label fx:id="goldsLabel" alignment="CENTER"
                text="Gold cards">
             <font>
-                <Font name="Bell MT" size="30.0"/>
+                <Font name="Bell MT" size="24.0"/>
             </font>
         </Label>
         <HBox fx:id="goldHBox" alignment="CENTER" spacing="10">
@@ -34,7 +34,7 @@
         <Label fx:id="commonObjectivesLabel" alignment="CENTER"
                text="Common Objectives">
             <font>
-                <Font name="Bell MT" size="30.0"/>
+                <Font name="Bell MT" size="24.0"/>
             </font>
         </Label>
         <HBox fx:id="objectiveHBox" alignment="CENTER" spacing="10">
@@ -43,7 +43,7 @@
         <Label fx:id="secretObjectiveLabel" alignment="CENTER"
                text="Secret Objective">
             <font>
-                <Font name="Bell MT" size="30.0"/>
+                <Font name="Bell MT" size="24.0"/>
             </font>
         </Label>
     </AnchorPane>
@@ -63,30 +63,27 @@
     </HBox>
 
     <AnchorPane fx:id="chatPane" visible="false">
-        <VBox fx:id="chatBox" alignment="CENTER">
+        <VBox fx:id="chatBox" alignment="CENTER" spacing="5">
             <ScrollPane fx:id="chatScrollPane" prefHeight="500.0" prefWidth="350.0">
-                <VBox fx:id="messagesBox"/>
+                <VBox fx:id="messagesBox" spacing="5"/>
             </ScrollPane>
             <HBox alignment="CENTER">
-                <Label fx:id="to" layoutX="198.0" layoutY="115.0" prefHeight="10.0"
-                       prefWidth="100.0" text="To: "
-                       textFill="#000000">
+                <Label fx:id="to" prefHeight="10.0" prefWidth="100.0" text="Send to:" textFill="#000000">
                     <font>
-                        <Font name="Bell MT" size="30.0"/>
+                        <Font name="Bell MT" size="24.0"/>
                     </font>
                 </Label>
                 <ComboBox fx:id="receiverSelector" layoutX="225.0" layoutY="188.0" prefWidth="150.0"
                           promptText="everyone"/>
             </HBox>
-            <HBox fx:id="sendControls" alignment="CENTER">
+            <HBox fx:id="sendControls" alignment="CENTER" spacing="10">
                 <TextField fx:id="messageText" prefHeight="10.0" prefWidth="100.0"
                            promptText="Scrivi qui il tuo messaggio...">
                     <font>
-                        <Font name="Bell MT" size="20.0"/>
+                        <Font name="Bell MT" size="16.0"/>
                     </font>
                 </TextField>
-                <Button fx:id="sendButton" styleClass="button" layoutX="846.0" layoutY="360.0"
-                        mnemonicParsing="false" text="Send"/>
+                <Button fx:id="sendButton" mnemonicParsing="false"/>
             </HBox>
         </VBox>
     </AnchorPane>

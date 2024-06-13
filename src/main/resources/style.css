@@ -125,9 +125,10 @@
 }
 
 #gameScreenPane {
-    -fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");
+    /*-fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");
     -fx-background-repeat: no-repeat;
     -fx-background-size: stretch;
+    */
 }
 
 #scoreboardPane {
@@ -151,7 +152,12 @@
 }
 
 #chatPane {
+    -fx-background-radius: 10%;
+    -fx-background-color: lightblue;
+}
 
+#chatScrollPane {
+    -fx-background-color: lightblue;
 }
 
 .roundButton {
@@ -164,4 +170,26 @@
     -fx-border-color: black;
     -fx-border-width: 2px;
     -fx-border-radius: 25;
+    -fx-alignment: center;
+}
+
+#sendButton {
+    -fx-background-radius: 30%;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-max-width: 30px;
+    -fx-max-height: 30px;
+    -fx-background-color: transparent;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+    -fx-border-radius: 15;
+    -fx-alignment: center;
+}
+
+.messageElement {
+    -fx-border-radius: 10;
+    -fx-background-color: transparent;
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+    -fx-padding: 10;
 }

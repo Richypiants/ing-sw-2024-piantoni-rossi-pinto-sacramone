@@ -57,6 +57,7 @@ public class GUIGameView extends GUIView {
     private final Button TOGGLE_CHAT_BUTTON;
     private final AnchorPane SCOREBOARD_PANE;
     private final AnchorPane CHAT_PANE;
+    private final VBox CHAT_VBOX;
     private final ScrollPane CHAT_SCROLL_PANE;
     private final VBox MESSAGES_BOX;
     private final ComboBox<String> RECEIVER_NICKNAME_SELECTOR;
@@ -76,6 +77,7 @@ public class GUIGameView extends GUIView {
     private final VBox LEADERBOARD_VBOX;
     private final Label LEADERBOARD_LABEL;
     private final Label WINNING_PLAYER_LABEL;
+    private final Label TO;
 
     private GUIGameView() {
         try {
@@ -112,6 +114,8 @@ public class GUIGameView extends GUIView {
         LEADERBOARD_VBOX = (VBox) SCENE_ROOT.lookup("#leaderboardVBox");
         LEADERBOARD_LABEL = (Label) SCENE_ROOT.lookup("#leaderboardLabel");
         WINNING_PLAYER_LABEL = (Label) SCENE_ROOT.lookup("#winningPlayerLabel");
+        TO = (Label) SCENE_ROOT.lookup("#to");
+        CHAT_VBOX = (VBox) SCENE_ROOT.lookup("#chatBox");
 
         RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS = new ArrayList<>();
         //TODO: CAMBIARE LE COORDINATE SOLO PREVIA COMUNICAZIONE A SACRAMONE
@@ -408,6 +412,7 @@ public class GUIGameView extends GUIView {
                 MESSAGES_BOX.getChildren().add(createMessageElement(chatLog.getLast()));
 
             CHAT_SCROLL_PANE.setVvalue(CHAT_SCROLL_PANE.getVmax());
+            CHAT_SCROLL_PANE.setPrefWidth(CHAT_PANE.getPrefWidth() * 80 / 100);
 
             List<String> nicknames = thisGame.getPlayers().stream().map(Player::getNickname).collect(Collectors.toCollection(ArrayList::new));
             nicknames.addFirst("everyone");
@@ -416,15 +421,31 @@ public class GUIGameView extends GUIView {
             RECEIVER_NICKNAME_SELECTOR.setItems(receiverNicknames);
             RECEIVER_NICKNAME_SELECTOR.getSelectionModel().selectFirst();
 
+            RECEIVER_NICKNAME_SELECTOR.relocate(CHAT_PANE.getPrefWidth() * 15 / 100, CHAT_PANE.getPrefHeight() * 80 / 100);
+            RECEIVER_NICKNAME_SELECTOR.setPrefWidth(CHAT_PANE.getPrefWidth() * 60 / 100);
+            RECEIVER_NICKNAME_SELECTOR.setPrefHeight(CHAT_PANE.getPrefHeight() * 2.5 / 100);
+
+            MESSAGE_TEXTFIELD.setPrefWidth(CHAT_PANE.getPrefWidth() * 60 / 100);
+            MESSAGE_TEXTFIELD.setPrefHeight(CHAT_PANE.getPrefHeight() * 5 / 100);
+
+            TO.relocate(CHAT_PANE.getPrefWidth() * 8.5 / 100, CHAT_PANE.getPrefHeight() * 90 / 100);
+
+            CHAT_VBOX.relocate(CHAT_PANE.getPrefWidth() * 10 / 100, CHAT_PANE.getPrefHeight() * 2 / 100);
+
+            ImageView sendImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/sendBetter.png")));
+            sendImage.setFitHeight(20);
+            sendImage.setPreserveRatio(true);
+            SEND_MESSAGE_BUTTON.setGraphic(sendImage);
+            SEND_MESSAGE_BUTTON.setPrefWidth(TOGGLE_CHAT_BUTTON.getPrefWidth() * 50 / 100);
             SEND_MESSAGE_BUTTON.setOnMouseClicked((event) -> {
                 String receiver = RECEIVER_NICKNAME_SELECTOR.getValue();
                 String message = MESSAGE_TEXTFIELD.getText().trim();
-
                 //FIXME: aggiungere lunghezza massima e substring anche qui? Magari aggiungerle ma più di 150 chars?
                 if (receiver.equals("everyone"))
                     ViewState.getCurrentState().broadcastMessage(message);
                 else
                     ViewState.getCurrentState().directMessage(receiver, message);
+                MESSAGE_TEXTFIELD.clear();
             });
         });
     }
@@ -478,12 +499,22 @@ public class GUIGameView extends GUIView {
             opponentScrollField.setPannable(true);
             drawField(opponentScrollField, player, false);
 
-            Button zoomedOwnFieldButton = new Button("[]");
-            zoomedOwnFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            ImageView zoomImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/zoom.png")));
+            zoomImage.setFitHeight(20);
+            zoomImage.setPreserveRatio(true);
+            Button zoomedOwnFieldButton = new Button();
+            zoomedOwnFieldButton.setGraphic(zoomImage);
+            zoomedOwnFieldButton.setPrefSize(25, 25);
+            zoomedOwnFieldButton.setStyle("-fx-border-radius: 5; -fx-border-width: 1px; -fx-border-color: black; -fx-background-color: white");
             zoomedOwnFieldButton.setOnMouseClicked((event) -> showField(player));
 
-            Button centerFieldButton = new Button("+");
-            centerFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            ImageView aimImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/aim.png")));
+            aimImage.setFitHeight(20);
+            aimImage.setPreserveRatio(true);
+            Button centerFieldButton = new Button();
+            centerFieldButton.setGraphic(aimImage);
+            centerFieldButton.setPrefSize(25, 25);
+            centerFieldButton.setStyle("-fx-border-radius: 5; -fx-border-width: 1px; -fx-border-color: black; -fx-background-color: white");
             centerFieldButton.setOnMouseClicked((event) -> {
                 opponentScrollField.setHvalue((opponentScrollField.getHmax() + opponentScrollField.getHmin()) / 2);
                 opponentScrollField.setVvalue((opponentScrollField.getVmax() + opponentScrollField.getVmin()) / 2);
@@ -732,7 +763,7 @@ public class GUIGameView extends GUIView {
                 }
             }
 
-            COMMON_OBJECTIVES_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 15 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 52.5 / 100);
+            COMMON_OBJECTIVES_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 20 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 52.5 / 100);
             OBJECTIVE_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
             OBJECTIVE_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 57.5 / 100);
 
@@ -749,7 +780,7 @@ public class GUIGameView extends GUIView {
                 }
             }
 
-            SECRET_OBJECTIVE_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 37.5 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 85 / 100);
+            SECRET_OBJECTIVE_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 36 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 85 / 100);
             if (thisGame.getOwnObjective() != null) {
                 ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getOwnObjective().GUI_SPRITES.get(Side.FRONT))));
                 secretObjective.setFitWidth(cardSizes.getX());
@@ -844,17 +875,16 @@ public class GUIGameView extends GUIView {
 
     //FIXME: separate parameter receiver from message both in signature here, in TUI and in viewModel?
     private HBox createMessageElement(String message) {
-        String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
-
-        // Box
         HBox messageBox = new HBox(250);
         messageBox.setPadding(new Insets(15, 12, 15, 12));
 
-        // Label messaggio
         Label messageLabel = new Label(String.valueOf(message));
-        messageLabel.setStyle("-fx-font-size: 16px;");
+        messageLabel.setPrefWidth(CHAT_SCROLL_PANE.getPrefWidth() * 80 / 100);
+        messageLabel.setWrapText(true);
+        messageLabel.setStyle("-fx-font-size: 14px;");
 
-        messageBox.setStyle(style);
+        messageBox.setPrefWidth(CHAT_SCROLL_PANE.getPrefWidth() * 80 / 100);
+        messageBox.getStyleClass().add("messageElement");
 
         messageBox.getChildren().add(messageLabel);
 
