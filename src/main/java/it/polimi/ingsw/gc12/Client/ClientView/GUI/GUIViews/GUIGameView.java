@@ -46,9 +46,11 @@ public class GUIGameView extends GUIView {
 
     private final ArrayList<GenericPair<Double, Double>> RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS;
 
+    private final double PADDING_SIZE;
+
     private final Parent SCENE_ROOT;
     private final AnchorPane OWN_FIELD_PANE;
-    private final VBox STATS_BOX;
+    private final VBox OWN_FIELD_STATS_BOX;
     private final ScrollPane OWN_FIELD_SCROLL_PANE;
     private final Button ZOOMED_OWN_FIELD_BUTTON;
     private final Button CENTER_OWN_FIELD_BUTTON;
@@ -86,7 +88,7 @@ public class GUIGameView extends GUIView {
             throw new RuntimeException(e);
         }
         OWN_FIELD_PANE = (AnchorPane) SCENE_ROOT.lookup("#ownFieldPane");
-        STATS_BOX = (VBox) OWN_FIELD_PANE.lookup("#statsBox");
+        OWN_FIELD_STATS_BOX = (VBox) OWN_FIELD_PANE.lookup("#ownFieldStatsBox");
         OWN_FIELD_SCROLL_PANE = (ScrollPane) OWN_FIELD_PANE.lookup("#ownFieldScrollPane");
         ZOOMED_OWN_FIELD_BUTTON = (Button) OWN_FIELD_PANE.lookup("#zoomedOwnFieldButton");
         CENTER_OWN_FIELD_BUTTON = (Button) OWN_FIELD_PANE.lookup("#centerOwnFieldButton");
@@ -116,6 +118,8 @@ public class GUIGameView extends GUIView {
         WINNING_PLAYER_LABEL = (Label) SCENE_ROOT.lookup("#winningPlayerLabel");
         TO = (Label) SCENE_ROOT.lookup("#to");
         CHAT_VBOX = (VBox) SCENE_ROOT.lookup("#chatBox");
+
+        PADDING_SIZE = 20.0;
 
         RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS = new ArrayList<>();
         //TODO: CAMBIARE LE COORDINATE SOLO PREVIA COMUNICAZIONE A SACRAMONE
@@ -163,52 +167,11 @@ public class GUIGameView extends GUIView {
         Platform.runLater(() -> {
             stage.getScene().setRoot(SCENE_ROOT);
 
-            ClientPlayer thisPlayer = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getThisPlayer();
-
             showHand();
             showCommonPlacedCards();
 
-            //TODO: estrarre in una funzione
-            OWN_FIELD_PANE.setPrefSize(screenSizes.getX() * 75 / 100, screenSizes.getY() * 50 / 100);
-            OWN_FIELD_PANE.relocate(screenSizes.getX() * 25 / 100, screenSizes.getY() * 35 / 100);
+            showOwnField();
 
-            STATS_BOX.getChildren().clear();
-
-            STATS_BOX.setPrefSize(OWN_FIELD_PANE.getPrefWidth() / 10, OWN_FIELD_PANE.getPrefHeight());
-            for (var resourceEntry : thisPlayer.getOwnedResources().entrySet()) {
-                //TODO: dopo aggiungeremo le immaginette o le icone o le emoji che al momento non abbiamo
-                HBox oneData = new HBox(5);
-                ImageView image = new ImageView(String.valueOf(GUIView.class.getResource("/images/icons/res/" + resourceEntry.getKey().SYMBOL.toLowerCase() + ".png")));
-                image.setFitWidth(50);
-                image.setPreserveRatio(true);
-                Label resourceInfo = new Label("" + resourceEntry.getValue());
-                resourceInfo.setPrefSize(STATS_BOX.getPrefWidth(), STATS_BOX.getPrefHeight());
-                resourceInfo.setStyle("-fx-font-size: 15px; -fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
-                oneData.getChildren().addAll(image, resourceInfo);
-                STATS_BOX.getChildren().add(oneData);
-//                Label resourceInfo = new Label(resourceEntry.getKey().SYMBOL + " x " + resourceEntry.getValue());
-//                resourceInfo.setAlignment(Pos.CENTER);
-//                resourceInfo.setPrefSize(STATS_BOX.getPrefWidth(), STATS_BOX.getPrefHeight());
-//                resourceInfo.setStyle("-fx-font-size: 15px; -fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
-//                STATS_BOX.getChildren().add(resourceInfo);
-            }
-
-            OWN_FIELD_SCROLL_PANE.setPannable(true);
-            OWN_FIELD_SCROLL_PANE.setPrefSize(OWN_FIELD_PANE.getPrefWidth() * 9 / 10, OWN_FIELD_PANE.getPrefHeight());
-            drawField(OWN_FIELD_SCROLL_PANE, thisPlayer, true);
-
-            ZOOMED_OWN_FIELD_BUTTON.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
-            ZOOMED_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> showField(thisPlayer));
-
-            CENTER_OWN_FIELD_BUTTON.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
-            CENTER_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> {
-                OWN_FIELD_SCROLL_PANE.setHvalue((OWN_FIELD_SCROLL_PANE.getHmax() + OWN_FIELD_SCROLL_PANE.getHmin()) / 2);
-                OWN_FIELD_SCROLL_PANE.setVvalue((OWN_FIELD_SCROLL_PANE.getVmax() + OWN_FIELD_SCROLL_PANE.getVmin()) / 2);
-            });
-
-            OWN_FIELD_SCROLL_PANE.relocate(OWN_FIELD_PANE.getPrefWidth() / 10, 0);
-            ZOOMED_OWN_FIELD_BUTTON.relocate(OWN_FIELD_PANE.getPrefWidth() - 50, 20);
-            CENTER_OWN_FIELD_BUTTON.relocate(OWN_FIELD_PANE.getPrefWidth() - 50, 60);
             showOpponentsFieldsMiniaturized();
 
             updateScoreboard();
@@ -221,6 +184,7 @@ public class GUIGameView extends GUIView {
             TOGGLE_SCOREBOARD_BUTTON.toFront();
 
             showChat(); //FIXME: make updateChat()?
+
             ImageView chatImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/chat.png")));
             chatImage.setFitHeight(30);
             chatImage.setPreserveRatio(true);
@@ -233,10 +197,60 @@ public class GUIGameView extends GUIView {
             leaveImage.setFitHeight(30);
             leaveImage.setPreserveRatio(true);
             LEAVE_BUTTON.setGraphic(leaveImage);
-            LEAVE_BUTTON.setOnMouseClicked((event) -> ViewState.getCurrentState().quit());
+            LEAVE_BUTTON.setOnMouseClicked((event) -> {
+                ViewState.getCurrentState().quit();
+                clear();
+            });
             LEAVE_BUTTON.relocate(screenSizes.getX() * 95 / 100, screenSizes.getY() * 90 / 100);
             LEAVE_BUTTON.toFront();
         });
+    }
+
+    private void showOwnField() {
+        ClientPlayer thisPlayer = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getThisPlayer();
+
+        OWN_FIELD_PANE.setPrefSize(
+                screenSizes.getX() * 70 / 100 - PADDING_SIZE,
+                screenSizes.getY() * 50 / 100 - PADDING_SIZE
+        );
+        OWN_FIELD_PANE.relocate(screenSizes.getX() * 30 / 100, screenSizes.getY() * 35 / 100);
+
+        OWN_FIELD_STATS_BOX.getChildren().clear();
+
+        OWN_FIELD_STATS_BOX.setPrefSize(100, OWN_FIELD_PANE.getPrefHeight());
+        for (var resourceEntry : thisPlayer.getOwnedResources().entrySet()) {
+            HBox resourceData = new HBox();
+            resourceData.setAlignment(Pos.CENTER);
+            ImageView image = new ImageView(String.valueOf(GUIView.class.getResource("/images/icons/res/" + resourceEntry.getKey().SYMBOL.toLowerCase() + ".png")));
+            image.setFitWidth(50);
+            image.setPreserveRatio(true);
+
+            Label resourceInfo = new Label("" + resourceEntry.getValue());
+            resourceInfo.setPrefWidth(25);
+            resourceInfo.setStyle("-fx-font-size: 15px; -fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+
+            resourceData.getChildren().addAll(image, resourceInfo);
+
+            OWN_FIELD_STATS_BOX.getChildren().add(resourceData);
+            resourceData.relocate(0, 0);
+        }
+
+        OWN_FIELD_SCROLL_PANE.setPannable(true);
+        OWN_FIELD_SCROLL_PANE.setPrefSize(OWN_FIELD_PANE.getPrefWidth() - 75, OWN_FIELD_PANE.getPrefHeight());
+        drawField(OWN_FIELD_SCROLL_PANE, thisPlayer, true);
+        OWN_FIELD_SCROLL_PANE.setLayoutX(80);
+
+        ZOOMED_OWN_FIELD_BUTTON.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+        ZOOMED_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> showField(thisPlayer));
+
+        CENTER_OWN_FIELD_BUTTON.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+        CENTER_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> {
+            OWN_FIELD_SCROLL_PANE.setHvalue((OWN_FIELD_SCROLL_PANE.getHmax() + OWN_FIELD_SCROLL_PANE.getHmin()) / 2);
+            OWN_FIELD_SCROLL_PANE.setVvalue((OWN_FIELD_SCROLL_PANE.getVmax() + OWN_FIELD_SCROLL_PANE.getVmin()) / 2);
+        });
+
+        ZOOMED_OWN_FIELD_BUTTON.relocate(OWN_FIELD_PANE.getPrefWidth() - 50, 20);
+        CENTER_OWN_FIELD_BUTTON.relocate(OWN_FIELD_PANE.getPrefWidth() - 50, 60);
     }
 
     @Override
@@ -276,6 +290,7 @@ public class GUIGameView extends GUIView {
             for (var player : thisGame.getPlayers().stream().sorted(Comparator.comparingInt(ClientPlayer::getPoints)).toList().reversed()) {
                 GenericPair<Double, Double> scaleFactor = RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.get(player.getPoints());
                 ImageView token = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/" + player.getColor().name().toLowerCase() + ".png")));
+                token.setSmooth(true);
                 token.setFitHeight(SCOREBOARD_PANE.getPrefWidth() * 0.16);
                 token.setPreserveRatio(true);
 
@@ -330,6 +345,7 @@ public class GUIGameView extends GUIView {
 
             //FIXME: correct this: it is needed to get this later, but which size?
             // or maybe later when needed use cardSizes like this, after having decided if values are correct
+            cardImage.setSmooth(true);
             cardImage.setFitHeight(cardSizes.getY());
             cardImage.setFitWidth(cardSizes.getX());
             cardImage.setPreserveRatio(true);
@@ -452,8 +468,13 @@ public class GUIGameView extends GUIView {
 
     //TODO: centrare l'opponentField sulla carta nuova appena piazzata?
     private void showOpponentsFieldsMiniaturized() {
-        OPPONENTS_FIELDS_PANE.setPrefSize(screenSizes.getX(), screenSizes.getY() * 35 / 100);
-        OPPONENTS_FIELDS_PANE.relocate(0, 0);
+        double opponentFieldsPaddingSize = 20;
+        OPPONENTS_FIELDS_PANE.setPrefSize(
+                screenSizes.getX() - 2 * opponentFieldsPaddingSize,
+                screenSizes.getY() * 35 / 100 - 2 * opponentFieldsPaddingSize
+        );
+        OPPONENTS_FIELDS_PANE.relocate(opponentFieldsPaddingSize, opponentFieldsPaddingSize);
+        OPPONENTS_FIELDS_PANE.setSpacing(30);
 
         ClientGame thisGame = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
 
@@ -464,45 +485,58 @@ public class GUIGameView extends GUIView {
         for (var player : thisGame.getPlayers().stream()
                 .filter((player) -> !(player.getNickname().equals(CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname()))).toList()) {
             VBox opponentInfo = new VBox(5);
+            //FIXME: togliere
+            // opponentInfo.setStyle("-fx-background-color: green");
             opponentInfo.setAlignment(Pos.CENTER);
-            opponentInfo.setPrefSize(OPPONENTS_FIELDS_PANE.getPrefWidth() / (thisGame.getPlayersNumber() - 1), OPPONENTS_FIELDS_PANE.getPrefHeight());
+            opponentInfo.setPrefSize(
+                    (OPPONENTS_FIELDS_PANE.getPrefWidth() - 2 * 30) / 3,
+                    OPPONENTS_FIELDS_PANE.getHeight()
+            );
 
             Label opponentName = new Label(player.getNickname());
             opponentName.setAlignment(Pos.CENTER);
             opponentName.setPrefSize(opponentInfo.getPrefWidth(), opponentInfo.getPrefHeight() / 10);
             opponentName.setStyle(style);
 
-            HBox opponentData = new HBox(0);
+            HBox opponentData = new HBox(5);
             opponentData.setAlignment(Pos.CENTER);
             opponentData.setPrefSize(opponentInfo.getPrefWidth(), opponentInfo.getPrefHeight() * 9 / 10);
 
-            VBox opponentStats = new VBox(0);
+            VBox opponentStats = new VBox();
             opponentStats.setAlignment(Pos.CENTER);
-            opponentStats.setPrefSize(opponentData.getPrefWidth() / 10, opponentData.getPrefHeight());
+            opponentStats.setPrefSize(55, opponentData.getPrefHeight());
             for (var resourceEntry : player.getOwnedResources().entrySet()) {
-                HBox oneData = new HBox(5);
+                HBox resourceData = new HBox();
+                resourceData.setAlignment(Pos.CENTER);
                 ImageView image = new ImageView(String.valueOf(GUIView.class.getResource("/images/icons/res/" + resourceEntry.getKey().SYMBOL.toLowerCase() + ".png")));
+                image.setSmooth(true);
                 image.setFitWidth(30);
                 image.setPreserveRatio(true);
+
                 Label resourceInfo = new Label("" + resourceEntry.getValue());
-                resourceInfo.setPrefSize(opponentStats.getPrefWidth(), opponentStats.getPrefHeight());
+                resourceInfo.setPrefWidth(25);
                 resourceInfo.setStyle(style);
-                oneData.getChildren().addAll(image, resourceInfo);
-                opponentStats.getChildren().add(oneData);
+
+                resourceData.getChildren().addAll(image, resourceInfo);
+                opponentStats.getChildren().add(resourceData);
             }
 
             AnchorPane opponentField = new AnchorPane();
-            opponentField.setPrefSize(opponentData.getPrefWidth() * 9 / 10, opponentData.getPrefHeight());
+            opponentField.setPrefSize(opponentData.getPrefWidth() - 60, opponentData.getPrefHeight());
 
             ScrollPane opponentScrollField = new ScrollPane();
             opponentScrollField.setPrefSize(opponentField.getPrefWidth(), opponentField.getPrefHeight());
             opponentScrollField.setPannable(true);
             drawField(opponentScrollField, player, false);
 
+            ((Pane) opponentScrollField.getContent()).getChildren().getFirst().setScaleX(0.75);
+            ((Pane) opponentScrollField.getContent()).getChildren().getFirst().setScaleY(0.75);
+
+            Button zoomedOwnFieldButton = new Button("[]");
             ImageView zoomImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/zoom.png")));
             zoomImage.setFitHeight(20);
             zoomImage.setPreserveRatio(true);
-            Button zoomedOwnFieldButton = new Button();
+
             zoomedOwnFieldButton.setGraphic(zoomImage);
             zoomedOwnFieldButton.setPrefSize(25, 25);
             zoomedOwnFieldButton.setStyle("-fx-border-radius: 5; -fx-border-width: 1px; -fx-border-color: black; -fx-background-color: white");
@@ -551,8 +585,10 @@ public class GUIGameView extends GUIView {
             ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.FRONT))));
             ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.BACK))));
 
+            frontCardView.setSmooth(true);
             frontCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
             frontCardView.setPreserveRatio(true);
+            backCardView.setSmooth(true);
             backCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
             backCardView.setPreserveRatio(true);
 
@@ -597,6 +633,7 @@ public class GUIGameView extends GUIView {
                 ClientCard objectiveCard = objectivesSelection.get(i);
                 ImageView objectiveCardView = new ImageView(String.valueOf(GUIView.class.getResource(objectiveCard.GUI_SPRITES.get(Side.FRONT))));
 
+                objectiveCardView.setSmooth(true);
                 objectiveCardView.setFitWidth(objectiveChoiceHBox.getPrefWidth() * 0.3);
                 objectiveCardView.setPreserveRatio(true);
 
@@ -642,9 +679,11 @@ public class GUIGameView extends GUIView {
                 pane.getChildren().addAll(backCardView, frontCardView);
                 backCardView.toBack();
 
+                frontCardView.setSmooth(true);
                 frontCardView.setFitWidth(pane.getPrefWidth() * 0.7);
                 frontCardView.setPreserveRatio(true);
 
+                backCardView.setSmooth(true);
                 backCardView.setFitWidth(pane.getPrefWidth() * 0.7);
                 backCardView.setPreserveRatio(true);
 
@@ -698,7 +737,7 @@ public class GUIGameView extends GUIView {
     public void showCommonPlacedCards() {
         Platform.runLater(() -> {
             //TODO: maybe GridPane and padding?
-            DECKS_AND_VISIBLE_CARDS_PANE.setPrefSize(screenSizes.getX() * 25 / 100, screenSizes.getY() * 65 / 100);
+            DECKS_AND_VISIBLE_CARDS_PANE.setPrefSize(screenSizes.getX() * 30 / 100, screenSizes.getY() * 65 / 100);
             DECKS_AND_VISIBLE_CARDS_PANE.relocate(0, screenSizes.getY() * 35 / 100);
 
             ClientGame thisGame = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
@@ -712,7 +751,8 @@ public class GUIGameView extends GUIView {
 
             ImageView resourceDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckResourceCard().GUI_SPRITES.get(Side.BACK))));
 
-            resourceDeck.setFitWidth(cardSizes.getX());
+            resourceDeck.setSmooth(true);
+            resourceDeck.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
             resourceDeck.setPreserveRatio(true);
             resourceDeck.setOnMouseClicked((event) ->
                     ViewState.getCurrentState().drawFromDeck("Resource")
@@ -722,7 +762,8 @@ public class GUIGameView extends GUIView {
             for (int i = 0; i < thisGame.getPlacedResources().length; i++) {
                 if (thisGame.getPlacedResources()[i] != null) {
                     ImageView resource = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedResources()[i].GUI_SPRITES.get(Side.FRONT))));
-                    resource.setFitWidth(cardSizes.getX());
+                    resource.setSmooth(true);
+                    resource.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
                     resource.setPreserveRatio(true);
 
                     int finalI = i + 1;
@@ -743,7 +784,8 @@ public class GUIGameView extends GUIView {
 
             ImageView goldDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckGoldCard().GUI_SPRITES.get(Side.BACK))));
 
-            goldDeck.setFitWidth(cardSizes.getX());
+            goldDeck.setSmooth(true);
+            goldDeck.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
             goldDeck.setPreserveRatio(true);
             goldDeck.setOnMouseClicked((event) -> ViewState.getCurrentState().drawFromDeck("Gold"));
             GOLD_HBOX.getChildren().add(goldDeck);
@@ -751,7 +793,8 @@ public class GUIGameView extends GUIView {
             for (int i = 0; i < thisGame.getPlacedGolds().length; i++) {
                 if (thisGame.getPlacedGolds()[i] != null) {
                     ImageView gold = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedGolds()[i].GUI_SPRITES.get(Side.FRONT))));
-                    gold.setFitWidth(cardSizes.getX());
+                    gold.setSmooth(true);
+                    gold.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
                     gold.setPreserveRatio(true);
 
                     int finalI = i + 1;
@@ -773,7 +816,8 @@ public class GUIGameView extends GUIView {
             for (int i = 0; i < thisGame.getCommonObjectives().length; i++) {
                 if (thisGame.getCommonObjectives()[i] != null) {
                     ImageView commonObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getCommonObjectives()[i].GUI_SPRITES.get(Side.FRONT))));
-                    commonObjective.setFitWidth(cardSizes.getX());
+                    commonObjective.setSmooth(true);
+                    commonObjective.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
                     commonObjective.setPreserveRatio(true);
 
                     OBJECTIVE_HBOX.getChildren().add(commonObjective);
@@ -783,7 +827,8 @@ public class GUIGameView extends GUIView {
             SECRET_OBJECTIVE_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 36 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 85 / 100);
             if (thisGame.getOwnObjective() != null) {
                 ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getOwnObjective().GUI_SPRITES.get(Side.FRONT))));
-                secretObjective.setFitWidth(cardSizes.getX());
+                secretObjective.setSmooth(true);
+                secretObjective.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
                 secretObjective.setPreserveRatio(true);
 
                 DECKS_AND_VISIBLE_CARDS_PANE.getChildren().add(secretObjective);
@@ -864,6 +909,7 @@ public class GUIGameView extends GUIView {
                 ViewState.getCurrentState().toLobbies();
                 LEADERBOARD_VBOX.setVisible(false);
                 createdPopup.hide();
+                clear();
             }));
 
             AWAITING_STATE_MESSAGE_BOX.setVisible(false);
@@ -889,5 +935,9 @@ public class GUIGameView extends GUIView {
         messageBox.getChildren().add(messageLabel);
 
         return messageBox;
+    }
+
+    private void clear() {
+        MESSAGES_BOX.getChildren().clear();
     }
 }

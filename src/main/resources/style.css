@@ -86,6 +86,10 @@
     -fx-background-color: transparent;
 }
 
+.scroll-pane {
+    -fx-background-insets: 0, 1;
+}
+
 .scroll-pane > .viewport {
     -fx-background-color: transparent;
 }
@@ -125,10 +129,9 @@
 }
 
 #gameScreenPane {
-    /*-fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");
+    -fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");
     -fx-background-repeat: no-repeat;
     -fx-background-size: stretch;
-    */
 }
 
 #scoreboardPane {
@@ -140,15 +143,16 @@
 }
 
 #opponentsFieldsPane {
-
+    -fx-alignment: CENTER;
+    /*-fx-background-color: red;*/
 }
 
 #ownFieldPane {
-
+    /*-fx-background-color: yellow;*/
 }
 
 #handPane {
-
+    /*-fx-background-color: purple;*/
 }
 
 #chatPane {
@@ -192,4 +196,9 @@
     -fx-border-color: black;
     -fx-border-width: 2px;
     -fx-padding: 10;
+}
+
+.popupText {
+    -fx-text-fill: #FADA5E;
+    /* F8E473 / EEDC82 */
 }

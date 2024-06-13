@@ -36,7 +36,8 @@
     </ScrollPane>
 
     <VBox fx:id="lobbyCreationPopupBox" styleClass="lobbyScreenPopupBox" visible="false">
-        <Label fx:id="playersNumberPrompt" alignment="CENTER" text="Inserisci il numero di giocatori:">
+        <Label fx:id="playersNumberPrompt" styleClass="popupText" alignment="CENTER"
+               text="Inserisci il numero di giocatori:">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>
@@ -51,7 +52,7 @@
     </VBox>
 
     <VBox fx:id="changeNicknamePopupBox" styleClass="lobbyScreenPopupBox" visible="false">
-        <Label fx:id="nicknamePrompt" alignment="CENTER" text="Inserisci un nuovo nickname:">
+        <Label fx:id="nicknamePrompt" styleClass="popupText" alignment="CENTER" text="Inserisci un nuovo nickname:">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>

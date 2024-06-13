@@ -48,11 +48,10 @@
         </Label>
     </AnchorPane>
 
-    <HBox fx:id="opponentsFieldsPane">
-    </HBox>
+    <HBox fx:id="opponentsFieldsPane"/>
 
     <AnchorPane fx:id="ownFieldPane">
-        <VBox fx:id="statsBox" alignment="CENTER"/>
+        <VBox fx:id="ownFieldStatsBox" alignment="CENTER"/>
         <ScrollPane fx:id="ownFieldScrollPane"/>
         <Button fx:id="zoomedOwnFieldButton" mnemonicParsing="false" text="[]"/>
         <Button fx:id="centerOwnFieldButton" mnemonicParsing="false" text="+"/>
@@ -98,14 +97,14 @@
     </VBox>
 
     <VBox fx:id="leaderboardVBox" styleClass="lobbyScreenPopupBox" visible="false">
-        <Label fx:id="leaderboardLabel" styleClass="titleScreenLabel" alignment="CENTER"
+        <Label fx:id="leaderboardLabel" styleClass="titleScreenLabel, popupText" alignment="CENTER"
                text="LEADERBOARD">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>
         </Label>
 
-        <Label fx:id="winningPlayerLabel" styleClass="titleScreenLabel" alignment="CENTER">
+        <Label fx:id="winningPlayerLabel" styleClass="titleScreenLabel, popupText" alignment="CENTER">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>
