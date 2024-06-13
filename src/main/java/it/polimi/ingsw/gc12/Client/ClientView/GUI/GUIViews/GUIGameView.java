@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIViews;
 
 import it.polimi.ingsw.gc12.Client.ClientView.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
@@ -26,6 +25,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -41,31 +41,37 @@ public class GUIGameView extends GUIView {
 
     //FIXME: this is probably not the correct MIME type syntax for the data we want to pass...
     private static final DataFormat PLACE_CARD_DATA_FORMAT = new DataFormat("text/genericpair<integer,side>");
+
     private static GUIGameView gameScreenController = null;
+
+    private final ArrayList<GenericPair<Double, Double>> RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS;
+
     private final Parent SCENE_ROOT;
     private final AnchorPane OWN_FIELD_PANE;
     private final VBox STATS_BOX;
     private final ScrollPane OWN_FIELD_SCROLL_PANE;
     private final Button ZOOMED_OWN_FIELD_BUTTON;
     private final Button CENTER_OWN_FIELD_BUTTON;
-    private final Button SHOW_SCOREBOARD_BUTTON;
+    private final Button TOGGLE_SCOREBOARD_BUTTON;
     private final Button LEAVE_BUTTON;
-    private final Button CHAT_BUTTON;
+    private final Button TOGGLE_CHAT_BUTTON;
     private final AnchorPane SCOREBOARD_PANE;
-    private final Button HIDE_SCOREBOARD_BUTTON;
     private final AnchorPane CHAT_PANE;
     private final ScrollPane CHAT_SCROLL_PANE;
     private final VBox MESSAGES_BOX;
     private final ComboBox<String> RECEIVER_NICKNAME_SELECTOR;
     private final TextField MESSAGE_TEXTFIELD;
-    private final Button HIDE_CHAT_BUTTON;
     private final Button SEND_MESSAGE_BUTTON;
     private final HBox OPPONENTS_FIELDS_PANE;
     private final HBox OWN_HAND_PANE;
-    private final AnchorPane DECK_AND_VISIBLE_CARDS_PANE;
+    private final AnchorPane DECKS_AND_VISIBLE_CARDS_PANE;
+    private final Label RESOURCES_LABEL;
     private final HBox RESOURCE_HBOX;
+    private final Label GOLDS_LABEL;
     private final HBox GOLD_HBOX;
+    private final Label COMMON_OBJECTIVES_LABEL;
     private final HBox OBJECTIVE_HBOX;
+    private final Label SECRET_OBJECTIVE_LABEL;
     private final VBox AWAITING_STATE_MESSAGE_BOX;
     private final VBox LEADERBOARD_VBOX;
     private final Label LEADERBOARD_LABEL;
@@ -78,32 +84,67 @@ public class GUIGameView extends GUIView {
             throw new RuntimeException(e);
         }
         OWN_FIELD_PANE = (AnchorPane) SCENE_ROOT.lookup("#ownFieldPane");
-        STATS_BOX = (VBox) SCENE_ROOT.lookup("#statsBox");
+        STATS_BOX = (VBox) OWN_FIELD_PANE.lookup("#statsBox");
         OWN_FIELD_SCROLL_PANE = (ScrollPane) OWN_FIELD_PANE.lookup("#ownFieldScrollPane");
         ZOOMED_OWN_FIELD_BUTTON = (Button) OWN_FIELD_PANE.lookup("#zoomedOwnFieldButton");
         CENTER_OWN_FIELD_BUTTON = (Button) OWN_FIELD_PANE.lookup("#centerOwnFieldButton");
-        SHOW_SCOREBOARD_BUTTON = (Button) SCENE_ROOT.lookup("#scoreboardButton");
+        TOGGLE_SCOREBOARD_BUTTON = (Button) SCENE_ROOT.lookup("#scoreboardButton");
+        TOGGLE_CHAT_BUTTON = (Button) SCENE_ROOT.lookup("#chatButton");
         LEAVE_BUTTON = (Button) SCENE_ROOT.lookup("#leaveButton");
-        CHAT_BUTTON = (Button) SCENE_ROOT.lookup("#chatButton");
         SCOREBOARD_PANE = (AnchorPane) SCENE_ROOT.lookup("#scoreboardPane");
-        HIDE_SCOREBOARD_BUTTON = (Button) SCOREBOARD_PANE.lookup("#hideScoreboardButton");
         CHAT_PANE = (AnchorPane) SCENE_ROOT.lookup("#chatPane");
-        CHAT_SCROLL_PANE = (ScrollPane) SCENE_ROOT.lookup("#chatScrollPane");
-        MESSAGES_BOX = (VBox) CHAT_SCROLL_PANE.lookup("#messagesBox");
+        CHAT_SCROLL_PANE = (ScrollPane) CHAT_PANE.lookup("#chatScrollPane");
+        MESSAGES_BOX = (VBox) CHAT_SCROLL_PANE.getContent().lookup("#messagesBox");
         RECEIVER_NICKNAME_SELECTOR = (ComboBox<String>) CHAT_PANE.lookup("#receiverSelector");
         MESSAGE_TEXTFIELD = (TextField) CHAT_PANE.lookup("#messageText");
-        HIDE_CHAT_BUTTON = (Button) CHAT_PANE.lookup("#hideChatButton");
         SEND_MESSAGE_BUTTON = (Button) CHAT_PANE.lookup("#sendButton");
         OPPONENTS_FIELDS_PANE = (HBox) SCENE_ROOT.lookup("#opponentsFieldsPane");
         OWN_HAND_PANE = (HBox) SCENE_ROOT.lookup("#handPane");
-        DECK_AND_VISIBLE_CARDS_PANE = (AnchorPane) SCENE_ROOT.lookup("#deckAndVisiblePane");
-        RESOURCE_HBOX = (HBox) DECK_AND_VISIBLE_CARDS_PANE.lookup("#resourceHBox");
-        GOLD_HBOX = (HBox) DECK_AND_VISIBLE_CARDS_PANE.lookup("#goldHBox");
-        OBJECTIVE_HBOX = (HBox) DECK_AND_VISIBLE_CARDS_PANE.lookup("#objectiveHBox");
+        DECKS_AND_VISIBLE_CARDS_PANE = (AnchorPane) SCENE_ROOT.lookup("#decksAndVisibleCardsPane");
+        RESOURCES_LABEL = (Label) DECKS_AND_VISIBLE_CARDS_PANE.lookup("#resourcesLabel");
+        RESOURCE_HBOX = (HBox) DECKS_AND_VISIBLE_CARDS_PANE.lookup("#resourceHBox");
+        GOLDS_LABEL = (Label) DECKS_AND_VISIBLE_CARDS_PANE.lookup("#goldsLabel");
+        GOLD_HBOX = (HBox) DECKS_AND_VISIBLE_CARDS_PANE.lookup("#goldHBox");
+        COMMON_OBJECTIVES_LABEL = (Label) DECKS_AND_VISIBLE_CARDS_PANE.lookup("#commonObjectivesLabel");
+        OBJECTIVE_HBOX = (HBox) DECKS_AND_VISIBLE_CARDS_PANE.lookup("#objectiveHBox");
+        SECRET_OBJECTIVE_LABEL = (Label) DECKS_AND_VISIBLE_CARDS_PANE.lookup("#secretObjectiveLabel");
         AWAITING_STATE_MESSAGE_BOX = (VBox) SCENE_ROOT.lookup("#awaitingStateMessageBox");
         LEADERBOARD_VBOX = (VBox) SCENE_ROOT.lookup("#leaderboardVBox");
         LEADERBOARD_LABEL = (Label) SCENE_ROOT.lookup("#leaderboardLabel");
         WINNING_PLAYER_LABEL = (Label) SCENE_ROOT.lookup("#winningPlayerLabel");
+
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS = new ArrayList<>();
+        //TODO: CAMBIARE LE COORDINATE SOLO PREVIA COMUNICAZIONE A SACRAMONE
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.187, 0.8918)); // 0
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.422, 0.8915)); // 1
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.658, 0.8915)); // 2
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.775, 0.783)); // 3
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.54, 0.783)); // 4
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.305, 0.783)); // 5
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.069, 0.783)); // 6
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.069, 0.6755)); // 7
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.303, 0.6755)); // 8
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.54, 0.6755)); // 9
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.775, 0.6755)); // 10
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.775, 0.568)); // 11
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.54, 0.568)); // 12
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.303, 0.568)); // 13
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.069, 0.568)); // 14
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.069, 0.4605)); // 15
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.303, 0.4605)); // 16
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.54, 0.4605)); // 17
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.775, 0.4605)); // 18
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.775, 0.353)); // 19
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.422, 0.3)); // 20
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.069, 0.353)); // 21
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.069, 0.245)); // 22
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.069, 0.1375)); // 23
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.205, 0.05)); // 24
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.422, 0.03)); // 25
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.639, 0.05)); // 26
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.775, 0.1375)); // 27
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.775, 0.245)); // 28
+        RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.422, 0.1623)); // 29
     }
 
     public static GUIGameView getInstance() {
@@ -118,10 +159,10 @@ public class GUIGameView extends GUIView {
         Platform.runLater(() -> {
             stage.getScene().setRoot(SCENE_ROOT);
 
-            ClientPlayer thisPlayer = ClientController.getInstance().VIEWMODEL.getCurrentGame().getThisPlayer();
+            ClientPlayer thisPlayer = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getThisPlayer();
 
-            GUIView.getInstance().showHand();
-            GUIView.getInstance().showCommonPlacedCards();
+            showHand();
+            showCommonPlacedCards();
 
             //TODO: estrarre in una funzione
             OWN_FIELD_PANE.setPrefSize(screenSizes.getX() * 75 / 100, screenSizes.getY() * 50 / 100);
@@ -153,7 +194,7 @@ public class GUIGameView extends GUIView {
             drawField(OWN_FIELD_SCROLL_PANE, thisPlayer, true);
 
             ZOOMED_OWN_FIELD_BUTTON.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
-            ZOOMED_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> GUIView.getInstance().showField(thisPlayer));
+            ZOOMED_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> showField(thisPlayer));
 
             CENTER_OWN_FIELD_BUTTON.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
             CENTER_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> {
@@ -166,13 +207,23 @@ public class GUIGameView extends GUIView {
             CENTER_OWN_FIELD_BUTTON.relocate(OWN_FIELD_PANE.getPrefWidth() - 50, 60);
             showOpponentsFieldsMiniaturized();
 
+            updateScoreboard();
             ImageView scoreboardImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/scoreboard.png")));
             scoreboardImage.setFitHeight(30);
             scoreboardImage.setPreserveRatio(true);
-            SHOW_SCOREBOARD_BUTTON.setGraphic(scoreboardImage);
-            SHOW_SCOREBOARD_BUTTON.setOnMouseClicked((event) -> showScoreboard());
-            SHOW_SCOREBOARD_BUTTON.relocate(screenSizes.getX() * 2 / 100, screenSizes.getY() * 90 / 100);
-            SHOW_SCOREBOARD_BUTTON.toFront();
+            TOGGLE_SCOREBOARD_BUTTON.setGraphic(scoreboardImage);
+            TOGGLE_SCOREBOARD_BUTTON.setOnMouseClicked((event) -> togglePopup(SCOREBOARD_PANE));
+            TOGGLE_SCOREBOARD_BUTTON.relocate(screenSizes.getX() * 2 / 100, screenSizes.getY() * 90 / 100);
+            TOGGLE_SCOREBOARD_BUTTON.toFront();
+
+            showChat(); //FIXME: make updateChat()?
+            ImageView chatImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/chat.png")));
+            chatImage.setFitHeight(30);
+            chatImage.setPreserveRatio(true);
+            TOGGLE_CHAT_BUTTON.setGraphic(chatImage);
+            TOGGLE_CHAT_BUTTON.setOnMouseClicked((event) -> togglePopup(CHAT_PANE));
+            TOGGLE_CHAT_BUTTON.relocate(screenSizes.getX() * 90 / 100, screenSizes.getY() * 90 / 100);
+            TOGGLE_CHAT_BUTTON.toFront();
 
             ImageView leaveImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/leaveGame.png")));
             leaveImage.setFitHeight(30);
@@ -181,14 +232,6 @@ public class GUIGameView extends GUIView {
             LEAVE_BUTTON.setOnMouseClicked((event) -> ViewState.getCurrentState().quit());
             LEAVE_BUTTON.relocate(screenSizes.getX() * 95 / 100, screenSizes.getY() * 90 / 100);
             LEAVE_BUTTON.toFront();
-
-            ImageView chatImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/chat.png")));
-            chatImage.setFitHeight(30);
-            chatImage.setPreserveRatio(true);
-            CHAT_BUTTON.setGraphic(chatImage);
-            CHAT_BUTTON.setOnMouseClicked((event) -> GUIView.getInstance().showChat()); //FIXME: make toggleChat()?
-            CHAT_BUTTON.relocate(screenSizes.getX() * 90 / 100, screenSizes.getY() * 90 / 100);
-            CHAT_BUTTON.toFront();
         });
     }
 
@@ -196,26 +239,17 @@ public class GUIGameView extends GUIView {
     public void awaitingScreen() {
         Platform.runLater(() -> {
             OverlayPopup awaitingStatePopup = drawOverlayPopup(AWAITING_STATE_MESSAGE_BOX, false);
-            awaitingStatePopup.setAutoFix(true);
 
             awaitingStatePopup.show(stage);
             AWAITING_STATE_MESSAGE_BOX.setVisible(true);
-            awaitingStatePopup.centerOnScreen();
         });
     }
 
-    private void showScoreboard() {
+    private void updateScoreboard() {
         Platform.runLater(() -> {
             //TODO: CAMBIARE LE DIMENSIONI SOLO PREVIA COMUNICAZIONE A SACRAMONE
             SCOREBOARD_PANE.setPrefSize(screenSizes.getX() * 0.1328125, screenSizes.getY() * 0.5);
-            // System.out.println("x: " + screenSizes.getX() + " y: " + screenSizes.getY());
-            // System.out.println("\n" + "x: " + scoreboardPane.getPrefWidth() + " y: " + scoreboardPane.getPrefHeight());
             SCOREBOARD_PANE.setStyle("-fx-background-image: url('/images/scoreboard.png'); -fx-background-size: stretch;");
-
-            HIDE_SCOREBOARD_BUTTON.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
-            HIDE_SCOREBOARD_BUTTON.setOnMouseClicked((event) -> SCOREBOARD_PANE.setVisible(false));
-
-            HIDE_SCOREBOARD_BUTTON.relocate(SCOREBOARD_PANE.getPrefWidth(), 0);
 
             //TODO: ???????
             AtomicReference<Double> xOffset = new AtomicReference<>((double) 0);
@@ -231,48 +265,12 @@ public class GUIGameView extends GUIView {
                 SCOREBOARD_PANE.relocate(event.getScreenX() + xOffset.get(), event.getScreenY() + yOffset.get());
             });
 
-            //TODO: Find correct coordinates of each point cell
-            ArrayList<GenericPair<Double, Double>> relativeOffsetScaleFactors = new ArrayList<>();
-
-            //TODO: CAMBIARE LE COORDINATE SOLO PREVIA COMUNICAZIONE A SACRAMONE
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.187, 0.8918)); // 0
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.8915)); // 1
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.658, 0.8915)); // 2
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.783)); // 3
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.783)); // 4
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.305, 0.783)); // 5
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.783)); // 6
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.6755)); // 7
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.303, 0.6755)); // 8
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.6755)); // 9
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.6755)); // 10
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.568)); // 11
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.568)); // 12
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.303, 0.568)); // 13
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.568)); // 14
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.4605)); // 15
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.303, 0.4605)); // 16
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.54, 0.4605)); // 17
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.4605)); // 18
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.353)); // 19
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.30)); // 20
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.353)); // 21
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.245)); // 22
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.069, 0.1375)); // 23
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.205, 0.05)); // 24
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.03)); // 25
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.639, 0.05)); // 26
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.1375)); // 27
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.775, 0.245)); // 28
-            relativeOffsetScaleFactors.add(new GenericPair<>(0.422, 0.1623)); // 29
-
-
-            ClientGame thisGame = ClientController.getInstance().VIEWMODEL.getCurrentGame();
+            ClientGame thisGame = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
 
             SCOREBOARD_PANE.getChildren().clear();
 
             for (var player : thisGame.getPlayers().stream().sorted(Comparator.comparingInt(ClientPlayer::getPoints)).toList().reversed()) {
-                GenericPair<Double, Double> scaleFactor = relativeOffsetScaleFactors.get(player.getPoints());
+                GenericPair<Double, Double> scaleFactor = RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.get(player.getPoints());
                 ImageView token = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/" + player.getColor().name().toLowerCase() + ".png")));
                 token.setFitHeight(SCOREBOARD_PANE.getPrefWidth() * 0.16);
                 token.setPreserveRatio(true);
@@ -283,17 +281,6 @@ public class GUIGameView extends GUIView {
 
                 //TODO: Sovrapporre pedine se punteggi uguali
             }
-
-            /*
-            GenericPair<Double, Double> scaleFactorCircle = relativeOffsetScaleFactors.get(0);
-            Circle circle = new Circle();
-            circle.setRadius((230 * scoreboardPane.getPrefWidth() / 1575) / 2);
-            circle.setFill(Color.RED);
-
-            scoreboardPane.getChildren().add(circle);
-            circle.relocate(scoreboardPane.getPrefWidth() * scaleFactorCircle.getX(),
-                    scoreboardPane.getPrefHeight() * scaleFactorCircle.getY());
-             */
 
             //FIXME: we need to clear all the previous token, but this also clears the hideScoreboardButton...
             //scoreboardPane.getChildren().clear();
@@ -309,13 +296,15 @@ public class GUIGameView extends GUIView {
                         SCOREBOARD_PANE.getPrefHeight() * scaleFactor.getY());
             }
             */
-
-
-            SCOREBOARD_PANE.setVisible(true);
-            SCOREBOARD_PANE.toFront();
         });
     }
 
+    private void togglePopup(Pane popupPane) {
+        Platform.runLater(() -> {
+            popupPane.setVisible(!popupPane.isVisible());
+            popupPane.toFront();
+        });
+    }
 
     //TODO: eventually remove boolean from signature?
     private void drawField(ScrollPane fieldPane, ClientPlayer player, boolean isInteractive) {
@@ -412,25 +401,20 @@ public class GUIGameView extends GUIView {
                 CHAT_PANE.relocate(event.getScreenX() + xOffset.get(), event.getScreenY() + yOffset.get());
             });
 
-            ClientGame thisGame = ClientController.getInstance().VIEWMODEL.getCurrentGame();
+            ClientGame thisGame = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
 
-            MESSAGES_BOX.getChildren().clear();
-
-            //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
-            for (var message : thisGame.getChatLog()) {
-                MESSAGES_BOX.getChildren().add(createMessageElement(message));
-            }
+            List<String> chatLog = thisGame.getChatLog();
+            if (!chatLog.isEmpty())
+                MESSAGES_BOX.getChildren().add(createMessageElement(chatLog.getLast()));
 
             CHAT_SCROLL_PANE.setVvalue(CHAT_SCROLL_PANE.getVmax());
 
             List<String> nicknames = thisGame.getPlayers().stream().map(Player::getNickname).collect(Collectors.toCollection(ArrayList::new));
             nicknames.addFirst("everyone");
-            nicknames.remove(ClientController.getInstance().VIEWMODEL.getOwnNickname());
+            nicknames.remove(CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname());
             ObservableList<String> receiverNicknames = FXCollections.observableList(nicknames);
             RECEIVER_NICKNAME_SELECTOR.setItems(receiverNicknames);
             RECEIVER_NICKNAME_SELECTOR.getSelectionModel().selectFirst();
-
-            HIDE_CHAT_BUTTON.setOnMouseClicked((event) -> CHAT_PANE.setVisible(false));
 
             SEND_MESSAGE_BUTTON.setOnMouseClicked((event) -> {
                 String receiver = RECEIVER_NICKNAME_SELECTOR.getValue();
@@ -442,9 +426,6 @@ public class GUIGameView extends GUIView {
                 else
                     ViewState.getCurrentState().directMessage(receiver, message);
             });
-
-            CHAT_PANE.setVisible(true);
-            CHAT_PANE.toFront();
         });
     }
 
@@ -453,14 +434,14 @@ public class GUIGameView extends GUIView {
         OPPONENTS_FIELDS_PANE.setPrefSize(screenSizes.getX(), screenSizes.getY() * 35 / 100);
         OPPONENTS_FIELDS_PANE.relocate(0, 0);
 
-        ClientGame thisGame = ClientController.getInstance().VIEWMODEL.getCurrentGame();
+        ClientGame thisGame = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
 
         String style = "-fx-font-size: 15px; -fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;";
 
         OPPONENTS_FIELDS_PANE.getChildren().clear();
 
         for (var player : thisGame.getPlayers().stream()
-                .filter((player) -> !(player.getNickname().equals(ClientController.getInstance().VIEWMODEL.getOwnNickname()))).toList()) {
+                .filter((player) -> !(player.getNickname().equals(CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname()))).toList()) {
             VBox opponentInfo = new VBox(5);
             opponentInfo.setAlignment(Pos.CENTER);
             opponentInfo.setPrefSize(OPPONENTS_FIELDS_PANE.getPrefWidth() / (thisGame.getPlayersNumber() - 1), OPPONENTS_FIELDS_PANE.getPrefHeight());
@@ -534,7 +515,7 @@ public class GUIGameView extends GUIView {
             initialChoiceHBox.setAlignment(Pos.CENTER);
             initialChoiceHBox.setPrefSize(initialCardsChoiceVBox.getPrefWidth(), initialCardsChoiceVBox.getPrefHeight() * 0.9);
 
-            ClientCard initialCard = ClientController.getInstance().VIEWMODEL.getCurrentGame().getCardsInHand().getFirst();
+            ClientCard initialCard = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getCardsInHand().getFirst();
 
             ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.FRONT))));
             ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.BACK))));
@@ -612,7 +593,7 @@ public class GUIGameView extends GUIView {
 
             double handPaneHeight = OWN_HAND_PANE.getPrefHeight();
             double handPaneWidth = OWN_HAND_PANE.getPrefWidth();
-            List<ClientCard> cardsInHand = ClientController.getInstance().VIEWMODEL.getCurrentGame().getCardsInHand();
+            List<ClientCard> cardsInHand = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getCardsInHand();
 
             OWN_HAND_PANE.getChildren().clear();
 
@@ -686,40 +667,14 @@ public class GUIGameView extends GUIView {
     public void showCommonPlacedCards() {
         Platform.runLater(() -> {
             //TODO: maybe GridPane and padding?
-            DECK_AND_VISIBLE_CARDS_PANE.setPrefSize(screenSizes.getX() * 25 / 100, screenSizes.getY() * 65 / 100);
-            DECK_AND_VISIBLE_CARDS_PANE.relocate(0, screenSizes.getY() * 35 / 100);
+            DECKS_AND_VISIBLE_CARDS_PANE.setPrefSize(screenSizes.getX() * 25 / 100, screenSizes.getY() * 65 / 100);
+            DECKS_AND_VISIBLE_CARDS_PANE.relocate(0, screenSizes.getY() * 35 / 100);
 
-            ClientGame thisGame = ClientController.getInstance().VIEWMODEL.getCurrentGame();
+            ClientGame thisGame = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
 
-            Label resourcesLabel = new Label("Resources");
-            DECK_AND_VISIBLE_CARDS_PANE.getChildren().add(resourcesLabel);
-            resourcesLabel.relocate(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 5 / 100, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 5 / 100);
-            RESOURCE_HBOX.setPrefSize(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
-            RESOURCE_HBOX.relocate(0, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 7.5 / 100);
-
-            Label goldsLabel = new Label("Golds");
-            DECK_AND_VISIBLE_CARDS_PANE.getChildren().add(goldsLabel);
-            goldsLabel.relocate(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 5 / 100, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 30 / 100);
-            GOLD_HBOX.setPrefSize(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
-            GOLD_HBOX.relocate(0, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 32.5 / 100);
-
-            Label commonObjectivesLabel = new Label("Common Objectives");
-            DECK_AND_VISIBLE_CARDS_PANE.getChildren().add(commonObjectivesLabel);
-            commonObjectivesLabel.relocate(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 37.5 / 100, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 55 / 100);
-            OBJECTIVE_HBOX.setPrefSize(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
-            OBJECTIVE_HBOX.relocate(0, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 57.5 / 100);
-
-            Label secretObjectiveLabel = new Label("Secret Objective");
-            DECK_AND_VISIBLE_CARDS_PANE.getChildren().add(secretObjectiveLabel);
-            secretObjectiveLabel.relocate(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 55 / 100, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 87.5 / 100);
-            if (thisGame.getOwnObjective() != null) {
-                ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getOwnObjective().GUI_SPRITES.get(Side.FRONT))));
-                secretObjective.setFitWidth(cardSizes.getX());
-                secretObjective.setPreserveRatio(true);
-
-                DECK_AND_VISIBLE_CARDS_PANE.getChildren().add(secretObjective);
-                secretObjective.relocate(DECK_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 80 / 100, DECK_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 82.5 / 100);
-            }
+            RESOURCES_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 5 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 5 / 100);
+            RESOURCE_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
+            RESOURCE_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 10 / 100);
 
             //TODO. make imageView static and clear and avoid clearing children and refresh only the content
             RESOURCE_HBOX.getChildren().clear();
@@ -748,6 +703,10 @@ public class GUIGameView extends GUIView {
                 }
             }
 
+            GOLDS_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 5 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 27.5 / 100);
+            GOLD_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
+            GOLD_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 32.5 / 100);
+
             //TODO. make imageView static and clear and avoid clearing children and refresh only the content
             GOLD_HBOX.getChildren().clear();
 
@@ -773,6 +732,10 @@ public class GUIGameView extends GUIView {
                 }
             }
 
+            COMMON_OBJECTIVES_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 15 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 52.5 / 100);
+            OBJECTIVE_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
+            OBJECTIVE_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 57.5 / 100);
+
             //TODO. make imageView static and clear and avoid clearing children and refresh only the content
             OBJECTIVE_HBOX.getChildren().clear();
 
@@ -784,6 +747,16 @@ public class GUIGameView extends GUIView {
 
                     OBJECTIVE_HBOX.getChildren().add(commonObjective);
                 }
+            }
+
+            SECRET_OBJECTIVE_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 37.5 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 85 / 100);
+            if (thisGame.getOwnObjective() != null) {
+                ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getOwnObjective().GUI_SPRITES.get(Side.FRONT))));
+                secretObjective.setFitWidth(cardSizes.getX());
+                secretObjective.setPreserveRatio(true);
+
+                DECKS_AND_VISIBLE_CARDS_PANE.getChildren().add(secretObjective);
+                secretObjective.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 80 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 82.5 / 100);
             }
         });
     }
@@ -848,7 +821,7 @@ public class GUIGameView extends GUIView {
             }
 
             WINNING_PLAYER_LABEL.setText(
-                    ClientController.getInstance().VIEWMODEL.getCurrentGame().getPlayers().getFirst().getNickname() + " won" +
+                    CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getPlayers().getFirst().getNickname() + " won" +
                             (gameEndedDueToDisconnections ? " as the only player left" : "") + "!"
             );
 
@@ -864,6 +837,7 @@ public class GUIGameView extends GUIView {
 
             AWAITING_STATE_MESSAGE_BOX.setVisible(false);
             LEADERBOARD_VBOX.setVisible(true);
+            //TODO: if(gameEndedDueToDisconnections) hide awaiting popup
             createdPopup.show(stage);
         });
     }

@@ -78,17 +78,18 @@ public class LobbyController extends ServerController {
     public synchronized void leaveLobby(NetworkSession sender, boolean isInactive) {
         System.out.println("[CLIENT]: LeaveLobbyCommand received and being executed");
 
+        if (isInactive) {
+            sender.getTimeoutTask().cancel();
+            MODEL.removeListener(sender.getListener());
+            removeActivePlayer(sender);
+        }
+
         if (CONTROLLED_LOBBY.getPlayersNumber() == 1)
             MODEL.destroyLobbyController(this);
         else
             MODEL.removePlayerFromLobby(sender.getPlayer(), CONTROLLED_LOBBY);
 
         sender.setController(ConnectionController.getInstance());
-
-        if (isInactive) {
-            MODEL.removeListener(sender.getListener());
-            removeActivePlayer(sender);
-        }
 
         System.out.println("[SERVER]: sending UpdateLobbiesCommand to clients");
     }

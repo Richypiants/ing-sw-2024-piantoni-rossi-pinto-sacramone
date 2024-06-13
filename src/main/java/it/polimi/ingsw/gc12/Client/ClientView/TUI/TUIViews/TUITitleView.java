@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIViews;
 
 import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIParser;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import org.fusesource.jansi.Ansi;
 
 import static java.lang.Thread.sleep;
@@ -24,7 +23,7 @@ public class TUITitleView extends TUIView{
     }
 
     public void titleScreen() {
-        TUIParser.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().VIEWMODEL.getOwnNickname().length();
+        TUIParser.COMMAND_INPUT_COLUMN = 6 + CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname().length();
         System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN));
         clearTerminal();
 
@@ -32,7 +31,7 @@ public class TUITitleView extends TUIView{
         try {
             sleep(2000);
         } catch (Exception e) {
-            ClientController.getInstance().ERROR_LOGGER.log(e);
+            CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
         }
 
         printToPosition(ansi()
@@ -90,7 +89,7 @@ public class TUITitleView extends TUIView{
         try {
             sleep(2000);
         } catch (Exception e) {
-            ClientController.getInstance().ERROR_LOGGER.log(e);
+            CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
         }
         clearTerminal();
         printToPosition(ansi()

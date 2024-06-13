@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Client.ClientView.GUI;
 
+import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -8,43 +9,69 @@ import javafx.stage.Window;
 
 public class OverlayPopup extends Popup {
 
-    AnchorPane darkening;
+    private static final AnchorPane DARKENING_PANE = generateDarkeningPane();
+
+    private Window ownerWindow = null;
+    private ChangeListener<Boolean> ownerWindowFocusedListener;
 
     public OverlayPopup() {
-        super();
+    }
+
+    private static AnchorPane generateDarkeningPane() {
+        AnchorPane darkening = new AnchorPane();
 
         darkening = new AnchorPane();
         darkening.setId("#darkening");
         darkening.setStyle("-fx-background-color: black;");
         darkening.setOpacity(0.8);
+
+        return darkening;
     }
 
-    private void darken(Window window) {
-        Node root = window.getScene().getRoot();
+    private void darken() {
+        if (ownerWindow == null) return;
+
+        Node root = ownerWindow.getScene().getRoot();
 
         if (root instanceof Pane pane) {
             pane.setDisable(true);
-            darkening.setPrefSize(window.getWidth(), window.getHeight());
-            pane.getChildren().add(darkening);
+            DARKENING_PANE.setPrefSize(ownerWindow.getWidth(), ownerWindow.getHeight());
+            pane.getChildren().add(DARKENING_PANE);
         }
     }
 
     @Override
     public void show(Window window) {
-        darken(window);
+        ownerWindow = window;
+        darken();
         getContent().getFirst().setVisible(true);
-        super.show(window);
+        if (ownerWindow.focusedProperty().get()) super.show(window);
+
+        ownerWindowFocusedListener = (observable, oldValue, newValue) -> {
+            if (newValue) {
+                super.show(window);
+            } else {
+                super.hide();
+            }
+        };
+
+        ownerWindow.focusedProperty().addListener(ownerWindowFocusedListener);
     }
 
     @Override
     public void hide() {
+        getContent().getFirst().setVisible(false);
+        ownerWindow.focusedProperty().removeListener(ownerWindowFocusedListener);
+        super.hide();
+
+        if (ownerWindow == null) return;
+
         Node root = getOwnerWindow().getScene().getRoot();
 
         if (root instanceof Pane pane) {
-            pane.getChildren().remove(darkening);
+            pane.getChildren().remove(DARKENING_PANE);
             pane.setDisable(false);
         }
-        getContent().getFirst().setVisible(true);
-        super.hide();
     }
 }
+

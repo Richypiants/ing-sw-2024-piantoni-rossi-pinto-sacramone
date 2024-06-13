@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
  * Represents a client-side game that extends the {@link Room}.
  * This class handles the state of the game from the client's perspective.
  */
-//FIXME: is it correct that it extends Lobby and not Room?
 public class ClientGame extends Room implements Serializable {
 
     /**
@@ -59,7 +58,10 @@ public class ClientGame extends Room implements Serializable {
      * and each player has to perform an action
      */
     private int currentPlayerIndex;
-    private final List<String> chatLog;
+    /**
+     * The log of all chat messages received during the game.
+     */
+    private final List<String> CHAT_LOG;
 
     /**
      * Constructs a new ClientGame with the specified parameters.
@@ -101,7 +103,7 @@ public class ClientGame extends Room implements Serializable {
         this.ownObjective = ownObjective;
         this.currentRound = currentRound;
         this.currentPlayerIndex = currentPlayerIndex;
-        this.chatLog = new ArrayList<>();
+        this.CHAT_LOG = new ArrayList<>();
     }
 
     /**
@@ -300,7 +302,7 @@ public class ClientGame extends Room implements Serializable {
      * @return an unmodifiable list of strings representing the chat log
      */
     public List<String> getChatLog() {
-        return Collections.unmodifiableList(chatLog);
+        return Collections.unmodifiableList(CHAT_LOG);
     }
 
     /**
@@ -309,6 +311,6 @@ public class ClientGame extends Room implements Serializable {
      * @param message the message to be added to the chat log
      */
     public void addMessageToChatLog(String message) {
-        chatLog.add(message);
+        CHAT_LOG.add(message);
     }
 }

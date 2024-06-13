@@ -16,7 +16,7 @@ public class ViewModel {
      * The map of cards used to graphically represent them on the clients.
      * Each client card is mapped to its unique ID for easy access.
      */
-    public final Map<Integer, ClientCard> CARDS_LIST;
+    public static final Map<Integer, ClientCard> CARDS_LIST = loadCards();
 
     /**
      * The nickname associated to this client.
@@ -38,7 +38,6 @@ public class ViewModel {
      * Constructs a new ViewModel with an empty nickname and no lobbies.
      */
     public ViewModel() {
-        CARDS_LIST = loadCards();
         ownNickname = "";
         lobbies = new HashMap<>();
         currentRoom = null;
@@ -49,12 +48,21 @@ public class ViewModel {
      *
      * @return A map of client card IDs to client cards.
      */
-    private Map<Integer, ClientCard> loadCards() {
+    private static Map<Integer, ClientCard> loadCards() {
         Map<Integer, ClientCard> tmp = new HashMap<>();
         Objects.requireNonNull(JSONParser.generateClientCardsFromJSON("/jsonFiles/client_cards.json"))
                 .forEach((card) -> tmp.put(card.ID, card));
         tmp.put(-1, new ClientCard(-1, null, null));
         return Collections.unmodifiableMap(tmp);
+    }
+
+    /**
+     * Clears this model instance, so that operations that need a fresh reboot can discard all the previous data.
+     */
+    public void clearModel() {
+        ownNickname = "";
+        lobbies = new HashMap<>();
+        currentRoom = null;
     }
 
     /**

@@ -30,14 +30,22 @@ public class TUIView extends View {
     public static TUIView getInstance() {
         if (SINGLETON_TUI_INSTANCE == null) {
             SINGLETON_TUI_INSTANCE = new TUIView();
+
             AnsiConsole.systemInstall();
             listener = TUIParser.getInstance();
+
             try {
                 //FIXME: on Mac bash instead of cmd (on Linux too?)
                 new ProcessBuilder("cmd", "/c", "mode con:cols=" + SINGLETON_TUI_INSTANCE.TERMINAL_SIZE.getY() + " lines=" + SINGLETON_TUI_INSTANCE.TERMINAL_SIZE.getX())
                         .inheritIO().start().waitFor();
             } catch (InterruptedException | IOException e) {
-                throw new RuntimeException(e);
+                try {
+                    //FIXME: on Mac bash instead of cmd (on Linux too?)
+                    new ProcessBuilder("bash", "/c", "mode con:cols=" + SINGLETON_TUI_INSTANCE.TERMINAL_SIZE.getY() + " lines=" + SINGLETON_TUI_INSTANCE.TERMINAL_SIZE.getX())
+                            .inheritIO().start().waitFor();
+                } catch (InterruptedException | IOException e2) {
+                    throw new RuntimeException(e2);
+                }
             }
         }
         return SINGLETON_TUI_INSTANCE;

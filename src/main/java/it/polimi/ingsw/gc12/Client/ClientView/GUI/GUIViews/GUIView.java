@@ -29,11 +29,11 @@ public class GUIView extends View {
 
     public static Stage stage;
 
-    static GenericPair<Double, Double> screenSizes;
+    public static GenericPair<Double, Double> screenSizes;
 
-    static GenericPair<Double, Double> cardSizes = new GenericPair<>(100.0, 66.0);
-    static GenericPair<Double, Double> clippedPaneCenter = null;
-    static GenericPair<Double, Double> cornerScaleFactor = new GenericPair<>(2.0 / 9, 2.0 / 5);
+    public static GenericPair<Double, Double> cardSizes = new GenericPair<>(100.0, 66.0);
+    public static GenericPair<Double, Double> clippedPaneCenter = null;
+    public static GenericPair<Double, Double> cornerScaleFactor = new GenericPair<>(2.0 / 9, 2.0 / 5);
 
     public GUIView() {
     }
@@ -152,7 +152,9 @@ public class GUIView extends View {
         }
 
         overlayPopup.getContent().add(content);
-        overlayPopup.setWidth(7);
+        overlayPopup.setAutoFix(true);
+        overlayPopup.centerOnScreen();
+        overlayPopup.setHideOnEscape(false);
         return overlayPopup;
     }
 

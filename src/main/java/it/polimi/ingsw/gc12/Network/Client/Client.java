@@ -34,14 +34,26 @@ public class Client {
         this.commandsReceivedExecutor = Executors.newSingleThreadExecutor();
         this.commandSenderExecutor = Executors.newSingleThreadExecutor();
 
-        this.serverIPAddress = "localhost";
-        this.serverConnection = null;
-        this.session = null;
-        this.keepAlive = null;
+        resetClient();
     }
 
     public static Client getClientInstance() {
         return CLIENT_INSTANCE;
+    }
+
+    public void resetClient() {
+        try {
+            if (serverConnection != null)
+                serverConnection.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        if (keepAlive != null)
+            keepAlive.interrupt();
+        this.serverIPAddress = "localhost";
+        this.serverConnection = null;
+        this.session = null;
+        this.keepAlive = null;
     }
 
     //Helper method to catch RemoteException (and eventually other ones) only one time

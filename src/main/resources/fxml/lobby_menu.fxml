@@ -3,8 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
-            fx:id="lobbiesMenuPane" stylesheets="/style.css">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:id="lobbiesMenuPane" xmlns="http://javafx.com/javafx/21" stylesheets="/style.css">
     <VBox fx:id="buttonsBox">
         <Label fx:id="ownNicknameLabel" styleClass="titleScreenLabel">
             <font>

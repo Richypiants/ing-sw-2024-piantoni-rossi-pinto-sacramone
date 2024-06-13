@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIViews;
 
 import it.polimi.ingsw.gc12.Client.ClientView.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Utilities.Color;
 import javafx.application.Platform;
@@ -72,7 +71,7 @@ public class GUILobbiesView extends GUIView {
         Platform.runLater(() -> {
             MENU_BUTTONS_BOX.relocate(screenSizes.getX() * 12 / 100, screenSizes.getY() * 9 / 16);
 
-            OWN_NICKNAME_LABEL.setText("Profile: " + ClientController.getInstance().VIEWMODEL.getOwnNickname());
+            OWN_NICKNAME_LABEL.setText("Profile: " + CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname());
 
             PLAYERS_NUMBER_SELECTOR.setItems(FXCollections.observableArrayList(2, 3, 4));
 
@@ -118,16 +117,16 @@ public class GUILobbiesView extends GUIView {
             LOBBIES_LIST.setPrefWidth(LOBBIES_PANE.getPrefWidth() * 98 / 100);
             LOBBIES_LIST.getChildren().clear();
 
-            if (ClientController.getInstance().VIEWMODEL.inRoom())
+            if (CLIENT_CONTROLLER.VIEWMODEL.inRoom())
                 LOBBIES_LIST.getChildren().add(createLobbyListElement(
-                                ClientController.getInstance().VIEWMODEL.getCurrentRoomUUID(),
-                                ClientController.getInstance().VIEWMODEL.getCurrentLobby()
+                        CLIENT_CONTROLLER.VIEWMODEL.getCurrentRoomUUID(),
+                        CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby()
                         )
                 );
 
             //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
-            for (var lobby : ClientController.getInstance().VIEWMODEL.getLobbies().entrySet()) {
-                if (!lobby.getValue().equals(ClientController.getInstance().VIEWMODEL.getCurrentLobby()))
+            for (var lobby : CLIENT_CONTROLLER.VIEWMODEL.getLobbies().entrySet()) {
+                if (!lobby.getValue().equals(CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby()))
                     LOBBIES_LIST.getChildren().add(createLobbyListElement(lobby.getKey(), lobby.getValue()));
             }
 
@@ -138,7 +137,7 @@ public class GUILobbiesView extends GUIView {
     @Override
     public void showNickname() {
         Platform.runLater(() -> {
-            OWN_NICKNAME_LABEL.setText("Profile: " + ClientController.getInstance().VIEWMODEL.getOwnNickname());
+            OWN_NICKNAME_LABEL.setText("Profile: " + CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname());
         });
     }
 
@@ -172,7 +171,7 @@ public class GUILobbiesView extends GUIView {
             colorToken.setPreserveRatio(true);
             colorToken.setSmooth(true);
 
-            if (lobby.equals(ClientController.getInstance().VIEWMODEL.getCurrentLobby()))
+            if (lobby.equals(CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby()))
                 colorToken.setOnMouseClicked((event) -> {
                     ViewState.getCurrentState().selectColor(color);
                 });
@@ -182,12 +181,12 @@ public class GUILobbiesView extends GUIView {
 
         lobbyBox.getChildren().addAll(nicknamesBox, playerCount, availableColorsBox);
 
-        if (ClientController.getInstance().VIEWMODEL.getCurrentLobby() == null && lobby.getPlayersNumber() < lobby.getMaxPlayers()) {
+        if (CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby() == null && lobby.getPlayersNumber() < lobby.getMaxPlayers()) {
             Button joinButton = new Button("JOIN");
             joinButton.setOnAction(e -> ViewState.getCurrentState().joinLobby(lobbyUUID));
             lobbyBox.getChildren().add(joinButton);
         } else {
-            if (ClientController.getInstance().VIEWMODEL.getCurrentLobby().equals(lobby)) {
+            if (CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby().equals(lobby)) {
                 Button leaveButton = new Button("LEAVE");
                 leaveButton.setOnAction(e -> ViewState.getCurrentState().leaveLobby()
                 );

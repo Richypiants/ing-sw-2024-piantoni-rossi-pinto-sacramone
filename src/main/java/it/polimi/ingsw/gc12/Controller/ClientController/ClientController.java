@@ -21,8 +21,6 @@ public class ClientController implements ClientControllerInterface {
 
     private static final ClientController SINGLETON_INSTANCE = new ClientController();
 
-    //TODO: in realtà potremmo usarlo come pulsante di reset nel caso in cui qualcosa vada storto, facciamo quit() e
-    // lo cancelliamo e ne creiamo uno nuovo ogni volta che la connessione viene creata...
     public final ViewModel VIEWMODEL;
 
     public final ErrorLogger ERROR_LOGGER;

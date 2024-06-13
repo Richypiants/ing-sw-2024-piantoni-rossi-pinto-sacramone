@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIViews;
 import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIParser;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.AwaitingReconnectionState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
@@ -56,7 +55,7 @@ public class TUIGameView extends TUIView{
         showCommonPlacedCards();
         printDecks();
         printOpponentsFieldsMiniaturized();
-        showField(ClientController.getInstance().VIEWMODEL.getCurrentGame().getThisPlayer());
+        showField(CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getThisPlayer());
         showHand();
         showChat();
         printStateCommandInfo();
@@ -72,7 +71,7 @@ public class TUIGameView extends TUIView{
 
     public void printStateCommandInfo(){
         int i = 42;
-        ClientGame thisGame = ClientController.getInstance().VIEWMODEL.getCurrentGame();
+        ClientGame thisGame = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
 
         Ansi printedMessage = thisGame.getCurrentPlayerIndex() != -1 ?
                 ansi().cursor(i++, 2).bold().a("It is ").fg(9).a(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname()).reset().bold().a("'s turn! Your available commands are: ") :
@@ -87,7 +86,7 @@ public class TUIGameView extends TUIView{
 
     public void printRoundInfo() {
         printToPosition(ansi().cursor(2,2).bold().a("[TURN #" +
-                ClientController.getInstance().VIEWMODEL.getCurrentGame().getCurrentRound() + "]").reset());
+                CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getCurrentRound() + "]").reset());
     }
 
     public void printStatsTable() {
@@ -104,7 +103,7 @@ public class TUIGameView extends TUIView{
                 .fg(94).a(" | Scroll [S] | Ink [K] | Quill [Q]").reset()
         );
 
-        for (ClientPlayer player : ClientController.getInstance().VIEWMODEL.getCurrentGame().getPlayers()) {
+        for (ClientPlayer player : CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getPlayers()) {
             EnumMap<Resource, Integer> playerResources = player.getOwnedResources();
 
             printToPosition(ansi().cursor(i, 2).a("[#" + (i - 2) + "] ").fg(Ansi.Color.valueOf(player.getColor().name())).a(player.getNickname()).reset()
@@ -130,37 +129,37 @@ public class TUIGameView extends TUIView{
         //FIXME: gestire i null delle carte non presenti
         printToPosition(ansi().cursor(12, 3).a("Resource:"));
         int column = 15;
-        for (var card : ClientController.getInstance().VIEWMODEL.getCurrentGame().getPlacedResources()) {
+        for (var card : CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getPlacedResources()) {
             printToPosition(ansi().cursor(10, column).a(standardAnsi(card, Side.FRONT)));
             column += 20;
         }
 
         column = 15;
         printToPosition(ansi().cursor(18, 3).a("Gold:"));
-        for (var card : ClientController.getInstance().VIEWMODEL.getCurrentGame().getPlacedGolds()) {
+        for (var card : CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getPlacedGolds()) {
             printToPosition(ansi().cursor(16, column).a(standardAnsi(card, Side.FRONT)));
             column += 20;
         }
 
         column = 15;
         printToPosition(ansi().cursor(24, 3).a("Objective:"));
-        for (var card : ClientController.getInstance().VIEWMODEL.getCurrentGame().getCommonObjectives()) {
+        for (var card : CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getCommonObjectives()) {
             printToPosition(ansi().cursor(22, column).a(standardAnsi(card, Side.FRONT)));
             column += 20;
         }
 
         printToPosition(ansi().cursor(24, 54).a("Secret:"));
         printToPosition(ansi().cursor(22, 64).a(standardAnsi(
-                ClientController.getInstance().VIEWMODEL.getCurrentGame().getOwnObjective(), Side.FRONT))
+                CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getOwnObjective(), Side.FRONT))
         );
     }
 
     public void printDecks() {
         printToPosition(ansi().cursor(8, 68).bold().a("Decks: "));
 
-        ClientCard card = ClientController.getInstance().VIEWMODEL.getCurrentGame().getTopDeckResourceCard();
+        ClientCard card = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getTopDeckResourceCard();
         printToPosition(ansi().cursor(10, 64).a(standardAnsi(card, Side.BACK)));
-        card = ClientController.getInstance().VIEWMODEL.getCurrentGame().getTopDeckGoldCard();
+        card = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getTopDeckGoldCard();
         printToPosition(ansi().cursor(16, 64).a(standardAnsi(card, Side.BACK)));
     }
 
@@ -178,8 +177,8 @@ public class TUIGameView extends TUIView{
            you should call xxxCommand*/
 
         int playerIndex = 0;
-        ArrayList<ClientPlayer> players = ClientController.getInstance().VIEWMODEL.getCurrentGame().getPlayers();
-        players.remove(ClientController.getInstance().VIEWMODEL.getCurrentGame().getThisPlayer());
+        ArrayList<ClientPlayer> players = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getPlayers();
+        players.remove(CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getThisPlayer());
         for (var player : players) {
             LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> field =
                     (player).getPlacedCards();
@@ -200,7 +199,7 @@ public class TUIGameView extends TUIView{
     }
 
     public void showChat() {
-        List<String> chatLog = ClientController.getInstance().VIEWMODEL.getCurrentGame().getChatLog();
+        List<String> chatLog = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getChatLog();
         printToPosition(ansi().cursor(2, 120).bold().a("Last chat messages: ").reset());
         for (int i = 0; i < 3; i++)
             printToPosition(ansi().cursor(3 + i, 122).eraseLine(Ansi.Erase.FORWARD)
@@ -273,7 +272,7 @@ public class TUIGameView extends TUIView{
         for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
             printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Ansi.Erase.FORWARD));
 
-        ClientCard card = ClientController.getInstance().VIEWMODEL.getCurrentGame().getCardsInHand().getFirst();
+        ClientCard card = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getCardsInHand().getFirst();
         printToPosition(ansi().cursor(15, 110).bold().eraseLine(Ansi.Erase.FORWARD)
                 .a("Choose which side you want to play your assigned initial card on: ").reset());
         printToPosition(ansi().cursor(20, 110).a(upscaledAnsi(card, Side.FRONT)));
@@ -310,7 +309,7 @@ public class TUIGameView extends TUIView{
     @Override
     public void showField(ClientPlayer player) {
         dynamicFieldCenter = new GenericPair<>(0, 0);
-        currentShownPlayerIndex = ClientController.getInstance().VIEWMODEL.getCurrentGame().getPlayers().indexOf(player);
+        currentShownPlayerIndex = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getPlayers().indexOf(player);
         moveField(new GenericPair<>(0, 0));
     }
 
@@ -320,7 +319,7 @@ public class TUIGameView extends TUIView{
                 dynamicFieldCenter.getY() + dynamicFieldCenterOffset.getY()
         );
 
-        ClientPlayer player = ClientController.getInstance().VIEWMODEL.getCurrentGame().getPlayers().get(currentShownPlayerIndex);
+        ClientPlayer player = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getPlayers().get(currentShownPlayerIndex);
 
         //erasing field area
         int fieldStartingColumn = FIELD_TOP_LEFT.getY();
@@ -451,7 +450,7 @@ public class TUIGameView extends TUIView{
                 .cursorDownLine()
                 .a("------------------------------------------------------------------").eraseLine(Ansi.Erase.FORWARD)
                 .cursorDownLine()
-                .a("> [" + ClientController.getInstance().VIEWMODEL.getOwnNickname() + "] "));
+                .a("> [" + CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname() + "] "));
     }
 
     @Override
@@ -460,7 +459,7 @@ public class TUIGameView extends TUIView{
         printToPosition(ansi().cursor(28, 2).bold().a("Your hand: ").reset());
         printToPosition(ansi().cursor(32, 3).a("Front:"));
         printToPosition(ansi().cursor(38, 3).a("Back:"));
-        for (var card : ClientController.getInstance().VIEWMODEL.getCurrentGame().getCardsInHand()) {
+        for (var card : CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getCardsInHand()) {
             printToPosition(ansi().cursor(30, column).a(standardAnsi(card, Side.FRONT)));
             printToPosition(ansi().cursor(36, column).a(standardAnsi(card, Side.BACK)));
             column += 20;

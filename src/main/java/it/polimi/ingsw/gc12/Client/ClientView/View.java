@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Client.ClientView;
 
+import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
@@ -8,7 +9,9 @@ import it.polimi.ingsw.gc12.Utilities.Triplet;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class View { //FIXME: turn into interface maybe?
+public abstract class View {
+
+    protected final static ClientController CLIENT_CONTROLLER = ClientController.getInstance();
 
     public abstract void printError(Throwable error);
 

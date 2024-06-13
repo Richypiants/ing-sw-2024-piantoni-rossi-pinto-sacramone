@@ -112,17 +112,8 @@ public abstract class ViewState {
     }
 
     public void quit() {
-        try {
-            CLIENT.serverConnection.close();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        CLIENT.serverConnection = null;
-        CLIENT.session = null;
-        CLIENT.keepAlive.interrupt();
-        CLIENT.keepAlive = null;
-        CLIENT_CONTROLLER.VIEWMODEL.setOwnNickname("");
-        CLIENT_CONTROLLER.VIEWMODEL.leaveRoom();
+        CLIENT.resetClient();
+        CLIENT_CONTROLLER.VIEWMODEL.clearModel();
 
         currentState = new TitleScreenState();
         currentState.executeState();

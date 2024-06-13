@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIViews;
 
 import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIParser;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import org.fusesource.jansi.Ansi;
 
 import java.util.List;
@@ -58,7 +57,7 @@ public class TUIConnectionView extends TUIView {
 
         do {
             if(lastInputWasInvalid)
-                printToPosition(ansi().cursor(1, 1).a("The entered nickname is longer than " + MAX_NICK_LENGTH + "characters or is empty!"));
+                printToPosition(ansi().cursor(1, 1).a("The entered nickname is longer than " + MAX_NICK_LENGTH + " characters or is empty!"));
             printToPosition(ansi().cursor(2, 1).a("Enter your nickname [Max " + MAX_NICK_LENGTH + " characters]: "));
             lastInputWasInvalid = false;
             nickname = console.readLine().trim();
@@ -76,14 +75,14 @@ public class TUIConnectionView extends TUIView {
     }
 
     public void connectedConfirmation() {
-        TUIParser.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().VIEWMODEL.getOwnNickname().length();
+        TUIParser.COMMAND_INPUT_COLUMN = 6 + CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname().length();
         printToPosition(ansi().cursor(3, 1).a("Successfully connected to the server: nickname confirmed!"));
         System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
         listener.startReading();
         try {
             sleep(1000);
         } catch (InterruptedException e) {
-            ClientController.getInstance().ERROR_LOGGER.log(e);
+            CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
         }
     }
 
