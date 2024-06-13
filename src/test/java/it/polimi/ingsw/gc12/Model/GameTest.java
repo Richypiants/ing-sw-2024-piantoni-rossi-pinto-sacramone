@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc12.Model;
 
 import com.google.gson.reflect.TypeToken;
+import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
+import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseInitialCardsState;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
@@ -87,7 +89,7 @@ class GameTest {
     /*@Test
     void nextPlayer() {
         lobby.addPlayer(player2);
-        game.getCurrentState().nextPlayer();  // don't touch this line
+        game.getCurrentState().nextPlayer();
         assertEquals(game.getPlayers().getFirst(), game.getCurrentPlayer());
     }*/
 
@@ -208,6 +210,42 @@ class GameTest {
         game.setState(new PlayerTurnPlayState(game, 1, 0));
         assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
     }*/
+
+    @Test
+    void successfulDecreaseFinalPhaseCounter(){
+        game.initializeFinalPhaseCounter();
+        int currentFinalPhaseCounter = game.getFinalPhaseCounter();
+        game.decreaseFinalPhaseCounter();
+        assertEquals(currentFinalPhaseCounter-1, game.getFinalPhaseCounter());
+    }
+
+    @Test
+    void coherentGetterValues(){
+        //For the correct initialization of the ObjectiveCards;
+        GameController gameController = new GameController(game);
+        ChooseInitialCardsState initialState = new ChooseInitialCardsState(gameController, game);
+        initialState.transition();
+
+        assertInstanceOf(CardDeck.class, game.getResourceCardsDeck());
+        assertInstanceOf(ResourceCard.class, game.getResourceCardsDeck().peek());
+
+        assertInstanceOf(CardDeck.class, game.getGoldCardsDeck());
+        assertInstanceOf(GoldCard.class, game.getGoldCardsDeck().peek());
+
+        assertInstanceOf(CardDeck.class, game.getObjectiveCardsDeck());
+        assertInstanceOf(ObjectiveCard.class, game.getObjectiveCardsDeck().peek());
+
+        assertEquals(2, game.getPlacedResources().length);
+        assertEquals(2, game.getPlacedGolds().length);
+        assertEquals(2, game.getCommonObjectives().length);
+
+        assertInstanceOf(ResourceCard.class, game.getPlacedResources()[0]);
+        assertInstanceOf(ResourceCard.class, game.getPlacedResources()[1]);
+        assertInstanceOf(GoldCard.class, game.getPlacedGolds()[0]);
+        assertInstanceOf(GoldCard.class, game.getPlacedGolds()[1]);
+        assertInstanceOf(ObjectiveCard.class, game.getCommonObjectives()[0]);
+        assertInstanceOf(ObjectiveCard.class, game.getCommonObjectives()[1]);
+    }
 
     @Test
     void generateDTOTest(){

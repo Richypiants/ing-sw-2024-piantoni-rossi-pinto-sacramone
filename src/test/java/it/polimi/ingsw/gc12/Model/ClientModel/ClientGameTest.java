@@ -1,54 +1,41 @@
 package it.polimi.ingsw.gc12.Model.ClientModel;
 
-import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
-import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseObjectiveCardsState;
-import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
-import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
-import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
-import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
-import it.polimi.ingsw.gc12.Model.ServerModel;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Side;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
 import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.createNetworkSessionStub;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ClientGameTest {
-    private static ArrayList<ResourceCard> resourceCards;
-    private static ArrayList<GoldCard> goldCards;
-    private static ArrayList<InitialCard> initialCards;
-    private static ArrayList<ObjectiveCard> objectiveCards;
-    Player player1;
-    Player player2;
-    ServerModel model;
-    Lobby lobby;
-    Game game;
-    ClientGame clientGame;
-    GameController gameController;
-    NetworkSession client1;
-    NetworkSession client2;
-    ChooseObjectiveCardsState state;
+    static Player testedPlayer;
+    static Lobby lobby;
+    static Game game;
+    static int numOfPlayers;
+    static int numOfCardsInHand;
+    static int numOfPlacedResources;
+    static int numOfPlacedGold;
+    static int numOfPlacedCommonObjectives;
+    static ClientGame clientGame;
+    static GameController gameController;
+    static NetworkSession client1;
+    static NetworkSession client2;
+    ViewModel viewModel = new ViewModel();
 
+    @BeforeAll
+    static void setGameParameters() throws Exception {
 
-    @BeforeEach
-    void setGameParameters() throws Exception {
-
-        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {});
-        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {});
-        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {});
-        objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {});
-
-        player1 = new Player("giovanni");
-        player2 = new Player("paolo");
+        Player player1 = new Player("playerOne");
+        Player player2 = new Player("playerTwo");
 
         UUID lobbyUUID = UUID.randomUUID();
 
@@ -57,6 +44,7 @@ class ClientGameTest {
 
         game = new Game(lobby);
         gameController = GameController.MODEL.createGameController(game);
+        numOfPlayers = game.getPlayersNumber();
 
         client1 = createNetworkSessionStub(gameController);
         client2 = createNetworkSessionStub(gameController);
@@ -67,84 +55,116 @@ class ClientGameTest {
 
         int i = 0;
         for (var target : game.getPlayers()) {
-            game.placeCard(target, new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
-            target.addCardToHand(resourceCards.get(i++));
-            target.addCardToHand(resourceCards.get(i));
-            target.addCardToHand(goldCards.get(i++));
+            game.placeCard(target, new GenericPair<>(0,0), target.getCardsInHand().getFirst(), Side.FRONT);
         }
-    }
-/*
-    @Test
-    void getterTest() {
-        clientGame = game.generateDTO(game.getCurrentPlayer());
-        assertInstanceOf(ClientPlayer.class, clientGame.getThisPlayer());
+        numOfCardsInHand = game.getPlayers().getFirst().getCardsInHand().size();
+        numOfPlacedResources = game.getPlacedResources().length;
+        numOfPlacedGold = game.getPlacedResources().length;
+        numOfPlacedCommonObjectives = game.getCommonObjectives().length;
 
-        assertInstanceOf(ArrayList.class, clientGame.getCardsInHand());
-        assert (!clientGame.getCardsInHand().isEmpty());
-
-        assertInstanceOf(ClientCard.class, clientGame.getOwnObjective());
-        assert (!clientGame.getOwnObjective().GUI_SPRITES.isEmpty());
-        assert (!clientGame.getOwnObjective().TUI_SPRITES.isEmpty());
-
-        assertInstanceOf(ClientCard[].class, clientGame.getPlacedGolds());
-        assert (!Arrays.stream(clientGame.getPlacedGolds()).toList().isEmpty());
-
-        assertInstanceOf(ClientCard[].class, clientGame.getPlacedResources());
-        assert (!Arrays.stream(clientGame.getPlacedResources()).toList().isEmpty());
-
-        assertInstanceOf(ClientCard[].class, clientGame.getCommonObjectives());
-        assert (!Arrays.stream(clientGame.getCommonObjectives()).toList().isEmpty());
-
-        clientGame.setCurrentPlayerIndex(1);
-        assertEquals(1, clientGame.getCurrentPlayerIndex());
-
-        clientGame.addMessageToChatLog("ciao");
-        assert (!clientGame.getChatLog().isEmpty());
-
-        assertInstanceOf(ClientCard.class, clientGame.getTopDeckGoldCard());
-        assert (!clientGame.getTopDeckGoldCard().GUI_SPRITES.isEmpty());
-        assert (!clientGame.getTopDeckGoldCard().TUI_SPRITES.isEmpty());
-
-        assertInstanceOf(ClientCard.class, clientGame.getTopDeckResourceCard());
-        assert (!clientGame.getTopDeckResourceCard().GUI_SPRITES.isEmpty());
-        assert (!clientGame.getTopDeckResourceCard().TUI_SPRITES.isEmpty());
-
-        int roundNumberTest = 10;
-        clientGame.setCurrentRound(roundNumberTest);
-        assertEquals(roundNumberTest, clientGame.getCurrentRound());
-
-        assertEquals(2, clientGame.getMaxPlayers());
-        assertEquals(2, clientGame.getPlayersNumber());
+        testedPlayer = game.getPlayers().getFirst();
+        clientGame = game.generateDTO( game.getPlayers().getFirst());
     }
 
     @Test
-    void setterTest() {
-        clientGame = game.generateDTO(game.getCurrentPlayer());
-        ClientCard card = new ClientCard(1, new HashMap<>(), new HashMap<>());
-        clientGame.setCurrentRound(1);
-        assertEquals(1, clientGame.getCurrentRound());
+    void assertionOnPlayers(){
+        ArrayList<ClientPlayer> clientPlayers = clientGame.getPlayers();
+        assertEquals(numOfPlayers, clientPlayers.size());
 
-        clientGame.addCardToHand(new ClientCard(1, new HashMap<>(), new HashMap<>()));
-        assert (!clientGame.getCardsInHand().isEmpty());
-        clientGame.removeCardFromHand(new ClientCard(1, new HashMap<>(), new HashMap<>()));
-        assert (!clientGame.getCardsInHand().contains(new ClientCard(1, new HashMap<>(), new HashMap<>())));
+        assertInstanceOf(ClientPlayer.class , clientGame.getThisPlayer());
+        assertEquals(testedPlayer.getNickname() , clientGame.getThisPlayer().getNickname());
+    }
 
-        clientGame.setPlacedResources(card, 1);
-        assertEquals(card, clientGame.getPlacedResources()[1]);
+    @Test
+    void correctCardsInOwnHand(){
+        assertEquals(numOfCardsInHand, clientGame.getCardsInHand().size());
+        for(var card : clientGame.getCardsInHand())
+            assertInstanceOf(ClientCard.class, card);
+    }
 
-        clientGame.setPlacedGold(card, 1);
-        assertEquals(card, clientGame.getPlacedGolds()[1]);
+    @Test
+    void operationsOnOwnHand(){
+        clientGame.removeCardFromHand(clientGame.getCardsInHand().getFirst());
+        assertEquals(numOfCardsInHand-1 , clientGame.getCardsInHand().size());
 
-        clientGame.setCommonObjectives(card, 1);
-        assertEquals(card, clientGame.getCommonObjectives()[1]);
+        ClientCard cardToAdd = viewModel.CARDS_LIST.get(40);
 
-        clientGame.setTopDeckGoldCard(card);
-        assertEquals(card, clientGame.getTopDeckGoldCard());
+        clientGame.addCardToHand(cardToAdd);
+        assertEquals(numOfCardsInHand , clientGame.getCardsInHand().size());
 
-        clientGame.setTopDeckResourceCard(card);
-        assertEquals(card, clientGame.getTopDeckResourceCard());
+        assertEquals(cardToAdd, clientGame.getCardsInHand().get(numOfCardsInHand-1));
+    }
 
-        clientGame.setOwnObjective(card);
-        assertEquals(card, clientGame.getOwnObjective());
-    }*/
+    @Test
+    void operationsOnCommonCards(){
+        assertEquals(numOfPlacedResources, clientGame.getPlacedResources().length);
+        assertEquals(numOfPlacedGold, clientGame.getPlacedGolds().length);
+        assertEquals(numOfPlacedCommonObjectives, clientGame.getCommonObjectives().length);
+
+        ClientCard chosenTopResource = viewModel.CARDS_LIST.get(30);
+        ClientCard chosenTopGold = viewModel.CARDS_LIST.get(50);
+
+        clientGame.setTopDeckResourceCard(chosenTopResource);
+        clientGame.setTopDeckGoldCard(chosenTopGold);
+        assertEquals(chosenTopResource, clientGame.getTopDeckResourceCard());
+        assertEquals(chosenTopGold, clientGame.getTopDeckGoldCard());
+
+
+        int GOLD_CARD_OFFSET = 41;
+        int OBJECTIVE_CARD_OFFSET = 87;
+        for(int index = 0; index < 2; index++) {
+            ClientCard chosenReplacedResource = viewModel.CARDS_LIST.get(index);
+            ClientCard chosenReplacedGold = viewModel.CARDS_LIST.get(index+GOLD_CARD_OFFSET);
+            ClientCard chosenReplacedObjective = viewModel.CARDS_LIST.get(index+OBJECTIVE_CARD_OFFSET);
+
+            clientGame.setPlacedResources(chosenReplacedResource, index);
+            clientGame.setPlacedGold(chosenReplacedGold, index);
+            clientGame.setCommonObjectives(chosenReplacedObjective, index);
+
+            assertEquals(chosenReplacedResource, clientGame.getPlacedResources()[index]);
+            assertEquals(chosenReplacedGold, clientGame.getPlacedGolds()[index]);
+            assertEquals(chosenReplacedObjective, clientGame.getCommonObjectives()[index]);
+        }
+
+    }
+
+    @Test
+    void assertionsOnOwnObjective(){
+        ClientCard chosenObjective = viewModel.CARDS_LIST.get(100);
+
+        clientGame.setOwnObjective(chosenObjective);
+        assertNotNull(clientGame.getOwnObjective());
+        assertEquals(chosenObjective, clientGame.getOwnObjective());
+    }
+
+    @Test
+    void assertionsOnCurrentRound(){
+        int randomCurrentRoundNumber = 20;
+
+        clientGame.setCurrentRound(randomCurrentRoundNumber);
+        assertEquals(randomCurrentRoundNumber, clientGame.getCurrentRound());
+    }
+
+    @Test
+    void assertionsOnCurrentPlayerIndex(){
+        //Since the game was sent during the initialPhase, there's no currentPlayer at the moment.
+        assertEquals(-1, clientGame.getCurrentPlayerIndex());
+
+        int desiredCurrentPlayerIndex = 0;
+
+        clientGame.setCurrentPlayerIndex(desiredCurrentPlayerIndex);
+        assertEquals(desiredCurrentPlayerIndex, clientGame.getCurrentPlayerIndex());
+    }
+
+    @Test
+    void operationsOnChatLog(){
+        String chatMessage = "Hello World!";
+
+        int chatLogSize = clientGame.getChatLog().size();
+
+        clientGame.addMessageToChatLog(chatMessage);
+        assertEquals(chatLogSize+1, clientGame.getChatLog().size());
+
+        assertEquals(chatMessage, clientGame.getChatLog().getFirst());
+    }
 }

@@ -18,10 +18,10 @@ public class CardDeckTest {
     final int GOLD_DECK_SIZE = 40;
     final int INITIAL_DECK_SIZE = 6;
     final int OBJECTIVE_DECK_SIZE = 16;
-    public final static String RESOURCE_DECK_FILENAME = "resource_cards.json";
-    public final static String GOLD_DECK_FILENAME = "gold_cards.json";
-    public final static String INITIAL_DECK_FILENAME = "initial_cards.json";
-    public final static String OBJECTIVE_DECK_FILENAME = "objective_cards.json";
+    public final static String RESOURCE_DECK_FILENAME = "/jsonFiles/resource_cards.json";
+    public final static String GOLD_DECK_FILENAME = "/jsonFiles/gold_cards.json";
+    public final static String INITIAL_DECK_FILENAME = "/jsonFiles/initial_cards.json";
+    public final static String OBJECTIVE_DECK_FILENAME = "/jsonFiles/objective_cards.json";
 
     protected static <T extends Card> CardDeck<T> loadCardDeck(String filename, TypeToken<ArrayList<T>> typifiedTypeToken){
         return new CardDeck<>(Objects.requireNonNull(

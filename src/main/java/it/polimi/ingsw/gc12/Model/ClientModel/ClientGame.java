@@ -25,7 +25,6 @@ public class ClientGame extends Room implements Serializable {
      * The cards in this player's hand
      */
     private final ArrayList<ClientCard> OWN_HAND;
-    //TODO: valutare private final Map<String, ClientCard[]> PLACED_CARDS;
     /**
      * The two resource cards visible to all the players placed on the table.
      */

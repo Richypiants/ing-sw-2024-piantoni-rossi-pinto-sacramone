@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc12.Model;
 
+import it.polimi.ingsw.gc12.Utilities.Color;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.FullLobbyException;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.UnavailableColorException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,10 +51,41 @@ class LobbyTest {
     }
 
     @Test
-    void setMaxPlayerTest() {
+    void successfulSetMaxPlayers() {
         Lobby lobby = new Lobby(UUID.randomUUID(), player1, 2);
         lobby.setMaxPlayers(4);
         assertEquals(4, lobby.getMaxPlayers());
+
+    }
+
+    @Test
+    void unsuccessfulSetMaxPlayers() {
+        int initialMaxPlayers = 2;
+        Lobby lobby = new Lobby(UUID.randomUUID(), player1, initialMaxPlayers);
+        lobby.setMaxPlayers(10); //Any value greater than 4
+        assertEquals(initialMaxPlayers, lobby.getMaxPlayers());
+        lobby.setMaxPlayers(0);
+        assertEquals(initialMaxPlayers, lobby.getMaxPlayers());
+    }
+
+    @Test
+    void operationsOnColorAssignment() {
+        Lobby lobby = new Lobby(UUID.randomUUID(), player1, 2);
+        Color firstColorChoice = Color.GREEN;
+        Color secondColorChoice = Color.RED;
+        assertEquals(Color.NO_COLOR, player1.getColor());
+
+
+        assertDoesNotThrow( () -> lobby.assignColor(player1, firstColorChoice));
+        assertEquals(firstColorChoice, player1.getColor());
+
+        assertDoesNotThrow( () -> lobby.assignColor(player1, secondColorChoice));
+        assertEquals(secondColorChoice, player1.getColor());
+
+        assertDoesNotThrow( () -> lobby.addPlayer(player2));
+        assertThrows(UnavailableColorException.class, () -> lobby.assignColor(player2, Color.BLACK));
+        assertThrows(UnavailableColorException.class, () -> lobby.assignColor(player2, Color.RED));
+        assertThrows(UnavailableColorException.class, () -> lobby.assignColor(player2, Color.NO_COLOR));
     }
 
     @Test

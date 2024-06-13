@@ -104,7 +104,7 @@ public class Lobby extends Room implements Serializable {
      * @param numOfMaxPlayers The new maximum number of players.
      */
     public void setMaxPlayers(int numOfMaxPlayers) {
-        if (numOfMaxPlayers <= 4) {
+        if (numOfMaxPlayers <= 4 && numOfMaxPlayers >=2) {
             this.maxPlayers = numOfMaxPlayers;
         }
     }

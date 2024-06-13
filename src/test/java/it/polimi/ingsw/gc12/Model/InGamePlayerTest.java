@@ -9,7 +9,6 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.JSONParser;
 import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
+import static it.polimi.ingsw.gc12.Model.Cards.CardDeckTest.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InGamePlayerTest {
@@ -32,14 +32,10 @@ class InGamePlayerTest {
 
     @BeforeAll
     static void setCardsLists() {
-        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
-        });
-        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
-        });
-        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
-        });
-        objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {
-        });
+        resourceCards = loadCardDeckAsArrayList(RESOURCE_DECK_FILENAME, new TypeToken<>(){});
+        goldCards = loadCardDeckAsArrayList(GOLD_DECK_FILENAME, new TypeToken<>(){});
+        initialCards = loadCardDeckAsArrayList(INITIAL_DECK_FILENAME, new TypeToken<>(){});
+        objectiveCards = loadCardDeckAsArrayList(OBJECTIVE_DECK_FILENAME, new TypeToken<>(){});
     }
 
     @BeforeEach

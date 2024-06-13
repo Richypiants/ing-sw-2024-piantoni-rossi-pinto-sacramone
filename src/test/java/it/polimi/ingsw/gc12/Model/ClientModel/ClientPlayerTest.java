@@ -1,142 +1,91 @@
 package it.polimi.ingsw.gc12.Model.ClientModel;
 
-import com.google.gson.reflect.TypeToken;
-import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
-import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseObjectiveCardsState;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest;
-import it.polimi.ingsw.gc12.Listeners.ServerListener;
-import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
-import it.polimi.ingsw.gc12.Model.Cards.InitialCard;
-import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
-import it.polimi.ingsw.gc12.Model.Cards.ResourceCard;
-import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
-import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.JSONParser;
+import it.polimi.ingsw.gc12.Utilities.Resource;
 import it.polimi.ingsw.gc12.Utilities.Side;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.EnumMap;
+import java.util.List;
 
-import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.createNetworkSessionStub;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ClientPlayerTest {
-    private static ArrayList<ResourceCard> resourceCards;
-    private static ArrayList<GoldCard> goldCards;
-    private static ArrayList<InitialCard> initialCards;
-    private static ArrayList<ObjectiveCard> objectiveCards;
-    Player player1;
-    Player player2;
-    Lobby lobby;
-    Game game;
-    ClientGame client;
-    GameController gameController;
-    NetworkSession client1;
-    NetworkSession client2;
-    ChooseObjectiveCardsState state;
+    static Player originalPlayer;
+    static ClientPlayer testedPlayer;
+    static EnumMap<Resource, Integer> originalResources;
+    static int initialPoints = 0;
+    static ViewModel viewModel = new ViewModel();
 
-
-    @BeforeEach
-    void setGameParameters() throws Exception {
-        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {
-        });
-        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {
-        });
-        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {
-        });
-        objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {
-        });
-
-        player1 = new Player("giovanni");
-        player2 = new Player("paolo");
-        UUID lobbyUUID = UUID.randomUUID();
-
-        lobby = new Lobby(lobbyUUID, player1, 2);
-        lobby.addPlayer(player2);
-
-        game = new Game(lobby);
-        gameController = GameController.MODEL.createGameController(game);
-
-        client1 = createNetworkSessionStub(gameController);
-        client2 = createNetworkSessionStub(gameController);
-
-        gameController.putActivePlayer(client1, game.getPlayers().get(0));
-        gameController.putActivePlayer(client2, game.getPlayers().get(1));
-
-        gameController.getCurrentState().transition();
-
-        int i = 0;
-        for (var target : game.getPlayers()) {
-            game.placeCard(target, new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
-            target.addCardToHand(resourceCards.get(i));
-            i++;
-            target.addCardToHand(resourceCards.get(i));
-            target.addCardToHand(goldCards.get(i));
-            i++;
+    static void originalResourcesSetup(int value){
+        originalResources = new EnumMap<>(Resource.class);
+        for(Resource r : Resource.values()) {
+            originalResources.put(r, value);
         }
-
-        Map<InGamePlayer, ArrayList<ObjectiveCard>> objectivesMap = new HashMap<>();
-        ArrayList<ObjectiveCard> obj_a = new ArrayList<>();
-        obj_a.add(objectiveCards.getFirst());
-        obj_a.add(objectiveCards.get(1));
-
-        ArrayList<ObjectiveCard> obj_a2 = new ArrayList<>();
-        obj_a2.add(objectiveCards.get(2));
-        obj_a2.add(objectiveCards.get(3));
-
-        objectivesMap.put(game.getPlayers().getFirst(), obj_a);
-        objectivesMap.put(game.getPlayers().getLast(), obj_a2);
-
-        state = new ChooseObjectiveCardsState(gameController, game);
-
-        gameController.pickObjective(client1, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) client1.getListener()).getVirtualClient()).myClientController.receivedObjectiveIDs.getFirst());
-        gameController.pickObjective(client2, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) client2.getListener()).getVirtualClient()).myClientController.receivedObjectiveIDs.getFirst());
-
-        gameController.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(1, 1), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
     }
-/*
+
+    @BeforeAll
+    static void playerSetup(){
+        originalPlayer = new Player("testedPlayer");
+        originalResourcesSetup(0);
+
+        testedPlayer = new ClientPlayer(originalPlayer, new ArrayList<>(), originalResources, initialPoints);
+    }
+
     @Test
-    void getterESetterTest() {
-        ClientPlayer player = new ClientPlayer(player1, null, null, 0);
+    void operationsOnOwnedResources(){
+        assertEquals(originalResources, testedPlayer.getOwnedResources());
 
-        assertEquals("giovanni", player.getNickname());
+        originalResourcesSetup(1);
 
-        player.placeCard(new GenericPair<>(1, 1), new ClientCard(1, new HashMap<>(), new HashMap<>()), Side.FRONT);
-        assertInstanceOf(LinkedHashMap.class, player.getPlacedCards());
-        assert (!player.getPlacedCards().isEmpty());
+        testedPlayer.setOwnedResources(originalResources);
+        assertEquals(originalResources, testedPlayer.getOwnedResources());
+    }
 
-        EnumMap<Resource, Integer> map = new EnumMap<>(Resource.class);
-        map.put(Resource.INSECT, 1);
-        player.setOwnedResources(map);
-        assertInstanceOf(EnumMap.class, player.getOwnedResources());
-        assert (!player.getOwnedResources().values().isEmpty());
+    @Test
+    void successfulPlacedCard(){
+        ClientCard placedCard = viewModel.CARDS_LIST.get(1);
+        GenericPair<Integer, Integer> coordinatePosition = new GenericPair<>(0, 0);
+        Side placedSide = Side.FRONT;
 
-        ArrayList<GenericPair<Integer, Integer>> list = new ArrayList<>();
-        list.add(new GenericPair<>(0, 1));
-        list.add(new GenericPair<>(0, -1));
-        list.add(new GenericPair<>(1, 0));
-        list.add(new GenericPair<>(1, 0));
+        testedPlayer.placeCard(coordinatePosition, placedCard, placedSide);
 
-        player.setOpenCorners(list);
-        assertInstanceOf(List.class, player.getOpenCorners());
-        assert (!player.getOpenCorners().isEmpty());
+        assertTrue(testedPlayer.getPlacedCards().containsKey(coordinatePosition));
+        assertEquals(placedCard, testedPlayer.getPlacedCards().get(coordinatePosition).getX());
+        assertEquals(placedSide, testedPlayer.getPlacedCards().get(coordinatePosition).getY());
+    }
 
-        player.setPoints(1);
-        assertEquals(1, player.getPoints());
+    @Test
+    void operationsOnOpenCorners(){
+        List<GenericPair<Integer, Integer>> openCorners = new ArrayList<>();
+        openCorners.add(new GenericPair<>(1,1));
+        openCorners.add(new GenericPair<>(1,-1));
+        openCorners.add(new GenericPair<>(-1,1));
+        openCorners.add(new GenericPair<>(-1,-1));
 
-        player.setColor(Color.RED);
-        assertEquals(Color.RED, player.getColor());
+        testedPlayer.setOpenCorners(openCorners);
+        assertEquals(openCorners, testedPlayer.getOpenCorners());
+    }
 
-        assert (player.isActive());
-        player.toggleActive();
-        assert (!player.isActive());
+    @Test
+    void operationsOnPoints(){
+        int expectedPoints = 10;
+        testedPlayer.setPoints(expectedPoints);
+        assertEquals(expectedPoints, testedPlayer.getPoints());
+    }
 
+    @Test
+    void operationsOnActivityStatus(){
+        boolean status = testedPlayer.isActive();
+        assertTrue(status);
 
-    }*/
+        testedPlayer.toggleActive();
+        assertFalse(testedPlayer.isActive());
+        testedPlayer.toggleActive();
+        assertTrue(testedPlayer.isActive());
+    }
+
 }

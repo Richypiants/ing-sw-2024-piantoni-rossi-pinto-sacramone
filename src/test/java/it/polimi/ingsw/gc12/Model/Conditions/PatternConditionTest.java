@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static it.polimi.ingsw.gc12.Model.Cards.CardDeckTest.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 //TODO: think about all possible fails and tests
@@ -35,10 +36,10 @@ class PatternConditionTest {
 
     @BeforeAll
     static void setCardsLists() {
-        resourceCards = JSONParser.deckFromJSONConstructor("resource_cards.json", new TypeToken<>() {});
-        goldCards = JSONParser.deckFromJSONConstructor("gold_cards.json", new TypeToken<>() {});
-        initialCards = JSONParser.deckFromJSONConstructor("initial_cards.json", new TypeToken<>() {});
-        objectiveCards = JSONParser.deckFromJSONConstructor("objective_cards.json", new TypeToken<>() {});
+        resourceCards = loadCardDeckAsArrayList(RESOURCE_DECK_FILENAME, new TypeToken<>(){});
+        goldCards = loadCardDeckAsArrayList(GOLD_DECK_FILENAME, new TypeToken<>(){});
+        initialCards = loadCardDeckAsArrayList(INITIAL_DECK_FILENAME, new TypeToken<>(){});
+        objectiveCards = loadCardDeckAsArrayList(OBJECTIVE_DECK_FILENAME, new TypeToken<>(){});
     }
 
     static Stream<Arguments> provideMultiConditionParameters(){
