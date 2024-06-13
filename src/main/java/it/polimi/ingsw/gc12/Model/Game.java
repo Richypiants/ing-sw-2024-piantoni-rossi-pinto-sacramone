@@ -91,15 +91,15 @@ public class Game extends Room implements Listenable {
 
         this.currentRound = 0;
 
-        this.RESOURCE_CARDS_DECK = new CardDeck<>(ServerModel.cardsList.values().stream()
+        this.RESOURCE_CARDS_DECK = new CardDeck<>(ServerModel.CARDS_LIST.values().stream()
                 .filter((card -> card instanceof ResourceCard))
                 .map((card) -> (ResourceCard) card)
                 .toList());
-        this.GOLD_CARDS_DECK = new CardDeck<>(ServerModel.cardsList.values().stream()
+        this.GOLD_CARDS_DECK = new CardDeck<>(ServerModel.CARDS_LIST.values().stream()
                 .filter((card -> card instanceof GoldCard))
                 .map((card) -> (GoldCard) card)
                 .toList());
-        this.OBJECTIVE_CARDS_DECK = new CardDeck<>(ServerModel.cardsList.values().stream()
+        this.OBJECTIVE_CARDS_DECK = new CardDeck<>(ServerModel.CARDS_LIST.values().stream()
                 .filter((card -> card instanceof ObjectiveCard))
                 .map((card) -> (ObjectiveCard) card)
                 .toList());
@@ -502,7 +502,7 @@ public class Game extends Room implements Listenable {
      * @return A Client instance containing the necessary information for the specified player.
      */
     public ClientGame generateDTO(InGamePlayer receiver) {
-        Map<Integer, ClientCard> clientCards = ServerModel.clientCardsList;
+        Map<Integer, ClientCard> clientCards = ServerModel.CLIENTS_CARDS_LIST;
         List<Player> players = this.getPlayers().stream()
                 .map((player) -> new ClientPlayer(player, player.getOpenCorners(), player.getOwnedResources(), player.getPoints()))
                 .collect(Collectors.toCollection(ArrayList::new));

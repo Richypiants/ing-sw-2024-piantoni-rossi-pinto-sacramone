@@ -2,19 +2,19 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
             fx:id="gameScreenPane" stylesheets="/style.css">
 
-    <Button fx:id="scoreboardButton" styleClass="button" mnemonicParsing="false" text="Show Scoreboard"/>
-    <Button fx:id="chatButton" styleClass="button" mnemonicParsing="false" rotate="270.0" text="Chat"/>
-    <Button fx:id="leaveButton" styleClass="button" mnemonicParsing="false" text="Leave Game"/>
+    <Button fx:id="scoreboardButton" styleClass="roundButton" mnemonicParsing="false"/>
+    <Button fx:id="chatButton" styleClass="roundButton" mnemonicParsing="false"/>
+    <Button fx:id="leaveButton" styleClass="roundButton" mnemonicParsing="false"/>
 
     <AnchorPane fx:id="scoreboardPane" visible="false">
         <Button fx:id="hideScoreboardButton" mnemonicParsing="false" text="X"/>
     </AnchorPane>
 
-    <VBox fx:id="deckAndVisiblePane" spacing="10">
+    <AnchorPane fx:id="deckAndVisiblePane">
         <HBox fx:id="resourceHBox" alignment="CENTER" spacing="10">
             <!--> <ImageView fx:id="resourceDeck"/> <-->
         </HBox>
@@ -24,7 +24,7 @@
         <HBox fx:id="objectiveHBox" alignment="CENTER" spacing="10">
             <!--> <ImageView fx:id="secretObjective"/> <-->
         </HBox>
-    </VBox>
+    </AnchorPane>
 
     <HBox fx:id="opponentsFieldsPane">
     </HBox>
@@ -80,5 +80,21 @@
                 <Font name="Bell MT" size="30.0"/>
             </font>
         </Label>
+    </VBox>
+
+    <VBox fx:id="leaderboardVBox" styleClass="lobbyScreenPopupBox" visible="false">
+        <Label fx:id="leaderboardLabel" styleClass="titleScreenLabel" alignment="CENTER"
+               text="LEADERBOARD">
+            <font>
+                <Font name="Bell MT" size="30.0"/>
+            </font>
+        </Label>
+
+        <Label fx:id="winningPlayerLabel" styleClass="titleScreenLabel" alignment="CENTER">
+            <font>
+                <Font name="Bell MT" size="30.0"/>
+            </font>
+        </Label>
+
     </VBox>
 </AnchorPane>

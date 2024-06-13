@@ -1,6 +1,6 @@
-package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers;
+package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIViews;
 
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -12,14 +12,14 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
-public class GUIConnectionLoadingController extends GUIView {
+public class GUIConnectionLoadingView extends GUIView {
 
-    private static GUIConnectionLoadingController connectionLoadingScreenController = null;
+    private static GUIConnectionLoadingView connectionLoadingScreenController = null;
 
     //static VBox connectionSetupBox = (VBox) sceneRoot.lookup("#connectionSetupBox");
     private final Parent SCENE_ROOT;
 
-    private GUIConnectionLoadingController() {
+    private GUIConnectionLoadingView() {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/fxml/connection_loading.fxml")).load();
         } catch (IOException e) {
@@ -27,9 +27,9 @@ public class GUIConnectionLoadingController extends GUIView {
         }
     }
 
-    public static GUIConnectionLoadingController getInstance() {
+    public static GUIConnectionLoadingView getInstance() {
         if (connectionLoadingScreenController == null) {
-            connectionLoadingScreenController = new GUIConnectionLoadingController();
+            connectionLoadingScreenController = new GUIConnectionLoadingView();
         }
         return connectionLoadingScreenController;
     }
@@ -62,9 +62,9 @@ public class GUIConnectionLoadingController extends GUIView {
         progressIndicator.relocate((screenSizes.getX() - progressIndicator.getPrefWidth()) / 2, screenSizes.getY() * 0.55);
 
         // Before changing scene, we notify the chosen comm technology to the controller so that it initializes it
-        new Thread(() -> ClientController.getInstance().viewState.connect(
+        new Thread(() -> ViewState.getCurrentState().connect(
                 addressField.getText(),
-                ((RadioButton) GUIConnectionSetupController.getInstance().getConnectionChoice().getSelectedToggle()).getText(),
+                ((RadioButton) GUIConnectionSetupView.getInstance().getConnectionChoice().getSelectedToggle()).getText(),
                 nicknameField.getText()
         )).start();
     }

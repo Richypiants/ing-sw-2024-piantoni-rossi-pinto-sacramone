@@ -2,16 +2,21 @@ package it.polimi.ingsw.gc12.Model.ClientModel;
 
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Room;
+import it.polimi.ingsw.gc12.Utilities.JSONParser;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Represents the client's view model, managing the player's nickname related to the client,
  * the list of game lobbies, and the current lobby or game if the player is in it.
  */
 public class ViewModel {
+
+    /**
+     * The map of cards used to graphically represent them on the clients.
+     * Each client card is mapped to its unique ID for easy access.
+     */
+    public final Map<Integer, ClientCard> CARDS_LIST;
 
     /**
      * The nickname associated to this client.
@@ -25,17 +30,31 @@ public class ViewModel {
     private Map<UUID, Lobby> lobbies;
 
     /**
-     * The pair containing the unique identifier and the lobby or game this client is currently in.
+     * The room (lobby or client game) this client is currently in.
      */
-    private Room currentLobbyOrGame;
+    private Room currentRoom;
 
     /**
      * Constructs a new ViewModel with an empty nickname and no lobbies.
      */
     public ViewModel() {
+        CARDS_LIST = loadCards();
         ownNickname = "";
         lobbies = new HashMap<>();
-        currentLobbyOrGame = null;
+        currentRoom = null;
+    }
+
+    /**
+     * Loads the client cards from JSON files.
+     *
+     * @return A map of client card IDs to client cards.
+     */
+    private Map<Integer, ClientCard> loadCards() {
+        Map<Integer, ClientCard> tmp = new HashMap<>();
+        Objects.requireNonNull(JSONParser.generateClientCardsFromJSON("/jsonFiles/client_cards.json"))
+                .forEach((card) -> tmp.put(card.ID, card));
+        tmp.put(-1, new ClientCard(-1, null, null));
+        return Collections.unmodifiableMap(tmp);
     }
 
     /**
@@ -98,33 +117,33 @@ public class ViewModel {
      *
      * @return the UUID of the current lobby
      */
-    public UUID getCurrentLobbyUUID() {
-        return currentLobbyOrGame == null ? null : currentLobbyOrGame.getRoomUUID();
+    public UUID getCurrentRoomUUID() {
+        return currentRoom == null ? null : currentRoom.getRoomUUID();
     }
 
     /**
-     * Checks if the player is currently in a lobby or game.
+     * Checks if the player is currently in a room (lobby or client game).
      *
-     * @return true if the player is in a lobby or game, false otherwise
+     * @return true if the player is in a room, false otherwise
      */
-    public boolean inLobbyOrGame() {
-        return currentLobbyOrGame != null;
+    public boolean inRoom() {
+        return currentRoom != null;
     }
 
     /**
-     * Joins a lobby or game.
+     * Joins a room (lobby or client game).
      *
-     * @param room the lobby or game to join
+     * @param room the room to join
      */
-    public void joinLobbyOrGame(Room room) {
-        currentLobbyOrGame = room;
+    public void joinRoom(Room room) {
+        currentRoom = room;
     }
 
     /**
-     * Leaves the current lobby or game.
+     * Leaves the current room (lobby or client game).
      */
-    public void leaveLobbyOrGame() {
-        currentLobbyOrGame = null;
+    public void leaveRoom() {
+        currentRoom = null;
     }
 
     /**
@@ -135,7 +154,7 @@ public class ViewModel {
      * @return the current lobby in which the player is in
      */
     public Lobby getCurrentLobby() {
-        return (Lobby) currentLobbyOrGame;
+        return (Lobby) currentRoom;
     }
 
     /**
@@ -143,9 +162,9 @@ public class ViewModel {
      * This method does not perform any check whether the player is actually in a game and not in a lobby.
      * It only forces a cast into a ClientGame.
      *
-     * @return the current lobby in which the player is in
+     * @return the current game in which the player is in
      */
-    public ClientGame getGame() {
-        return (ClientGame) currentLobbyOrGame;
+    public ClientGame getCurrentGame() {
+        return (ClientGame) currentRoom;
     }
 }

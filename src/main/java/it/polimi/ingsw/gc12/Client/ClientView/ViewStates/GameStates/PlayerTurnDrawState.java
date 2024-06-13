@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates;
 
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.DrawFromDeckCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.DrawFromVisibleCardsCommand;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
@@ -13,7 +12,7 @@ public class PlayerTurnDrawState extends GameScreenState {
     public PlayerTurnDrawState() {
 
         //TODO: add showField <playerID>
-        TUICommands = ClientController.getInstance().isThisClientTurn() ?
+        TUICommands = CLIENT_CONTROLLER.isThisClientTurn() ?
                 List.of(
                         "'drawFromDeck <deck>' [resource][gold]",
                         "'drawFromVisibleCards <deck> <position>' [resource][gold] [1][2]",
@@ -26,20 +25,20 @@ public class PlayerTurnDrawState extends GameScreenState {
 
     @Override
     public void executeState() {
-        ClientController.getInstance().view.gameScreen();
+        selectedView.gameScreen();
     }
 
     public void restoreScreenState(){
-        ClientController.getInstance().view.gameScreen();
+        selectedView.gameScreen();
     }
 
     @Override
     public void drawFromDeck(String deck) {
         if (invalidDeck(deck)) throw new IllegalArgumentException("deck fornito da cui pescare invalido");
         try {
-            ClientController.getInstance().requestToServer(new DrawFromDeckCommand(deck));
+            CLIENT.requestToServer(new DrawFromDeckCommand(deck));
         } catch (Exception e) {
-            ClientController.getInstance().view.printError(e);
+            selectedView.printError(e);
         }
     }
 
@@ -48,22 +47,23 @@ public class PlayerTurnDrawState extends GameScreenState {
         if (invalidDeck(deck)) throw new IllegalArgumentException("area fornita da cui pescare invalida");
         if (position != 1 && position != 2) throw new IllegalArgumentException("position fornita da cui pescare invalida");
         try {
-            ClientController.getInstance().requestToServer(new DrawFromVisibleCardsCommand(deck, position - 1));
+            CLIENT.requestToServer(new DrawFromVisibleCardsCommand(deck, position - 1));
         } catch (Exception e) {
-            ClientController.getInstance().view.printError(e);
+            selectedView.printError(e);
         }
     }
 
     public void showField(int playerID) {
-        ClientGame game = ClientController.getInstance().viewModel.getGame();
+        ClientGame game = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
         if (playerID < 0 || playerID > game.getPlayersNumber())
             throw new IllegalArgumentException("The provided ID doesn't match to a player's ID in the game.");
 
-        ClientController.getInstance().view.showField(game.getPlayers().get(playerID-1));
+        selectedView.showField(game.getPlayers().get(playerID - 1));
     }
 
+    //FIXME: TUI-only function, could be moved inside...
     public void moveField(GenericPair<Integer, Integer> centerOffset) {
-        ClientController.getInstance().view.moveField(centerOffset);
+        selectedView.moveField(centerOffset);
     }
 
     private boolean invalidDeck(String deck) {
@@ -72,6 +72,6 @@ public class PlayerTurnDrawState extends GameScreenState {
 
     @Override
     public void transition() {
-        ClientController.getInstance().viewState = new PlayerTurnPlayState();
+        currentState = new PlayerTurnPlayState();
     }
 }

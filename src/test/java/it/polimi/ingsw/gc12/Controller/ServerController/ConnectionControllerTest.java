@@ -31,7 +31,7 @@ class ConnectionControllerTest {
         connectionController.setNickname(inLobbyPlayer2, "thePlayer2");
         assertInstanceOf(
                 ThrowExceptionCommand.class,
-                ((VirtualClientImpl) ((ServerListener) (inLobbyPlayer2.getListener())).getVirtualClient()).receivedCommand
+                ((VirtualClientImpl) ((ServerListener) (inLobbyPlayer2.getListener())).getVirtualClient()).lastCommandReceived
         );
         assertInstanceOf(
                 IllegalArgumentException.class,
@@ -45,7 +45,7 @@ class ConnectionControllerTest {
         connectionController.createLobby(inLobbyPlayer, 5);
         assertInstanceOf(
                 ThrowExceptionCommand.class,
-                ((VirtualClientImpl) ((ServerListener) (inLobbyPlayer.getListener())).getVirtualClient()).receivedCommand
+                ((VirtualClientImpl) ((ServerListener) (inLobbyPlayer.getListener())).getVirtualClient()).lastCommandReceived
         );
         assertInstanceOf(
                 IllegalArgumentException.class,
@@ -59,7 +59,7 @@ class ConnectionControllerTest {
         connectionController.joinLobby(inLobbyPlayer, new UUID(1, 1));
         assertInstanceOf(
                 ThrowExceptionCommand.class,
-                ((VirtualClientImpl) ((ServerListener) (inLobbyPlayer.getListener())).getVirtualClient()).receivedCommand
+                ((VirtualClientImpl) ((ServerListener) (inLobbyPlayer.getListener())).getVirtualClient()).lastCommandReceived
         );
         assertInstanceOf(
                 IllegalArgumentException.class,

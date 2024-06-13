@@ -1,6 +1,6 @@
-package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers;
+package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIViews;
 
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -14,16 +14,16 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.util.Objects;
 
-public class GUITitleScreenController extends GUIView {
+public class GUITitleView extends GUIView {
 
-    private static GUITitleScreenController titleScreenController = null;
+    private static GUITitleView titleScreenController = null;
     private final Parent SCENE_ROOT;
     private final ImageView CRANIO_CREATIONS_LOGO;
     private final AnchorPane TITLE_SCREEN_BOX;
     private final ImageView TITLE_SCREEN_GAME_LOGO;
     private Label TITLE_SCREEN_PROMPT;
 
-    private GUITitleScreenController() {
+    private GUITitleView() {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/fxml/title_screen.fxml")).load();
         } catch (IOException e) {
@@ -34,9 +34,9 @@ public class GUITitleScreenController extends GUIView {
         TITLE_SCREEN_GAME_LOGO = (ImageView) TITLE_SCREEN_BOX.lookup("#titleScreenGameLogo");
     }
 
-    public static GUITitleScreenController getInstance() {
+    public static GUITitleView getInstance() {
         if (titleScreenController == null) {
-            titleScreenController = new GUITitleScreenController();
+            titleScreenController = new GUITitleView();
         }
         return titleScreenController;
     }
@@ -87,8 +87,8 @@ public class GUITitleScreenController extends GUIView {
             TITLE_SCREEN_PROMPT = new Label("Premi INVIO per iniziare");
             TITLE_SCREEN_PROMPT.setId("titleScreenPrompt");
             TITLE_SCREEN_PROMPT.setPrefSize(500, 25);
-            TITLE_SCREEN_PROMPT.setOnMouseClicked((event -> ClientController.getInstance().viewState.keyPressed()));
-            TITLE_SCREEN_PROMPT.setOnKeyPressed((event -> ClientController.getInstance().viewState.keyPressed()));
+            TITLE_SCREEN_PROMPT.setOnMouseClicked((event -> ViewState.getCurrentState().keyPressed()));
+            TITLE_SCREEN_PROMPT.setOnKeyPressed((event -> ViewState.getCurrentState().keyPressed()));
 
             TITLE_SCREEN_BOX.getChildren().add(TITLE_SCREEN_PROMPT);
 

@@ -20,9 +20,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * The {@code Server} class represents a server in a client-server communication setup.
- * It implements {@link Runnable} and {@link RMIMainServer}.
+ * It extends {@link Thread} and implements {@link RMIMainServer}. It can be instantiated only once
+ * because it follows the Singleton pattern, and it can also be executed only once as a Thread.
  */
-public class Server implements Runnable, RMIMainServer {
+public class Server extends Thread implements RMIMainServer {
 
     /**
      * The singleton instance of the server.
@@ -50,8 +51,10 @@ public class Server implements Runnable, RMIMainServer {
     private Server() {
         connectionExecutorsPool = new ThreadPoolExecutor(100, 120, Integer.MAX_VALUE, TimeUnit.MINUTES, new SynchronousQueue<>());
         commandExecutorsPool = new ThreadPoolExecutor(100, 120, Integer.MAX_VALUE, TimeUnit.MINUTES, new SynchronousQueue<>());
-        System.out.println("Inserisci l'indirizzo IP del server (leave empty for 'localhost'): ");
-        serverIPAddress = System.console().readLine();
+        if (System.console() != null) {
+            System.out.println("Inserisci l'indirizzo IP del server (leave empty for 'localhost'): ");
+            serverIPAddress = System.console().readLine();
+        }
     }
 
     /**

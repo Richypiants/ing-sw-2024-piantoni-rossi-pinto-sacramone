@@ -36,16 +36,16 @@ import java.util.stream.Collectors;
 public class ServerModel implements Listenable {
 
     /**
-     * The list of cards used to perform server-side operations in the game.
+     * The map of cards used to perform server-side operations in the game.
      * Each card is mapped to its unique ID for easy access.
      */
-    public static final Map<Integer, Card> cardsList = loadModelCards();
+    public static final Map<Integer, Card> CARDS_LIST = loadModelCards();
 
     /**
-     * The list of cards used to graphically represent them on the clients.
+     * The map of cards used to graphically represent them on the clients.
      * Each client card is mapped to its unique ID for easy access.
      */
-    public static final Map<Integer, ClientCard> clientCardsList = loadClientCards();
+    public static final Map<Integer, ClientCard> CLIENTS_CARDS_LIST = loadClientCards();
 
     /**
      * The map of lobby controllers, indexed by lobby UUID.
@@ -92,22 +92,34 @@ public class ServerModel implements Listenable {
      */
     private static Map<Integer, Card> loadModelCards() {
         Map<Integer, Card> tmp = new HashMap<>();
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("resource_cards.json",
+        Objects.requireNonNull(
+                JSONParser.deckFromJSONConstructor(
+                        "/jsonFiles/resource_cards.json",
                         new TypeToken<ArrayList<ResourceCard>>() {
-                        }))
-                .forEach((card) -> tmp.put(card.ID, card));
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("gold_cards.json",
+                        }
+                )
+        ).forEach((card) -> tmp.put(card.ID, card));
+        Objects.requireNonNull(
+                JSONParser.deckFromJSONConstructor(
+                        "/jsonFiles/gold_cards.json",
                         new TypeToken<ArrayList<GoldCard>>() {
-                        }))
-                .forEach((card) -> tmp.put(card.ID, card));
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("initial_cards.json",
+                        }
+                )
+        ).forEach((card) -> tmp.put(card.ID, card));
+        Objects.requireNonNull(
+                JSONParser.deckFromJSONConstructor(
+                        "/jsonFiles/initial_cards.json",
                         new TypeToken<ArrayList<InitialCard>>() {
-                        }))
-                .forEach((card) -> tmp.put(card.ID, card));
-        Objects.requireNonNull(JSONParser.deckFromJSONConstructor("objective_cards.json",
+                        }
+                )
+        ).forEach((card) -> tmp.put(card.ID, card));
+        Objects.requireNonNull(
+                JSONParser.deckFromJSONConstructor(
+                        "/jsonFiles/objective_cards.json",
                         new TypeToken<ArrayList<ObjectiveCard>>() {
-                        }))
-                .forEach((card) -> tmp.put(card.ID, card));
+                        }
+                )
+        ).forEach((card) -> tmp.put(card.ID, card));
 
         return Collections.unmodifiableMap(tmp);
     }
@@ -118,7 +130,7 @@ public class ServerModel implements Listenable {
      * @return A map of client card IDs to client cards.
      */
     private static Map<Integer, ClientCard> loadClientCards() {
-        return JSONParser.generateClientCardsFromJSON("client_cards.json")
+        return JSONParser.generateClientCardsFromJSON("/jsonFiles/client_cards.json")
                 .stream().collect(Collectors.toMap((card) -> card.ID, (card) -> card));
     }
 

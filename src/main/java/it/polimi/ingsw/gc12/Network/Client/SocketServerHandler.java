@@ -52,7 +52,7 @@ public class SocketServerHandler extends SocketHandler implements VirtualServer 
      */
     @Override
     protected void executeReceivedCommand(Command receivedCommand) {
-        ClientController.getInstance().commandExecutorsPool.submit(
+        Client.getClientInstance().commandsReceivedExecutor.submit(
                 () -> ((ClientCommand) receivedCommand).execute((ClientControllerInterface) getController())
         );
     }
@@ -64,7 +64,7 @@ public class SocketServerHandler extends SocketHandler implements VirtualServer 
      */
     @Override
     public void printError(Exception e){
-        ClientController.getInstance().errorLogger.log(e);
+        ClientController.getInstance().ERROR_LOGGER.log(e);
     }
 
     /**

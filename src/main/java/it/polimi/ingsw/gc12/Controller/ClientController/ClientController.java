@@ -1,152 +1,96 @@
 package it.polimi.ingsw.gc12.Controller.ClientController;
 
-import it.polimi.ingsw.gc12.Client.ClientView.View;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.*;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LeaderboardScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.LobbyScreenState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
-import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.ClientModel.ViewModel;
 import it.polimi.ingsw.gc12.Model.Lobby;
+import it.polimi.ingsw.gc12.Network.Client.Client;
 import it.polimi.ingsw.gc12.Network.Client.RMIClientSkeleton;
 import it.polimi.ingsw.gc12.Network.Client.SocketClient;
-import it.polimi.ingsw.gc12.Network.NetworkSession;
-import it.polimi.ingsw.gc12.Network.VirtualServer;
 import it.polimi.ingsw.gc12.Utilities.*;
 
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ClientController implements ClientControllerInterface {
 
     private static final ClientController SINGLETON_INSTANCE = new ClientController();
 
-    public final Map<Integer, ClientCard> cardsList;
-    //FIXME: forse era meglio che rimanessero di competenza della View stessa nel ViewState...
-    public View view;
-    public ViewState viewState;
-    public String serverIPAddress = "localhost";
-    public VirtualServer serverConnection;
-    public NetworkSession thisClient;
-    public Thread keepAlive;
-    public ViewModel viewModel;
-    public ErrorLogger errorLogger;
-    //Should we use a Lock?
-    public final Object LOCK = new Object();
-    public final ExecutorService commandExecutorsPool;
+    //TODO: in realtà potremmo usarlo come pulsante di reset nel caso in cui qualcosa vada storto, facciamo quit() e
+    // lo cancelliamo e ne creiamo uno nuovo ogni volta che la connessione viene creata...
+    public final ViewModel VIEWMODEL;
+
+    public final ErrorLogger ERROR_LOGGER;
 
     private ClientController() {
-        serverConnection = null;
-        thisClient = null;
-        keepAlive = null;
-        cardsList = loadCards();
-        viewModel = new ViewModel();
-        errorLogger = new ErrorLogger("src/main/java/it/polimi/ingsw/gc12/Utilities/errorLog" + this + ".txt");
-        this.commandExecutorsPool = Executors.newSingleThreadExecutor();
+        VIEWMODEL = new ViewModel();
+        ERROR_LOGGER = new ErrorLogger("src/main/java/it/polimi/ingsw/gc12/Utilities/errorLogger_" + this + ".txt");
     }
 
     public static ClientController getInstance() {
         return SINGLETON_INSTANCE;
     }
 
-    public ViewState getCurrentState() {
-        return viewState;
-    }
-
-    public void setCurrentState(ViewState currentState) {
-        viewState = currentState;
-    }
-
-    public View getView() {
-        return view;
-    }
-
-    public void setView(View view){
-        this.view = view;
-    }
-
-    //Helper method to catch RemoteException (and eventually other ones) only one time
-    public void requestToServer(ServerCommand command) {
-        try {
-            serverConnection.requestToServer(command);
-        } catch (Exception e) {
-            errorLogger.log(e);
-        }
-    }
-
-    public void setCommunicationTechnology(String communicationTechnology) {
+    public void setupCommunication(String serverIPAddress, String communicationTechnology) {
+        Client.getClientInstance().serverIPAddress = serverIPAddress;
         switch (communicationTechnology.trim().toLowerCase()) {
-            case "socket" -> SocketClient.getInstance();
-            case "rmi" -> RMIClientSkeleton.getInstance();
-            default -> System.out.println("Unknown communication technology");
+            case "socket" -> Client.getClientInstance().serverConnection = SocketClient.getInstance();
+            case "rmi" -> Client.getClientInstance().session = RMIClientSkeleton.getInstance();
+            default ->
+                    throw new RuntimeException("Communication technology " + communicationTechnology + " not supported");
         }
-    }
-
-    private Map<Integer, ClientCard> loadCards() {
-        Map<Integer, ClientCard> tmp = new HashMap<>();
-        Objects.requireNonNull(JSONParser.generateClientCardsFromJSON("client_cards.json"))
-                .forEach((card) -> tmp.put(card.ID, card));
-        tmp.put(-1, new ClientCard(-1, null, null));
-        return Collections.unmodifiableMap(tmp);
     }
 
     public void throwException(Exception e) {
-        errorLogger.log(e);
-    }
-
-    public void keepAlive() {
-        //TODO: update Timer on VirtualClient Timer Map (add attributes or methods for management)
+        ERROR_LOGGER.log(e);
     }
 
     public void setNickname(String nickname){
-        viewModel.setOwnNickname(nickname);
-        //TODO: is it correct?
-        synchronized (LOCK) {
-            LOCK.notify();
-        }
-        //FIXME: are we sure it goes here? (View and Controller not separated...?)
-        viewState.updateNickname();
+        VIEWMODEL.setOwnNickname(nickname);
+        ViewState.getCurrentState().updateNickname();
     }
 
     public void setLobbies(Map<UUID, Lobby> lobbies) {
-        viewModel.setLobbies(lobbies);
-        if(!(viewState instanceof LeaderboardScreenState)) {
-            viewState = new LobbyScreenState();
-            viewState.executeState();
+        VIEWMODEL.setLobbies(lobbies);
+        if (!(ViewState.getCurrentState() instanceof LeaderboardScreenState)) {
+            LobbyScreenState newState = new LobbyScreenState();
+            ViewState.setCurrentState(newState);
+            newState.executeState();
         }
     }
 
     public void updateLobby(Lobby lobby) {
         //The received lobbies with a playersNumber equal to zero or below are removed from the ClientModel
         if(lobby.getPlayersNumber() <= 0)
-            viewModel.removeLobby(lobby.getRoomUUID());
+            VIEWMODEL.removeLobby(lobby.getRoomUUID());
         else
-            viewModel.putLobby(lobby.getRoomUUID(), lobby);
+            VIEWMODEL.putLobby(lobby.getRoomUUID(), lobby);
 
-        if (lobby.getPlayers().stream().anyMatch((player) -> player.getNickname().equals(viewModel.getOwnNickname()))) {
-            viewModel.joinLobbyOrGame(lobby);
+        if (lobby.getPlayers().stream().anyMatch((player) -> player.getNickname().equals(VIEWMODEL.getOwnNickname()))) {
+            VIEWMODEL.joinRoom(lobby);
         }
         //Se leaveLobby, cioè se noneMatch e c'ero dentro
-        else if (lobby.getRoomUUID().equals(viewModel.getCurrentLobbyUUID())) {
-            viewModel.leaveLobbyOrGame();
+        else if (lobby.getRoomUUID().equals(VIEWMODEL.getCurrentRoomUUID())) {
+            VIEWMODEL.leaveRoom();
         }
 
-        if(!(viewState instanceof LeaderboardScreenState)) {
-            viewState = new LobbyScreenState();
-            viewState.executeState();
+        if (!(ViewState.getCurrentState() instanceof LeaderboardScreenState)) {
+            LobbyScreenState newState = new LobbyScreenState();
+            ViewState.setCurrentState(newState);
+            newState.executeState();
         }
     }
 
     //FIXME: da qui in poi i synchronized servono davvero oppure risolvendo la writePending e facendo una coda di comandi si risolve?
     public synchronized void startGame(ClientGame gameDTO) {
-        viewModel.joinLobbyOrGame(gameDTO);
+        VIEWMODEL.joinRoom(gameDTO);
 
-        viewState = new ChooseInitialCardsState();
+        ViewState.setCurrentState(new ChooseInitialCardsState());
     }
 
     public void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD) {
@@ -155,92 +99,95 @@ public class ClientController implements ClientControllerInterface {
                     .filter( (player) -> player.getNickname().equals(playerEntry.getKey())).findFirst().orElseThrow();
 
             for (var fieldEntry : PLAYERS_FIELD.get(playerEntry.getKey()).sequencedEntrySet())
-                clientPlayerInstance.placeCard(fieldEntry.getKey(), cardsList.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
+                clientPlayerInstance.placeCard(fieldEntry.getKey(), VIEWMODEL.CARDS_LIST.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
         }
-        viewModel.joinLobbyOrGame(gameDTO);
+        VIEWMODEL.joinRoom(gameDTO);
 
-        switch(currentState){
-            case "initialState" -> viewState = new ChooseInitialCardsState();
-            case "objectiveState" -> viewState = new ChooseObjectiveCardsState();
-            case "playState" -> viewState = new PlayerTurnPlayState();
-            case "drawState" -> viewState = new PlayerTurnDrawState();
-        }
+        GameScreenState restoredGameState = switch (currentState) {
+            case "initialState" -> new ChooseInitialCardsState();
+            case "objectiveState" -> new ChooseObjectiveCardsState();
+            case "playState" -> new PlayerTurnPlayState();
+            case "drawState" -> new PlayerTurnDrawState();
+            default -> throw new IllegalArgumentException("Invalid restore state received");
+        };
 
-        ((GameScreenState) viewState).restoreScreenState();
+        ViewState.setCurrentState(restoredGameState);
+        restoredGameState.restoreScreenState();
     }
 
     public synchronized void receiveObjectiveChoice(List<Integer> cardIDs) {
-        for (var cardID : cardIDs)
-            ((ChooseObjectiveCardsState) viewState).objectivesSelection.add(cardsList.get(cardID));
+        ChooseObjectiveCardsState newState = new ChooseObjectiveCardsState();
+        ViewState.setCurrentState(newState);
 
-        view.showObjectiveCardsChoice();
+        for (var cardID : cardIDs)
+            newState.objectivesSelection.add(VIEWMODEL.CARDS_LIST.get(cardID));
+
+        newState.executeState();
     }
 
     public void confirmObjectiveChoice(int cardID){
-        viewModel.getGame().setOwnObjective(cardsList.get(cardID));
-        view.gameScreen();
+        VIEWMODEL.getCurrentGame().setOwnObjective(VIEWMODEL.CARDS_LIST.get(cardID));
+        ViewState.getCurrentState().executeState();
     }
 
     public synchronized void placeCard(String nickname, GenericPair<Integer, Integer> coordinates, int cardID,
                           Side playedSide, EnumMap<Resource, Integer> ownedResources,
                           List<GenericPair<Integer, Integer>> openCorners, int points) {
-        ClientPlayer thisPlayer = viewModel.getGame().getPlayers().stream()
+        ClientPlayer thisPlayer = VIEWMODEL.getCurrentGame().getPlayers().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
                 .findAny()
                 .orElseThrow();
 
-        thisPlayer.placeCard(coordinates, cardsList.get(cardID), playedSide);
-        if (nickname.equals(viewModel.getOwnNickname())) viewModel.getGame().removeCardFromHand(cardsList.get(cardID));
+        thisPlayer.placeCard(coordinates, VIEWMODEL.CARDS_LIST.get(cardID), playedSide);
+        if (nickname.equals(VIEWMODEL.getOwnNickname()))
+            VIEWMODEL.getCurrentGame().removeCardFromHand(VIEWMODEL.CARDS_LIST.get(cardID));
         thisPlayer.setOwnedResources(ownedResources);
         thisPlayer.setOpenCorners(openCorners);
         thisPlayer.setPoints(points);
 
-        if(viewState instanceof ChooseInitialCardsState){
-            if (nickname.equals(viewModel.getOwnNickname())) {
-                view.gameScreen();
-            }
-        }
+        ViewState.getCurrentState().showPlacedCard(nickname);
     }
 
     public synchronized void receiveCard(List<Integer> cardIDs) {
         for (var cardID : cardIDs)
-            viewModel.getGame().addCardToHand(cardsList.get(cardID));
+            VIEWMODEL.getCurrentGame().addCardToHand(VIEWMODEL.CARDS_LIST.get(cardID));
 
-        viewState.executeState();
+        ViewState.getCurrentState().executeState();
     }
 
     public synchronized void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {
         for(var cardPlacement : cardPlacements) {
-            ClientCard card = cardsList.get(cardPlacement.getX());
+            ClientCard card = VIEWMODEL.CARDS_LIST.get(cardPlacement.getX());
             switch (cardPlacement.getY().trim().toLowerCase()) {
-                case "resource_deck" -> viewModel.getGame().setTopDeckResourceCard(card);
-                case "gold_deck" -> viewModel.getGame().setTopDeckGoldCard(card);
-                case "resource_visible" -> viewModel.getGame().setPlacedResources(card, cardPlacement.getZ());
-                case "gold_visible" -> viewModel.getGame().setPlacedGold(card, cardPlacement.getZ());
-                case "objective_visible" -> viewModel.getGame().setCommonObjectives(card, cardPlacement.getZ());
+                case "resource_deck" -> VIEWMODEL.getCurrentGame().setTopDeckResourceCard(card);
+                case "gold_deck" -> VIEWMODEL.getCurrentGame().setTopDeckGoldCard(card);
+                case "resource_visible" -> VIEWMODEL.getCurrentGame().setPlacedResources(card, cardPlacement.getZ());
+                case "gold_visible" -> VIEWMODEL.getCurrentGame().setPlacedGold(card, cardPlacement.getZ());
+                case "objective_visible" -> VIEWMODEL.getCurrentGame().setCommonObjectives(card, cardPlacement.getZ());
             }
         }
     }
 
     public synchronized void transition(int round, int currentPlayerIndex) {
         if(round != 0)
-            viewModel.getGame().setCurrentRound(round);
+            VIEWMODEL.getCurrentGame().setCurrentRound(round);
 
-        viewModel.getGame().setCurrentPlayerIndex(currentPlayerIndex);
+        VIEWMODEL.getCurrentGame().setCurrentPlayerIndex(currentPlayerIndex);
 
-        ((GameScreenState) viewState).transition();
-        viewState.executeState();
+        ((GameScreenState) ViewState.getCurrentState()).transition();
+        ViewState.getCurrentState().executeState();
     }
 
     public void pauseGame(){
-        viewState = new AwaitingReconnectionState(viewState);
-        viewModel.getGame().setCurrentPlayerIndex(-1);
+        AwaitingReconnectionState newState = new AwaitingReconnectionState(ViewState.getCurrentState());
+        ViewState.setCurrentState(newState);
+        VIEWMODEL.getCurrentGame().setCurrentPlayerIndex(-1);
 
-        viewState.executeState();
+        newState.executeState();
     }
 
     public void toggleActive(String nickname){
-        ClientPlayer targetPlayer = viewModel.getGame().getPlayers().stream()
+        ClientPlayer targetPlayer = VIEWMODEL.getCurrentGame().getPlayers().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
                 .findAny()
                 .orElseThrow();
@@ -254,16 +201,20 @@ public class ClientController implements ClientControllerInterface {
     }
 
     public void endGame(List<Triplet<String, Integer, Integer>> pointsStats, boolean gameEndedDueToDisconnections) {
-        viewState = new LeaderboardScreenState(pointsStats, gameEndedDueToDisconnections);
-        viewState.executeState();
+        LeaderboardScreenState newState = new LeaderboardScreenState(pointsStats, gameEndedDueToDisconnections);
+        ViewState.setCurrentState(newState);
+        newState.executeState();
     }
 
     public void addChatMessage(String senderNickname, String chatMessage, boolean isPrivate) {
-        viewState.addChatMessage(((isPrivate) ? "<Private> " : "") + "[" + senderNickname + "] " + chatMessage);
+        ViewState.getCurrentState().showReceivedChatMessage(((isPrivate) ? "<Private> " : "") + "[" + senderNickname + "] " + chatMessage);
     }
 
     public boolean isThisClientTurn(){
-        ClientGame game = viewModel.getGame();
-        return game.getPlayers().get(game.getCurrentPlayerIndex()).getNickname().equals(game.getThisPlayer().getNickname());
+        ClientGame game = VIEWMODEL.getCurrentGame();
+        return game.getPlayers()
+                .get(game.getCurrentPlayerIndex())
+                .getNickname()
+                .equals(game.getThisPlayer().getNickname());
     }
 }

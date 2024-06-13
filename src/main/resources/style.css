@@ -1,3 +1,7 @@
+.root {
+
+}
+
 #titleScreenPane {
     /*-fx-background-color: black;*/
     -fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");
@@ -120,6 +124,12 @@
     -fx-alignment: CENTER;
 }
 
+#gameScreenPane {
+    -fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+}
+
 #scoreboardPane {
 
 }
@@ -142,4 +152,16 @@
 
 #chatPane {
 
+}
+
+.roundButton {
+    -fx-background-radius: 50%;
+    -fx-min-width: 50px;
+    -fx-min-height: 50px;
+    -fx-max-width: 50px;
+    -fx-max-height: 50px;
+    -fx-background-color: transparent;
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+    -fx-border-radius: 25;
 }

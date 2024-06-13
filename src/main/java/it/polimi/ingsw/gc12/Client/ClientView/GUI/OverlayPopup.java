@@ -32,6 +32,7 @@ public class OverlayPopup extends Popup {
     @Override
     public void show(Window window) {
         darken(window);
+        getContent().getFirst().setVisible(true);
         super.show(window);
     }
 
@@ -43,6 +44,7 @@ public class OverlayPopup extends Popup {
             pane.getChildren().remove(darkening);
             pane.setDisable(false);
         }
+        getContent().getFirst().setVisible(true);
         super.hide();
     }
 }

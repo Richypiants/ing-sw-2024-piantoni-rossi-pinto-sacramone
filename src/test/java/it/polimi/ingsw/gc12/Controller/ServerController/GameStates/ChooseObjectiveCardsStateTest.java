@@ -70,7 +70,7 @@ class ChooseObjectiveCardsStateTest {
                 ((ServerListener) client1.getListener()).getVirtualClient()).myClientController
                 .receivedObjectiveIDs.getFirst();
         assertDoesNotThrow(() -> gameController.getCurrentState().pickObjective( target,
-                (ObjectiveCard) ServerModel.cardsList.get(receivedObjectiveCardID)));
+                (ObjectiveCard) ServerModel.CARDS_LIST.get(receivedObjectiveCardID)));
         assertNotNull(target.getSecretObjective());
     }
 
@@ -83,7 +83,7 @@ class ChooseObjectiveCardsStateTest {
         gameController.getCurrentState().transition();
 
         assertThrows(CardNotInHandException.class, () -> gameController.getCurrentState().pickObjective( target,
-                (ObjectiveCard) ServerModel.cardsList.get(0)));
+                (ObjectiveCard) ServerModel.CARDS_LIST.get(0)));
 
         assertNull(target.getSecretObjective());
     }
@@ -103,12 +103,24 @@ class ChooseObjectiveCardsStateTest {
                 ((ServerListener) client1.getListener()).getVirtualClient()).myClientController
                 .receivedObjectiveIDs.get(1);
         assertDoesNotThrow( () -> gameController.getCurrentState().pickObjective( target,
-                (ObjectiveCard) ServerModel.cardsList.get(firstChoiceID)));
+                (ObjectiveCard) ServerModel.CARDS_LIST.get(firstChoiceID)));
 
         assertThrows(AlreadySetCardException.class , () -> gameController.getCurrentState().pickObjective( target,
-                (ObjectiveCard) ServerModel.cardsList.get(secondChoiceID)));
+                (ObjectiveCard) ServerModel.CARDS_LIST.get(secondChoiceID)));
 
         assertNotNull(target.getSecretObjective());
+    }
+
+    @Test
+    void correctPickCardIfPlayerDisconnected() throws Exception {
+        gameController.CONTROLLED_GAME.getPlayers().getFirst().addListener(client1.getListener());
+        gameController.CONTROLLED_GAME.getPlayers().getLast().addListener(client2.getListener());
+
+        gameController.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(0, 0), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
+        gameController.getCurrentState().placeCard(game.getPlayers().getLast(), new GenericPair<>(0, 0), game.getPlayers().getLast().getCardsInHand().getFirst(), Side.FRONT);
+
+        gameController.getCurrentState().playerDisconnected(game.getPlayers().getFirst());
+        assertNotNull(gameController.CONTROLLED_GAME.getPlayers().getFirst().getSecretObjective());
     }
 
 

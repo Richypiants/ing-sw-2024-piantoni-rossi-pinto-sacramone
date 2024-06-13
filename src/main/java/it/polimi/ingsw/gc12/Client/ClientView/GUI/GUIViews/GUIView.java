@@ -1,8 +1,9 @@
-package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIControllers;
+package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIViews;
 
 import it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIApplication;
 import it.polimi.ingsw.gc12.Client.ClientView.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.Client.ClientView.View;
+import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
@@ -18,6 +19,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 //FIXME: consider removing some Platform.runLater() and restricting some of them to necessary actions only
@@ -40,11 +42,11 @@ public class GUIView extends View {
         if (SINGLETON_GUI_INSTANCE == null) {
             new Thread(() -> Application.launch(GUIApplication.class)).start(); //starting the GUI thread
 
-            GUITitleScreenController.getInstance();
-            GUIConnectionSetupController.getInstance();
-            GUIConnectionLoadingController.getInstance();
-            GUILobbiesScreenController.getInstance();
-            GUIGameScreenController.getInstance();
+            GUITitleView.getInstance();
+            GUIConnectionSetupView.getInstance();
+            GUIConnectionLoadingView.getInstance();
+            GUILobbiesView.getInstance();
+            GUIGameView.getInstance();
 
             SINGLETON_GUI_INSTANCE = new GUIView();
         }
@@ -89,17 +91,17 @@ public class GUIView extends View {
     }
 
     protected void connectionLoadingScreen() {
-        GUIConnectionLoadingController.getInstance().connectionLoadingScreen();
+        GUIConnectionLoadingView.getInstance().connectionLoadingScreen();
     }
 
     @Override
     public void titleScreen() {
-        GUITitleScreenController.getInstance().titleScreen();
+        GUITitleView.getInstance().titleScreen();
     }
 
     @Override
     public void connectionSetupScreen() {
-        GUIConnectionSetupController.getInstance().connectionSetupScreen();
+        GUIConnectionSetupView.getInstance().connectionSetupScreen();
     }
 
     @Override
@@ -109,22 +111,27 @@ public class GUIView extends View {
 
     @Override
     public void lobbiesScreen() {
-        GUILobbiesScreenController.getInstance().lobbiesScreen();
+        GUILobbiesView.getInstance().lobbiesScreen();
+    }
+
+    @Override
+    public void quittingScreen() {
+        //TODO: implement quitting screen for GUI
     }
 
     @Override
     public void showNickname() {
-        GUILobbiesScreenController.getInstance().showNickname();
+        GUILobbiesView.getInstance().showNickname();
     }
 
     @Override
     public void gameScreen() {
-        GUIGameScreenController.getInstance().gameScreen();
+        GUIGameView.getInstance().gameScreen();
     }
 
     @Override
     public void awaitingScreen() {
-        GUIGameScreenController.getInstance().awaitingScreen();
+        GUIGameView.getInstance().awaitingScreen();
     }
 
     public static OverlayPopup drawOverlayPopup(Pane popupContent, boolean isCloseable) {
@@ -151,32 +158,32 @@ public class GUIView extends View {
 
     @Override
     public void showChat() {
-        GUIGameScreenController.getInstance().showChat();
+        GUIGameView.getInstance().showChat();
     }
 
     @Override
     public void showInitialCardsChoice() {
-        GUIGameScreenController.getInstance().showInitialCardsChoice();
+        GUIGameView.getInstance().showInitialCardsChoice();
     }
 
     @Override
-    public void showObjectiveCardsChoice() {
-        GUIGameScreenController.getInstance().showObjectiveCardsChoice();
+    public void showObjectiveCardsChoice(ArrayList<ClientCard> objectivesSelection) {
+        GUIGameView.getInstance().showObjectiveCardsChoice(objectivesSelection);
     }
 
     @Override
     public void showHand() {
-        GUIGameScreenController.getInstance().showHand();
+        GUIGameView.getInstance().showHand();
     }
 
     @Override
     public void showCommonPlacedCards() {
-        GUIGameScreenController.getInstance().showCommonPlacedCards();
+        GUIGameView.getInstance().showCommonPlacedCards();
     }
 
     @Override
     public void showField(ClientPlayer player) {
-        GUIGameScreenController.getInstance().showField(player);
+        GUIGameView.getInstance().showField(player);
     }
 
     @Override
@@ -185,7 +192,7 @@ public class GUIView extends View {
 
     @Override
     public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
-        GUIGameScreenController.getInstance().showLeaderboard(POINTS_STATS, gameEndedDueToDisconnections);
+        GUIGameView.getInstance().showLeaderboard(POINTS_STATS, gameEndedDueToDisconnections);
     }
 
 }

@@ -20,7 +20,7 @@ public class ChooseInitialCardsState extends GameState {
         super(controller, thisGame, "initialState");
 
         CardDeck<InitialCard> initialCardsDeck = new CardDeck<>(
-                ServerModel.cardsList.values().stream()
+                ServerModel.CARDS_LIST.values().stream()
                         .filter((card -> card instanceof InitialCard))
                         .map((card) -> (InitialCard) card)
                         .toList()

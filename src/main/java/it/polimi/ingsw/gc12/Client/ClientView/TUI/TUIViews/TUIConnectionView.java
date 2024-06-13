@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIViews;
 
-import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIListener;
+import it.polimi.ingsw.gc12.Client.ClientView.TUI.TUIParser;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import org.fusesource.jansi.Ansi;
 
@@ -28,7 +29,7 @@ public class TUIConnectionView extends TUIView {
         String selection;
         do {
             clearTerminal();
-            System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN)
+            System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN)
                     .eraseLine(Ansi.Erase.FORWARD)
             );
             printToPosition(ansi().a(prompt));
@@ -42,13 +43,13 @@ public class TUIConnectionView extends TUIView {
         clearTerminal();
         printToPosition(ansi().cursor(1, 1).a("Enter the server IP address (leave empty for 'localhost'): "));
         String serverIPAddress = console.readLine();
-        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
+        System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
         clearTerminal();
         String communicationTechnology = readUntil(
                 ansi().cursor(1, 1).a("Choose the communication technology (RMI-Socket):"),
                 List.of("rmi", "socket")
         );
-        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
+        System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
         clearTerminal();
 
         String nickname = "";
@@ -64,25 +65,25 @@ public class TUIConnectionView extends TUIView {
             if(nickname.length() > MAX_NICK_LENGTH || nickname.isEmpty())
                 lastInputWasInvalid = true;
             clearTerminal();
-            System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN)
+            System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN)
                     .eraseLine(Ansi.Erase.FORWARD)
-                    .cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN));
+                    .cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN));
         }while(lastInputWasInvalid);
 
         printToPosition(ansi().cursor(2,1).a("Connecting to the server..."));
 
-        ClientController.getInstance().viewState.connect(serverIPAddress, communicationTechnology, nickname);
+        ViewState.getCurrentState().connect(serverIPAddress, communicationTechnology, nickname);
     }
 
     public void connectedConfirmation() {
-        TUIListener.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().viewModel.getOwnNickname().length();
+        TUIParser.COMMAND_INPUT_COLUMN = 6 + ClientController.getInstance().VIEWMODEL.getOwnNickname().length();
         printToPosition(ansi().cursor(3, 1).a("Successfully connected to the server: nickname confirmed!"));
-        System.out.print(ansi().cursor(TUIListener.COMMAND_INPUT_ROW, TUIListener.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
+        System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
         listener.startReading();
         try {
             sleep(1000);
         } catch (InterruptedException e) {
-            ClientController.getInstance().errorLogger.log(e);
+            ClientController.getInstance().ERROR_LOGGER.log(e);
         }
     }
 

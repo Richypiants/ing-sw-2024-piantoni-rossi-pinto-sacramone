@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates;
 
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.BroadcastMessageCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.DirectMessageCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.LeaveGameCommand;
@@ -20,45 +19,53 @@ public abstract class GameScreenState extends ViewState {
     protected void sendCardToPlace(GenericPair<Integer, Integer> coordinates, int inHandPosition, Side playedSide) {
         ClientCard card;
         try {
-            card = ClientController.getInstance().viewModel.getGame().getCardsInHand().get(inHandPosition);
+            card = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getCardsInHand().get(inHandPosition);
         } catch (IndexOutOfBoundsException e) {
             throw new IllegalArgumentException("nessuna carta presente alla posizione specificata della mano");
         }
 
         try {
-            ClientController.getInstance().requestToServer(new PlaceCardCommand(coordinates, card.ID, playedSide));
+            CLIENT.requestToServer(new PlaceCardCommand(coordinates, card.ID, playedSide));
         } catch (Exception e) {
-            ClientController.getInstance().view.printError(e);
+            selectedView.printError(e);
         }
     }
 
     @Override
     public void broadcastMessage(String message) {
         //TODO: message timestamp? add it to the message or send it as parameter? (to avoid local timezone conversions...)
-        ClientController.getInstance().requestToServer(new BroadcastMessageCommand(message));
+        CLIENT.requestToServer(new BroadcastMessageCommand(message));
     }
 
     @Override
     public void directMessage(String receiverNickname, String message) {
         //TODO: message timestamp? add it to the message or send it as parameter? (to avoid local timezone conversions...)
-        ClientController.getInstance().requestToServer(new DirectMessageCommand(receiverNickname, message));
+        CLIENT.requestToServer(new DirectMessageCommand(receiverNickname, message));
     }
 
     //FIXME: estrarre tra le costanti anche la dimensione della chat?
     @Override
-    public void addChatMessage(String message) {
+    public void showReceivedChatMessage(String message) {
         if (message.length() < 90)
-            ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message);
+            CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().addMessageToChatLog(message);
         else {
-            ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message.substring(0, 90));
-            ClientController.getInstance().viewModel.getGame().addMessageToChatLog(message.substring(90));
+            CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().addMessageToChatLog(message.substring(0, 90));
+            CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().addMessageToChatLog(message.substring(90));
         }
-        ClientController.getInstance().view.showChat();
+        selectedView.showChat();
     }
 
     @Override
     public void quit() {
-        ClientController.getInstance().requestToServer(new LeaveGameCommand());
+        CLIENT.requestToServer(new LeaveGameCommand());
+        synchronized (CLIENT) {
+            try {
+                selectedView.quittingScreen();
+                CLIENT.wait();
+            } catch (InterruptedException e) {
+                CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
+            }
+        }
         super.quit();
     }
 

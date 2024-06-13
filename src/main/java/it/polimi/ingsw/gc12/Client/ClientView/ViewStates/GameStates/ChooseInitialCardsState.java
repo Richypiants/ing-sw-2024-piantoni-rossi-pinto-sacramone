@@ -19,15 +19,22 @@ public class ChooseInitialCardsState extends GameScreenState{
 
     @Override
     public void executeState() {
-        ClientController.getInstance().view.gameScreen();
-        if(!ClientController.getInstance().viewModel.getGame().getThisPlayer().getPlacedCards().containsKey(new GenericPair<>(0,0)))
-            ClientController.getInstance().view.showInitialCardsChoice();
+        selectedView.gameScreen();
+        if (!ClientController.getInstance().VIEWMODEL.getCurrentGame().getThisPlayer().getPlacedCards().containsKey(new GenericPair<>(0, 0)))
+            selectedView.showInitialCardsChoice();
     }
 
+    @Override
     public void restoreScreenState(){
-        ClientController.getInstance().view.gameScreen();
-        if(!ClientController.getInstance().viewModel.getGame().getThisPlayer().getPlacedCards().containsKey(new GenericPair<>(0,0)))
-            ClientController.getInstance().view.showInitialCardsChoice();
+        selectedView.gameScreen();
+        if (!CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getThisPlayer().getPlacedCards().containsKey(new GenericPair<>(0, 0)))
+            selectedView.showInitialCardsChoice();
+    }
+
+    @Override
+    public void showPlacedCard(String nickname) {
+        if (nickname.equals(CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname()))
+            selectedView.gameScreen();
     }
 
     @Override
@@ -37,6 +44,5 @@ public class ChooseInitialCardsState extends GameScreenState{
 
     @Override
     public void transition() {
-        ClientController.getInstance().viewState = new ChooseObjectiveCardsState();
     }
 }

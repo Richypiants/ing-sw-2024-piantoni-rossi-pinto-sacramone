@@ -83,11 +83,12 @@ public class LobbyController extends ServerController {
         else
             MODEL.removePlayerFromLobby(sender.getPlayer(), CONTROLLED_LOBBY);
 
-
         sender.setController(ConnectionController.getInstance());
 
-        if (isInactive)
+        if (isInactive) {
+            MODEL.removeListener(sender.getListener());
             removeActivePlayer(sender);
+        }
 
         System.out.println("[SERVER]: sending UpdateLobbiesCommand to clients");
     }
