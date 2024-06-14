@@ -52,7 +52,7 @@ public abstract class GameScreenState extends ViewState {
             CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().addMessageToChatLog(message.substring(0, 90));
             CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().addMessageToChatLog(message.substring(90));
         }
-        selectedView.showChat();
+        selectedView.updateChat();
     }
 
     @Override

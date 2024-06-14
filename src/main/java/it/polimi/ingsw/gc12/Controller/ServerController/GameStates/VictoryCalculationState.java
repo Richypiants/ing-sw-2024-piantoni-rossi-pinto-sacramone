@@ -141,6 +141,7 @@ public class VictoryCalculationState extends GameState {
             for (var inGamePlayer : GAME.getActivePlayers()) {
                 Player thisPlayer = returnLobby.getPlayers().get(currentIndex);
                 NetworkSession thisSession = GAME_CONTROLLER.getSessionFromActivePlayer(inGamePlayer);
+                thisSession.setPlayer(thisPlayer);
                 GAME_CONTROLLER.putActivePlayer(thisSession, thisPlayer);
 
                 GameController.MODEL.addListener(thisSession.getListener());

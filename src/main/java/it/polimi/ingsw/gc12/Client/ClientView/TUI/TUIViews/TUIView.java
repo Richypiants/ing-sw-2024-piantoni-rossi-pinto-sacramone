@@ -126,8 +126,8 @@ public class TUIView extends View {
     }
 
     @Override
-    public void showChat() {
-        TUIGameView.getInstance().showChat();
+    public void updateChat() {
+        TUIGameView.getInstance().updateChat();
     }
 
     @Override
@@ -146,8 +146,8 @@ public class TUIView extends View {
     }
 
     @Override
-    public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
-        TUIGameView.getInstance().showLeaderboard(POINTS_STATS, gameEndedDueToDisconnections);
+    public void leaderboardScreen(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
+        TUIGameView.getInstance().leaderboardScreen(POINTS_STATS, gameEndedDueToDisconnections);
     }
 
     @Override

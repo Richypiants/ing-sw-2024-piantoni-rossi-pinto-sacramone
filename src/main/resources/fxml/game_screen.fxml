@@ -10,7 +10,7 @@
     <Button fx:id="chatButton" styleClass="roundButton" mnemonicParsing="false"/>
     <Button fx:id="leaveButton" styleClass="roundButton" mnemonicParsing="false"/>
 
-    <AnchorPane fx:id="scoreboardPane" visible="false"/>
+    <HBox fx:id="opponentsFieldsPane" spacing="30"/>
 
     <AnchorPane fx:id="decksAndVisibleCardsPane">
         <Label fx:id="resourcesLabel" alignment="CENTER"
@@ -48,18 +48,16 @@
         </Label>
     </AnchorPane>
 
-    <HBox fx:id="opponentsFieldsPane"/>
-
     <AnchorPane fx:id="ownFieldPane">
         <VBox fx:id="ownFieldStatsBox" alignment="CENTER"/>
         <ScrollPane fx:id="ownFieldScrollPane"/>
-        <Button fx:id="zoomedOwnFieldButton" mnemonicParsing="false" text="[]"/>
-        <Button fx:id="centerOwnFieldButton" mnemonicParsing="false" text="+"/>
+        <Button fx:id="zoomOwnFieldButton" mnemonicParsing="false"/>
+        <Button fx:id="centerOwnFieldButton" mnemonicParsing="false"/>
     </AnchorPane>
 
-    <HBox fx:id="handPane">
+    <HBox fx:id="handPane" alignment="CENTER"/>
 
-    </HBox>
+    <AnchorPane fx:id="scoreboardPane" visible="false"/>
 
     <AnchorPane fx:id="chatPane" visible="false">
         <VBox fx:id="chatBox" alignment="CENTER" spacing="5">
@@ -88,7 +86,7 @@
     </AnchorPane>
 
     <VBox fx:id="awaitingStateMessageBox" styleClass="awaitingStateMessageBox" visible="false">
-        <Label fx:id="awaitingPrompt" alignment="CENTER"
+        <Label fx:id="awaitingPrompt" styleClass="popupText" alignment="CENTER"
                text="[GAME PAUSED] Awaiting for reconnection of other players...">
             <font>
                 <Font name="Bell MT" size="30.0"/>

@@ -75,7 +75,7 @@ public class TUIConnectionView extends TUIView {
     }
 
     public void connectedConfirmation() {
-        TUIParser.COMMAND_INPUT_COLUMN = 6 + CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname().length();
+        TUIParser.COMMAND_INPUT_COLUMN = 6 + VIEWMODEL.getOwnNickname().length();
         printToPosition(ansi().cursor(3, 1).a("Successfully connected to the server: nickname confirmed!"));
         System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
         listener.startReading();

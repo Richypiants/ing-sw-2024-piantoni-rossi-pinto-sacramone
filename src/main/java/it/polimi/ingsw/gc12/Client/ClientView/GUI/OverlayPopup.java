@@ -13,8 +13,11 @@ public class OverlayPopup extends Popup {
 
     private Window ownerWindow = null;
     private ChangeListener<Boolean> ownerWindowFocusedListener;
+    private static OverlayPopup openedPopup = null;
 
     public OverlayPopup() {
+        if (openedPopup != null) openedPopup.hide();
+        openedPopup = this;
     }
 
     private static AnchorPane generateDarkeningPane() {
@@ -62,11 +65,13 @@ public class OverlayPopup extends Popup {
     public void hide() {
         getContent().getFirst().setVisible(false);
         ownerWindow.focusedProperty().removeListener(ownerWindowFocusedListener);
+        openedPopup = null;
+
         super.hide();
 
         if (ownerWindow == null) return;
 
-        Node root = getOwnerWindow().getScene().getRoot();
+        Node root = ownerWindow.getScene().getRoot();
 
         if (root instanceof Pane pane) {
             pane.getChildren().remove(DARKENING_PANE);

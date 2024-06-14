@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc12.Client.ClientView;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
+import it.polimi.ingsw.gc12.Model.ClientModel.ViewModel;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
@@ -12,6 +13,7 @@ import java.util.List;
 public abstract class View {
 
     protected final static ClientController CLIENT_CONTROLLER = ClientController.getInstance();
+    protected final static ViewModel VIEWMODEL = CLIENT_CONTROLLER.VIEWMODEL;
 
     public abstract void printError(Throwable error);
 
@@ -31,7 +33,7 @@ public abstract class View {
 
     public abstract void showNickname();
 
-    public abstract void showChat();
+    public abstract void updateChat();
 
     public abstract void showInitialCardsChoice();
 
@@ -39,7 +41,7 @@ public abstract class View {
 
     public abstract void showCommonPlacedCards();
 
-    public abstract void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections);
+    public abstract void leaderboardScreen(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections);
 
     public abstract void showField(ClientPlayer player);
 

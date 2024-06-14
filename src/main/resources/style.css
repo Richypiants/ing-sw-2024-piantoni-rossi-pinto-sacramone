@@ -199,6 +199,11 @@
 }
 
 .popupText {
+    -fx-font-family: Bell MT;
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
     -fx-text-fill: #FADA5E;
     /* F8E473 / EEDC82 */
 }

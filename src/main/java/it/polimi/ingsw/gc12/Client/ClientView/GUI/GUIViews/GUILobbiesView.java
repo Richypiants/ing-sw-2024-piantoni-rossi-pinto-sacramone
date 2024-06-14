@@ -71,7 +71,7 @@ public class GUILobbiesView extends GUIView {
         Platform.runLater(() -> {
             MENU_BUTTONS_BOX.relocate(screenSizes.getX() * 12 / 100, screenSizes.getY() * 9 / 16);
 
-            OWN_NICKNAME_LABEL.setText("Profile: " + CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname());
+            OWN_NICKNAME_LABEL.setText("Profile: " + VIEWMODEL.getOwnNickname());
 
             PLAYERS_NUMBER_SELECTOR.setItems(FXCollections.observableArrayList(2, 3, 4));
 
@@ -117,12 +117,12 @@ public class GUILobbiesView extends GUIView {
             LOBBIES_LIST.setPrefWidth(LOBBIES_PANE.getPrefWidth() * 98 / 100);
             LOBBIES_LIST.getChildren().clear();
 
-            if (CLIENT_CONTROLLER.VIEWMODEL.inRoom())
-                LOBBIES_LIST.getChildren().add(createLobbyListElement(CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby()));
+            if (VIEWMODEL.inRoom())
+                LOBBIES_LIST.getChildren().add(createLobbyListElement(VIEWMODEL.getCurrentLobby()));
 
             //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
-            for (var lobby : CLIENT_CONTROLLER.VIEWMODEL.getLobbies().values()) {
-                if (!lobby.equals(CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby()))
+            for (var lobby : VIEWMODEL.getLobbies().values()) {
+                if (!lobby.equals(VIEWMODEL.getCurrentLobby()))
                     LOBBIES_LIST.getChildren().add(createLobbyListElement(lobby));
             }
 
@@ -133,7 +133,7 @@ public class GUILobbiesView extends GUIView {
     @Override
     public void showNickname() {
         Platform.runLater(() -> {
-            OWN_NICKNAME_LABEL.setText("Profile: " + CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname());
+            OWN_NICKNAME_LABEL.setText("Profile: " + VIEWMODEL.getOwnNickname());
         });
     }
 
@@ -164,7 +164,7 @@ public class GUILobbiesView extends GUIView {
             colorToken.setFitWidth(20);
             colorToken.setPreserveRatio(true);
 
-            if (lobby.equals(CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby()))
+            if (lobby.equals(VIEWMODEL.getCurrentLobby()))
                 colorToken.setOnMouseClicked((event) -> ViewState.getCurrentState().selectColor(color));
 
             availableColorsBox.getChildren().add(colorToken);
@@ -172,12 +172,12 @@ public class GUILobbiesView extends GUIView {
 
         lobbyBox.getChildren().addAll(nicknamesBox, playerCount, availableColorsBox);
 
-        if (CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby() == null && lobby.getPlayersNumber() < lobby.getMaxPlayers()) {
+        if (VIEWMODEL.getCurrentLobby() == null && lobby.getPlayersNumber() < lobby.getMaxPlayers()) {
             Button joinButton = new Button("JOIN");
             joinButton.setOnAction(e -> ViewState.getCurrentState().joinLobby(lobby.getRoomUUID()));
             lobbyBox.getChildren().add(joinButton);
         } else {
-            if (lobby.equals(CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby())) {
+            if (lobby.equals(VIEWMODEL.getCurrentLobby())) {
                 Button leaveButton = new Button("LEAVE");
                 leaveButton.setOnAction(e -> ViewState.getCurrentState().leaveLobby()
                 );

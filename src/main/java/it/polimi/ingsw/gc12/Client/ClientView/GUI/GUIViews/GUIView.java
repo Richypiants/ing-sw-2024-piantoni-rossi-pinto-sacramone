@@ -32,7 +32,6 @@ public class GUIView extends View {
     public static GenericPair<Double, Double> screenSizes;
 
     public static GenericPair<Double, Double> cardSizes = new GenericPair<>(100.0, 66.0);
-    public static GenericPair<Double, Double> clippedPaneCenter = null;
     public static GenericPair<Double, Double> cornerScaleFactor = new GenericPair<>(2.0 / 9, 2.0 / 5);
 
     public GUIView() {
@@ -159,8 +158,8 @@ public class GUIView extends View {
     }
 
     @Override
-    public void showChat() {
-        GUIGameView.getInstance().showChat();
+    public void updateChat() {
+        GUIGameView.getInstance().updateChat();
     }
 
     @Override
@@ -193,8 +192,8 @@ public class GUIView extends View {
     }
 
     @Override
-    public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
-        GUIGameView.getInstance().showLeaderboard(POINTS_STATS, gameEndedDueToDisconnections);
+    public void leaderboardScreen(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
+        GUIGameView.getInstance().leaderboardScreen(POINTS_STATS, gameEndedDueToDisconnections);
     }
 
 }

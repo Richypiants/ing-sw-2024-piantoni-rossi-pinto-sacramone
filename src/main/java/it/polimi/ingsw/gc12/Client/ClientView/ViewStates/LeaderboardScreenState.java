@@ -16,7 +16,7 @@ public class LeaderboardScreenState extends ViewState {
 
     @Override
     public void executeState() {
-        selectedView.showLeaderboard(POINTS_STATS, GAME_ENDED_DUE_TO_DISCONNECTIONS);
+        selectedView.leaderboardScreen(POINTS_STATS, GAME_ENDED_DUE_TO_DISCONNECTIONS);
     }
 
     @Override

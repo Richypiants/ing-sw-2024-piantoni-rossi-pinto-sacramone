@@ -39,10 +39,13 @@ import java.util.stream.Collectors;
 
 public class GUIGameView extends GUIView {
 
-    //FIXME: this is probably not the correct MIME type syntax for the data we want to pass...
-    private static final DataFormat PLACE_CARD_DATA_FORMAT = new DataFormat("text/genericpair<integer,side>");
-
     private static GUIGameView gameScreenController = null;
+
+    private final DataFormat PLACE_CARD_DATA_FORMAT = new DataFormat("text/genericpair<integer,side>");
+    private final String RED_WHITE_STYLE = "-fx-font-size: 15px; -fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+    private final Button ZOOM_OWN_FIELD_BUTTON;
+    private ClientGame thisGame = null;
+    private ClientPlayer thisPlayer = null;
 
     private final ArrayList<GenericPair<Double, Double>> RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS;
 
@@ -52,7 +55,7 @@ public class GUIGameView extends GUIView {
     private final AnchorPane OWN_FIELD_PANE;
     private final VBox OWN_FIELD_STATS_BOX;
     private final ScrollPane OWN_FIELD_SCROLL_PANE;
-    private final Button ZOOMED_OWN_FIELD_BUTTON;
+    private boolean shouldReset = true;
     private final Button CENTER_OWN_FIELD_BUTTON;
     private final Button TOGGLE_SCOREBOARD_BUTTON;
     private final Button LEAVE_BUTTON;
@@ -90,7 +93,7 @@ public class GUIGameView extends GUIView {
         OWN_FIELD_PANE = (AnchorPane) SCENE_ROOT.lookup("#ownFieldPane");
         OWN_FIELD_STATS_BOX = (VBox) OWN_FIELD_PANE.lookup("#ownFieldStatsBox");
         OWN_FIELD_SCROLL_PANE = (ScrollPane) OWN_FIELD_PANE.lookup("#ownFieldScrollPane");
-        ZOOMED_OWN_FIELD_BUTTON = (Button) OWN_FIELD_PANE.lookup("#zoomedOwnFieldButton");
+        ZOOM_OWN_FIELD_BUTTON = (Button) OWN_FIELD_PANE.lookup("#zoomOwnFieldButton");
         CENTER_OWN_FIELD_BUTTON = (Button) OWN_FIELD_PANE.lookup("#centerOwnFieldButton");
         TOGGLE_SCOREBOARD_BUTTON = (Button) SCENE_ROOT.lookup("#scoreboardButton");
         TOGGLE_CHAT_BUTTON = (Button) SCENE_ROOT.lookup("#chatButton");
@@ -162,237 +165,100 @@ public class GUIGameView extends GUIView {
         return gameScreenController;
     }
 
-    @Override
-    public void gameScreen() {
-        Platform.runLater(() -> {
-            stage.getScene().setRoot(SCENE_ROOT);
-
-            showHand();
-            showCommonPlacedCards();
-
-            showOwnField();
-
-            showOpponentsFieldsMiniaturized();
-
-            updateScoreboard();
-            ImageView scoreboardImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/scoreboard.png")));
-            scoreboardImage.setFitHeight(30);
-            scoreboardImage.setPreserveRatio(true);
-            TOGGLE_SCOREBOARD_BUTTON.setGraphic(scoreboardImage);
-            TOGGLE_SCOREBOARD_BUTTON.setOnMouseClicked((event) -> togglePopup(SCOREBOARD_PANE));
-            TOGGLE_SCOREBOARD_BUTTON.relocate(screenSizes.getX() * 2 / 100, screenSizes.getY() * 90 / 100);
-            TOGGLE_SCOREBOARD_BUTTON.toFront();
-
-            showChat(); //FIXME: make updateChat()?
-
-            ImageView chatImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/chat.png")));
-            chatImage.setFitHeight(30);
-            chatImage.setPreserveRatio(true);
-            TOGGLE_CHAT_BUTTON.setGraphic(chatImage);
-            TOGGLE_CHAT_BUTTON.setOnMouseClicked((event) -> togglePopup(CHAT_PANE));
-            TOGGLE_CHAT_BUTTON.relocate(screenSizes.getX() * 90 / 100, screenSizes.getY() * 90 / 100);
-            TOGGLE_CHAT_BUTTON.toFront();
-
-            ImageView leaveImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/leaveGame.png")));
-            leaveImage.setFitHeight(30);
-            leaveImage.setPreserveRatio(true);
-            LEAVE_BUTTON.setGraphic(leaveImage);
-            LEAVE_BUTTON.setOnMouseClicked((event) -> {
-                ViewState.getCurrentState().quit();
-                clear();
-            });
-            LEAVE_BUTTON.relocate(screenSizes.getX() * 95 / 100, screenSizes.getY() * 90 / 100);
-            LEAVE_BUTTON.toFront();
-        });
-    }
-
-    private void showOwnField() {
-        ClientPlayer thisPlayer = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getThisPlayer();
-
-        OWN_FIELD_PANE.setPrefSize(
-                screenSizes.getX() * 70 / 100 - PADDING_SIZE,
-                screenSizes.getY() * 50 / 100 - PADDING_SIZE
-        );
-        OWN_FIELD_PANE.relocate(screenSizes.getX() * 30 / 100, screenSizes.getY() * 35 / 100);
-
-        OWN_FIELD_STATS_BOX.getChildren().clear();
-
-        OWN_FIELD_STATS_BOX.setPrefSize(100, OWN_FIELD_PANE.getPrefHeight());
-        for (var resourceEntry : thisPlayer.getOwnedResources().entrySet()) {
-            HBox resourceData = new HBox();
-            resourceData.setAlignment(Pos.CENTER);
-            ImageView image = new ImageView(String.valueOf(GUIView.class.getResource("/images/icons/res/" + resourceEntry.getKey().SYMBOL.toLowerCase() + ".png")));
-            image.setFitWidth(50);
-            image.setPreserveRatio(true);
-
-            Label resourceInfo = new Label("" + resourceEntry.getValue());
-            resourceInfo.setPrefWidth(25);
-            resourceInfo.setStyle("-fx-font-size: 15px; -fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;");
-
-            resourceData.getChildren().addAll(image, resourceInfo);
-
-            OWN_FIELD_STATS_BOX.getChildren().add(resourceData);
-            resourceData.relocate(0, 0);
-        }
-
-        OWN_FIELD_SCROLL_PANE.setPannable(true);
-        OWN_FIELD_SCROLL_PANE.setPrefSize(OWN_FIELD_PANE.getPrefWidth() - 75, OWN_FIELD_PANE.getPrefHeight());
-        drawField(OWN_FIELD_SCROLL_PANE, thisPlayer, true);
-        OWN_FIELD_SCROLL_PANE.setLayoutX(80);
-
-        ZOOMED_OWN_FIELD_BUTTON.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
-        ZOOMED_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> showField(thisPlayer));
-
-        CENTER_OWN_FIELD_BUTTON.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
-        CENTER_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> {
-            OWN_FIELD_SCROLL_PANE.setHvalue((OWN_FIELD_SCROLL_PANE.getHmax() + OWN_FIELD_SCROLL_PANE.getHmin()) / 2);
-            OWN_FIELD_SCROLL_PANE.setVvalue((OWN_FIELD_SCROLL_PANE.getVmax() + OWN_FIELD_SCROLL_PANE.getVmin()) / 2);
-        });
-
-        ZOOMED_OWN_FIELD_BUTTON.relocate(OWN_FIELD_PANE.getPrefWidth() - 50, 20);
-        CENTER_OWN_FIELD_BUTTON.relocate(OWN_FIELD_PANE.getPrefWidth() - 50, 60);
-    }
-
-    @Override
-    public void awaitingScreen() {
-        Platform.runLater(() -> {
-            OverlayPopup awaitingStatePopup = drawOverlayPopup(AWAITING_STATE_MESSAGE_BOX, false);
-
-            awaitingStatePopup.show(stage);
-            AWAITING_STATE_MESSAGE_BOX.setVisible(true);
-        });
-    }
-
-    private void updateScoreboard() {
-        Platform.runLater(() -> {
-            //TODO: CAMBIARE LE DIMENSIONI SOLO PREVIA COMUNICAZIONE A SACRAMONE
-            SCOREBOARD_PANE.setPrefSize(screenSizes.getX() * 0.1328125, screenSizes.getY() * 0.5);
-            SCOREBOARD_PANE.setStyle("-fx-background-image: url('/images/scoreboard.png'); -fx-background-size: stretch;");
-
-            //TODO: ???????
-            AtomicReference<Double> xOffset = new AtomicReference<>((double) 0);
-            AtomicReference<Double> yOffset = new AtomicReference<>((double) 0);
-
-            SCOREBOARD_PANE.setOnMousePressed((event) -> {
-                xOffset.set(SCOREBOARD_PANE.getLayoutX() - event.getScreenX());
-                yOffset.set(SCOREBOARD_PANE.getLayoutY() - event.getScreenY());
-                SCOREBOARD_PANE.toFront();
-            });
-
-            SCOREBOARD_PANE.setOnMouseDragged((event) -> {
-                SCOREBOARD_PANE.relocate(event.getScreenX() + xOffset.get(), event.getScreenY() + yOffset.get());
-            });
-
-            ClientGame thisGame = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
-
-            SCOREBOARD_PANE.getChildren().clear();
-
-            for (var player : thisGame.getPlayers().stream().sorted(Comparator.comparingInt(ClientPlayer::getPoints)).toList().reversed()) {
-                GenericPair<Double, Double> scaleFactor = RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.get(player.getPoints());
-                ImageView token = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/" + player.getColor().name().toLowerCase() + ".png")));
-                token.setSmooth(true);
-                token.setFitHeight(SCOREBOARD_PANE.getPrefWidth() * 0.16);
-                token.setPreserveRatio(true);
-
-                SCOREBOARD_PANE.getChildren().add(token);
-                token.relocate(SCOREBOARD_PANE.getPrefWidth() * scaleFactor.getX(),
-                        SCOREBOARD_PANE.getPrefHeight() * scaleFactor.getY());
-
-                //TODO: Sovrapporre pedine se punteggi uguali
-            }
-
-            //FIXME: we need to clear all the previous token, but this also clears the hideScoreboardButton...
-            //scoreboardPane.getChildren().clear();
-
-            /* for (int i = 0; i < 30; i++) {
-                GenericPair<Double, Double> scaleFactor = relativeOffsetScaleFactors.get(i);
-                ImageView token = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/red.png")));
-                token.setFitWidth(SCOREBOARD_PANE.getPrefWidth() * 0.16);
-                token.setPreserveRatio(true);
-
-                SCOREBOARD_PANE.getChildren().add(token);
-                token.relocate(SCOREBOARD_PANE.getPrefWidth() * scaleFactor.getX(),
-                        SCOREBOARD_PANE.getPrefHeight() * scaleFactor.getY());
-            }
-            */
-        });
-    }
-
-    private void togglePopup(Pane popupPane) {
+    private void togglePane(Pane popupPane) {
         Platform.runLater(() -> {
             popupPane.setVisible(!popupPane.isVisible());
             popupPane.toFront();
         });
     }
 
-    //TODO: eventually remove boolean from signature?
+    private Rectangle generateOpenCornerShape(GenericPair<Integer, Integer> openCorner, boolean isInteractive) {
+        var openCornerShape = new Rectangle(cardSizes.getX(), cardSizes.getY()) {
+            public final GenericPair<Integer, Integer> COORDINATES = openCorner;
+        };
+        openCornerShape.setFill(Color.TRANSPARENT);
+        openCornerShape.setStyle("-fx-stroke: gray; -fx-stroke-width: 2; -fx-stroke-dash-array: 4 8;");
+        openCornerShape.setArcWidth(10);
+        openCornerShape.setArcHeight(10);
+
+        if (isInteractive) {
+            openCornerShape.setOnDragOver((event) -> {
+                //TODO: implement visual effects
+                if (event.getGestureSource() != openCornerShape && event.getDragboard().hasContent(PLACE_CARD_DATA_FORMAT)) {
+                    event.acceptTransferModes(TransferMode.MOVE);
+                }
+            });
+
+            openCornerShape.setOnDragDropped((event) -> {
+                if (event.getTransferMode() == TransferMode.MOVE) {
+                    var data = event.getDragboard().getContent(PLACE_CARD_DATA_FORMAT);
+                    if (!(data instanceof GenericPair<?, ?> placeCardData))
+                        throw new RuntimeException(); //FIXME: should never happen...
+
+                    ViewState.getCurrentState().placeCard(
+                            openCornerShape.COORDINATES, (Integer) placeCardData.getX(), (Side) placeCardData.getY()
+                    );
+                    event.setDropCompleted(event.getDragboard().hasContent(PLACE_CARD_DATA_FORMAT));
+                }
+            });
+        }
+        return openCornerShape;
+    }
+
+    private void generateFieldInteractionButton(Button button, String iconResourcePath) {
+        ImageView image = new ImageView(String.valueOf(GUIGameView.class.getResource(iconResourcePath)));
+        image.setFitHeight(20);
+        image.setPreserveRatio(true);
+
+        button.setGraphic(image);
+        button.setPrefSize(25, 25);
+        button.setStyle("-fx-border-radius: 5; -fx-border-width: 1px; -fx-border-color: black; -fx-background-color: white");
+    }
+
     private void drawField(ScrollPane fieldPane, ClientPlayer player, boolean isInteractive) {
+        //TODO: resize this pane based on how many cards have been played and center the field on it? or not?
+        GenericPair<Double, Double> clippedPaneSize = new GenericPair<>(
+                4000.0, 4000.0 * cardSizes.getY() / cardSizes.getX()
+        );
+
         fieldPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         fieldPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         //TODO: add background color or texture or image?
-        //TODO: resize this pane based on how many cards have been played and center the field on it? or not?
-        double clippedPaneWidth = 4000;
-        double clippedPaneHeight = 4000 * cardSizes.getY() / cardSizes.getX();
         AnchorPane clippedPane = new AnchorPane();
-        clippedPane.setPrefSize(clippedPaneWidth, clippedPaneHeight);
+        clippedPane.setPrefSize(clippedPaneSize.getX(), clippedPaneSize.getY());
         clippedPane.setCenterShape(true);
 
-        clippedPaneCenter = new GenericPair<>(clippedPaneWidth / 2, clippedPaneHeight / 2);
         for (var cardEntry : player.getPlacedCards().sequencedEntrySet()) {
-            //TODO: maybe zoom cards here in this popup?
             ImageView cardImage = new ImageView(String.valueOf(GUIView.class.getResource(cardEntry.getValue().getX().GUI_SPRITES.get(cardEntry.getValue().getY()))));
 
             //FIXME: correct this: it is needed to get this later, but which size?
             // or maybe later when needed use cardSizes like this, after having decided if values are correct
             cardImage.setSmooth(true);
-            cardImage.setFitHeight(cardSizes.getY());
             cardImage.setFitWidth(cardSizes.getX());
+            cardImage.setFitHeight(cardSizes.getY());
             cardImage.setPreserveRatio(true);
 
             clippedPane.getChildren().add(cardImage);
 
             cardImage.relocate(
-                    clippedPaneCenter.getX() - cardImage.getFitWidth() / 2 + cardImage.getFitWidth() * (1 - cornerScaleFactor.getX()) * cardEntry.getKey().getX(),
-                    clippedPaneCenter.getY() - cardImage.getFitHeight() / 2 - cardImage.getFitHeight() * (1 - cornerScaleFactor.getY()) * cardEntry.getKey().getY()
+                    (clippedPaneSize.getX() - cardImage.getFitWidth()) / 2 +
+                            cardImage.getFitWidth() * (1 - cornerScaleFactor.getX()) * cardEntry.getKey().getX(),
+                    (clippedPaneSize.getY() - cardImage.getFitHeight()) / 2 -
+                            cardImage.getFitHeight() * (1 - cornerScaleFactor.getY()) * cardEntry.getKey().getY()
             );
         }
 
         for (var openCorner : player.getOpenCorners()) {
-            var openCornerShape = new Rectangle(cardSizes.getX(), cardSizes.getY()) {
-                public final GenericPair<Integer, Integer> COORDINATES = openCorner;
-            };
-            openCornerShape.setFill(Color.TRANSPARENT);
-            openCornerShape.setStyle("-fx-stroke: gray; -fx-stroke-width: 1; -fx-stroke-dash-array: 4 8;");
-            openCornerShape.setArcWidth(10);
-            openCornerShape.setArcHeight(10);
-
-            if (isInteractive) {
-                openCornerShape.setOnDragOver((event) -> {
-                    //TODO: implement visual effects
-                    if (event.getGestureSource() != openCornerShape && event.getDragboard().hasContent(PLACE_CARD_DATA_FORMAT)) {
-                        event.acceptTransferModes(TransferMode.MOVE);
-                    }
-                });
-
-                openCornerShape.setOnDragDropped((event) -> {
-                    if (event.getTransferMode() == TransferMode.MOVE) {
-                        GenericPair<Integer, Side> placeCardData = (GenericPair<Integer, Side>) event.getDragboard().getContent(PLACE_CARD_DATA_FORMAT);
-                        ViewState.getCurrentState().placeCard(
-                                openCornerShape.COORDINATES,
-                                placeCardData.getX(),
-                                placeCardData.getY()
-                        );
-                        event.setDropCompleted(event.getDragboard().hasContent(PLACE_CARD_DATA_FORMAT));
-                    }
-                });
-            }
+            var openCornerShape = generateOpenCornerShape(openCorner, isInteractive);
 
             clippedPane.getChildren().add(openCornerShape);
 
             openCornerShape.relocate(
-                    clippedPaneCenter.getX() - cardSizes.getX() / 2 + cardSizes.getX() * (1 - cornerScaleFactor.getX()) * openCorner.getX(),
-                    clippedPaneCenter.getY() - cardSizes.getY() / 2 - cardSizes.getY() * (1 - cornerScaleFactor.getY()) * openCorner.getY()
+                    (clippedPaneSize.getX() - cardSizes.getX()) / 2 +
+                            cardSizes.getX() * (1 - cornerScaleFactor.getX()) * openCorner.getX(),
+                    (clippedPaneSize.getY() - cardSizes.getY()) / 2 -
+                            cardSizes.getY() * (1 - cornerScaleFactor.getY()) * openCorner.getY()
             );
         }
 
@@ -401,89 +267,163 @@ public class GUIGameView extends GUIView {
         fieldPane.setVvalue((fieldPane.getVmax() + fieldPane.getVmin()) / 2);
     }
 
+    private void makePaneDraggable(Pane pane) {
+        AtomicReference<Double> xOffset = new AtomicReference<>(0.0);
+        AtomicReference<Double> yOffset = new AtomicReference<>(0.0);
+
+        pane.setOnMousePressed((event) -> {
+            xOffset.set(pane.getLayoutX() - event.getScreenX());
+            yOffset.set(pane.getLayoutY() - event.getScreenY());
+            pane.toFront();
+        });
+
+        pane.setOnMouseDragged((event) -> {
+            pane.relocate(event.getScreenX() + xOffset.get(), event.getScreenY() + yOffset.get());
+        });
+    }
+
+    private void resetGameScreen() {
+        thisGame = VIEWMODEL.getCurrentGame();
+        thisPlayer = thisGame.getThisPlayer();
+
+        OPPONENTS_FIELDS_PANE.setPrefSize(
+                screenSizes.getX() - 2 * PADDING_SIZE,
+                screenSizes.getY() * 35 / 100 - 2 * PADDING_SIZE
+        );
+        OPPONENTS_FIELDS_PANE.relocate(PADDING_SIZE, PADDING_SIZE);
+
+        DECKS_AND_VISIBLE_CARDS_PANE.setPrefSize(screenSizes.getX() * 30 / 100, screenSizes.getY() * 65 / 100);
+        DECKS_AND_VISIBLE_CARDS_PANE.relocate(0, screenSizes.getY() * 35 / 100);
+
+        RESOURCES_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 5 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 5 / 100);
+        RESOURCE_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
+        RESOURCE_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 10 / 100);
+
+        GOLDS_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 5 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 27.5 / 100);
+        GOLD_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
+        GOLD_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 32.5 / 100);
+
+        COMMON_OBJECTIVES_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 20 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 52.5 / 100);
+        OBJECTIVE_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
+        OBJECTIVE_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 57.5 / 100);
+
+        SECRET_OBJECTIVE_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 36 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 85 / 100);
+
+        OWN_FIELD_PANE.setPrefSize(
+                screenSizes.getX() * 70 / 100 - PADDING_SIZE,
+                screenSizes.getY() * 50 / 100 - PADDING_SIZE
+        );
+        OWN_FIELD_PANE.relocate(screenSizes.getX() * 30 / 100, screenSizes.getY() * 35 / 100);
+
+        OWN_FIELD_STATS_BOX.setPrefSize(75, OWN_FIELD_PANE.getPrefHeight());
+
+        OWN_FIELD_SCROLL_PANE.setPannable(true);
+        OWN_FIELD_SCROLL_PANE.setPrefSize(OWN_FIELD_PANE.getPrefWidth() - 75, OWN_FIELD_PANE.getPrefHeight());
+        OWN_FIELD_SCROLL_PANE.setLayoutX(80);
+
+        OWN_HAND_PANE.setPrefSize(screenSizes.getX() * 50 / 100, screenSizes.getY() * 15 / 100);
+        OWN_HAND_PANE.relocate(screenSizes.getX() * 40 / 100, screenSizes.getY() * 85 / 100);
+
+        //TODO: CAMBIARE LE DIMENSIONI SOLO PREVIA COMUNICAZIONE A SACRAMONE
+        SCOREBOARD_PANE.setPrefSize(screenSizes.getX() * 0.1328125, screenSizes.getY() * 0.5);
+        SCOREBOARD_PANE.setStyle("-fx-background-image: url('/images/scoreboard.png'); -fx-background-size: stretch;");
+        makePaneDraggable(SCOREBOARD_PANE);
+
+        CHAT_PANE.setPrefSize(screenSizes.getX() * 30 / 100, screenSizes.getY() * 70 / 100);
+        makePaneDraggable(CHAT_PANE);
+
+        CHAT_SCROLL_PANE.setPrefWidth(CHAT_PANE.getPrefWidth() * 80 / 100);
+
+        List<String> nicknames = thisGame.getPlayers().stream()
+                .map(Player::getNickname).collect(Collectors.toCollection(ArrayList::new));
+        nicknames.addFirst("everyone");
+        nicknames.remove(VIEWMODEL.getOwnNickname());
+        ObservableList<String> receiverNicknames = FXCollections.observableList(nicknames);
+        RECEIVER_NICKNAME_SELECTOR.setItems(receiverNicknames);
+        RECEIVER_NICKNAME_SELECTOR.getSelectionModel().selectFirst();
+
+        RECEIVER_NICKNAME_SELECTOR.setPrefWidth(CHAT_PANE.getPrefWidth() * 60 / 100);
+        RECEIVER_NICKNAME_SELECTOR.setPrefHeight(CHAT_PANE.getPrefHeight() * 2.5 / 100);
+        RECEIVER_NICKNAME_SELECTOR.relocate(CHAT_PANE.getPrefWidth() * 15 / 100, CHAT_PANE.getPrefHeight() * 80 / 100);
+
+        MESSAGE_TEXTFIELD.setPrefWidth(CHAT_PANE.getPrefWidth() * 60 / 100);
+        MESSAGE_TEXTFIELD.setPrefHeight(CHAT_PANE.getPrefHeight() * 5 / 100);
+
+        TO.relocate(CHAT_PANE.getPrefWidth() * 8.5 / 100, CHAT_PANE.getPrefHeight() * 90 / 100);
+
+        CHAT_VBOX.relocate(CHAT_PANE.getPrefWidth() * 10 / 100, CHAT_PANE.getPrefHeight() * 2 / 100);
+
+        MESSAGES_BOX.getChildren().clear();
+
+        ImageView sendImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/sendBetter.png")));
+        sendImage.setFitHeight(20);
+        sendImage.setPreserveRatio(true);
+        SEND_MESSAGE_BUTTON.setGraphic(sendImage);
+        SEND_MESSAGE_BUTTON.setPrefWidth(TOGGLE_CHAT_BUTTON.getPrefWidth() * 50 / 100);
+        SEND_MESSAGE_BUTTON.setOnMouseClicked((event) -> {
+            String receiver = RECEIVER_NICKNAME_SELECTOR.getValue();
+            String message = MESSAGE_TEXTFIELD.getText().trim();
+            //FIXME: aggiungere lunghezza massima e substring anche qui? Magari aggiungerle ma più di 150 chars?
+            if (receiver.equals("everyone"))
+                ViewState.getCurrentState().broadcastMessage(message);
+            else
+                ViewState.getCurrentState().directMessage(receiver, message);
+            MESSAGE_TEXTFIELD.clear();
+        });
+
+        ImageView scoreboardImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/scoreboard.png")));
+        scoreboardImage.setFitHeight(30);
+        scoreboardImage.setPreserveRatio(true);
+        TOGGLE_SCOREBOARD_BUTTON.setGraphic(scoreboardImage);
+        TOGGLE_SCOREBOARD_BUTTON.toFront();
+        TOGGLE_SCOREBOARD_BUTTON.relocate(screenSizes.getX() * 2 / 100, screenSizes.getY() * 90 / 100);
+        TOGGLE_SCOREBOARD_BUTTON.setOnMouseClicked((event) -> togglePane(SCOREBOARD_PANE));
+
+        ImageView chatImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/chat.png")));
+        chatImage.setFitHeight(30);
+        chatImage.setPreserveRatio(true);
+        TOGGLE_CHAT_BUTTON.setGraphic(chatImage);
+        TOGGLE_CHAT_BUTTON.toFront();
+        TOGGLE_CHAT_BUTTON.relocate(screenSizes.getX() * 90 / 100, screenSizes.getY() * 90 / 100);
+        TOGGLE_CHAT_BUTTON.setOnMouseClicked((event) -> togglePane(CHAT_PANE));
+
+        ImageView leaveImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/leaveGame.png")));
+        leaveImage.setFitHeight(30);
+        leaveImage.setPreserveRatio(true);
+        LEAVE_BUTTON.setGraphic(leaveImage);
+        LEAVE_BUTTON.toFront();
+        LEAVE_BUTTON.relocate(screenSizes.getX() * 95 / 100, screenSizes.getY() * 90 / 100);
+        LEAVE_BUTTON.setOnMouseClicked((event) -> {
+            ViewState.getCurrentState().quit();
+            shouldReset = true;
+        });
+
+        shouldReset = false;
+    }
+
     @Override
-    public void showChat() {
+    public void gameScreen() {
         Platform.runLater(() -> {
-            //TODO: maybe perform chatPane initialization only at the start of a game instead of everytime?
-            CHAT_PANE.setPrefSize(screenSizes.getX() * 30 / 100, screenSizes.getY() * 70 / 100);
+            if (shouldReset) resetGameScreen();
+            //clear();
+            stage.getScene().setRoot(SCENE_ROOT);
 
-            //TODO: ???????
-            AtomicReference<Double> xOffset = new AtomicReference<>((double) 0);
-            AtomicReference<Double> yOffset = new AtomicReference<>((double) 0);
+            showOpponentsFieldsMiniaturized();
+            showCommonPlacedCards();
+            showOwnField();
+            showHand();
 
-            CHAT_PANE.setOnMousePressed((event) -> {
-                xOffset.set(CHAT_PANE.getLayoutX() - event.getScreenX());
-                yOffset.set(CHAT_PANE.getLayoutY() - event.getScreenY());
-                CHAT_PANE.toFront();
-            });
-
-            CHAT_PANE.setOnMouseDragged((event) -> {
-                CHAT_PANE.relocate(event.getScreenX() + xOffset.get(), event.getScreenY() + yOffset.get());
-            });
-
-            ClientGame thisGame = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
-
-            List<String> chatLog = thisGame.getChatLog();
-            if (!chatLog.isEmpty())
-                MESSAGES_BOX.getChildren().add(createMessageElement(chatLog.getLast()));
-
-            CHAT_SCROLL_PANE.setVvalue(CHAT_SCROLL_PANE.getVmax());
-            CHAT_SCROLL_PANE.setPrefWidth(CHAT_PANE.getPrefWidth() * 80 / 100);
-
-            List<String> nicknames = thisGame.getPlayers().stream().map(Player::getNickname).collect(Collectors.toCollection(ArrayList::new));
-            nicknames.addFirst("everyone");
-            nicknames.remove(CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname());
-            ObservableList<String> receiverNicknames = FXCollections.observableList(nicknames);
-            RECEIVER_NICKNAME_SELECTOR.setItems(receiverNicknames);
-            RECEIVER_NICKNAME_SELECTOR.getSelectionModel().selectFirst();
-
-            RECEIVER_NICKNAME_SELECTOR.relocate(CHAT_PANE.getPrefWidth() * 15 / 100, CHAT_PANE.getPrefHeight() * 80 / 100);
-            RECEIVER_NICKNAME_SELECTOR.setPrefWidth(CHAT_PANE.getPrefWidth() * 60 / 100);
-            RECEIVER_NICKNAME_SELECTOR.setPrefHeight(CHAT_PANE.getPrefHeight() * 2.5 / 100);
-
-            MESSAGE_TEXTFIELD.setPrefWidth(CHAT_PANE.getPrefWidth() * 60 / 100);
-            MESSAGE_TEXTFIELD.setPrefHeight(CHAT_PANE.getPrefHeight() * 5 / 100);
-
-            TO.relocate(CHAT_PANE.getPrefWidth() * 8.5 / 100, CHAT_PANE.getPrefHeight() * 90 / 100);
-
-            CHAT_VBOX.relocate(CHAT_PANE.getPrefWidth() * 10 / 100, CHAT_PANE.getPrefHeight() * 2 / 100);
-
-            ImageView sendImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/sendBetter.png")));
-            sendImage.setFitHeight(20);
-            sendImage.setPreserveRatio(true);
-            SEND_MESSAGE_BUTTON.setGraphic(sendImage);
-            SEND_MESSAGE_BUTTON.setPrefWidth(TOGGLE_CHAT_BUTTON.getPrefWidth() * 50 / 100);
-            SEND_MESSAGE_BUTTON.setOnMouseClicked((event) -> {
-                String receiver = RECEIVER_NICKNAME_SELECTOR.getValue();
-                String message = MESSAGE_TEXTFIELD.getText().trim();
-                //FIXME: aggiungere lunghezza massima e substring anche qui? Magari aggiungerle ma più di 150 chars?
-                if (receiver.equals("everyone"))
-                    ViewState.getCurrentState().broadcastMessage(message);
-                else
-                    ViewState.getCurrentState().directMessage(receiver, message);
-                MESSAGE_TEXTFIELD.clear();
-            });
+            updateScoreboard();
         });
     }
 
     //TODO: centrare l'opponentField sulla carta nuova appena piazzata?
     private void showOpponentsFieldsMiniaturized() {
-        double opponentFieldsPaddingSize = 20;
-        OPPONENTS_FIELDS_PANE.setPrefSize(
-                screenSizes.getX() - 2 * opponentFieldsPaddingSize,
-                screenSizes.getY() * 35 / 100 - 2 * opponentFieldsPaddingSize
-        );
-        OPPONENTS_FIELDS_PANE.relocate(opponentFieldsPaddingSize, opponentFieldsPaddingSize);
-        OPPONENTS_FIELDS_PANE.setSpacing(30);
-
-        ClientGame thisGame = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
-
-        String style = "-fx-font-size: 15px; -fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;";
-
         OPPONENTS_FIELDS_PANE.getChildren().clear();
 
         for (var player : thisGame.getPlayers().stream()
-                .filter((player) -> !(player.getNickname().equals(CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname()))).toList()) {
+                .filter((player) -> !(player.getNickname().equals(VIEWMODEL.getOwnNickname())))
+                .toList()) {
             VBox opponentInfo = new VBox(5);
             //FIXME: togliere
             // opponentInfo.setStyle("-fx-background-color: green");
@@ -496,7 +436,7 @@ public class GUIGameView extends GUIView {
             Label opponentName = new Label(player.getNickname());
             opponentName.setAlignment(Pos.CENTER);
             opponentName.setPrefSize(opponentInfo.getPrefWidth(), opponentInfo.getPrefHeight() / 10);
-            opponentName.setStyle(style);
+            opponentName.setStyle(RED_WHITE_STYLE);
 
             HBox opponentData = new HBox(5);
             opponentData.setAlignment(Pos.CENTER);
@@ -515,7 +455,7 @@ public class GUIGameView extends GUIView {
 
                 Label resourceInfo = new Label("" + resourceEntry.getValue());
                 resourceInfo.setPrefWidth(25);
-                resourceInfo.setStyle(style);
+                resourceInfo.setStyle(RED_WHITE_STYLE);
 
                 resourceData.getChildren().addAll(image, resourceInfo);
                 opponentStats.getChildren().add(resourceData);
@@ -529,34 +469,23 @@ public class GUIGameView extends GUIView {
             opponentScrollField.setPannable(true);
             drawField(opponentScrollField, player, false);
 
-            ((Pane) opponentScrollField.getContent()).getChildren().getFirst().setScaleX(0.75);
-            ((Pane) opponentScrollField.getContent()).getChildren().getFirst().setScaleY(0.75);
+            opponentScrollField.getContent().setScaleX(0.75);
+            opponentScrollField.getContent().setScaleY(0.75);
 
-            Button zoomedOwnFieldButton = new Button("[]");
-            ImageView zoomImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/zoom.png")));
-            zoomImage.setFitHeight(20);
-            zoomImage.setPreserveRatio(true);
+            Button zoomOpponentFieldButton = new Button();
+            generateFieldInteractionButton(zoomOpponentFieldButton, "/images/icons/zoom.png");
+            zoomOpponentFieldButton.setOnMouseClicked((event) -> showField(player));
 
-            zoomedOwnFieldButton.setGraphic(zoomImage);
-            zoomedOwnFieldButton.setPrefSize(25, 25);
-            zoomedOwnFieldButton.setStyle("-fx-border-radius: 5; -fx-border-width: 1px; -fx-border-color: black; -fx-background-color: white");
-            zoomedOwnFieldButton.setOnMouseClicked((event) -> showField(player));
-
-            ImageView aimImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/aim.png")));
-            aimImage.setFitHeight(20);
-            aimImage.setPreserveRatio(true);
-            Button centerFieldButton = new Button();
-            centerFieldButton.setGraphic(aimImage);
-            centerFieldButton.setPrefSize(25, 25);
-            centerFieldButton.setStyle("-fx-border-radius: 5; -fx-border-width: 1px; -fx-border-color: black; -fx-background-color: white");
-            centerFieldButton.setOnMouseClicked((event) -> {
+            Button centerOpponentFieldButton = new Button();
+            generateFieldInteractionButton(centerOpponentFieldButton, "/images/icons/aim.png");
+            centerOpponentFieldButton.setOnMouseClicked((event) -> {
                 opponentScrollField.setHvalue((opponentScrollField.getHmax() + opponentScrollField.getHmin()) / 2);
                 opponentScrollField.setVvalue((opponentScrollField.getVmax() + opponentScrollField.getVmin()) / 2);
             });
 
-            opponentField.getChildren().addAll(opponentScrollField, zoomedOwnFieldButton, centerFieldButton);
-            zoomedOwnFieldButton.relocate(opponentField.getPrefWidth() - 50, 20);
-            centerFieldButton.relocate(opponentField.getPrefWidth() - 50, 60);
+            opponentField.getChildren().addAll(opponentScrollField, zoomOpponentFieldButton, centerOpponentFieldButton);
+            zoomOpponentFieldButton.relocate(opponentField.getPrefWidth() - 50, 20);
+            centerOpponentFieldButton.relocate(opponentField.getPrefWidth() - 50, 60);
 
             opponentData.getChildren().addAll(opponentStats, opponentField);
             opponentInfo.getChildren().addAll(opponentName, opponentData);
@@ -565,134 +494,155 @@ public class GUIGameView extends GUIView {
     }
 
     @Override
-    public void showInitialCardsChoice() {
+    public void showCommonPlacedCards() {
         Platform.runLater(() -> {
-            double popupWidth = 720, popupHeight = 480;
-            String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
+            //TODO. make imageView static and clear and avoid clearing children and refresh only the content
+            RESOURCE_HBOX.getChildren().clear();
 
-            VBox initialCardsChoiceVBox = new VBox(30);
-            initialCardsChoiceVBox.setAlignment(Pos.CENTER);
-            initialCardsChoiceVBox.setPrefSize(popupWidth, popupHeight);
-            initialCardsChoiceVBox.setStyle(style);
-            Label cardLabel = new Label("Seleziona la carta iniziale: ");
+            ImageView resourceDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckResourceCard().GUI_SPRITES.get(Side.BACK))));
+            resourceDeck.setSmooth(true);
+            resourceDeck.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
+            resourceDeck.setPreserveRatio(true);
+            resourceDeck.setOnMouseClicked((event) ->
+                    ViewState.getCurrentState().drawFromDeck("Resource")
+            );
+            RESOURCE_HBOX.getChildren().add(resourceDeck);
 
-            HBox initialChoiceHBox = new HBox(30);
-            initialChoiceHBox.setAlignment(Pos.CENTER);
-            initialChoiceHBox.setPrefSize(initialCardsChoiceVBox.getPrefWidth(), initialCardsChoiceVBox.getPrefHeight() * 0.9);
+            for (int i = 0; i < thisGame.getPlacedResources().length; i++) {
+                if (thisGame.getPlacedResources()[i] != null) {
+                    ImageView resource = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedResources()[i].GUI_SPRITES.get(Side.FRONT))));
+                    resource.setSmooth(true);
+                    resource.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
+                    resource.setPreserveRatio(true);
 
-            ClientCard initialCard = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getCardsInHand().getFirst();
+                    int finalI = i + 1;
+                    resource.setOnMouseClicked((event) ->
+                            ViewState.getCurrentState().drawFromVisibleCards("Resource", finalI)
+                    );
 
-            ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.FRONT))));
-            ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.BACK))));
+                    RESOURCE_HBOX.getChildren().add(resource);
+                }
+            }
 
-            frontCardView.setSmooth(true);
-            frontCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
-            frontCardView.setPreserveRatio(true);
-            backCardView.setSmooth(true);
-            backCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
-            backCardView.setPreserveRatio(true);
+            //TODO. make imageView static and clear and avoid clearing children and refresh only the content
+            GOLD_HBOX.getChildren().clear();
 
-            initialChoiceHBox.getChildren().addAll(frontCardView, backCardView);
-            initialCardsChoiceVBox.getChildren().addAll(cardLabel, initialChoiceHBox/*, aggiungere scritta "Scegli carta iniziale: "*/);
+            ImageView goldDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckGoldCard().GUI_SPRITES.get(Side.BACK))));
 
-            OverlayPopup createdPopup = drawOverlayPopup(initialCardsChoiceVBox, false);
+            goldDeck.setSmooth(true);
+            goldDeck.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
+            goldDeck.setPreserveRatio(true);
+            goldDeck.setOnMouseClicked((event) -> ViewState.getCurrentState().drawFromDeck("Gold"));
+            GOLD_HBOX.getChildren().add(goldDeck);
 
-            frontCardView.setOnMouseClicked((event) -> {
-                ViewState.getCurrentState().placeCard(new GenericPair<>(0, 0), 1, Side.FRONT);
-                createdPopup.hide();
-            });
+            for (int i = 0; i < thisGame.getPlacedGolds().length; i++) {
+                if (thisGame.getPlacedGolds()[i] != null) {
+                    ImageView gold = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedGolds()[i].GUI_SPRITES.get(Side.FRONT))));
+                    gold.setSmooth(true);
+                    gold.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
+                    gold.setPreserveRatio(true);
 
-            backCardView.setOnMouseClicked((event) -> {
-                ViewState.getCurrentState().placeCard(new GenericPair<>(0, 0), 1, Side.BACK);
-                createdPopup.hide();
-            });
+                    int finalI = i + 1;
+                    gold.setOnMouseClicked((event) ->
+                            ViewState.getCurrentState().drawFromVisibleCards("Gold", finalI)
+                    );
 
-            createdPopup.show(stage);
+                    GOLD_HBOX.getChildren().add(gold);
+                }
+            }
+
+            //TODO. make imageView static and clear and avoid clearing children and refresh only the content
+            OBJECTIVE_HBOX.getChildren().clear();
+
+            for (int i = 0; i < thisGame.getCommonObjectives().length; i++) {
+                if (thisGame.getCommonObjectives()[i] != null) {
+                    ImageView commonObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getCommonObjectives()[i].GUI_SPRITES.get(Side.FRONT))));
+                    commonObjective.setSmooth(true);
+                    commonObjective.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
+                    commonObjective.setPreserveRatio(true);
+
+                    OBJECTIVE_HBOX.getChildren().add(commonObjective);
+                }
+            }
+
+            if (thisGame.getOwnObjective() != null) {
+                ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getOwnObjective().GUI_SPRITES.get(Side.FRONT))));
+                secretObjective.setSmooth(true);
+                secretObjective.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
+                secretObjective.setPreserveRatio(true);
+
+                DECKS_AND_VISIBLE_CARDS_PANE.getChildren().add(secretObjective);
+                secretObjective.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 80 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 82.5 / 100);
+            }
         });
     }
 
-    @Override
-    public void showObjectiveCardsChoice(ArrayList<ClientCard> objectivesSelection) {
-        Platform.runLater(() -> {
-            double popupWidth = 720, popupHeight = 480;
-            String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
+    private void showOwnField() {
+        OWN_FIELD_STATS_BOX.getChildren().clear();
 
-            VBox objectiveChoiceVBox = new VBox(30);
-            objectiveChoiceVBox.setAlignment(Pos.CENTER);
-            objectiveChoiceVBox.setPrefSize(popupWidth, popupHeight);
-            objectiveChoiceVBox.setStyle(style);
-            Label cardLabel = new Label("Seleziona la carta obiettivo segreto: ");
+        for (var resourceEntry : thisPlayer.getOwnedResources().entrySet()) {
+            HBox resourceData = new HBox();
+            resourceData.setAlignment(Pos.CENTER);
+            ImageView image = new ImageView(String.valueOf(GUIView.class.getResource("/images/icons/res/" + resourceEntry.getKey().SYMBOL.toLowerCase() + ".png")));
+            image.setFitWidth(50);
+            image.setPreserveRatio(true);
 
-            HBox objectiveChoiceHBox = new HBox(30);
-            objectiveChoiceHBox.setAlignment(Pos.CENTER);
-            objectiveChoiceHBox.setPrefSize(objectiveChoiceVBox.getPrefWidth(), objectiveChoiceVBox.getPrefHeight() * 0.9);
+            Label resourceInfo = new Label("" + resourceEntry.getValue());
+            resourceInfo.setPrefWidth(25);
+            resourceInfo.setStyle(RED_WHITE_STYLE);
 
-            OverlayPopup createdPopup = drawOverlayPopup(objectiveChoiceVBox, false);
+            resourceData.getChildren().addAll(image, resourceInfo);
 
-            for (int i = 0; i < objectivesSelection.size(); i++) {
-                ClientCard objectiveCard = objectivesSelection.get(i);
-                ImageView objectiveCardView = new ImageView(String.valueOf(GUIView.class.getResource(objectiveCard.GUI_SPRITES.get(Side.FRONT))));
+            OWN_FIELD_STATS_BOX.getChildren().add(resourceData);
+            resourceData.relocate(0, 0);
+        }
 
-                objectiveCardView.setSmooth(true);
-                objectiveCardView.setFitWidth(objectiveChoiceHBox.getPrefWidth() * 0.3);
-                objectiveCardView.setPreserveRatio(true);
+        drawField(OWN_FIELD_SCROLL_PANE, thisPlayer, true);
 
-                int cardPosition = i;
-                objectiveCardView.setOnMouseClicked((event) -> {
-                    ViewState.getCurrentState().pickObjective(cardPosition + 1);
-                    createdPopup.hide();
-                });
+        generateFieldInteractionButton(ZOOM_OWN_FIELD_BUTTON, "/images/icons/zoom.png");
+        ZOOM_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> showField(thisPlayer));
 
-                objectiveChoiceHBox.getChildren().add(objectiveCardView);
-            }
-
-            objectiveChoiceVBox.getChildren().addAll(cardLabel, objectiveChoiceHBox/*, aggiungere scritta "Scegli carta iniziale: "*/);
-
-            createdPopup.show(stage);
+        generateFieldInteractionButton(CENTER_OWN_FIELD_BUTTON, "/images/icons/aim.png");
+        CENTER_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> {
+            OWN_FIELD_SCROLL_PANE.setHvalue((OWN_FIELD_SCROLL_PANE.getHmax() + OWN_FIELD_SCROLL_PANE.getHmin()) / 2);
+            OWN_FIELD_SCROLL_PANE.setVvalue((OWN_FIELD_SCROLL_PANE.getVmax() + OWN_FIELD_SCROLL_PANE.getVmin()) / 2);
         });
+
+        ZOOM_OWN_FIELD_BUTTON.relocate(OWN_FIELD_PANE.getPrefWidth() - 50, 20);
+        CENTER_OWN_FIELD_BUTTON.relocate(OWN_FIELD_PANE.getPrefWidth() - 50, 60);
     }
 
     @Override
     public void showHand() {
         Platform.runLater(() -> {
-            OWN_HAND_PANE.setPrefSize(screenSizes.getX() * 50 / 100, screenSizes.getY() * 15 / 100);
-            OWN_HAND_PANE.relocate(screenSizes.getX() * 40 / 100, screenSizes.getY() * 85 / 100);
-            OWN_HAND_PANE.setAlignment(Pos.CENTER);
-
-            double handPaneHeight = OWN_HAND_PANE.getPrefHeight();
-            double handPaneWidth = OWN_HAND_PANE.getPrefWidth();
-            List<ClientCard> cardsInHand = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getCardsInHand();
+            List<ClientCard> cardsInHand = thisGame.getCardsInHand();
 
             OWN_HAND_PANE.getChildren().clear();
 
             for (int i = 0; i < cardsInHand.size(); i++) {
                 ClientCard card = cardsInHand.get(i);
+
                 AnchorPane pane = new AnchorPane();
+                pane.setPrefSize(OWN_HAND_PANE.getPrefWidth() / 3, OWN_HAND_PANE.getPrefHeight());
 
-                pane.setPrefSize(handPaneWidth / 3, handPaneHeight);  //FIXME: Diviso 3? (cardInHand.size()?)
-                // pane.setStyle("-fx-background-color: darkorange;");
-
-                //FIXME: mappa anche per gli sprite GUI come sprite TUI? altrimenti card.XXX_SPRITE
                 ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.FRONT))));
-                ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.BACK))));
-
-                pane.getChildren().addAll(backCardView, frontCardView);
-                backCardView.toBack();
-
                 frontCardView.setSmooth(true);
                 frontCardView.setFitWidth(pane.getPrefWidth() * 0.7);
                 frontCardView.setPreserveRatio(true);
 
+                ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.BACK))));
                 backCardView.setSmooth(true);
                 backCardView.setFitWidth(pane.getPrefWidth() * 0.7);
                 backCardView.setPreserveRatio(true);
 
-                //TODO: vs setLayoutX/Y ?
+                pane.getChildren().addAll(backCardView, frontCardView);
+                backCardView.toBack();
+
                 frontCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.05);
                 backCardView.relocate(pane.getPrefWidth() * 0.2, pane.getPrefHeight() * 0.05);
 
-                backCardView.setOnMouseClicked((event) -> frontCardView.toFront());
                 frontCardView.setOnMouseClicked((event) -> backCardView.toFront());
+                backCardView.setOnMouseClicked((event) -> frontCardView.toFront());
 
                 //TODO: Complete implementation of drag-and-drop of cards with all DragEvents specified, and this is horrible...
                 int inHandPosition = i + 1;
@@ -733,107 +683,142 @@ public class GUIGameView extends GUIView {
         });
     }
 
-    @Override
-    public void showCommonPlacedCards() {
+    private void updateScoreboard() {
         Platform.runLater(() -> {
-            //TODO: maybe GridPane and padding?
-            DECKS_AND_VISIBLE_CARDS_PANE.setPrefSize(screenSizes.getX() * 30 / 100, screenSizes.getY() * 65 / 100);
-            DECKS_AND_VISIBLE_CARDS_PANE.relocate(0, screenSizes.getY() * 35 / 100);
+            SCOREBOARD_PANE.getChildren().clear();
 
-            ClientGame thisGame = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
+            for (var player : thisGame.getPlayers().stream()
+                    .sorted(Comparator.comparingInt(ClientPlayer::getPoints)).toList().reversed()
+            ) {
+                GenericPair<Double, Double> scaleFactor = RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.get(player.getPoints());
+                ImageView token = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/" + player.getColor().name().toLowerCase() + ".png")));
+                token.setSmooth(true);
+                token.setFitHeight(SCOREBOARD_PANE.getPrefWidth() * 0.16);
+                token.setPreserveRatio(true);
 
-            RESOURCES_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 5 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 5 / 100);
-            RESOURCE_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
-            RESOURCE_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 10 / 100);
+                SCOREBOARD_PANE.getChildren().add(token);
+                token.relocate(SCOREBOARD_PANE.getPrefWidth() * scaleFactor.getX(),
+                        SCOREBOARD_PANE.getPrefHeight() * scaleFactor.getY());
 
-            //TODO. make imageView static and clear and avoid clearing children and refresh only the content
-            RESOURCE_HBOX.getChildren().clear();
-
-            ImageView resourceDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckResourceCard().GUI_SPRITES.get(Side.BACK))));
-
-            resourceDeck.setSmooth(true);
-            resourceDeck.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
-            resourceDeck.setPreserveRatio(true);
-            resourceDeck.setOnMouseClicked((event) ->
-                    ViewState.getCurrentState().drawFromDeck("Resource")
-            );
-            RESOURCE_HBOX.getChildren().add(resourceDeck);
-
-            for (int i = 0; i < thisGame.getPlacedResources().length; i++) {
-                if (thisGame.getPlacedResources()[i] != null) {
-                    ImageView resource = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedResources()[i].GUI_SPRITES.get(Side.FRONT))));
-                    resource.setSmooth(true);
-                    resource.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
-                    resource.setPreserveRatio(true);
-
-                    int finalI = i + 1;
-                    resource.setOnMouseClicked((event) ->
-                            ViewState.getCurrentState().drawFromVisibleCards("Resource", finalI)
-                    );
-
-                    RESOURCE_HBOX.getChildren().add(resource);
-                }
+                //TODO: Sovrapporre pedine se punteggi uguali
             }
 
-            GOLDS_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 5 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 27.5 / 100);
-            GOLD_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
-            GOLD_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 32.5 / 100);
+            /* for (int i = 0; i < 30; i++) {
+                GenericPair<Double, Double> scaleFactor = relativeOffsetScaleFactors.get(i);
+                ImageView token = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/red.png")));
+                token.setFitWidth(SCOREBOARD_PANE.getPrefWidth() * 0.16);
+                token.setPreserveRatio(true);
 
-            //TODO. make imageView static and clear and avoid clearing children and refresh only the content
-            GOLD_HBOX.getChildren().clear();
+                SCOREBOARD_PANE.getChildren().add(token);
+                token.relocate(SCOREBOARD_PANE.getPrefWidth() * scaleFactor.getX(),
+                        SCOREBOARD_PANE.getPrefHeight() * scaleFactor.getY());
+            }
+            */
+        });
+    }
 
-            ImageView goldDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckGoldCard().GUI_SPRITES.get(Side.BACK))));
+    @Override
+    public void updateChat() {
+        Platform.runLater(() -> {
+            List<String> chatLog = thisGame.getChatLog();
+            if (!chatLog.isEmpty()) {
+                if (chatLog.size() > 2 && !(chatLog.getLast().startsWith("[") || chatLog.getLast().startsWith("<")))
+                    MESSAGES_BOX.getChildren().add(createMessageElement(chatLog.get(chatLog.size() - 2)));
+                MESSAGES_BOX.getChildren().add(createMessageElement(chatLog.getLast()));
+            }
+            CHAT_SCROLL_PANE.setVvalue(CHAT_SCROLL_PANE.getVmax());
+        });
+    }
 
-            goldDeck.setSmooth(true);
-            goldDeck.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
-            goldDeck.setPreserveRatio(true);
-            goldDeck.setOnMouseClicked((event) -> ViewState.getCurrentState().drawFromDeck("Gold"));
-            GOLD_HBOX.getChildren().add(goldDeck);
+    @Override
+    public void showInitialCardsChoice() {
+        Platform.runLater(() -> {
+            //double popupWidth = 720, popupHeight = 480;
+            //String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
 
-            for (int i = 0; i < thisGame.getPlacedGolds().length; i++) {
-                if (thisGame.getPlacedGolds()[i] != null) {
-                    ImageView gold = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedGolds()[i].GUI_SPRITES.get(Side.FRONT))));
-                    gold.setSmooth(true);
-                    gold.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
-                    gold.setPreserveRatio(true);
+            VBox initialCardsChoiceVBox = new VBox(30);
+            initialCardsChoiceVBox.setAlignment(Pos.CENTER);
+            initialCardsChoiceVBox.setPrefSize(screenSizes.getX(), screenSizes.getY() * 60 / 100);
+            //initialCardsChoiceVBox.setStyle(style);
+            Label cardLabel = new Label("Seleziona la carta iniziale: ");
+            cardLabel.getStyleClass().add("popupText");
 
-                    int finalI = i + 1;
-                    gold.setOnMouseClicked((event) ->
-                            ViewState.getCurrentState().drawFromVisibleCards("Gold", finalI)
-                    );
+            HBox initialChoiceHBox = new HBox(100);
+            initialChoiceHBox.setAlignment(Pos.CENTER);
+            initialChoiceHBox.setPrefSize(initialCardsChoiceVBox.getPrefWidth(), initialCardsChoiceVBox.getPrefHeight() * 0.9);
 
-                    GOLD_HBOX.getChildren().add(gold);
-                }
+            ClientCard initialCard = VIEWMODEL.getCurrentGame().getCardsInHand().getFirst();
+
+            ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.FRONT))));
+            ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.BACK))));
+
+            frontCardView.setSmooth(true);
+            frontCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
+            frontCardView.setPreserveRatio(true);
+            backCardView.setSmooth(true);
+            backCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
+            backCardView.setPreserveRatio(true);
+
+            initialChoiceHBox.getChildren().addAll(frontCardView, backCardView);
+            initialCardsChoiceVBox.getChildren().addAll(cardLabel, initialChoiceHBox);
+
+            OverlayPopup createdPopup = drawOverlayPopup(initialCardsChoiceVBox, false);
+
+            frontCardView.setOnMouseClicked((event) -> {
+                ViewState.getCurrentState().placeCard(new GenericPair<>(0, 0), 1, Side.FRONT);
+                createdPopup.hide();
+            });
+
+            backCardView.setOnMouseClicked((event) -> {
+                ViewState.getCurrentState().placeCard(new GenericPair<>(0, 0), 1, Side.BACK);
+                createdPopup.hide();
+            });
+
+            createdPopup.setY(screenSizes.getY() * 20 / 100);
+            createdPopup.show(stage);
+        });
+    }
+
+    @Override
+    public void showObjectiveCardsChoice(ArrayList<ClientCard> objectivesSelection) {
+        Platform.runLater(() -> {
+            //double popupWidth = 720, popupHeight = 480;
+            //String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
+
+            VBox objectiveChoiceVBox = new VBox(30);
+            objectiveChoiceVBox.setAlignment(Pos.CENTER);
+            objectiveChoiceVBox.setPrefSize(screenSizes.getX(), screenSizes.getY() * 60 / 100);
+            //objectiveChoiceVBox.setStyle(style);
+            Label cardLabel = new Label("Seleziona la carta obiettivo segreto: ");
+            cardLabel.getStyleClass().add("popupText");
+
+            HBox objectiveChoiceHBox = new HBox(100);
+            objectiveChoiceHBox.setAlignment(Pos.CENTER);
+            objectiveChoiceHBox.setPrefSize(objectiveChoiceVBox.getPrefWidth(), objectiveChoiceVBox.getPrefHeight() * 0.9);
+
+            objectiveChoiceVBox.getChildren().addAll(cardLabel, objectiveChoiceHBox);
+
+            OverlayPopup createdPopup = drawOverlayPopup(objectiveChoiceVBox, false);
+
+            for (int i = 0; i < objectivesSelection.size(); i++) {
+                ClientCard objectiveCard = objectivesSelection.get(i);
+                ImageView objectiveCardView = new ImageView(String.valueOf(GUIView.class.getResource(objectiveCard.GUI_SPRITES.get(Side.FRONT))));
+
+                objectiveCardView.setSmooth(true);
+                objectiveCardView.setFitWidth(objectiveChoiceHBox.getPrefWidth() * 0.3);
+                objectiveCardView.setPreserveRatio(true);
+
+                int cardPosition = i;
+                objectiveCardView.setOnMouseClicked((event) -> {
+                    ViewState.getCurrentState().pickObjective(cardPosition + 1);
+                    createdPopup.hide();
+                });
+
+                objectiveChoiceHBox.getChildren().add(objectiveCardView);
             }
 
-            COMMON_OBJECTIVES_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 20 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 52.5 / 100);
-            OBJECTIVE_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
-            OBJECTIVE_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 57.5 / 100);
-
-            //TODO. make imageView static and clear and avoid clearing children and refresh only the content
-            OBJECTIVE_HBOX.getChildren().clear();
-
-            for (int i = 0; i < thisGame.getCommonObjectives().length; i++) {
-                if (thisGame.getCommonObjectives()[i] != null) {
-                    ImageView commonObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getCommonObjectives()[i].GUI_SPRITES.get(Side.FRONT))));
-                    commonObjective.setSmooth(true);
-                    commonObjective.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
-                    commonObjective.setPreserveRatio(true);
-
-                    OBJECTIVE_HBOX.getChildren().add(commonObjective);
-                }
-            }
-
-            SECRET_OBJECTIVE_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 36 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 85 / 100);
-            if (thisGame.getOwnObjective() != null) {
-                ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getOwnObjective().GUI_SPRITES.get(Side.FRONT))));
-                secretObjective.setSmooth(true);
-                secretObjective.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
-                secretObjective.setPreserveRatio(true);
-
-                DECKS_AND_VISIBLE_CARDS_PANE.getChildren().add(secretObjective);
-                secretObjective.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 80 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 82.5 / 100);
-            }
+            createdPopup.setY(screenSizes.getY() * 20 / 100);
+            createdPopup.show(stage);
         });
     }
 
@@ -842,20 +827,23 @@ public class GUIGameView extends GUIView {
         Platform.runLater(() ->
         {
             AnchorPane popupContent = new AnchorPane();
-            popupContent.setPrefSize(screenSizes.getX() * 70 / 100, screenSizes.getY() * 80 / 100);
+            popupContent.setPrefSize(screenSizes.getX() * 80 / 100, screenSizes.getY() * 90 / 100);
 
-            //TODO: add label with name
-            // Label playerNameLabel = new Label();
+            Label playerNameLabel = new Label(player.getNickname());
 
             ScrollPane fieldPane = new ScrollPane();
             fieldPane.setPannable(true);
-            fieldPane.setPrefSize(popupContent.getPrefWidth(), popupContent.getPrefHeight());
-            //TODO: ??? fieldPane.setFitToHeight();
+            fieldPane.setPrefSize(popupContent.getPrefWidth(), popupContent.getPrefHeight() - playerNameLabel.getHeight());
             drawField(fieldPane, player, false);
-            popupContent.getChildren().add(/*playerNameLabel,*/ fieldPane);
+            fieldPane.getContent().setScaleX(1.5);
+            fieldPane.getContent().setScaleY(1.5);
+            popupContent.getChildren().addAll(playerNameLabel, fieldPane);
 
-            Button centerFieldButton = new Button("+");
-            centerFieldButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            playerNameLabel.relocate((popupContent.getPrefWidth() - playerNameLabel.getWidth()) / 2, 0);
+            fieldPane.relocate(0, playerNameLabel.getHeight());
+
+            Button centerFieldButton = new Button();
+            generateFieldInteractionButton(centerFieldButton, "/images/icons/aim.png");
             centerFieldButton.setOnMouseClicked((event) -> {
                 fieldPane.setHvalue((fieldPane.getHmax() + fieldPane.getHmin()) / 2);
                 fieldPane.setVvalue((fieldPane.getVmax() + fieldPane.getVmin()) / 2);
@@ -865,18 +853,26 @@ public class GUIGameView extends GUIView {
             centerFieldButton.relocate(popupContent.getPrefWidth() - 50, 60);
 
             OverlayPopup overlayPopup = GUIView.drawOverlayPopup(popupContent, true);
-            overlayPopup.setX(screenSizes.getX() * 15 / 100);
-            overlayPopup.setY(screenSizes.getY() * 10 / 100);
+            overlayPopup.setX(screenSizes.getX() * 10 / 100);
+            overlayPopup.setY(screenSizes.getY() * 5 / 100);
             overlayPopup.show(stage);
         });
     }
 
     @Override
-    public void showLeaderboard(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
+    public void awaitingScreen() {
         Platform.runLater(() -> {
-            double popupWidth = 720, popupHeight = 480;
+            OverlayPopup createdPopup = drawOverlayPopup(AWAITING_STATE_MESSAGE_BOX, false);
 
-            LEADERBOARD_VBOX.setPrefSize(popupWidth, popupHeight);
+            createdPopup.show(stage);
+            AWAITING_STATE_MESSAGE_BOX.setVisible(true);
+        });
+    }
+
+    @Override
+    public void leaderboardScreen(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
+        Platform.runLater(() -> {
+            LEADERBOARD_VBOX.setPrefSize(screenSizes.getX() * 80 / 100, screenSizes.getY() * 90 / 100);
 
             Button exitButton = new Button("Torna alla schermata delle lobby");
             exitButton.getStyleClass().add("button");
@@ -897,7 +893,7 @@ public class GUIGameView extends GUIView {
             }
 
             WINNING_PLAYER_LABEL.setText(
-                    CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getPlayers().getFirst().getNickname() + " won" +
+                    VIEWMODEL.getCurrentGame().getPlayers().getFirst().getNickname() + " won" +
                             (gameEndedDueToDisconnections ? " as the only player left" : "") + "!"
             );
 
@@ -909,12 +905,12 @@ public class GUIGameView extends GUIView {
                 ViewState.getCurrentState().toLobbies();
                 LEADERBOARD_VBOX.setVisible(false);
                 createdPopup.hide();
-                clear();
+                shouldReset = true;
             }));
 
-            AWAITING_STATE_MESSAGE_BOX.setVisible(false);
             LEADERBOARD_VBOX.setVisible(true);
-            //TODO: if(gameEndedDueToDisconnections) hide awaiting popup
+            createdPopup.setX(screenSizes.getX() * 10 / 100);
+            createdPopup.setY(screenSizes.getY() * 5 / 100);
             createdPopup.show(stage);
         });
     }
@@ -935,9 +931,5 @@ public class GUIGameView extends GUIView {
         messageBox.getChildren().add(messageLabel);
 
         return messageBox;
-    }
-
-    private void clear() {
-        MESSAGES_BOX.getChildren().clear();
     }
 }
