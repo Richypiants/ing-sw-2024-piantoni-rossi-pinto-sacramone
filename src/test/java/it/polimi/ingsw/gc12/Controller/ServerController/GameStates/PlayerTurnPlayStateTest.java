@@ -51,7 +51,7 @@ class PlayerTurnPlayStateTest {
         gameController.CONTROLLED_GAME.getPlayers().getLast().addListener(client2.getListener());
 
         gameController.putActivePlayer(client1, player1);
-        gameController.putActivePlayer(client1, player1);
+        gameController.putActivePlayer(client2, player1);
 
         gameController.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(0, 0), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
         gameController.getCurrentState().placeCard(game.getPlayers().getLast(), new GenericPair<>(0, 0), game.getPlayers().getLast().getCardsInHand().getFirst(), Side.FRONT);

@@ -10,8 +10,6 @@ import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Model.ServerModel;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidDeckPositionException;
-import it.polimi.ingsw.gc12.Utilities.Exceptions.UnexpectedPlayerException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,10 +18,9 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.createNetworkSessionStub;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-class PlayerTurnDrawStateTest {
-
+class AwaitingReconnectionStateTest {
 
     Player player1;
     Player player2;
@@ -33,7 +30,6 @@ class PlayerTurnDrawStateTest {
     NetworkSession client2;
     ServerController server;
     GameController gameController;
-
 
     @BeforeEach
     void setGameParameters() throws Exception {
@@ -50,11 +46,17 @@ class PlayerTurnDrawStateTest {
         client1 = createNetworkSessionStub(gameController);
         client2 = createNetworkSessionStub(gameController);
 
+        client1.setPlayer(gameController.CONTROLLED_GAME.getPlayers().getFirst());
+        client2.setPlayer(gameController.CONTROLLED_GAME.getPlayers().getLast());
+
         gameController.CONTROLLED_GAME.getPlayers().getFirst().addListener(client1.getListener());
         gameController.CONTROLLED_GAME.getPlayers().getLast().addListener(client2.getListener());
 
+        gameController.CONTROLLED_GAME.addListener(client1.getListener());
+        gameController.CONTROLLED_GAME.addListener(client2.getListener());
+
         gameController.putActivePlayer(client1, player1);
-        gameController.putActivePlayer(client2, player1);
+        gameController.putActivePlayer(client1, player1);
 
         gameController.getCurrentState().placeCard(game.getPlayers().getFirst(), new GenericPair<>(0, 0), game.getPlayers().getFirst().getCardsInHand().getFirst(), Side.FRONT);
         gameController.getCurrentState().placeCard(game.getPlayers().getLast(), new GenericPair<>(0, 0), game.getPlayers().getLast().getCardsInHand().getFirst(), Side.FRONT);
@@ -65,50 +67,32 @@ class PlayerTurnDrawStateTest {
         gameController.getCurrentState().pickObjective(game.getPlayers().getFirst(), (ObjectiveCard) ServerModel.CARDS_LIST.get(choice1));
         gameController.getCurrentState().pickObjective(game.getPlayers().getLast(), (ObjectiveCard) ServerModel.CARDS_LIST.get(choice2));
 
-        gameController.getCurrentState().placeCard(game.getCurrentPlayer(), new GenericPair<>(1, 1), game.getCurrentPlayer().getCardsInHand().getFirst(), Side.FRONT);
-
-
     }
 
     @Test
-    void correctTransitionTest_Draw1() throws Exception {
-        gameController.getCurrentState().drawFrom(game.getCurrentPlayer(), "Resource");
-        assertInstanceOf(PlayerTurnPlayState.class, gameController.getCurrentState());
-        assertEquals(game.getPlayers().getLast(), game.getCurrentPlayer());
+    void correctTransitionToAwaitingState() throws InterruptedException {
+        gameController.leaveGame(client1);
+
+        synchronized (((ServerControllerTest.VirtualClientImpl) ((ServerListener) client2.getListener()).getVirtualClient())) {
+            (((ServerListener) client2.getListener()).getVirtualClient()).wait();
+        }
+
+        assertInstanceOf(AwaitingReconnectionState.class, gameController.getCurrentState());
     }
 
+    //FIXME: questo test è inutile ma non c'e altro modo di testare un metodo che non viene mai chiamato nel flusso di gioco e non fa nulla
     @Test
-    void correctTransitionTest_Draw2() throws Exception {
-        gameController.getCurrentState().drawFrom(game.getCurrentPlayer(), "Resource", 1);
-        assertInstanceOf(PlayerTurnPlayState.class, gameController.getCurrentState());
-        assertEquals(game.getPlayers().getLast(), game.getCurrentPlayer());
-    }
+    void correctDisconnection() throws InterruptedException {
+        gameController.leaveGame(client1);
 
-    @Test
-    void correctUnexpectedPlayerExceptionCall() throws Exception {
-        assertThrows(UnexpectedPlayerException.class, () -> gameController.getCurrentState().drawFrom(game.getPlayers().getLast(), "Resource"));
+        synchronized (((ServerControllerTest.VirtualClientImpl) ((ServerListener) client2.getListener()).getVirtualClient())) {
+            (((ServerListener) client2.getListener()).getVirtualClient()).wait();
 
-    }
+        }
 
-    @Test
-    void correctInvalidDeckPositionException() throws Exception {
-        assertThrows(InvalidDeckPositionException.class,
-                () -> gameController.getCurrentState().drawFrom(
-                        game.getCurrentPlayer(), "Resource", 3
-                )
-        );
+        gameController.getCurrentState().playerDisconnected(game.getPlayers().getLast());
 
     }
-
-    @Test
-    void correctTransitionsAndDrawRoutineAfterDisconnection() throws Exception {
-        gameController.getCurrentState().playerDisconnected(game.getCurrentPlayer());
-        assertEquals(3, game.getCurrentPlayer().getCardsInHand().size());
-        assertInstanceOf(PlayerTurnPlayState.class, gameController.getCurrentState());
-
-    }
-
-
 
 
 }

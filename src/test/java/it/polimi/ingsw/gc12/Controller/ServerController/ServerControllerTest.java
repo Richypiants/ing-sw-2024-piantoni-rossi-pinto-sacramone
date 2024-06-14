@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc12.Controller.ServerController;
 
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.PauseGameCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
 import it.polimi.ingsw.gc12.Listeners.NetworkListener;
 import it.polimi.ingsw.gc12.Listeners.ServerListener;
@@ -54,6 +55,7 @@ public class ServerControllerTest {
 
             ;
         });
+
 
         return session;
     };
@@ -443,12 +445,17 @@ public class ServerControllerTest {
         public ClientCommand lastCommandReceived = null;
         public List<ClientCommand> receivedCommandsList = new ArrayList<>();
 
+
         @Override
         public void requestToClient(ClientCommand command) {
             lastCommandReceived = command;
             receivedCommandsList.add(command);
-
             command.execute(myClientController);
+            if (command instanceof PauseGameCommand) {
+                synchronized (this) {
+                    notify();
+                }
+            }
         }
     }
 

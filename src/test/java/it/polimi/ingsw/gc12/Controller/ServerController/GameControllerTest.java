@@ -335,7 +335,7 @@ class GameControllerTest {
         assertInstanceOf(RestoreGameCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_1.getListener()).getVirtualClient()).lastCommandReceived);
     }
 
-    static class GameStatesDriver extends GameState {
+    public static class GameStatesDriver extends GameState {
         public String thrownException;
 
         public GameStatesDriver(GameController controller, Game thisGame, String state) {
