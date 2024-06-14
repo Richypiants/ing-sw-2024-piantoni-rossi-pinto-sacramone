@@ -63,6 +63,7 @@ public class GUIConnectionSetupView extends GUIView {
     @Override
     public void connectionSetupScreen() {
         CONNECTION_TITLE_SCREEN_GAME_LOGO.setImage(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/images/only_center_logo_no_bg.png"))));
+        CONNECTION_TITLE_SCREEN_GAME_LOGO.setSmooth(true);
         CONNECTION_TITLE_SCREEN_GAME_LOGO.setFitWidth(650);
         CONNECTION_TITLE_SCREEN_GAME_LOGO.setFitHeight(650);
         CONNECTION_TITLE_SCREEN_GAME_LOGO.setPreserveRatio(true);
@@ -112,6 +113,7 @@ public class GUIConnectionSetupView extends GUIView {
         centerLogoTransition.setToY((screenSizes.getY() - CONNECTION_TITLE_SCREEN_GAME_LOGO.getFitHeight()) / 2 - CONNECTION_TITLE_SCREEN_GAME_LOGO.getLayoutY());
 
         APPEARING_LOGO.setImage(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/images/transparent_game_logo2.png"))));
+        APPEARING_LOGO.setSmooth(true);
         APPEARING_LOGO.setOpacity(0.0);
         APPEARING_LOGO.setFitWidth(650);
         APPEARING_LOGO.setFitHeight(650);

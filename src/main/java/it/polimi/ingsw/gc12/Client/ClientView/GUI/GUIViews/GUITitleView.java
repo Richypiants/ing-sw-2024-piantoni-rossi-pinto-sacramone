@@ -48,6 +48,7 @@ public class GUITitleView extends GUIView {
 
             //FIXME: why does this not work in fxml???
             CRANIO_CREATIONS_LOGO.setImage(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/images/cranio_creations_logo_no_bg.png"))));
+            CRANIO_CREATIONS_LOGO.setSmooth(true);
             CRANIO_CREATIONS_LOGO.setFitWidth(650);
             CRANIO_CREATIONS_LOGO.setPreserveRatio(true);
             CRANIO_CREATIONS_LOGO.setVisible(true);
@@ -71,6 +72,7 @@ public class GUITitleView extends GUIView {
             TITLE_SCREEN_BOX.setPrefSize(screenSizes.getX(), screenSizes.getY());
 
             TITLE_SCREEN_GAME_LOGO.setImage(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/images/only_center_logo_no_bg.png"))));
+            TITLE_SCREEN_GAME_LOGO.setSmooth(true);
             TITLE_SCREEN_GAME_LOGO.setFitWidth(650);
             TITLE_SCREEN_GAME_LOGO.setFitHeight(650);
             TITLE_SCREEN_GAME_LOGO.setPreserveRatio(true);

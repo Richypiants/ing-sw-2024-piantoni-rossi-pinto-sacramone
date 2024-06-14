@@ -14,7 +14,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
-import java.util.UUID;
 
 public class GUILobbiesView extends GUIView {
 
@@ -42,6 +41,7 @@ public class GUILobbiesView extends GUIView {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         MENU_BUTTONS_BOX = (VBox) SCENE_ROOT.lookup("#buttonsBox");
         OWN_NICKNAME_LABEL = (Label) SCENE_ROOT.lookup("#ownNicknameLabel");
         CREATE_LOBBY_BUTTON = (Button) SCENE_ROOT.lookup("#createGameButton");
@@ -118,16 +118,12 @@ public class GUILobbiesView extends GUIView {
             LOBBIES_LIST.getChildren().clear();
 
             if (CLIENT_CONTROLLER.VIEWMODEL.inRoom())
-                LOBBIES_LIST.getChildren().add(createLobbyListElement(
-                        CLIENT_CONTROLLER.VIEWMODEL.getCurrentRoomUUID(),
-                        CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby()
-                        )
-                );
+                LOBBIES_LIST.getChildren().add(createLobbyListElement(CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby()));
 
             //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
-            for (var lobby : CLIENT_CONTROLLER.VIEWMODEL.getLobbies().entrySet()) {
-                if (!lobby.getValue().equals(CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby()))
-                    LOBBIES_LIST.getChildren().add(createLobbyListElement(lobby.getKey(), lobby.getValue()));
+            for (var lobby : CLIENT_CONTROLLER.VIEWMODEL.getLobbies().values()) {
+                if (!lobby.equals(CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby()))
+                    LOBBIES_LIST.getChildren().add(createLobbyListElement(lobby));
             }
 
             stage.getScene().setRoot(SCENE_ROOT);
@@ -141,16 +137,14 @@ public class GUILobbiesView extends GUIView {
         });
     }
 
-    private HBox createLobbyListElement(UUID lobbyUUID, Lobby lobby) {
-        // Box
+    private HBox createLobbyListElement(Lobby lobby) {
         HBox lobbyBox = new HBox(100);
         lobbyBox.getStyleClass().add("lobbyBox");
         lobbyBox.setPrefSize(LOBBIES_LIST.getPrefWidth() - 10, 10);
 
         HBox nicknamesBox = new HBox(10);
-        nicknamesBox.getStyleClass().add("lobbyBox");
+        //nicknamesBox.getStyleClass().add("lobbyBox");
 
-        // Label nomi
         for (var player : lobby.getPlayers()) {
             Label playerName = new Label(player.getNickname());
             playerName.setStyle("-fx-font-size: 14px; -fx-text-fill: " +
@@ -158,7 +152,6 @@ public class GUILobbiesView extends GUIView {
             nicknamesBox.getChildren().add(playerName);
         }
 
-        // Label giocatori
         Label playerCount = new Label(String.valueOf(lobby.getMaxPlayers()));
         playerCount.setStyle("-fx-font-size: 16px;");
 
@@ -167,14 +160,12 @@ public class GUILobbiesView extends GUIView {
 
         for (var color : lobby.getAvailableColors()) {
             ImageView colorToken = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/" + color.name().toLowerCase() + ".png")));
+            colorToken.setSmooth(true);
             colorToken.setFitWidth(20);
             colorToken.setPreserveRatio(true);
-            colorToken.setSmooth(true);
 
             if (lobby.equals(CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby()))
-                colorToken.setOnMouseClicked((event) -> {
-                    ViewState.getCurrentState().selectColor(color);
-                });
+                colorToken.setOnMouseClicked((event) -> ViewState.getCurrentState().selectColor(color));
 
             availableColorsBox.getChildren().add(colorToken);
         }
@@ -183,10 +174,10 @@ public class GUILobbiesView extends GUIView {
 
         if (CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby() == null && lobby.getPlayersNumber() < lobby.getMaxPlayers()) {
             Button joinButton = new Button("JOIN");
-            joinButton.setOnAction(e -> ViewState.getCurrentState().joinLobby(lobbyUUID));
+            joinButton.setOnAction(e -> ViewState.getCurrentState().joinLobby(lobby.getRoomUUID()));
             lobbyBox.getChildren().add(joinButton);
         } else {
-            if (CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby().equals(lobby)) {
+            if (lobby.equals(CLIENT_CONTROLLER.VIEWMODEL.getCurrentLobby())) {
                 Button leaveButton = new Button("LEAVE");
                 leaveButton.setOnAction(e -> ViewState.getCurrentState().leaveLobby()
                 );

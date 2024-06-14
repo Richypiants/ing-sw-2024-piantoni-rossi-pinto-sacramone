@@ -86,6 +86,10 @@
     -fx-background-color: transparent;
 }
 
+.scroll-pane {
+    -fx-background-insets: 0, 1;
+}
+
 .scroll-pane > .viewport {
     -fx-background-color: transparent;
 }
@@ -139,19 +143,25 @@
 }
 
 #opponentsFieldsPane {
-
+    -fx-alignment: CENTER;
+    /*-fx-background-color: red;*/
 }
 
 #ownFieldPane {
-
+    /*-fx-background-color: yellow;*/
 }
 
 #handPane {
-
+    /*-fx-background-color: purple;*/
 }
 
 #chatPane {
+    -fx-background-radius: 10%;
+    -fx-background-color: lightblue;
+}
 
+#chatScrollPane {
+    -fx-background-color: lightblue;
 }
 
 .roundButton {
@@ -164,4 +174,31 @@
     -fx-border-color: black;
     -fx-border-width: 2px;
     -fx-border-radius: 25;
+    -fx-alignment: center;
+}
+
+#sendButton {
+    -fx-background-radius: 30%;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-max-width: 30px;
+    -fx-max-height: 30px;
+    -fx-background-color: transparent;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+    -fx-border-radius: 15;
+    -fx-alignment: center;
+}
+
+.messageElement {
+    -fx-border-radius: 10;
+    -fx-background-color: transparent;
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+    -fx-padding: 10;
+}
+
+.popupText {
+    -fx-text-fill: #FADA5E;
+    /* F8E473 / EEDC82 */
 }

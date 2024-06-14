@@ -111,6 +111,7 @@ public class ConnectionController extends ServerController {
                             new IllegalArgumentException("There's no lobby with the provided UUID")
                     )
             );
+            return;
         } catch (FullLobbyException e) {
             sender.getListener().notified(
                     new ThrowExceptionCommand(
