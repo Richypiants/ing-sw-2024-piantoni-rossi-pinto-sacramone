@@ -9,6 +9,7 @@
     <Button fx:id="scoreboardButton" styleClass="roundButton" mnemonicParsing="false"/>
     <Button fx:id="chatButton" styleClass="roundButton" mnemonicParsing="false"/>
     <Button fx:id="leaveButton" styleClass="roundButton" mnemonicParsing="false"/>
+    <Label fx:id="gameStateLabel" styleClass="titleScreenLabel"/>
 
     <HBox fx:id="opponentsFieldsPane" spacing="30"/>
 

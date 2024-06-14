@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIViews;
 
 import it.polimi.ingsw.gc12.Client.ClientView.GUI.OverlayPopup;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.PlayerTurnDrawState;
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates.PlayerTurnPlayState;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
@@ -88,6 +90,7 @@ public class GUIGameView extends GUIView {
     private final Label LEADERBOARD_LABEL;
     private final Label WINNING_PLAYER_LABEL;
     private final Label TO;
+    private final Label GAME_STATE_LABEL;
 
     private GUIGameView() {
         try {
@@ -126,6 +129,7 @@ public class GUIGameView extends GUIView {
         WINNING_PLAYER_LABEL = (Label) SCENE_ROOT.lookup("#winningPlayerLabel");
         TO = (Label) SCENE_ROOT.lookup("#to");
         CHAT_VBOX = (VBox) SCENE_ROOT.lookup("#chatBox");
+        GAME_STATE_LABEL = (Label) SCENE_ROOT.lookup("#gameStateLabel");
 
         PADDING_SIZE = 20.0;
 
@@ -308,11 +312,11 @@ public class GUIGameView extends GUIView {
         GOLD_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
         GOLD_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 32.5 / 100);
 
-        COMMON_OBJECTIVES_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 20 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 52.5 / 100);
+        COMMON_OBJECTIVES_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 27.5 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 52.5 / 100);
         OBJECTIVE_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
         OBJECTIVE_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 57.5 / 100);
 
-        SECRET_OBJECTIVE_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 36 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 85 / 100);
+        SECRET_OBJECTIVE_LABEL.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 30 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 86 / 100);
 
         OWN_FIELD_PANE.setPrefSize(
                 screenSizes.getX() * 70 / 100 - PADDING_SIZE,
@@ -405,6 +409,8 @@ public class GUIGameView extends GUIView {
             shouldReset = true;
         });
 
+        GAME_STATE_LABEL.relocate(screenSizes.getX() * 32.5 / 100, screenSizes.getY() * 90 / 100);
+
         shouldReset = false;
     }
 
@@ -418,6 +424,17 @@ public class GUIGameView extends GUIView {
             showCommonPlacedCards();
             showOwnField();
             showHand();
+
+            String playingPhase = "Playing a card";
+            String drawPhase = "Drawing a card";
+            GAME_STATE_LABEL.setWrapText(true);
+            if (ViewState.getCurrentState() instanceof PlayerTurnDrawState) {
+                GAME_STATE_LABEL.setText("It's " + thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname() + "'s turn!\n" +
+                        drawPhase);
+            } else if (ViewState.getCurrentState() instanceof PlayerTurnPlayState) {
+                GAME_STATE_LABEL.setText("It's " + thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname() + "'s turn!\n" +
+                        playingPhase);
+            }
 
             updateScoreboard();
         });
@@ -581,7 +598,7 @@ public class GUIGameView extends GUIView {
                 secretObjective.setPreserveRatio(true);
 
                 DECKS_AND_VISIBLE_CARDS_PANE.getChildren().add(secretObjective);
-                secretObjective.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 80 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 82.5 / 100);
+                secretObjective.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 67.5 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 82.5 / 100);
             }
         });
     }
@@ -696,9 +713,20 @@ public class GUIGameView extends GUIView {
         Platform.runLater(() -> {
             SCOREBOARD_PANE.getChildren().clear();
 
+            int currentPoints = -1;
+            int overlappingTokens = 0;
+
+            double yOverlappingOffset = 0.0125;
+
             for (var player : thisGame.getPlayers().stream()
                     .sorted(Comparator.comparingInt(ClientPlayer::getPoints)).toList().reversed()
             ) {
+                if (currentPoints != player.getPoints()) {
+                    currentPoints = player.getPoints();
+                    overlappingTokens = 0;
+                } else
+                    overlappingTokens++;
+
                 GenericPair<Double, Double> scaleFactor = RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.get(player.getPoints());
                 ImageView token = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/" + player.getColor().name().toLowerCase() + ".png")));
                 token.setSmooth(true);
@@ -707,9 +735,7 @@ public class GUIGameView extends GUIView {
 
                 SCOREBOARD_PANE.getChildren().add(token);
                 token.relocate(SCOREBOARD_PANE.getPrefWidth() * scaleFactor.getX(),
-                        SCOREBOARD_PANE.getPrefHeight() * scaleFactor.getY());
-
-                //TODO: Sovrapporre pedine se punteggi uguali
+                        SCOREBOARD_PANE.getPrefHeight() * (scaleFactor.getY() - (overlappingTokens * yOverlappingOffset)));
             }
 
             /* for (int i = 0; i < 30; i++) {

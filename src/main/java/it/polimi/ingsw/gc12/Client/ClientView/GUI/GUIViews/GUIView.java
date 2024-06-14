@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -113,8 +114,14 @@ public class GUIView extends View {
         popupContent.setVisible(true);
 
         if (isCloseable) {
-            Button XButton = new Button("X");
-            XButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            ImageView closeImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/close.png")));
+            closeImage.setFitHeight(20);
+            closeImage.setPreserveRatio(true);
+
+            Button XButton = new Button();
+            XButton.setGraphic(closeImage);
+            XButton.setPrefSize(25, 25);
+            XButton.setStyle("-fx-border-radius: 5; -fx-border-width: 1px; -fx-border-color: black; -fx-background-color: white");
             XButton.setOnMouseClicked((event) -> overlayPopup.hide());
 
             content.getChildren().add(XButton);
