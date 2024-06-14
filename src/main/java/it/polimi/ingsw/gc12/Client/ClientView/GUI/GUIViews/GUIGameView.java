@@ -9,6 +9,10 @@ import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,6 +33,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -165,13 +170,6 @@ public class GUIGameView extends GUIView {
         return gameScreenController;
     }
 
-    private void togglePane(Pane popupPane) {
-        Platform.runLater(() -> {
-            popupPane.setVisible(!popupPane.isVisible());
-            popupPane.toFront();
-        });
-    }
-
     private Rectangle generateOpenCornerShape(GenericPair<Integer, Integer> openCorner, boolean isInteractive) {
         var openCornerShape = new Rectangle(cardSizes.getX(), cardSizes.getY()) {
             public final GenericPair<Integer, Integer> COORDINATES = openCorner;
@@ -282,6 +280,13 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    private void togglePane(Pane popupPane) {
+        Platform.runLater(() -> {
+            popupPane.setVisible(!popupPane.isVisible());
+            popupPane.toFront();
+        });
+    }
+
     private void resetGameScreen() {
         thisGame = VIEWMODEL.getCurrentGame();
         thisPlayer = thisGame.getThisPlayer();
@@ -327,9 +332,11 @@ public class GUIGameView extends GUIView {
         //TODO: CAMBIARE LE DIMENSIONI SOLO PREVIA COMUNICAZIONE A SACRAMONE
         SCOREBOARD_PANE.setPrefSize(screenSizes.getX() * 0.1328125, screenSizes.getY() * 0.5);
         SCOREBOARD_PANE.setStyle("-fx-background-image: url('/images/scoreboard.png'); -fx-background-size: stretch;");
+        SCOREBOARD_PANE.relocate(screenSizes.getX() * 10 / 100, screenSizes.getY() * 40 / 100);
         makePaneDraggable(SCOREBOARD_PANE);
 
         CHAT_PANE.setPrefSize(screenSizes.getX() * 30 / 100, screenSizes.getY() * 70 / 100);
+        CHAT_PANE.relocate(screenSizes.getX() * 60 / 100, screenSizes.getY() * 10 / 100);
         makePaneDraggable(CHAT_PANE);
 
         CHAT_SCROLL_PANE.setPrefWidth(CHAT_PANE.getPrefWidth() * 80 / 100);
@@ -405,7 +412,6 @@ public class GUIGameView extends GUIView {
     public void gameScreen() {
         Platform.runLater(() -> {
             if (shouldReset) resetGameScreen();
-            //clear();
             stage.getScene().setRoot(SCENE_ROOT);
 
             showOpponentsFieldsMiniaturized();
@@ -433,7 +439,10 @@ public class GUIGameView extends GUIView {
                     OPPONENTS_FIELDS_PANE.getHeight()
             );
 
-            Label opponentName = new Label(player.getNickname());
+            Label opponentName = new Label(
+                    player.getNickname() +
+                            ((thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex())).equals(player) ? " (IN TURN)" : "")
+            );
             opponentName.setAlignment(Pos.CENTER);
             opponentName.setPrefSize(opponentInfo.getPrefWidth(), opponentInfo.getPrefHeight() / 10);
             opponentName.setStyle(RED_WHITE_STYLE);
@@ -747,34 +756,41 @@ public class GUIGameView extends GUIView {
             initialChoiceHBox.setAlignment(Pos.CENTER);
             initialChoiceHBox.setPrefSize(initialCardsChoiceVBox.getPrefWidth(), initialCardsChoiceVBox.getPrefHeight() * 0.9);
 
-            ClientCard initialCard = VIEWMODEL.getCurrentGame().getCardsInHand().getFirst();
-
-            ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.FRONT))));
-            ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(initialCard.GUI_SPRITES.get(Side.BACK))));
-
-            frontCardView.setSmooth(true);
-            frontCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
-            frontCardView.setPreserveRatio(true);
-            backCardView.setSmooth(true);
-            backCardView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
-            backCardView.setPreserveRatio(true);
-
-            initialChoiceHBox.getChildren().addAll(frontCardView, backCardView);
             initialCardsChoiceVBox.getChildren().addAll(cardLabel, initialChoiceHBox);
 
             OverlayPopup createdPopup = drawOverlayPopup(initialCardsChoiceVBox, false);
 
-            frontCardView.setOnMouseClicked((event) -> {
-                ViewState.getCurrentState().placeCard(new GenericPair<>(0, 0), 1, Side.FRONT);
-                createdPopup.hide();
-            });
+            ClientCard initialCard = VIEWMODEL.getCurrentGame().getCardsInHand().getFirst();
 
-            backCardView.setOnMouseClicked((event) -> {
-                ViewState.getCurrentState().placeCard(new GenericPair<>(0, 0), 1, Side.BACK);
-                createdPopup.hide();
-            });
+            ParallelTransition choiceTransition = new ParallelTransition();
 
+            for (var entry : initialCard.GUI_SPRITES.entrySet()) {
+                ImageView initialCardSideView = new ImageView(String.valueOf(GUIGameView.class.getResource(entry.getValue())));
+                initialCardSideView.setSmooth(true);
+                initialCardSideView.setFitWidth(initialChoiceHBox.getPrefWidth() * 0.3);
+                initialCardSideView.setPreserveRatio(true);
+
+                ScaleTransition zoomInOutTransition = new ScaleTransition(Duration.millis(2000), initialCardSideView);
+                zoomInOutTransition.setByX(0.05);
+                zoomInOutTransition.setByY(0.05);
+                zoomInOutTransition.setCycleCount(Animation.INDEFINITE);
+                zoomInOutTransition.setAutoReverse(true);
+                zoomInOutTransition.setInterpolator(Interpolator.EASE_BOTH);
+
+                choiceTransition.getChildren().add(zoomInOutTransition);
+
+                initialChoiceHBox.getChildren().add(initialCardSideView);
+
+                initialCardSideView.setOnMouseClicked((event) -> {
+                    ViewState.getCurrentState().placeCard(new GenericPair<>(0, 0), 1, entry.getKey());
+                    createdPopup.hide();
+                    choiceTransition.stop();
+                });
+            }
+
+            createdPopup.setX(0);
             createdPopup.setY(screenSizes.getY() * 20 / 100);
+            choiceTransition.play();
             createdPopup.show(stage);
         });
     }
@@ -800,24 +816,38 @@ public class GUIGameView extends GUIView {
 
             OverlayPopup createdPopup = drawOverlayPopup(objectiveChoiceVBox, false);
 
+            ParallelTransition choiceTransition = new ParallelTransition();
+
             for (int i = 0; i < objectivesSelection.size(); i++) {
                 ClientCard objectiveCard = objectivesSelection.get(i);
-                ImageView objectiveCardView = new ImageView(String.valueOf(GUIView.class.getResource(objectiveCard.GUI_SPRITES.get(Side.FRONT))));
 
+                ImageView objectiveCardView = new ImageView(String.valueOf(GUIView.class.getResource(objectiveCard.GUI_SPRITES.get(Side.FRONT))));
                 objectiveCardView.setSmooth(true);
                 objectiveCardView.setFitWidth(objectiveChoiceHBox.getPrefWidth() * 0.3);
                 objectiveCardView.setPreserveRatio(true);
+
+                ScaleTransition zoomInOutTransition = new ScaleTransition(Duration.millis(2000), objectiveCardView);
+                zoomInOutTransition.setByX(0.05);
+                zoomInOutTransition.setByY(0.05);
+                zoomInOutTransition.setCycleCount(Animation.INDEFINITE);
+                zoomInOutTransition.setAutoReverse(true);
+                zoomInOutTransition.setInterpolator(Interpolator.EASE_BOTH);
+
+                choiceTransition.getChildren().add(zoomInOutTransition);
 
                 int cardPosition = i;
                 objectiveCardView.setOnMouseClicked((event) -> {
                     ViewState.getCurrentState().pickObjective(cardPosition + 1);
                     createdPopup.hide();
+                    choiceTransition.stop();
                 });
 
                 objectiveChoiceHBox.getChildren().add(objectiveCardView);
             }
 
+            createdPopup.setX(0);
             createdPopup.setY(screenSizes.getY() * 20 / 100);
+            choiceTransition.play();
             createdPopup.show(stage);
         });
     }
@@ -827,20 +857,23 @@ public class GUIGameView extends GUIView {
         Platform.runLater(() ->
         {
             AnchorPane popupContent = new AnchorPane();
-            popupContent.setPrefSize(screenSizes.getX() * 80 / 100, screenSizes.getY() * 90 / 100);
+            popupContent.setPrefSize(screenSizes.getX() * 90 / 100, screenSizes.getY() * 90 / 100);
 
-            Label playerNameLabel = new Label(player.getNickname());
+            //FIXME: why is is not shown?
+            Label playerNameLabel = new Label(
+                    player.getNickname() +
+                            ((thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex())).equals(player) ? " (IN TURN)" : "")
+            );
+            playerNameLabel.setStyle(RED_WHITE_STYLE);
 
             ScrollPane fieldPane = new ScrollPane();
             fieldPane.setPannable(true);
-            fieldPane.setPrefSize(popupContent.getPrefWidth(), popupContent.getPrefHeight() - playerNameLabel.getHeight());
+            fieldPane.setPrefSize(popupContent.getPrefWidth(), popupContent.getPrefHeight());
             drawField(fieldPane, player, false);
             fieldPane.getContent().setScaleX(1.5);
             fieldPane.getContent().setScaleY(1.5);
-            popupContent.getChildren().addAll(playerNameLabel, fieldPane);
 
-            playerNameLabel.relocate((popupContent.getPrefWidth() - playerNameLabel.getWidth()) / 2, 0);
-            fieldPane.relocate(0, playerNameLabel.getHeight());
+            popupContent.getChildren().addAll(fieldPane);
 
             Button centerFieldButton = new Button();
             generateFieldInteractionButton(centerFieldButton, "/images/icons/aim.png");
@@ -852,8 +885,12 @@ public class GUIGameView extends GUIView {
             popupContent.getChildren().add(centerFieldButton);
             centerFieldButton.relocate(popupContent.getPrefWidth() - 50, 60);
 
-            OverlayPopup overlayPopup = GUIView.drawOverlayPopup(popupContent, true);
-            overlayPopup.setX(screenSizes.getX() * 10 / 100);
+            OverlayPopup overlayPopup = drawOverlayPopup(popupContent, true);
+
+            ((AnchorPane) overlayPopup.getContent().getFirst()).getChildren().add(playerNameLabel);
+            playerNameLabel.relocate((popupContent.getPrefWidth() - playerNameLabel.getWidth()) / 2, popupContent.getPrefHeight() / 20);
+
+            overlayPopup.setX(screenSizes.getX() * 5 / 100);
             overlayPopup.setY(screenSizes.getY() * 5 / 100);
             overlayPopup.show(stage);
         });

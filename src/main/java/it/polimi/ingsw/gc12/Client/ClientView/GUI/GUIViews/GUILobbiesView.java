@@ -79,32 +79,26 @@ public class GUILobbiesView extends GUIView {
                 PLAYERS_NUMBER_SELECTOR.setValue(2);
 
                 OverlayPopup lobbyCreationPopup = drawOverlayPopup(LOBBY_CREATION_POPUP_BOX, true);
-                lobbyCreationPopup.setAutoFix(true);
 
                 CONFIRM_LOBBY_CREATION_BUTTON.setOnAction(event2 -> {
                     ViewState.getCurrentState().createLobby(PLAYERS_NUMBER_SELECTOR.getValue());
-                    LOBBY_CREATION_POPUP_BOX.setVisible(false);
                     lobbyCreationPopup.hide();
                 });
 
-                lobbyCreationPopup.show(stage);
-                LOBBY_CREATION_POPUP_BOX.setVisible(true);
                 lobbyCreationPopup.centerOnScreen();
+                lobbyCreationPopup.show(stage);
             });
 
             CHANGE_NICKNAME_BUTTON.setOnMouseClicked(event -> {
                 OverlayPopup nicknameChangePopup = drawOverlayPopup(CHANGE_NICKNAME_POPUP_BOX, true);
-                nicknameChangePopup.setAutoFix(true);
 
                 CONFIRM_NICKNAME_CHANGE_BUTTON.setOnAction(event2 -> {
                     ViewState.getCurrentState().setNickname(CHANGE_NICKNAME_TEXTFIELD.getText());
-                    CHANGE_NICKNAME_POPUP_BOX.setVisible(false);
                     nicknameChangePopup.hide();
                 });
 
-                nicknameChangePopup.show(stage);
-                CHANGE_NICKNAME_POPUP_BOX.setVisible(true);
                 nicknameChangePopup.centerOnScreen();
+                nicknameChangePopup.show(stage);
             });
 
             BACK_TO_TITLE_SCREEN_BUTTON.setOnAction(event -> ViewState.getCurrentState().quit());
@@ -138,12 +132,13 @@ public class GUILobbiesView extends GUIView {
     }
 
     private HBox createLobbyListElement(Lobby lobby) {
-        HBox lobbyBox = new HBox(100);
+        HBox lobbyBox = new HBox(30);
         lobbyBox.getStyleClass().add("lobbyBox");
         lobbyBox.setPrefSize(LOBBIES_LIST.getPrefWidth() - 10, 10);
 
         HBox nicknamesBox = new HBox(10);
-        //nicknamesBox.getStyleClass().add("lobbyBox");
+        nicknamesBox.setPrefSize(lobbyBox.getPrefWidth() * 80 / 100 - 250, lobbyBox.getPrefHeight());
+        nicknamesBox.getStyleClass().add("lobbyBox");
 
         for (var player : lobby.getPlayers()) {
             Label playerName = new Label(player.getNickname());
@@ -156,6 +151,7 @@ public class GUILobbiesView extends GUIView {
         playerCount.setStyle("-fx-font-size: 16px;");
 
         HBox availableColorsBox = new HBox(10);
+        availableColorsBox.setPrefSize(lobbyBox.getPrefWidth() * 20 / 100, lobbyBox.getPrefHeight());
         availableColorsBox.getStyleClass().add("lobbyBox");
 
         for (var color : lobby.getAvailableColors()) {
@@ -174,11 +170,13 @@ public class GUILobbiesView extends GUIView {
 
         if (VIEWMODEL.getCurrentLobby() == null && lobby.getPlayersNumber() < lobby.getMaxPlayers()) {
             Button joinButton = new Button("JOIN");
+            joinButton.setPrefWidth(250);
             joinButton.setOnAction(e -> ViewState.getCurrentState().joinLobby(lobby.getRoomUUID()));
             lobbyBox.getChildren().add(joinButton);
         } else {
             if (lobby.equals(VIEWMODEL.getCurrentLobby())) {
                 Button leaveButton = new Button("LEAVE");
+                leaveButton.setPrefWidth(250);
                 leaveButton.setOnAction(e -> ViewState.getCurrentState().leaveLobby()
                 );
                 lobbyBox.getChildren().add(leaveButton);

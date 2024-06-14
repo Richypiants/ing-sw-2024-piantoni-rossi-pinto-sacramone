@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Network.Client;
 
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Network.VirtualServer;
@@ -39,6 +40,13 @@ public class SocketClient implements VirtualServer {
         this.readerExecutor = Executors.newSingleThreadExecutor();
 
         Socket socket = new Socket(Client.getClientInstance().serverIPAddress, 5000);
+
+        //If connection to the server is successful, I wake up the connect() function continuously retrying to
+        // reconnect every 10 seconds
+        synchronized (ViewState.getCurrentState()) {
+            ViewState.getCurrentState().notifyAll();
+        }
+
         serverHandler = new SocketServerHandler(socket, ClientController.getInstance());
 
         readerExecutor.submit(
@@ -66,6 +74,7 @@ public class SocketClient implements VirtualServer {
             try {
                 SINGLETON_SOCKET_CLIENT = new SocketClient();
             } catch (IOException e) {
+                Client.getClientInstance().resetClient();
                 ClientController.getInstance().ERROR_LOGGER.log(e);
             }
         }

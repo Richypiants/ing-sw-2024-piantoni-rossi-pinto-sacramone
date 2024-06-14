@@ -47,167 +47,7 @@ public class TUIGameView extends TUIView{
         return gameView;
     }
 
-    public void gameScreen() {
-        clearTerminal();
-
-        printRoundInfo();
-        printStatsTable();
-        showCommonPlacedCards();
-        printDecks();
-        printOpponentsFieldsMiniaturized();
-        showField(VIEWMODEL.getCurrentGame().getThisPlayer());
-        showHand();
-        updateChat();
-        printStateCommandInfo();
-
-        //FIXME: al momento comandi filtrati per stato di gioco, replicati in ogni viewState, orribile anche perchè alla GUI non servono...
-        // però forse possiamo avere una lista di prompt e caricare quelli da mostrare a seconda di TUI o GUI?
-        // (per esempio, trascina una carta per posizionarla)
-    }
-
-    public void awaitingScreen() {
-        gameScreen();
-    }
-
-    public void printStateCommandInfo(){
-        int i = 42;
-        ClientGame thisGame = VIEWMODEL.getCurrentGame();
-
-        Ansi printedMessage = thisGame.getCurrentPlayerIndex() != -1 ?
-                ansi().cursor(i++, 2).bold().a("It is ").fg(9).a(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname()).reset().bold().a("'s turn! Your available commands are: ") :
-                ViewState.getCurrentState() instanceof AwaitingReconnectionState ?
-                        ansi().cursor(i++, 2).bold().a("[GAME PAUSED] Awaiting for reconnection of other players...") :
-                        ansi().cursor(i++, 2).bold().a("[SETUP PHASE] Every player needs to do an action! Your available commands are: ");
-
-        printToPosition(printedMessage);
-        for (var command : ViewState.getCurrentState().TUICommands)
-            printToPosition(ansi().cursor(i++, 4).a(command));
-    }
-
-    public void printRoundInfo() {
-        printToPosition(ansi().cursor(2,2).bold().a("[TURN #" +
-                VIEWMODEL.getCurrentGame().getCurrentRound() + "]").reset());
-    }
-
-    public void printStatsTable() {
-        int i = 2;
-        printToPosition(ansi().cursor(i++, 23)
-                .bold().a("Points | ").reset()
-                .fg(Ansi.Color.RED).a("Fungi [F]").reset()
-                .a(" | ")
-                .fg(Ansi.Color.GREEN).a("Plant [P]").reset()
-                .a(" | ")
-                .fg(Ansi.Color.BLUE).a("Animal [A]").reset()
-                .a(" | ")
-                .fg(Ansi.Color.MAGENTA).a("Insect [I]").reset()
-                .fg(94).a(" | Scroll [S] | Ink [K] | Quill [Q]").reset()
-        );
-
-        for (ClientPlayer player : VIEWMODEL.getCurrentGame().getPlayers()) {
-            EnumMap<Resource, Integer> playerResources = player.getOwnedResources();
-
-            printToPosition(ansi().cursor(i, 2).a("[#" + (i - 2) + "] ").fg(Ansi.Color.valueOf(player.getColor().name())).a(player.getNickname()).reset()
-                    .cursor(i, 26).a(player.getPoints()) //POINTS
-                    .cursor(i, 36).a(playerResources.containsKey(Resource.FUNGI) ? playerResources.get(Resource.FUNGI) : "0") //FUNGI
-                    .cursor(i, 48).a(playerResources.containsKey(Resource.PLANT) ? playerResources.get(Resource.PLANT) : "0") //PLANT
-                    .cursor(i, 60).a(playerResources.containsKey(Resource.ANIMAL) ? playerResources.get(Resource.ANIMAL) : "0") //ANIMAL
-                    .cursor(i, 73).a(playerResources.containsKey(Resource.INSECT) ? playerResources.get(Resource.INSECT) : "0") //INSECT
-                    .cursor(i, 86).a(playerResources.containsKey(Resource.SCROLL) ? playerResources.get(Resource.SCROLL) : "0") //SCROLL
-                    .cursor(i, 98).a(playerResources.containsKey(Resource.INK) ? playerResources.get(Resource.INK) : "0") //INK
-                    .cursor(i++, 108).a(playerResources.containsKey(Resource.QUILL) ? playerResources.get(Resource.QUILL) : "0") //QUILL
-            );
-        }
-    }
-
-    public void showCommonPlacedCards() {
-        //erasing old placed cards
-        for (int i = 12; i < 24; i++)
-            printToPosition(ansi().cursor(i, 53).eraseLine(Ansi.Erase.BACKWARD));
-
-        printToPosition(ansi().cursor(8, 23).bold().a("Common placed cards: ").reset());
-
-        //FIXME: gestire i null delle carte non presenti
-        printToPosition(ansi().cursor(12, 3).a("Resource:"));
-        int column = 15;
-        for (var card : VIEWMODEL.getCurrentGame().getPlacedResources()) {
-            printToPosition(ansi().cursor(10, column).a(standardAnsi(card, Side.FRONT)));
-            column += 20;
-        }
-
-        column = 15;
-        printToPosition(ansi().cursor(18, 3).a("Gold:"));
-        for (var card : VIEWMODEL.getCurrentGame().getPlacedGolds()) {
-            printToPosition(ansi().cursor(16, column).a(standardAnsi(card, Side.FRONT)));
-            column += 20;
-        }
-
-        column = 15;
-        printToPosition(ansi().cursor(24, 3).a("Objective:"));
-        for (var card : VIEWMODEL.getCurrentGame().getCommonObjectives()) {
-            printToPosition(ansi().cursor(22, column).a(standardAnsi(card, Side.FRONT)));
-            column += 20;
-        }
-
-        printToPosition(ansi().cursor(24, 54).a("Secret:"));
-        printToPosition(ansi().cursor(22, 64).a(standardAnsi(
-                VIEWMODEL.getCurrentGame().getOwnObjective(), Side.FRONT))
-        );
-    }
-
-    public void printDecks() {
-        printToPosition(ansi().cursor(8, 68).bold().a("Decks: "));
-
-        ClientCard card = VIEWMODEL.getCurrentGame().getTopDeckResourceCard();
-        printToPosition(ansi().cursor(10, 64).a(standardAnsi(card, Side.BACK)));
-        card = VIEWMODEL.getCurrentGame().getTopDeckGoldCard();
-        printToPosition(ansi().cursor(16, 64).a(standardAnsi(card, Side.BACK)));
-    }
-
-    public void printOpponentsFieldsMiniaturized() {
-        GenericPair<Integer, Integer> REDUCED_FIELD_SIZE = new GenericPair<>(11, 9);
-        GenericPair<Integer, Integer> TOP_LEFT_REDUCED_FIELD = new GenericPair<>(10, 85);
-        GenericPair<Integer, Integer> CENTER_REDUCED_FIELD =
-                new GenericPair<>(
-                        TOP_LEFT_REDUCED_FIELD.getX() + REDUCED_FIELD_SIZE.getY() / 2,
-                        TOP_LEFT_REDUCED_FIELD.getY() + REDUCED_FIELD_SIZE.getX() / 2
-                );
-        int FIELD_SPACING = REDUCED_FIELD_SIZE.getY() + 1;
-        printToPosition(ansi().cursor(8, 82).bold().a("Opponents' Fields: "));
-        /*TODO: Signal to players that the miniaturized fields are truncated and if you want to see them full-sized
-           you should call xxxCommand*/
-
-        int playerIndex = 0;
-        ArrayList<ClientPlayer> players = VIEWMODEL.getCurrentGame().getPlayers();
-        players.remove(VIEWMODEL.getCurrentGame().getThisPlayer());
-        for (var player : players) {
-            LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> field =
-                    (player).getPlacedCards();
-
-            for (var entry : field.sequencedEntrySet().stream()
-                    .filter( (entry) ->
-                            Math.abs(entry.getKey().getX()) <= REDUCED_FIELD_SIZE.getX()/2 &&
-                                    Math.abs(entry.getKey().getY()) <= REDUCED_FIELD_SIZE.getY()/2)
-                    .toList()) {
-                printToPosition(ansi().cursor(
-                                (playerIndex * FIELD_SPACING) + CENTER_REDUCED_FIELD.getX() - entry.getKey().getY(),
-                                CENTER_REDUCED_FIELD.getY() + entry.getKey().getX())
-                        .bg(entry.getValue().getX().TUI_SPRITES.get(Side.BACK).get(2).getFirst().getY()[1]).a(" ")
-                );
-            }
-            playerIndex++;
-        }
-    }
-
-    public void updateChat() {
-        List<String> chatLog = VIEWMODEL.getCurrentGame().getChatLog();
-        printToPosition(ansi().cursor(2, 120).bold().a("Last chat messages: ").reset());
-        for (int i = 0; i < 3; i++)
-            printToPosition(ansi().cursor(3 + i, 122).eraseLine(Ansi.Erase.FORWARD)
-                    .a((chatLog.size() >= 3 - i) ? chatLog.get(chatLog.size() - 3 + i) : "")
-            );
-    }
-
-    public Ansi standardAnsi(ClientCard card, Side side) {
+    private Ansi standardAnsi(ClientCard card, Side side) {
         if (card == null) return Ansi.ansi();
         if (card.ID == -1) return Ansi.ansi();
 
@@ -230,7 +70,7 @@ public class TUIGameView extends TUIView{
         return sprite;
     }
 
-    public Ansi upscaledAnsi(ClientCard card, Side side) {
+    private Ansi upscaledAnsi(ClientCard card, Side side) {
         if (card.ID == -1) return Ansi.ansi();
 
         Ansi sprite = Ansi.ansi();
@@ -266,6 +106,171 @@ public class TUIGameView extends TUIView{
         return sprite;
     }
 
+    @Override
+    public void gameScreen() {
+        clearTerminal();
+
+        printRoundInfo();
+        printStatsTable();
+        showCommonPlacedCards();
+        printDecks();
+        printOpponentsFieldsMiniaturized();
+        showField(VIEWMODEL.getCurrentGame().getThisPlayer());
+        showHand();
+        updateChat();
+        printStateCommandInfo();
+
+        //FIXME: al momento comandi filtrati per stato di gioco, replicati in ogni viewState, orribile anche perchè alla GUI non servono...
+        // però forse possiamo avere una lista di prompt e caricare quelli da mostrare a seconda di TUI o GUI?
+        // (per esempio, trascina una carta per posizionarla)
+    }
+
+    @Override
+    public void awaitingScreen() {
+        gameScreen();
+    }
+
+    private void printStateCommandInfo() {
+        int i = 42;
+        ClientGame thisGame = VIEWMODEL.getCurrentGame();
+
+        Ansi printedMessage = thisGame.getCurrentPlayerIndex() != -1 ?
+                ansi().cursor(i++, 2).bold().a("It is ").fg(9).a(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname()).reset().bold().a("'s turn! Your available commands are: ") :
+                ViewState.getCurrentState() instanceof AwaitingReconnectionState ?
+                        ansi().cursor(i++, 2).bold().a("[GAME PAUSED] Awaiting for reconnection of other players...") :
+                        ansi().cursor(i++, 2).bold().a("[SETUP PHASE] Every player needs to do an action! Your available commands are: ");
+
+        printToPosition(printedMessage);
+        for (var command : ViewState.getCurrentState().TUICommands)
+            printToPosition(ansi().cursor(i++, 4).a(command));
+    }
+
+    private void printRoundInfo() {
+        printToPosition(ansi().cursor(2,2).bold().a("[TURN #" +
+                VIEWMODEL.getCurrentGame().getCurrentRound() + "]").reset());
+    }
+
+    private void printStatsTable() {
+        int i = 2;
+        printToPosition(ansi().cursor(i++, 23)
+                .bold().a("Points | ").reset()
+                .fg(Ansi.Color.RED).a("Fungi [F]").reset()
+                .a(" | ")
+                .fg(Ansi.Color.GREEN).a("Plant [P]").reset()
+                .a(" | ")
+                .fg(Ansi.Color.BLUE).a("Animal [A]").reset()
+                .a(" | ")
+                .fg(Ansi.Color.MAGENTA).a("Insect [I]").reset()
+                .fg(94).a(" | Scroll [S] | Ink [K] | Quill [Q]").reset()
+        );
+
+        for (ClientPlayer player : VIEWMODEL.getCurrentGame().getPlayers()) {
+            EnumMap<Resource, Integer> playerResources = player.getOwnedResources();
+
+            printToPosition(ansi().cursor(i, 2).a("[#" + (i - 2) + "] ").fg(Ansi.Color.valueOf(player.getColor().name())).a(player.getNickname()).reset()
+                    .cursor(i, 26).a(player.getPoints()) //POINTS
+                    .cursor(i, 36).a(playerResources.containsKey(Resource.FUNGI) ? playerResources.get(Resource.FUNGI) : "0") //FUNGI
+                    .cursor(i, 48).a(playerResources.containsKey(Resource.PLANT) ? playerResources.get(Resource.PLANT) : "0") //PLANT
+                    .cursor(i, 60).a(playerResources.containsKey(Resource.ANIMAL) ? playerResources.get(Resource.ANIMAL) : "0") //ANIMAL
+                    .cursor(i, 73).a(playerResources.containsKey(Resource.INSECT) ? playerResources.get(Resource.INSECT) : "0") //INSECT
+                    .cursor(i, 86).a(playerResources.containsKey(Resource.SCROLL) ? playerResources.get(Resource.SCROLL) : "0") //SCROLL
+                    .cursor(i, 98).a(playerResources.containsKey(Resource.INK) ? playerResources.get(Resource.INK) : "0") //INK
+                    .cursor(i++, 108).a(playerResources.containsKey(Resource.QUILL) ? playerResources.get(Resource.QUILL) : "0") //QUILL
+            );
+        }
+    }
+
+    @Override
+    public void showCommonPlacedCards() {
+        //erasing old placed cards
+        for (int i = 12; i < 24; i++)
+            printToPosition(ansi().cursor(i, 53).eraseLine(Ansi.Erase.BACKWARD));
+
+        printToPosition(ansi().cursor(8, 23).bold().a("Common placed cards: ").reset());
+
+        //FIXME: gestire i null delle carte non presenti
+        printToPosition(ansi().cursor(12, 3).a("Resource:"));
+        int column = 15;
+        for (var card : VIEWMODEL.getCurrentGame().getPlacedResources()) {
+            printToPosition(ansi().cursor(10, column).a(standardAnsi(card, Side.FRONT)));
+            column += 20;
+        }
+
+        column = 15;
+        printToPosition(ansi().cursor(18, 3).a("Gold:"));
+        for (var card : VIEWMODEL.getCurrentGame().getPlacedGolds()) {
+            printToPosition(ansi().cursor(16, column).a(standardAnsi(card, Side.FRONT)));
+            column += 20;
+        }
+
+        column = 15;
+        printToPosition(ansi().cursor(24, 3).a("Objective:"));
+        for (var card : VIEWMODEL.getCurrentGame().getCommonObjectives()) {
+            printToPosition(ansi().cursor(22, column).a(standardAnsi(card, Side.FRONT)));
+            column += 20;
+        }
+
+        printToPosition(ansi().cursor(24, 54).a("Secret:"));
+        printToPosition(ansi().cursor(22, 64).a(standardAnsi(
+                VIEWMODEL.getCurrentGame().getOwnObjective(), Side.FRONT))
+        );
+    }
+
+    private void printDecks() {
+        printToPosition(ansi().cursor(8, 68).bold().a("Decks: "));
+
+        ClientCard card = VIEWMODEL.getCurrentGame().getTopDeckResourceCard();
+        printToPosition(ansi().cursor(10, 64).a(standardAnsi(card, Side.BACK)));
+        card = VIEWMODEL.getCurrentGame().getTopDeckGoldCard();
+        printToPosition(ansi().cursor(16, 64).a(standardAnsi(card, Side.BACK)));
+    }
+
+    private void printOpponentsFieldsMiniaturized() {
+        GenericPair<Integer, Integer> REDUCED_FIELD_SIZE = new GenericPair<>(11, 9);
+        GenericPair<Integer, Integer> TOP_LEFT_REDUCED_FIELD = new GenericPair<>(10, 85);
+        GenericPair<Integer, Integer> CENTER_REDUCED_FIELD =
+                new GenericPair<>(
+                        TOP_LEFT_REDUCED_FIELD.getX() + REDUCED_FIELD_SIZE.getY() / 2,
+                        TOP_LEFT_REDUCED_FIELD.getY() + REDUCED_FIELD_SIZE.getX() / 2
+                );
+        int FIELD_SPACING = REDUCED_FIELD_SIZE.getY() + 1;
+        printToPosition(ansi().cursor(8, 82).bold().a("Opponents' Fields: "));
+        /*TODO: Signal to players that the miniaturized fields are truncated and if you want to see them full-sized
+           you should call xxxCommand*/
+
+        int playerIndex = 0;
+        ArrayList<ClientPlayer> players = VIEWMODEL.getCurrentGame().getPlayers();
+        players.remove(VIEWMODEL.getCurrentGame().getThisPlayer());
+        for (var player : players) {
+            LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> field =
+                    (player).getPlacedCards();
+
+            for (var entry : field.sequencedEntrySet().stream()
+                    .filter( (entry) ->
+                            Math.abs(entry.getKey().getX()) <= REDUCED_FIELD_SIZE.getX()/2 &&
+                                    Math.abs(entry.getKey().getY()) <= REDUCED_FIELD_SIZE.getY()/2)
+                    .toList()) {
+                printToPosition(ansi().cursor(
+                                (playerIndex * FIELD_SPACING) + CENTER_REDUCED_FIELD.getX() - entry.getKey().getY(),
+                                CENTER_REDUCED_FIELD.getY() + entry.getKey().getX())
+                        .bg(entry.getValue().getX().TUI_SPRITES.get(Side.BACK).get(2).getFirst().getY()[1]).a(" ")
+                );
+            }
+            playerIndex++;
+        }
+    }
+
+    @Override
+    public void updateChat() {
+        List<String> chatLog = VIEWMODEL.getCurrentGame().getChatLog();
+        printToPosition(ansi().cursor(2, 120).bold().a("Last chat messages: ").reset());
+        for (int i = 0; i < 3; i++)
+            printToPosition(ansi().cursor(3 + i, 122).eraseLine(Ansi.Erase.FORWARD)
+                    .a((chatLog.size() >= 3 - i) ? chatLog.get(chatLog.size() - 3 + i) : "")
+            );
+    }
+
+    @Override
     public void showInitialCardsChoice() {
         //erasing field area
         int fieldStartingColumn = FIELD_TOP_LEFT.getY();
@@ -313,6 +318,7 @@ public class TUIGameView extends TUIView{
         moveField(new GenericPair<>(0, 0));
     }
 
+    @Override
     public void moveField(GenericPair<Integer, Integer> dynamicFieldCenterOffset) {
         dynamicFieldCenter = new GenericPair<>(
                 dynamicFieldCenter.getX() + dynamicFieldCenterOffset.getX(),
@@ -409,6 +415,7 @@ public class TUIGameView extends TUIView{
         return outOfBounds;
     }
 
+    @Override
     public void leaderboardScreen(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
         int FIRST_ROW = 15;
         int ROW_OFFSET = 2;

@@ -10,9 +10,6 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.ClientModel.ViewModel;
 import it.polimi.ingsw.gc12.Model.Lobby;
-import it.polimi.ingsw.gc12.Network.Client.Client;
-import it.polimi.ingsw.gc12.Network.Client.RMIClientSkeleton;
-import it.polimi.ingsw.gc12.Network.Client.SocketClient;
 import it.polimi.ingsw.gc12.Utilities.*;
 
 import java.util.*;
@@ -32,16 +29,6 @@ public class ClientController implements ClientControllerInterface {
 
     public static ClientController getInstance() {
         return SINGLETON_INSTANCE;
-    }
-
-    public void setupCommunication(String serverIPAddress, String communicationTechnology) {
-        Client.getClientInstance().serverIPAddress = serverIPAddress;
-        switch (communicationTechnology.trim().toLowerCase()) {
-            case "socket" -> Client.getClientInstance().serverConnection = SocketClient.getInstance();
-            case "rmi" -> Client.getClientInstance().session = RMIClientSkeleton.getInstance();
-            default ->
-                    throw new RuntimeException("Communication technology " + communicationTechnology + " not supported");
-        }
     }
 
     public void throwException(Exception e) {

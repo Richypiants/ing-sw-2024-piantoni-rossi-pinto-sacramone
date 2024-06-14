@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Network.Client;
 
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
@@ -33,7 +34,14 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
             UnicastRemoteObject.exportObject(this, 0);
             Client.getClientInstance().serverConnection =
                     ((RMIMainServer) registry.lookup("codex_naturalis_rmi")).accept(this);
+
+            //If connection to the server is successful, I wake up the connect() function continuously retrying to
+            // reconnect every 10 seconds
+            synchronized (ViewState.getCurrentState()) {
+                ViewState.getCurrentState().notifyAll();
+            }
         } catch (RemoteException | NotBoundException e) {
+            Client.getClientInstance().resetClient();
             throw new RuntimeException(e);
         }
     }

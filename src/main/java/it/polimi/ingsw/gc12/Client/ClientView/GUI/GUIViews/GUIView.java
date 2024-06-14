@@ -103,19 +103,44 @@ public class GUIView extends View {
         GUIConnectionSetupView.getInstance().connectionSetupScreen();
     }
 
+    public static OverlayPopup drawOverlayPopup(Pane popupContent, boolean isCloseable) {
+        OverlayPopup overlayPopup = new OverlayPopup();
+
+        AnchorPane content = new AnchorPane();
+        content.setVisible(false);
+        content.setPrefSize(popupContent.getPrefWidth(), popupContent.getPrefHeight());
+        content.getChildren().add(popupContent);
+        popupContent.setVisible(true);
+
+        if (isCloseable) {
+            Button XButton = new Button("X");
+            XButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
+            XButton.setOnMouseClicked((event) -> overlayPopup.hide());
+
+            content.getChildren().add(XButton);
+            XButton.relocate(content.getPrefWidth() - 50, 20);
+        }
+
+        overlayPopup.getContent().add(content);
+        overlayPopup.setAutoFix(true);
+        overlayPopup.centerOnScreen();
+        overlayPopup.setHideOnEscape(false);
+        return overlayPopup;
+    }
+
     @Override
     public void connectedConfirmation() {
         //TODO: maybe consider deleting this for TUI also?
     }
 
     @Override
-    public void lobbiesScreen() {
-        GUILobbiesView.getInstance().lobbiesScreen();
+    public boolean retryConnectionPrompt(boolean causedByNetworkError) {
+        return GUIConnectionLoadingView.getInstance().retryConnectionPrompt(causedByNetworkError);
     }
 
     @Override
-    public void quittingScreen() {
-        //TODO: implement quitting screen for GUI
+    public void lobbiesScreen() {
+        GUILobbiesView.getInstance().lobbiesScreen();
     }
 
     @Override
@@ -133,28 +158,9 @@ public class GUIView extends View {
         GUIGameView.getInstance().awaitingScreen();
     }
 
-    public static OverlayPopup drawOverlayPopup(Pane popupContent, boolean isCloseable) {
-        OverlayPopup overlayPopup = new OverlayPopup();
-        //TODO: aggiungere per quanto possibile gli elementi dei popup all'fxml?
-
-        AnchorPane content = new AnchorPane();
-        content.setPrefSize(popupContent.getPrefWidth(), popupContent.getPrefHeight());
-        content.getChildren().add(popupContent);
-
-        if (isCloseable) {
-            Button XButton = new Button("X");
-            XButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ffffff; -fx-background-color: #ff0000; -fx-background-radius: 5px;"); // -fx-padding: 10px 20px;");
-            XButton.setOnMouseClicked((event) -> overlayPopup.hide());
-
-            content.getChildren().add(XButton);
-            XButton.relocate(content.getPrefWidth() - 50, 20);
-        }
-
-        overlayPopup.getContent().add(content);
-        overlayPopup.setAutoFix(true);
-        overlayPopup.centerOnScreen();
-        overlayPopup.setHideOnEscape(false);
-        return overlayPopup;
+    @Override
+    public void quittingScreen() {
+        //TODO: implement quitting screen for GUI
     }
 
     @Override

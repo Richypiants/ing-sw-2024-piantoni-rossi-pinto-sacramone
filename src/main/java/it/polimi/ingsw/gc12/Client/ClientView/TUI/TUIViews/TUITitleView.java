@@ -22,6 +22,7 @@ public class TUITitleView extends TUIView{
         return titleView;
     }
 
+    @Override
     public void titleScreen() {
         TUIParser.COMMAND_INPUT_COLUMN = 6 + VIEWMODEL.getOwnNickname().length();
         System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN));

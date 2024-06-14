@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Network.Client;
 
+import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
@@ -18,12 +19,12 @@ public class Client {
     /**
      * The single executor for handling all the received commands from the server.
      */
-    protected final ExecutorService commandsReceivedExecutor;
+    protected final ExecutorService commandsReceivedExecutor = Executors.newSingleThreadExecutor();
 
     /**
      * The single executor for sending outgoing commands to the server without blocking the view or controller.
      */
-    private final ExecutorService commandSenderExecutor;
+    private ExecutorService commandSenderExecutor;
 
     public String serverIPAddress;
     public VirtualServer serverConnection;
@@ -31,9 +32,6 @@ public class Client {
     public Thread keepAlive;
 
     private Client() {
-        this.commandsReceivedExecutor = Executors.newSingleThreadExecutor();
-        this.commandSenderExecutor = Executors.newSingleThreadExecutor();
-
         resetClient();
     }
 
@@ -54,6 +52,24 @@ public class Client {
         this.serverConnection = null;
         this.session = null;
         this.keepAlive = null;
+
+        if (commandSenderExecutor != null)
+            this.commandSenderExecutor.shutdownNow();
+        this.commandSenderExecutor = Executors.newSingleThreadExecutor();
+    }
+
+    public void setupCommunication(String serverIPAddress, String communicationTechnology) {
+        Client.getClientInstance().serverIPAddress = serverIPAddress;
+        commandSenderExecutor.submit(() -> {
+            synchronized (ViewState.getCurrentState()) {
+                switch (communicationTechnology.trim().toLowerCase()) {
+                    case "socket" -> Client.getClientInstance().serverConnection = SocketClient.getInstance();
+                    case "rmi" -> Client.getClientInstance().session = RMIClientSkeleton.getInstance();
+                    default ->
+                            throw new RuntimeException("Communication technology " + communicationTechnology + " not supported");
+                }
+            }
+        });
     }
 
     //Helper method to catch RemoteException (and eventually other ones) only one time

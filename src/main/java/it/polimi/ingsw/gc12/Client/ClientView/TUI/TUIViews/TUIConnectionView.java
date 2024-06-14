@@ -38,19 +38,21 @@ public class TUIConnectionView extends TUIView {
         return selection;
     }
 
+    @Override
     public void connectionSetupScreen() {
         clearTerminal();
         printToPosition(ansi().cursor(1, 1).a("Enter the server IP address (leave empty for 'localhost'): "));
         String serverIPAddress = console.readLine();
         System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
+
         clearTerminal();
         String communicationTechnology = readUntil(
                 ansi().cursor(1, 1).a("Choose the communication technology (RMI-Socket):"),
                 List.of("rmi", "socket")
         );
         System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
-        clearTerminal();
 
+        clearTerminal();
         String nickname = "";
         boolean lastInputWasInvalid = false;
         final int MAX_NICK_LENGTH = 10;
@@ -74,6 +76,28 @@ public class TUIConnectionView extends TUIView {
         ViewState.getCurrentState().connect(serverIPAddress, communicationTechnology, nickname);
     }
 
+    @Override
+    public boolean retryConnectionPrompt(boolean causedByNetworkError) {
+        clearTerminal();
+
+        String promptText = "It seems " + (
+                causedByNetworkError ?
+                        "a network error occurred" :
+                        "your chosen nickname is already in use"
+        ) + ": would you like to retry? (Yes-No):";
+
+        String wantsToRetry = readUntil(ansi().cursor(1, 1).a(promptText), List.of("yes", "no"));
+        System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
+
+        if (wantsToRetry.equals("no")) {
+            quittingScreen();
+            System.exit(0);
+        }
+
+        return wantsToRetry.equals("yes");
+    }
+
+    @Override
     public void connectedConfirmation() {
         TUIParser.COMMAND_INPUT_COLUMN = 6 + VIEWMODEL.getOwnNickname().length();
         printToPosition(ansi().cursor(3, 1).a("Successfully connected to the server: nickname confirmed!"));

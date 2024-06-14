@@ -18,47 +18,44 @@ public class ConnectionSetupState extends ViewState {
 
     @Override
     public void connect(String serverIPAddress, String communicationTechnology, String nickname) {
-        //TODO: print "would you like to retry?"
-        do {
-            try {
-                CLIENT_CONTROLLER.setupCommunication(serverIPAddress, communicationTechnology);
-            } catch(Exception e1) {
-                //TODO: problema se l'host è online ma la porta è chiusa, perchè lancia una exception
-                // "Connessione rifiutata dall'host remoto" tipo
-                CLIENT_CONTROLLER.ERROR_LOGGER.log(e1);
-
+        synchronized (this) {
+            do {
+                CLIENT.setupCommunication(serverIPAddress, communicationTechnology);
                 try {
-                    sleep(10000);
-                } catch (Exception e2) {
-                    CLIENT_CONTROLLER.ERROR_LOGGER.log(e2);
+                    //Wait 5 seconds before asking whether to retry connecting to the server.
+                    this.wait(5000);
+                } catch (InterruptedException e) {
+                    CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
                 }
-            }
-        } while (CLIENT.serverConnection == null /*|| nicknameNotAccepted || yes*/);
-
-        //TODO: se ricevo nickname già in uso, ripetere la richiesta
-        try {
-            CLIENT.requestToServer(new CreatePlayerCommand(nickname));
-        } catch(Exception e) {
-            ClientController.getInstance().ERROR_LOGGER.log(e);
+                if (CLIENT.serverConnection == null)
+                    if (!selectedView.retryConnectionPrompt(true)) {
+                        selectedView.quittingScreen();
+                        quit();
+                        return;
+                    }
+            } while (CLIENT.serverConnection == null);
         }
 
-        //TODO: this state isn't notified when the server replies with an error related to the inability of creating a player.
+        CLIENT.requestToServer(new CreatePlayerCommand(nickname));
+
+        //We use the wait timeout to handle both a network error and the notification of a nickname already in use.
         synchronized (this) {
             try {
-                this.wait(10000);
+                this.wait(5000);
             } catch (InterruptedException e) {
                 ClientController.getInstance().ERROR_LOGGER.log(e);
             }
         }
 
-        //TODO: Operations when a player couldn't be created ....
-
-        //potenzialmente readUntil se anche la GUI ce l'avrà
-
-        /*if(yes)){
-            ClientController.getInstance().viewState = new TitleScreenState();
-            ClientController.getInstance().viewState.executeState();
-        }*/
+        if (CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname().isEmpty()) {
+            if (selectedView.retryConnectionPrompt(false)) {
+                currentState = new TitleScreenState();
+                currentState.executeState();
+            } else {
+                selectedView.quittingScreen();
+                System.exit(0);
+            }
+        }
     }
 
     @Override

@@ -95,6 +95,11 @@ public class TUIView extends View {
     }
 
     @Override
+    public boolean retryConnectionPrompt(boolean causedByNetworkError) {
+        return TUIConnectionView.getInstance().retryConnectionPrompt(causedByNetworkError);
+    }
+
+    @Override
     public void connectedConfirmation() {
         TUIConnectionView.getInstance().connectedConfirmation();
     }

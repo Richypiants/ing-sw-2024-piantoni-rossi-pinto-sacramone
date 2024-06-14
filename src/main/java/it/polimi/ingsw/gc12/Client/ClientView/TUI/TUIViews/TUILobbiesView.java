@@ -20,6 +20,7 @@ public class TUILobbiesView extends TUIView{
         return lobbiesView;
     }
 
+    @Override
     public void lobbiesScreen() {
         clearTerminal();
 
@@ -57,6 +58,7 @@ public class TUILobbiesView extends TUIView{
         ));
     }
 
+    @Override
     public void showNickname() {
         TUIParser.COMMAND_INPUT_COLUMN = 6 + VIEWMODEL.getOwnNickname().length();
         lobbiesScreen();

@@ -21,6 +21,10 @@ public abstract class View {
 
     public abstract void connectionSetupScreen();
 
+    public abstract boolean retryConnectionPrompt(boolean causedByNetworkError);
+
+    public abstract void connectedConfirmation();
+
     public abstract void quittingScreen();
 
     public abstract void lobbiesScreen();
@@ -28,8 +32,6 @@ public abstract class View {
     public abstract void gameScreen();
 
     public abstract void awaitingScreen();
-
-    public abstract void connectedConfirmation();
 
     public abstract void showNickname();
 
