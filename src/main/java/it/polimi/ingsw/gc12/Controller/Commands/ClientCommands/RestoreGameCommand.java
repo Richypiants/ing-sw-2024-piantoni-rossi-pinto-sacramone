@@ -2,8 +2,8 @@ package it.polimi.ingsw.gc12.Controller.Commands.ClientCommands;
 
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

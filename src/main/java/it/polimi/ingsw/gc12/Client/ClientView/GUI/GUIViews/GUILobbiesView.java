@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIViews;
 import it.polimi.ingsw.gc12.Client.ClientView.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Model.Lobby;
-import it.polimi.ingsw.gc12.Utilities.Color;
+import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
@@ -46,7 +46,7 @@ public class GUILobbiesView extends GUIView {
         OWN_NICKNAME_LABEL = (Label) SCENE_ROOT.lookup("#ownNicknameLabel");
         CREATE_LOBBY_BUTTON = (Button) SCENE_ROOT.lookup("#createGameButton");
         CHANGE_NICKNAME_BUTTON = (Button) SCENE_ROOT.lookup("#nicknameButton");
-        BACK_TO_TITLE_SCREEN_BUTTON = (Button) SCENE_ROOT.lookup("#backToTitleButton");
+        BACK_TO_TITLE_SCREEN_BUTTON = (Button) SCENE_ROOT.lookup("#backToTitleScreenButton");
         LOBBY_CREATION_POPUP_BOX = (VBox) SCENE_ROOT.lookup("#lobbyCreationPopupBox");
         PLAYERS_NUMBER_PROMPT = (Label) SCENE_ROOT.lookup("#playersNumberPrompt");
         PLAYERS_NUMBER_SELECTOR = (ComboBox<Integer>) SCENE_ROOT.lookup("#maxPlayersSelector");
@@ -71,7 +71,7 @@ public class GUILobbiesView extends GUIView {
         Platform.runLater(() -> {
             MENU_BUTTONS_BOX.relocate(screenSizes.getX() * 12 / 100, screenSizes.getY() * 9 / 16);
 
-            OWN_NICKNAME_LABEL.setText("Profile: " + VIEWMODEL.getOwnNickname());
+            OWN_NICKNAME_LABEL.setText("Your nickname: " + VIEWMODEL.getOwnNickname());
 
             PLAYERS_NUMBER_SELECTOR.setItems(FXCollections.observableArrayList(2, 3, 4));
 
@@ -127,7 +127,7 @@ public class GUILobbiesView extends GUIView {
     @Override
     public void showNickname() {
         Platform.runLater(() -> {
-            OWN_NICKNAME_LABEL.setText("Profile: " + VIEWMODEL.getOwnNickname());
+            OWN_NICKNAME_LABEL.setText("Your nickname: " + VIEWMODEL.getOwnNickname());
         });
     }
 

@@ -5,7 +5,7 @@ import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.JoinLobbyCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.LeaveLobbyCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.PickColorCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.SetNicknameCommand;
-import it.polimi.ingsw.gc12.Utilities.Color;
+import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 
 import java.util.UUID;
 

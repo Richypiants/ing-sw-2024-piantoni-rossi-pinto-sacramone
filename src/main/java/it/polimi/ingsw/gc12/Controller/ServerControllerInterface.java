@@ -1,9 +1,9 @@
 package it.polimi.ingsw.gc12.Controller;
 
 import it.polimi.ingsw.gc12.Network.NetworkSession;
-import it.polimi.ingsw.gc12.Utilities.Color;
+import it.polimi.ingsw.gc12.Utilities.Enums.Color;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.UUID;
 

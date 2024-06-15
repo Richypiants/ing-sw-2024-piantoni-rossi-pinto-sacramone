@@ -6,8 +6,8 @@ import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.DirectMessageComm
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.LeaveGameCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.PlaceCardCommand;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 public abstract class GameScreenState extends ViewState {
 

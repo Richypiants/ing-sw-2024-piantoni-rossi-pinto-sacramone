@@ -10,7 +10,8 @@ import it.polimi.ingsw.gc12.Listeners.Listener;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.FullLobbyException;
-import it.polimi.ingsw.gc12.Utilities.JSONParser;
+import it.polimi.ingsw.gc12.Utilities.JSONParsers.ClientJSONParser;
+import it.polimi.ingsw.gc12.Utilities.JSONParsers.ServerJSONParser;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -93,28 +94,28 @@ public class ServerModel implements Listenable {
     private static Map<Integer, Card> loadModelCards() {
         Map<Integer, Card> tmp = new HashMap<>();
         Objects.requireNonNull(
-                JSONParser.deckFromJSONConstructor(
+                ServerJSONParser.deckFromJSONConstructor(
                         "/jsonFiles/resource_cards.json",
                         new TypeToken<ArrayList<ResourceCard>>() {
                         }
                 )
         ).forEach((card) -> tmp.put(card.ID, card));
         Objects.requireNonNull(
-                JSONParser.deckFromJSONConstructor(
+                ServerJSONParser.deckFromJSONConstructor(
                         "/jsonFiles/gold_cards.json",
                         new TypeToken<ArrayList<GoldCard>>() {
                         }
                 )
         ).forEach((card) -> tmp.put(card.ID, card));
         Objects.requireNonNull(
-                JSONParser.deckFromJSONConstructor(
+                ServerJSONParser.deckFromJSONConstructor(
                         "/jsonFiles/initial_cards.json",
                         new TypeToken<ArrayList<InitialCard>>() {
                         }
                 )
         ).forEach((card) -> tmp.put(card.ID, card));
         Objects.requireNonNull(
-                JSONParser.deckFromJSONConstructor(
+                ServerJSONParser.deckFromJSONConstructor(
                         "/jsonFiles/objective_cards.json",
                         new TypeToken<ArrayList<ObjectiveCard>>() {
                         }
@@ -130,7 +131,7 @@ public class ServerModel implements Listenable {
      * @return A map of client card IDs to client cards.
      */
     private static Map<Integer, ClientCard> loadClientCards() {
-        return JSONParser.generateClientCardsFromJSON("/jsonFiles/client_cards.json")
+        return ClientJSONParser.generateClientCardsFromJSON("/jsonFiles/client_cards.json")
                 .stream().collect(Collectors.toMap((card) -> card.ID, (card) -> card));
     }
 

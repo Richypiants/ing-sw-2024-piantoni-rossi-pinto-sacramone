@@ -6,9 +6,9 @@ import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
+import it.polimi.ingsw.gc12.Utilities.Enums.Resource;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Resource;
-import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import org.fusesource.jansi.Ansi;
 
@@ -447,13 +447,14 @@ public class TUIGameView extends TUIView{
             index++;
         }
 
-        if(gameEndedDueToDisconnections)
-            printToPosition(ansi()
-                    .cursor(30,72).a("Since the game ended due to disconnections of all the other players, ")
-                    .bold().fg(9).a(leaderboard.getFirst().getX()).reset().a(" is the WINNER!")
-            );
+        Ansi toPrint = ansi().bold().fg(9).a(leaderboard.getFirst().getX()).reset().a(" is the WINNER!");
 
-        System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW - 2, 1).a("Type 'ok' to return to lobbies")
+        if(gameEndedDueToDisconnections)
+            toPrint = ansi().a("Since the game ended due to disconnections of all the other players, ").a(toPrint);
+
+        printToPosition(ansi().cursor(30, 72).a(toPrint));
+
+        System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW - 2, 1).a("Type 'OK' to return to lobbies")
                 .cursorDownLine()
                 .a("------------------------------------------------------------------").eraseLine(Ansi.Erase.FORWARD)
                 .cursorDownLine()

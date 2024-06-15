@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc12.Model;
 
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
+import it.polimi.ingsw.gc12.Utilities.Enums.Resource;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Resource;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

@@ -9,7 +9,7 @@
     <ProgressIndicator fx:id="progress" prefWidth="50.0"/>
 
     <Label fx:id="download" styleClass="titleScreenLabel" prefWidth="500.0" prefHeight="20.0"
-           text="Aprendo il Codex Naturalis...">
+           text="Opening the Codex... Please wait...">
     </Label>
 
     <VBox fx:id="retryConnectionPane" visible="false" spacing="100.0" alignment="CENTER">

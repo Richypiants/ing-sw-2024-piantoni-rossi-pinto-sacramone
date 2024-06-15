@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc12.Model.Conditions;
 
 import it.polimi.ingsw.gc12.Model.Cards.Card;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
-import it.polimi.ingsw.gc12.Utilities.Resource;
+import it.polimi.ingsw.gc12.Utilities.Enums.Resource;
 
 import java.util.Map;
 

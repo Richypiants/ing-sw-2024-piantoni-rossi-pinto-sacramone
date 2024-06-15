@@ -44,5 +44,9 @@ module it.polimi.ingsw.gc12 {
     opens it.polimi.ingsw.gc12.Network.Client to com.google.gson;
     exports it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIViews;
     opens it.polimi.ingsw.gc12.Client.ClientView.GUI.GUIViews to javafx.fxml;
+    exports it.polimi.ingsw.gc12.Utilities.Enums to com.google.gson, java.rmi;
+    opens it.polimi.ingsw.gc12.Utilities.Enums to com.google.gson;
+    exports it.polimi.ingsw.gc12.Utilities.JSONParsers to com.google.gson, java.rmi;
+    opens it.polimi.ingsw.gc12.Utilities.JSONParsers to com.google.gson;
     // exports it.polimi.ingsw.gc12.Client.ClientView.GUI;
 }

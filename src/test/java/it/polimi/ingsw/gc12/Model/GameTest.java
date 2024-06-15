@@ -5,10 +5,10 @@ import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
 import it.polimi.ingsw.gc12.Controller.ServerController.GameStates.ChooseInitialCardsState;
 import it.polimi.ingsw.gc12.Model.Cards.*;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.FullLobbyException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

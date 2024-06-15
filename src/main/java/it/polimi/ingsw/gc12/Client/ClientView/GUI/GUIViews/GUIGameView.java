@@ -8,8 +8,8 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.Player;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -34,6 +34,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
@@ -62,11 +63,12 @@ public class GUIGameView extends GUIView {
     private final AnchorPane OWN_FIELD_PANE;
     private final VBox OWN_FIELD_STATS_BOX;
     private final ScrollPane OWN_FIELD_SCROLL_PANE;
-    private boolean shouldReset = true;
+    private final Circle NEW_CHAT_MESSAGE_NOTIFICATION;
     private final Button CENTER_OWN_FIELD_BUTTON;
     private final Button TOGGLE_SCOREBOARD_BUTTON;
-    private final Button LEAVE_BUTTON;
     private final Button TOGGLE_CHAT_BUTTON;
+    private boolean shouldReset = true;
+    private final Button LEAVE_BUTTON;
     private final AnchorPane SCOREBOARD_PANE;
     private final AnchorPane CHAT_PANE;
     private final VBox CHAT_VBOX;
@@ -104,6 +106,7 @@ public class GUIGameView extends GUIView {
         ZOOM_OWN_FIELD_BUTTON = (Button) OWN_FIELD_PANE.lookup("#zoomOwnFieldButton");
         CENTER_OWN_FIELD_BUTTON = (Button) OWN_FIELD_PANE.lookup("#centerOwnFieldButton");
         TOGGLE_SCOREBOARD_BUTTON = (Button) SCENE_ROOT.lookup("#scoreboardButton");
+        NEW_CHAT_MESSAGE_NOTIFICATION = (Circle) SCENE_ROOT.lookup("#newChatMessageNotification");
         TOGGLE_CHAT_BUTTON = (Button) SCENE_ROOT.lookup("#chatButton");
         LEAVE_BUTTON = (Button) SCENE_ROOT.lookup("#leaveButton");
         SCOREBOARD_PANE = (AnchorPane) SCENE_ROOT.lookup("#scoreboardPane");
@@ -390,13 +393,19 @@ public class GUIGameView extends GUIView {
         TOGGLE_SCOREBOARD_BUTTON.relocate(screenSizes.getX() * 2 / 100, screenSizes.getY() * 90 / 100);
         TOGGLE_SCOREBOARD_BUTTON.setOnMouseClicked((event) -> togglePane(SCOREBOARD_PANE));
 
+        NEW_CHAT_MESSAGE_NOTIFICATION.setRadius(10);
+        NEW_CHAT_MESSAGE_NOTIFICATION.relocate(screenSizes.getX() * 90 / 100 + 40, screenSizes.getY() * 90 / 100 + 5);
+
         ImageView chatImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/chat.png")));
         chatImage.setFitHeight(30);
         chatImage.setPreserveRatio(true);
         TOGGLE_CHAT_BUTTON.setGraphic(chatImage);
         TOGGLE_CHAT_BUTTON.toFront();
         TOGGLE_CHAT_BUTTON.relocate(screenSizes.getX() * 90 / 100, screenSizes.getY() * 90 / 100);
-        TOGGLE_CHAT_BUTTON.setOnMouseClicked((event) -> togglePane(CHAT_PANE));
+        TOGGLE_CHAT_BUTTON.setOnMouseClicked((event) -> {
+            togglePane(CHAT_PANE);
+            NEW_CHAT_MESSAGE_NOTIFICATION.setVisible(false);
+        });
 
         ImageView leaveImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/leaveGame.png")));
         leaveImage.setFitHeight(30);
@@ -761,7 +770,11 @@ public class GUIGameView extends GUIView {
                     MESSAGES_BOX.getChildren().add(createMessageElement(chatLog.get(chatLog.size() - 2)));
                 MESSAGES_BOX.getChildren().add(createMessageElement(chatLog.getLast()));
             }
+
             CHAT_SCROLL_PANE.setVvalue(CHAT_SCROLL_PANE.getVmax());
+
+            if (!CHAT_PANE.isVisible())
+                NEW_CHAT_MESSAGE_NOTIFICATION.setVisible(true);
         });
     }
 
@@ -775,7 +788,7 @@ public class GUIGameView extends GUIView {
             initialCardsChoiceVBox.setAlignment(Pos.CENTER);
             initialCardsChoiceVBox.setPrefSize(screenSizes.getX(), screenSizes.getY() * 60 / 100);
             //initialCardsChoiceVBox.setStyle(style);
-            Label cardLabel = new Label("Seleziona la carta iniziale: ");
+            Label cardLabel = new Label("Choose which side you want to play your assigned initial card on: ");
             cardLabel.getStyleClass().add("popupText");
 
             HBox initialChoiceHBox = new HBox(100);
@@ -831,7 +844,7 @@ public class GUIGameView extends GUIView {
             objectiveChoiceVBox.setAlignment(Pos.CENTER);
             objectiveChoiceVBox.setPrefSize(screenSizes.getX(), screenSizes.getY() * 60 / 100);
             //objectiveChoiceVBox.setStyle(style);
-            Label cardLabel = new Label("Seleziona la carta obiettivo segreto: ");
+            Label cardLabel = new Label("Choose which card you want to keep as your secret objective: ");
             cardLabel.getStyleClass().add("popupText");
 
             HBox objectiveChoiceHBox = new HBox(100);
@@ -933,14 +946,14 @@ public class GUIGameView extends GUIView {
     }
 
     @Override
-    public void leaderboardScreen(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
+    public void leaderboardScreen(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
         Platform.runLater(() -> {
             LEADERBOARD_VBOX.setPrefSize(screenSizes.getX() * 80 / 100, screenSizes.getY() * 90 / 100);
 
-            Button exitButton = new Button("Torna alla schermata delle lobby");
+            Button exitButton = new Button("Back to lobbies' screen");
             exitButton.getStyleClass().add("button");
 
-            for (var row : POINTS_STATS) {
+            for (var row : leaderboard) {
                 HBox playerHBox = new HBox(20);
                 playerHBox.getStyleClass().add("lobbyBox");
 
@@ -955,10 +968,9 @@ public class GUIGameView extends GUIView {
                 LEADERBOARD_VBOX.getChildren().add(playerHBox);
             }
 
-            WINNING_PLAYER_LABEL.setText(
-                    VIEWMODEL.getCurrentGame().getPlayers().getFirst().getNickname() + " won" +
-                            (gameEndedDueToDisconnections ? " as the only player left" : "") + "!"
-            );
+            WINNING_PLAYER_LABEL.setText((gameEndedDueToDisconnections ?
+                    "Since the game ended due to disconnections of all the other players, " : "") +
+                    leaderboard.getFirst().getX() + " is the WINNER!");
 
             LEADERBOARD_VBOX.getChildren().add(exitButton);
 

@@ -5,7 +5,7 @@ import it.polimi.ingsw.gc12.Listeners.ServerListener;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
-import it.polimi.ingsw.gc12.Utilities.Color;
+import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnavailableColorException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

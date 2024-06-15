@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc12.Utilities;
+package it.polimi.ingsw.gc12.Utilities.Enums;
 
 /**
  * An enumeration of all the possible resource values that can appear in card corners and back-centers.

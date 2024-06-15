@@ -6,11 +6,11 @@ import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Model.ServerModel;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
-import it.polimi.ingsw.gc12.Utilities.Color;
+import it.polimi.ingsw.gc12.Utilities.Enums.Color;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.ForbiddenActionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotExistingPlayerException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

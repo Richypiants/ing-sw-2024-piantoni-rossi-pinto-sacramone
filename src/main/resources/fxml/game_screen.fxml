@@ -2,11 +2,13 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
             fx:id="gameScreenPane" stylesheets="/style.css">
 
     <Button fx:id="scoreboardButton" styleClass="roundButton" mnemonicParsing="false"/>
+    <Circle fx:id="newChatMessageNotification" visible="false"/>
     <Button fx:id="chatButton" styleClass="roundButton" mnemonicParsing="false"/>
     <Button fx:id="leaveButton" styleClass="roundButton" mnemonicParsing="false"/>
     <Label fx:id="gameStateLabel" styleClass="titleScreenLabel"/>

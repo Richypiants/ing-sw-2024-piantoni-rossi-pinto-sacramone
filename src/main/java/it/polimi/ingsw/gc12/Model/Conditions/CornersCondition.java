@@ -3,8 +3,8 @@ package it.polimi.ingsw.gc12.Model.Conditions;
 import it.polimi.ingsw.gc12.Model.Cards.Card;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 /**
  * A condition that counts how many corners are covered when playing the associated card.

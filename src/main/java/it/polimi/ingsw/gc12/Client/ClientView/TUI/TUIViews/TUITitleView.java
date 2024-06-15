@@ -30,11 +30,12 @@ public class TUITitleView extends TUIView{
 
         printToPosition(ansi().cursor(1, 1).a("Starting Codex Naturalis..."));
         try {
-            sleep(2000);
+            sleep(1000);
         } catch (Exception e) {
             CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
         }
 
+        clearTerminal();
         printToPosition(ansi()
                 .cursor(1, 50).a("                                                                                                                     ")
                 .cursorMove(-117, 1).a("                                                         ###########                                                 ")
@@ -86,12 +87,12 @@ public class TUITitleView extends TUIView{
                 .cursorMove(-117, 1).a("                              ##   #####                                            #####    ###                     ")
                 .cursorMove(-117, 1).a("                                ######                                                #### ###                       ")
                 .cursorMove(-117, 1).a("                                                                                        ####                         "));
-
         try {
-            sleep(2000);
+            sleep(1000);
         } catch (Exception e) {
             CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
         }
+
         clearTerminal();
         printToPosition(ansi()
                 .cursor(1, 50).a("                                                ###   ######   ##                                                        ")
@@ -143,7 +144,7 @@ public class TUITitleView extends TUIView{
                 .cursorMove(-121, 1).a("                                             ####    ######     #####                                                    "));
 
         printToPosition(ansi().cursor(49, 1));
-        printToPosition(ansi().cursor(50, 1).a("Premi Invio per iniziare..."));
+        printToPosition(ansi().cursor(50, 1).a("Press ENTER to start..."));
         console.readLine();
         System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
 

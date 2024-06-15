@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc12.Utilities;
+package it.polimi.ingsw.gc12.Utilities.Enums;
 
 /**
  An enumeration of the possible players' colors and the one which represents the player who plays first. (BLACK)

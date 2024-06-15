@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc12.Utilities;
+package it.polimi.ingsw.gc12.Utilities.JSONParsers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -12,6 +12,9 @@ import it.polimi.ingsw.gc12.Model.Conditions.CornersCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.PatternCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.PointsCondition;
 import it.polimi.ingsw.gc12.Model.Conditions.ResourcesCondition;
+import it.polimi.ingsw.gc12.Utilities.Enums.Resource;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
+import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,10 +24,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Utility class to handle JSON parsing and serialization for various card types and conditions.
- */
-public class JSONParser {
+public class ServerJSONParser extends JSONParser {
 
     /**
      * Gson instance configured with custom TypeAdapters for PointsCondition and ResourcesCondition.
@@ -32,46 +32,6 @@ public class JSONParser {
     private static final Gson GSON_CARD_BUILDER = new GsonBuilder().registerTypeAdapter(PointsCondition.class, new PointsConditionAdapter())
             .registerTypeAdapter(ResourcesCondition.class, new ResourcesConditionAdapter())
             .create();
-
-    private static final Gson CARD_IMAGE_RESOURCES_BUILDER = new Gson();
-
-    /**
-     * Constructs a deck of cards from a JSON file.
-     *
-     * @param filename The name of the JSON file.
-     * @param type The TypeToken representing the generic type.
-     * @param <E> The type of the cards in the deck.
-     * @return An ArrayList of cards.
-     */
-    public static <E extends Card> ArrayList<E> deckFromJSONConstructor(String filename, TypeToken<ArrayList<E>> type) {
-        try{
-            return new ArrayList<>(GSON_CARD_BUILDER.fromJson(
-                    new InputStreamReader(Objects.requireNonNull(JSONParser.class.getResourceAsStream(filename))), type)
-            );
-        }catch(Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Helper method to convert a String to the corresponding Resource enum.
-     *
-     * @param resource The resource string.
-     * @return The corresponding Resource enum.
-     */
-    private static Resource conversionHelper(String resource){
-        return switch (resource) {
-            case "FUNGI" -> Resource.FUNGI;
-            case "ANIMAL" -> Resource.ANIMAL;
-            case "PLANT" -> Resource.PLANT;
-            case "INSECT" -> Resource.INSECT;
-            case "SCROLL" -> Resource.SCROLL;
-            case "INK" -> Resource.INK;
-            case "QUILL" -> Resource.QUILL;
-            default -> null;
-        };
-    }
 
     /**
      * Custom TypeAdapter to handle the PointsCondition hierarchy serialization and deserialization.
@@ -147,34 +107,39 @@ public class JSONParser {
     }
 
     /**
-     * Reads ClientCard objects from a JSON file.
+     * Constructs a deck of cards from a JSON file.
      *
      * @param filename The name of the JSON file.
-     * @return An ArrayList of ClientCard objects.
+     * @param type The TypeToken representing the generic type.
+     * @param <E> The type of the cards in the deck.
+     * @return An ArrayList of cards.
      */
-    public static ArrayList<ClientCard> generateClientCardsFromJSON(String filename) {
-        return new ArrayList<>(CARD_IMAGE_RESOURCES_BUILDER.fromJson(
-                new InputStreamReader(Objects.requireNonNull(JSONParser.class.getResourceAsStream(filename))),
-                new TypeToken<ArrayList<ClientCard>>() {
-                })
-        );
+    public static <E extends Card> ArrayList<E> deckFromJSONConstructor(String filename, TypeToken<ArrayList<E>> type) {
+        try {
+            return new ArrayList<>(GSON_CARD_BUILDER.fromJson(
+                    new InputStreamReader(Objects.requireNonNull(JSONParser.class.getResourceAsStream(filename))), type)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
      * Generates a JSON file containing only the playable ClientCard objects.
      */
     public static void generateClientCardsJSONPlayableOnly() {
-        ArrayList<ResourceCard> rc = JSONParser.deckFromJSONConstructor(
+        ArrayList<ResourceCard> rc = deckFromJSONConstructor(
                 "/jsonFiles/resource_cards.json",
                 new TypeToken<>() {
                 }
         );
-        ArrayList<GoldCard> gc = JSONParser.deckFromJSONConstructor(
+        ArrayList<GoldCard> gc = deckFromJSONConstructor(
                 "/jsonFiles/gold_cards.json",
                 new TypeToken<>() {
                 }
         );
-        ArrayList<InitialCard> ic = JSONParser.deckFromJSONConstructor(
+        ArrayList<InitialCard> ic = deckFromJSONConstructor(
                 "/jsonFiles/initial_cards.json",
                 new TypeToken<>() {
                 }
@@ -204,7 +169,7 @@ public class JSONParser {
         for(var card : gc) {
             clientCards.add(new ClientCard(card.ID,
                     Map.of(
-                            Side.FRONT, "/images/cards/front/0" + card.ID + ".png",
+                            Side.FRONT, "/images/cards/front/0" + ((card.ID < 10) ? "0" + card.ID : card.ID) + ".png",
                             Side.BACK, "/images/cards/back/" + card.getCenterBackResources().keySet().stream().findAny().orElseThrow().SYMBOL + "_gold.png"
                     ),
                     Map.of(
@@ -285,9 +250,9 @@ public class JSONParser {
         }
         cornerResource = card.getCornerResource(side, 1, 1);
         sequence.getFirst().add(new Triplet<>(cornerResource.SYMBOL,
-                        new Integer[]{cornerResource.ANSI_COLOR,
-                                cornerResource.equals(Resource.NOT_A_CORNER) ? cardColor : Resource.EMPTY.ANSI_COLOR
-                        }, 1));
+                new Integer[]{cornerResource.ANSI_COLOR,
+                        cornerResource.equals(Resource.NOT_A_CORNER) ? cardColor : Resource.EMPTY.ANSI_COLOR
+                }, 1));
 
         sequence.get(1).add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 13));
 

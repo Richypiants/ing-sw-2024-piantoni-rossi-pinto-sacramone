@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Model.ClientModel;
 
-import it.polimi.ingsw.gc12.Utilities.Side;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.io.Serializable;

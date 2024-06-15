@@ -4,7 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
-import it.polimi.ingsw.gc12.Utilities.JSONParser;
+import it.polimi.ingsw.gc12.Utilities.JSONParsers.ServerJSONParser;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class CardDeckTest {
 
     protected static <T extends Card> CardDeck<T> loadCardDeck(String filename, TypeToken<ArrayList<T>> typifiedTypeToken){
         return new CardDeck<>(Objects.requireNonNull(
-                JSONParser.deckFromJSONConstructor(
+                ServerJSONParser.deckFromJSONConstructor(
                         filename,
                         typifiedTypeToken
                 )));
@@ -33,7 +33,7 @@ public class CardDeckTest {
 
     public static <T extends Card> ArrayList<T> loadCardDeckAsArrayList(String filename, TypeToken<ArrayList<T>> typifiedTypeToken){
         return new ArrayList<>(Objects.requireNonNull(
-                JSONParser.deckFromJSONConstructor(
+                ServerJSONParser.deckFromJSONConstructor(
                         filename,
                         typifiedTypeToken
                 )));

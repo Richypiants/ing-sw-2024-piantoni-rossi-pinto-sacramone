@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc12.Model;
 
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.UpdateLobbyCommand;
-import it.polimi.ingsw.gc12.Utilities.Color;
+import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.FullLobbyException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnavailableColorException;
 

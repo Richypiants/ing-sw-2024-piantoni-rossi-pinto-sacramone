@@ -12,18 +12,19 @@
             </font>
         </Label>
         <Button fx:id="createGameButton" styleClass="button" layoutX="51.0" layoutY="122.0" mnemonicParsing="false"
-                prefHeight="27.0" prefWidth="250.0" text="Create Game">
+                prefHeight="27.0" prefWidth="250.0" text="Create game">
             <font>
                 <Font name="Bell MT" size="14.0"/>
             </font>
         </Button>
         <Button fx:id="nicknameButton" styleClass="button" layoutX="51.0" layoutY="200.0" mnemonicParsing="false"
-                prefHeight="27.0" prefWidth="250.0" text="Change Nickname">
+                prefHeight="27.0" prefWidth="250.0" text="Change nickname">
             <font>
                 <Font name="Bell MT" size="14.0"/>
             </font>
         </Button>
-        <Button fx:id="backToTitleButton" styleClass="button" layoutX="51.0" layoutY="278.0" mnemonicParsing="false"
+        <Button fx:id="backToTitleScreenButton" styleClass="button" layoutX="51.0" layoutY="278.0"
+                mnemonicParsing="false"
                 prefHeight="27.0" prefWidth="250.0" text="Back to title screen">
             <font>
                 <Font name="Bell MT" size="14.0"/>
@@ -37,7 +38,7 @@
 
     <VBox fx:id="lobbyCreationPopupBox" styleClass="lobbyScreenPopupBox" visible="false">
         <Label fx:id="playersNumberPrompt" styleClass="popupText" alignment="CENTER"
-               text="Inserisci il numero di giocatori:">
+               text="Insert the maximum number of players for the game:">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>
@@ -52,7 +53,7 @@
     </VBox>
 
     <VBox fx:id="changeNicknamePopupBox" styleClass="lobbyScreenPopupBox" visible="false">
-        <Label fx:id="nicknamePrompt" styleClass="popupText" alignment="CENTER" text="Inserisci un nuovo nickname:">
+        <Label fx:id="nicknamePrompt" styleClass="popupText" alignment="CENTER" text="Choose a new nickname:">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>

@@ -47,12 +47,12 @@ public class TUILobbiesView extends TUIView{
         printToPosition(ansi().cursor(i++, 1));
         printToPosition(ansi().cursor(i, 1).a(
                 """
-                            'createLobby <maxPlayers>' per creare una lobby,
-                            'joinLobby <lobbyUUID>' per joinare una lobby esistente,
-                            'setNickname <newNickname>' per cambiare il proprio nickname,
-                            'selectColor <color>' per scegliere un colore tra quelli disponibili,
-                            'leaveLobby' per lasciare la lobby in cui si e' attualmente,
-                            'quit' per ritornare alla schermata del titolo
+                                    '[createLobby | cl] <maxPlayers>' to create a new lobby,
+                                    '[joinLobby | jl] <lobbyUUID>' to join an existing lobby,
+                                    '[setNickname | sn] <newNickname>' to change your own nickname,
+                                    '[selectColor | sc] <color>' to choose a color among the available ones,
+                                    '[leaveLobby | ll]' to leave the lobby you are currently in,
+                                    '[quit]' to go back to title screen.
                 """
                 //TODO: leaveLobby andrebbe promptato solo dopo
         ));
@@ -62,8 +62,5 @@ public class TUILobbiesView extends TUIView{
     public void showNickname() {
         TUIParser.COMMAND_INPUT_COLUMN = 6 + VIEWMODEL.getOwnNickname().length();
         lobbiesScreen();
-        //printToPosition(ansi().cursor(1, 11).eraseLine(Erase.FORWARD).fg(Ansi.Color.RED).bold()
-        //        .a(CLIENT_CONTROLLER.ownNickname).eraseLine().reset());
-        //TODO: altrimenti: erasare il nickname dalla inputLine (va fatto dopo aver implementato che non si erasa l'inputLine)
     }
 }

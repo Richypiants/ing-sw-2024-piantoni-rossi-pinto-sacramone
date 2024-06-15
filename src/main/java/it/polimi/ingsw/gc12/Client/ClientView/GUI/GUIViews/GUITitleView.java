@@ -86,7 +86,7 @@ public class GUITitleView extends GUIView {
                     screenSizes.getY() * 5 / 100
             );
 
-            TITLE_SCREEN_PROMPT = new Label("Premi INVIO per iniziare");
+            TITLE_SCREEN_PROMPT = new Label("Click HERE to start");
             TITLE_SCREEN_PROMPT.setId("titleScreenPrompt");
             TITLE_SCREEN_PROMPT.setPrefSize(500, 25);
             TITLE_SCREEN_PROMPT.setOnMouseClicked((event -> ViewState.getCurrentState().keyPressed()));

@@ -7,12 +7,12 @@ import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.ServerModel;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 public class ChooseInitialCardsState extends GameState {
 

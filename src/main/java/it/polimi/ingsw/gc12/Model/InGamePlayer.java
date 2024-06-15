@@ -9,12 +9,12 @@ import it.polimi.ingsw.gc12.Listeners.Listener;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
+import it.polimi.ingsw.gc12.Utilities.Enums.Resource;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Resource;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;

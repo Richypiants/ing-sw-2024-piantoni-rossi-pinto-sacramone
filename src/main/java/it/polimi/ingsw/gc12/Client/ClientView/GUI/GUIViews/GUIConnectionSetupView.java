@@ -90,7 +90,7 @@ public class GUIConnectionSetupView extends GUIView {
 
         CONNECTION_TECHNOLOGY_SETUP_BOX.getChildren().addAll(socket, rmi);
 
-        CONNECTION_SETUP_SEND_BUTTON = new Button("Inizia a scrivere il tuo manoscritto!");
+        CONNECTION_SETUP_SEND_BUTTON = new Button("Start writing your Codex!");
         CONNECTION_SETUP_SEND_BUTTON.getStyleClass().add("button");
         CONNECTION_SETUP_SEND_BUTTON.setStyle("-fx-font-size: 15.0;");
         CONNECTION_SETUP_SEND_BUTTON.setPrefSize(CONNECTION_SETUP_BOX.getPrefWidth(), 10.0);

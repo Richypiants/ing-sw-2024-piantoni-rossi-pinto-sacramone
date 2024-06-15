@@ -2,9 +2,9 @@ package it.polimi.ingsw.gc12.Client.ClientView.TUI;
 
 import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Utilities.Color;
+import it.polimi.ingsw.gc12.Utilities.Enums.Color;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 import org.fusesource.jansi.Ansi;
 
 import java.io.Console;
@@ -69,11 +69,11 @@ public class TUIParser {
                     currentState.setNickname(nickname.substring(0, Math.min(nickname.length(), 10)));
                 }
                 case "createlobby", "cl" -> {
-                    errorMessage = "expected numero di giocatori nella lobby as first argument";
+                    errorMessage = "expected a valid maximum number of players for the lobby as first argument";
                     currentState.createLobby(Integer.parseInt(tokens.removeFirst()));
                 }
                 case "joinlobby", "jl" -> {
-                    errorMessage = "expected lobbyUUID as second argument";
+                    errorMessage = "expected a valid lobbyUUID as first argument";
                     currentState.joinLobby((UUID.fromString(tokens.removeFirst())));
                 }
                 case "selectcolor", "sc" -> {
@@ -91,7 +91,7 @@ public class TUIParser {
                 case "pickobjective", "po" -> currentState.pickObjective(Integer.parseInt(tokens.removeFirst()));
                 case "drawfromdeck", "dfd" -> currentState.drawFromDeck(tokens.removeFirst());
                 case "drawfromvisiblecards", "dfvc" -> {
-                    errorMessage = "expected position to draw from as second argument";
+                    errorMessage = "expected valid position to draw from as first argument";
                     currentState.drawFromVisibleCards(
                             tokens.removeFirst(), Integer.parseInt(tokens.removeFirst())
                     );
@@ -117,13 +117,13 @@ public class TUIParser {
                 );
                 case "quit" -> currentState.quit();
                 case "ok" -> currentState.toLobbies();
-                default -> throw new IllegalArgumentException("Unknown command");
+                default -> throw new IllegalArgumentException("Unknown command received: maybe check for misspelling?");
             }
         } catch (NoSuchElementException e) {
-            ClientController.getInstance().ERROR_LOGGER.log(new NoSuchElementException("Formato del comando fornito non valido: parametri forniti insufficienti"));
+            ClientController.getInstance().ERROR_LOGGER.log(new NoSuchElementException("Invalid command format: not enough parameters received"));
         } catch (IllegalArgumentException e) {
             if(!e.getMessage().isEmpty()) errorMessage = e.getMessage();
-            ClientController.getInstance().ERROR_LOGGER.log(new IllegalArgumentException("Parametri forniti invalidi: " + errorMessage));
+            ClientController.getInstance().ERROR_LOGGER.log(new IllegalArgumentException("Invalid parameters given: " + errorMessage));
         }
     }
 
@@ -144,7 +144,7 @@ public class TUIParser {
         return switch(input.trim().toLowerCase()){
             case "front" -> Side.FRONT;
             case "back" -> Side.BACK;
-            default -> throw new IllegalArgumentException("unknown side string given: " + input);
+            default -> throw new IllegalArgumentException("expected a valid side as argument" + input);
         };
     }
 
@@ -152,6 +152,6 @@ public class TUIParser {
         return Arrays.stream(Color.values())
                 .filter((color) -> color.name().equalsIgnoreCase(input))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("colore non valido fornito: " + input));
+                .orElseThrow(() -> new IllegalArgumentException("expected a valid color as first argument" + input));
     }
 }

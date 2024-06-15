@@ -7,10 +7,10 @@ import it.polimi.ingsw.gc12.Listeners.ServerListener;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
 import it.polimi.ingsw.gc12.Model.*;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.AlreadySetCardException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

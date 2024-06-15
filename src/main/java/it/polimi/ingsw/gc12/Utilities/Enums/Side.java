@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc12.Utilities;
+package it.polimi.ingsw.gc12.Utilities.Enums;
 
 import java.io.Serializable;
 

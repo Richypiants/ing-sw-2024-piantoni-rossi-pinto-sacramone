@@ -47,7 +47,7 @@ public class TUIConnectionView extends TUIView {
 
         clearTerminal();
         String communicationTechnology = readUntil(
-                ansi().cursor(1, 1).a("Choose the communication technology (RMI-Socket):"),
+                ansi().cursor(1, 1).a("Choose the communication technology (RMI-Socket): "),
                 List.of("rmi", "socket")
         );
         System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
@@ -60,7 +60,7 @@ public class TUIConnectionView extends TUIView {
         do {
             if(lastInputWasInvalid)
                 printToPosition(ansi().cursor(1, 1).a("The entered nickname is longer than " + MAX_NICK_LENGTH + " characters or is empty!"));
-            printToPosition(ansi().cursor(2, 1).a("Enter your nickname [Max " + MAX_NICK_LENGTH + " characters]: "));
+            printToPosition(ansi().cursor(2, 1).a("Enter your nickname [" + MAX_NICK_LENGTH + " chars max.]: "));
             lastInputWasInvalid = false;
             nickname = console.readLine().trim();
             if(nickname.length() > MAX_NICK_LENGTH || nickname.isEmpty())
@@ -92,6 +92,9 @@ public class TUIConnectionView extends TUIView {
         if (wantsToRetry.equals("no")) {
             quittingScreen();
             System.exit(0);
+        } else {
+            clearTerminal();
+            printToPosition(ansi().cursor(2, 1).a("Connecting to the server..."));
         }
 
         return wantsToRetry.equals("yes");

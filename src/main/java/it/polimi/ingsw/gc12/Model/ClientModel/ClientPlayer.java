@@ -1,9 +1,9 @@
 package it.polimi.ingsw.gc12.Model.ClientModel;
 
 import it.polimi.ingsw.gc12.Model.Player;
+import it.polimi.ingsw.gc12.Utilities.Enums.Resource;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Resource;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.io.Serializable;
 import java.util.EnumMap;

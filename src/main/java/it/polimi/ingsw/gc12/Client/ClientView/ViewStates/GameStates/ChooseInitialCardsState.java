@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc12.Client.ClientView.ViewStates.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Side;
 
 import java.util.List;
 

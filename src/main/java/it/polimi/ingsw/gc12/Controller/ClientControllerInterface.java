@@ -2,9 +2,9 @@ package it.polimi.ingsw.gc12.Controller;
 
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.Lobby;
+import it.polimi.ingsw.gc12.Utilities.Enums.Resource;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
-import it.polimi.ingsw.gc12.Utilities.Resource;
-import it.polimi.ingsw.gc12.Utilities.Side;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.util.*;

@@ -17,13 +17,14 @@
         </ImageView>
     </AnchorPane>
     <VBox fx:id="connectionSetupBox">
-        <Label fx:id="nicknamePrompt" styleClass="titleScreenLabel" text="Scegli il tuo nickname: "/>
+        <Label fx:id="nicknamePrompt" styleClass="titleScreenLabel" text="Choose your nickname: "/>
         <TextField fx:id="nicknameField" styleClass="titleScreenTextField"
-                   promptText="Scrivi qui il tuo nickname... (max 10 caratteri)"/>
-        <Label fx:id="addressPrompt" styleClass="titleScreenLabel" text="Inserisci l'indirizzo IP del server: "/>
+                   promptText="Write your nickname here... [10 chars max.]:"/>
+        <Label fx:id="addressPrompt" styleClass="titleScreenLabel"
+               text="Enter the server IP address (empty: 'localhost'): "/>
         <TextField fx:id="addressField" styleClass="titleScreenTextField" promptText="localhost"/>
         <Label fx:id="connectionTechnologyPrompt" styleClass="titleScreenLabel"
-               text="Scegli la tecnologia di comunicazione: "/>
+               text="Choose the communication technology: "/>
         <HBox fx:id="connectionTechnologySetupBox">
 
         </HBox>

@@ -6,7 +6,7 @@ import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
-import it.polimi.ingsw.gc12.Utilities.Color;
+import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnavailableColorException;
 
 import java.util.Arrays;

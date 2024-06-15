@@ -205,8 +205,8 @@ public class GUIView extends View {
     }
 
     @Override
-    public void leaderboardScreen(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
-        GUIGameView.getInstance().leaderboardScreen(POINTS_STATS, gameEndedDueToDisconnections);
+    public void leaderboardScreen(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
+        GUIGameView.getInstance().leaderboardScreen(leaderboard, gameEndedDueToDisconnections);
     }
 
 }
