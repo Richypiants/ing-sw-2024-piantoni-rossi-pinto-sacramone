@@ -10,17 +10,19 @@ import java.util.List;
 public class PlayerTurnDrawState extends GameScreenState {
 
     public PlayerTurnDrawState() {
-
-        //TODO: add showField <playerID>
         TUICommands = CLIENT_CONTROLLER.isThisClientTurn() ?
                 List.of(
                         "'drawFromDeck <deck>' [resource][gold]",
                         "'drawFromVisibleCards <deck> <position>' [resource][gold] [1][2]",
-                        "'broadcastMessage <message>' per inviare un messaggio in gioco (max 200 chars)",
-                        "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco (max 200 chars)") :
+                        "'showField <playerID>' to show the player's field",
+                        "'moveField <x> <y>' moves the field by x cards right and y cards up",
+                        "'broadcastMessage <message>' to send a message to all players (max 200 chars)",
+                        "'directMessage <recipient> <message>' to send a private message @recipient (max 200 chars)") :
                 List.of(
-                        "'broadcastMessage <message>' per inviare un messaggio in gioco (max 200 chars)",
-                        "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco (max 200 chars)");
+                        "'showField <playerID>' to show the player's field",
+                        "'moveField <x> <y>' moves the field by x cards right and y cards up",
+                        "'broadcastMessage <message>' to send a message to all players (max 200 chars)",
+                        "'directMessage <recipient> <message>' to send a private message @recipient (max 200 chars)");
     }
 
     @Override
@@ -34,7 +36,7 @@ public class PlayerTurnDrawState extends GameScreenState {
 
     @Override
     public void drawFromDeck(String deck) {
-        if (invalidDeck(deck)) throw new IllegalArgumentException("deck fornito da cui pescare invalido");
+        if (invalidDeck(deck)) throw new IllegalArgumentException("The provided deck doesn't exist!");
         try {
             CLIENT.requestToServer(new DrawFromDeckCommand(deck));
         } catch (Exception e) {
@@ -44,8 +46,8 @@ public class PlayerTurnDrawState extends GameScreenState {
 
     @Override
     public void drawFromVisibleCards(String deck, int position) {
-        if (invalidDeck(deck)) throw new IllegalArgumentException("area fornita da cui pescare invalida");
-        if (position != 1 && position != 2) throw new IllegalArgumentException("position fornita da cui pescare invalida");
+        if (invalidDeck(deck)) throw new IllegalArgumentException("The provided visible card area doesn't exist!");
+        if (position != 1 && position != 2) throw new IllegalArgumentException("The provided position doesn't exist!");
         try {
             CLIENT.requestToServer(new DrawFromVisibleCardsCommand(deck, position - 1));
         } catch (Exception e) {

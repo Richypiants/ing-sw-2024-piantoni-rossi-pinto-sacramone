@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc12.Controller.ServerController.GameStates;
 
 import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
@@ -24,7 +23,6 @@ class ChooseInitialCardsStateTest {
     Game game;
     NetworkSession client1;
     NetworkSession client2;
-    ServerController server;
     GameController gameController;
 
     @BeforeEach
@@ -66,7 +64,7 @@ class ChooseInitialCardsStateTest {
     }
 
     @Test
-    void correctPlaceCardIfPlayerDisconnected() throws Exception {
+    void correctPlaceCardIfPlayerDisconnected(){
         gameController.CONTROLLED_GAME.getPlayers().getFirst().addListener(client1.getListener());
         gameController.CONTROLLED_GAME.getPlayers().getLast().addListener(client2.getListener());
 

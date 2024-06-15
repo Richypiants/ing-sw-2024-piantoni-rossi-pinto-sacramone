@@ -5,39 +5,38 @@ import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
 import it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest;
 import it.polimi.ingsw.gc12.Listeners.ServerListener;
 import it.polimi.ingsw.gc12.Model.Cards.ObjectiveCard;
-import it.polimi.ingsw.gc12.Model.Game;
-import it.polimi.ingsw.gc12.Model.Lobby;
-import it.polimi.ingsw.gc12.Model.Player;
-import it.polimi.ingsw.gc12.Model.ServerModel;
+import it.polimi.ingsw.gc12.Model.*;
+import it.polimi.ingsw.gc12.Model.Cards.PlayableCard;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
-import it.polimi.ingsw.gc12.Utilities.Enums.Side;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.ForbiddenActionException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
+import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
 import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.createNetworkSessionStub;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AwaitingReconnectionStateTest {
-
     Player player1;
     Player player2;
     Lobby lobby;
+    UUID lobbyID;
     Game game;
     NetworkSession client1;
     NetworkSession client2;
-    ServerController server;
     GameController gameController;
+    AwaitingReconnectionState awaitingReconnectionState;
 
     @BeforeEach
     void setGameParameters() throws Exception {
         player1 = new Player("giovanni");
         player2 = new Player("paolo");
-        UUID lobbyUUID = UUID.randomUUID();
+        lobbyID = UUID.randomUUID();
 
-        lobby = new Lobby(lobbyUUID, player1, 2);
+        lobby = new Lobby(lobbyID, player1, 2);
         lobby.addPlayer(player2);
 
         game = new Game(lobby);
@@ -66,33 +65,62 @@ class AwaitingReconnectionStateTest {
 
         gameController.getCurrentState().pickObjective(game.getPlayers().getFirst(), (ObjectiveCard) ServerModel.CARDS_LIST.get(choice1));
         gameController.getCurrentState().pickObjective(game.getPlayers().getLast(), (ObjectiveCard) ServerModel.CARDS_LIST.get(choice2));
-
     }
 
     @Test
-    void correctTransitionToAwaitingState() throws InterruptedException {
-        gameController.leaveGame(client1);
+    void correctStateStored(){
+        GameState lastCurrentState = gameController.getCurrentState();
+        awaitingReconnectionState = new AwaitingReconnectionState(gameController, game);
 
-        synchronized (((ServerControllerTest.VirtualClientImpl) ((ServerListener) client2.getListener()).getVirtualClient())) {
-            (((ServerListener) client2.getListener()).getVirtualClient()).wait();
-        }
-
-        assertInstanceOf(AwaitingReconnectionState.class, gameController.getCurrentState());
+        awaitingReconnectionState.transition();
+        assertEquals(lastCurrentState, gameController.getCurrentState());
     }
 
-    //FIXME: questo test è inutile ma non c'e altro modo di testare un metodo che non viene mai chiamato nel flusso di gioco e non fa nulla
     @Test
-    void correctDisconnection() throws InterruptedException {
-        gameController.leaveGame(client1);
-
-        synchronized (((ServerControllerTest.VirtualClientImpl) ((ServerListener) client2.getListener()).getVirtualClient())) {
-            (((ServerListener) client2.getListener()).getVirtualClient()).wait();
-
-        }
-
-        gameController.getCurrentState().playerDisconnected(game.getPlayers().getLast());
-
+    void cancelTermination(){
+        awaitingReconnectionState = new AwaitingReconnectionState(gameController, game);
+        awaitingReconnectionState.cancelTimerTask();
     }
 
+    @Test
+    void correctDisconnection(){
+        awaitingReconnectionState = new AwaitingReconnectionState(gameController, game);
 
+        awaitingReconnectionState.playerDisconnected(game.getPlayers().getLast());
+        assertNull(ServerController.MODEL.getGameController(lobbyID));
+    }
+
+    //TESTING THE PREDEFINED FORBIDDEN ACTIONS IN GameState
+    @Test
+    void tryingToPerformForbiddenActionsInThisState(){
+        gameController.setState(new AwaitingReconnectionState(gameController, game));
+
+        assertThrows(ForbiddenActionException.class ,
+                () -> gameController.getCurrentState().pickObjective(
+                        game.getPlayers().getFirst(),
+                        (ObjectiveCard) ServerModel.CARDS_LIST.get(100)
+                ));
+
+        assertThrows(ForbiddenActionException.class ,
+                () -> gameController.getCurrentState().drawFrom(
+                        game.getPlayers().getFirst(),
+                        "resource"
+                ));
+
+        assertThrows(ForbiddenActionException.class ,
+                () -> gameController.getCurrentState().drawFrom(
+                        game.getPlayers().getFirst(), "resource",0));
+
+
+        assertThrows(ForbiddenActionException.class ,
+                () -> gameController.getCurrentState().placeCard(
+                        game.getPlayers().getFirst(),
+                        new GenericPair<>(0,0),
+                        (PlayableCard) ServerModel.CARDS_LIST.get(1),
+                        Side.FRONT
+                ));
+    }
+
+    //TODO: Per testare la lambda contenuta nel costruttore è necessario passare il tempo di Timeout come parametro al costruttore,
+    // così è adattabile alle esigenze di testing,
 }

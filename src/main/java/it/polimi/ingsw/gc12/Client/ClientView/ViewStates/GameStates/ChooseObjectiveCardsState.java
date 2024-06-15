@@ -11,9 +11,11 @@ public class ChooseObjectiveCardsState extends GameScreenState {
     public ArrayList<ClientCard> objectivesSelection = new ArrayList<>();
 
     public ChooseObjectiveCardsState() {
-        TUICommands = List.of("'pickObjective <selection>' [1][2] per selezionare il proprio obiettivo segreto",
-                "'broadcastMessage <message>' per inviare un messaggio in gioco (max 200 chars)",
-                "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco (max 200 chars)"
+        TUICommands = List.of(
+                "'pickObjective <selection>' [1][2] to select your personal objective",
+                "'showField <playerID>' to show the player's field",
+                "'broadcastMessage <message>' to send a message to all players (max 200 chars)",
+                "'directMessage <recipient> <message> to send a private message @recipient (max 200 chars)"
         );
     }
 
@@ -38,7 +40,7 @@ public class ChooseObjectiveCardsState extends GameScreenState {
         try {
             card = objectivesSelection.get(selection - 1);
         } catch (IndexOutOfBoundsException e) {
-            throw new IllegalArgumentException("nessuna carta obiettivo presente alla posizione specificata");
+            throw new IllegalArgumentException("There's no such objective card at that position.");
         }
 
         CLIENT.requestToServer(new PickObjectiveCommand(card.ID));

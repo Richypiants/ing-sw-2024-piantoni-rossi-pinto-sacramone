@@ -42,7 +42,6 @@ public abstract class GameState { //TODO: make all exceptions extends RuntimeExc
         throw new ForbiddenActionException();
     }
 
-    //FIXME: change in UML
     public void drawFrom(InGamePlayer target, String whichType, int position)
             throws UnexpectedPlayerException, ForbiddenActionException, InvalidDeckPositionException,
             UnknownStringException, EmptyDeckException {

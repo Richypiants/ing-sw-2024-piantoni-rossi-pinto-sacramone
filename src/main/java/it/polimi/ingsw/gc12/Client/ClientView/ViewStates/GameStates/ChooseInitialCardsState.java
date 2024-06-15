@@ -10,10 +10,10 @@ public class ChooseInitialCardsState extends GameScreenState{
 
     public ChooseInitialCardsState() {
         TUICommands = List.of(
-                "'pickInitial <side> [front][back],",
-                "'broadcastMessage <message>' per inviare un messaggio in gioco (max 200 chars)",
-                "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco (max 200 chars)"
-                //FIXME: troppo lungo?
+                "'pickInitial <side> [front][back]' to place your initial card",
+                "'broadcastMessage <message>' to send a message to all players (max 200 chars)",
+                "'directMessage <recipient> <message>' to send a private message @recipient (max 200 chars)",
+                "Remember that you can always type 'quit' and then reconnect to this game"
         );
     }
 

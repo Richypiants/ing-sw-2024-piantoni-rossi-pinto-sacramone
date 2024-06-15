@@ -24,7 +24,7 @@ public class TUIGameView extends TUIView{
 
     private static TUIGameView gameView = null;
 
-    private final GenericPair<Integer, Integer> FIELD_SIZE = new GenericPair<>(38, 105); //x: height, y: width
+    private final GenericPair<Integer, Integer> FIELD_SIZE = new GenericPair<>(30, 105); //x: height, y: width
     private final GenericPair<Integer, Integer> FIELD_TOP_LEFT = new GenericPair<>(10, 105); //x: startingRow, y: startingColumn
     private final GenericPair<Integer, Integer> FIELD_CENTER = new GenericPair<>(
             FIELD_TOP_LEFT.getX() + (FIELD_SIZE.getX() / 2),
@@ -141,8 +141,16 @@ public class TUIGameView extends TUIView{
                         ansi().cursor(i++, 2).bold().a("[SETUP PHASE] Every player needs to do an action! Your available commands are: ");
 
         printToPosition(printedMessage);
-        for (var command : ViewState.getCurrentState().TUICommands)
-            printToPosition(ansi().cursor(i++, 4).a(command));
+
+        int startingRowMessage = 43;
+        int availableLinesForCommands = 4;
+        int printedMessages = 0;
+        for (var command : ViewState.getCurrentState().TUICommands) {
+            int actualColumn = (printedMessages >= availableLinesForCommands ? 120 : 4);
+            int actualRow = startingRowMessage + printedMessages % availableLinesForCommands;
+            printToPosition(ansi().cursor(actualRow, actualColumn).a(command));
+            printedMessages++;
+        }
     }
 
     private void printRoundInfo() {

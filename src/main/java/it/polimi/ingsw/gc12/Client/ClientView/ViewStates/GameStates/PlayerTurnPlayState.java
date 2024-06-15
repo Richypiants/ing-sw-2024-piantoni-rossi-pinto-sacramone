@@ -9,17 +9,20 @@ import java.util.List;
 public class PlayerTurnPlayState extends GameScreenState {
 
     public PlayerTurnPlayState() {
-        //TODO: add showField <playerID>
         TUICommands =
                 CLIENT_CONTROLLER.isThisClientTurn() ?
                 List.of(
-                    "'placeCard <x> <y> <inHandPosition> <side>' (x,y): coordinate di piazzamento,",
+                    "'placeCard <x> <y> <inHandPosition> <side>' coordinates: x y",
                     "    inHandPosition: [1]...[n], side: [front][back]",
-                    "'broadcastMessage <message>' per inviare un messaggio in gioco (max 200 chars)",
-                    "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco (max 200 chars)") :
+                    "'showField <playerID>' to show the player's field",
+                    "'moveField <x> <y>' moves the field by x cards right and y cards up",
+                    "'broadcastMessage <message>' to send a message to all players (max 200 chars)",
+                    "'directMessage <recipient> <message>' to send a private message @recipient (max 200 chars)") :
                 List.of(
-                    "'broadcastMessage <message>' per inviare un messaggio in gioco (max 200 chars)",
-                    "'directMessage <recipient> <message> per inviare un messaggio privato @recipient in gioco (max 200 chars)");
+                    "'showField <playerID>' to show the player's field",
+                    "'moveField <x> <y>' moves the field by x cards right and y cards up",
+                    "'broadcastMessage <message>' to send a message to all players (max 200 chars)",
+                    "'directMessage <recipient> <message>' to send a private message @recipient (max 200 chars)");
     }
 
     @Override

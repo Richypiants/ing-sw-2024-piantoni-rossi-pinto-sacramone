@@ -29,12 +29,6 @@ public class TUITitleView extends TUIView{
         clearTerminal();
 
         printToPosition(ansi().cursor(1, 1).a("Starting Codex Naturalis..."));
-        try {
-            sleep(1000);
-        } catch (Exception e) {
-            CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
-        }
-
         clearTerminal();
         printToPosition(ansi()
                 .cursor(1, 50).a("                                                                                                                     ")
