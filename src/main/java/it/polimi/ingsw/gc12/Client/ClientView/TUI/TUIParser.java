@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
 import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 import it.polimi.ingsw.gc12.Utilities.Enums.Side;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.ForbiddenActionException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import org.fusesource.jansi.Ansi;
 
@@ -117,13 +118,15 @@ public class TUIParser {
                 );
                 case "quit" -> currentState.quit();
                 case "ok" -> currentState.toLobbies();
-                default -> throw new IllegalArgumentException("Unknown command received: maybe check for misspelling?");
+                default -> throw new ForbiddenActionException();
             }
         } catch (NoSuchElementException e) {
             ClientController.getInstance().ERROR_LOGGER.log(new NoSuchElementException("Invalid command format: not enough parameters received"));
         } catch (IllegalArgumentException e) {
             if(!e.getMessage().isEmpty()) errorMessage = e.getMessage();
             ClientController.getInstance().ERROR_LOGGER.log(new IllegalArgumentException("Invalid parameters given: " + errorMessage));
+        } catch (ForbiddenActionException e) {
+            ClientController.getInstance().ERROR_LOGGER.log(new ForbiddenActionException("Unknown command received: maybe check for misspelling?"));
         }
     }
 
@@ -139,7 +142,7 @@ public class TUIParser {
         runCommand(tokens);
     }
 
-    //TODO: sposterei nello state per single resp principle...
+    //TODO: sposterei nello state per single resp principle... oppure cambiare messaggi di exception per riflettere il check di tipo?
     private Side convertSide(String input) {
         return switch(input.trim().toLowerCase()){
             case "front" -> Side.FRONT;

@@ -131,14 +131,13 @@ public class TUIGameView extends TUIView{
     }
 
     private void printStateCommandInfo() {
-        int i = 42;
         ClientGame thisGame = VIEWMODEL.getCurrentGame();
 
         Ansi printedMessage = thisGame.getCurrentPlayerIndex() != -1 ?
-                ansi().cursor(i++, 2).bold().a("It is ").fg(9).a(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname()).reset().bold().a("'s turn! Your available commands are: ") :
+                ansi().cursor(42, 2).bold().a("It is ").fg(9).a(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname()).reset().bold().a("'s turn! Your available commands are: ") :
                 ViewState.getCurrentState() instanceof AwaitingReconnectionState ?
-                        ansi().cursor(i++, 2).bold().a("[GAME PAUSED] Awaiting for reconnection of other players...") :
-                        ansi().cursor(i++, 2).bold().a("[SETUP PHASE] Every player needs to do an action! Your available commands are: ");
+                        ansi().cursor(42, 2).bold().a("[GAME PAUSED] Awaiting for reconnection of other players...") :
+                        ansi().cursor(42, 2).bold().a("[SETUP PHASE] Every player needs to do an action! Your available commands are: ");
 
         printToPosition(printedMessage);
 
@@ -196,7 +195,6 @@ public class TUIGameView extends TUIView{
 
         printToPosition(ansi().cursor(8, 23).bold().a("Common placed cards: ").reset());
 
-        //FIXME: gestire i null delle carte non presenti
         printToPosition(ansi().cursor(12, 3).a("Resource:"));
         int column = 15;
         for (var card : VIEWMODEL.getCurrentGame().getPlacedResources()) {
@@ -219,9 +217,9 @@ public class TUIGameView extends TUIView{
         }
 
         printToPosition(ansi().cursor(24, 54).a("Secret:"));
-        printToPosition(ansi().cursor(22, 64).a(standardAnsi(
-                VIEWMODEL.getCurrentGame().getOwnObjective(), Side.FRONT))
-        );
+        printToPosition(ansi().cursor(22, 64).a(
+                standardAnsi(VIEWMODEL.getCurrentGame().getOwnObjective(), Side.FRONT)
+        ));
     }
 
     private void printDecks() {

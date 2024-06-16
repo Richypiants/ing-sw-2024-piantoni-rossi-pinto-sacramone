@@ -13,6 +13,7 @@ import java.util.UUID;
 
 public abstract class ViewState {
 
+    //FIXME: maybe move these in GameScreenState?
     public List<String> TUICommands = null;
 
     public final static ClientController CLIENT_CONTROLLER = ClientController.getInstance();

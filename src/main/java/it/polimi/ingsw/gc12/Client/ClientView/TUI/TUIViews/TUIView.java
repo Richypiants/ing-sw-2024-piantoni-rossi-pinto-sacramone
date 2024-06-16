@@ -35,12 +35,11 @@ public class TUIView extends View {
             listener = TUIParser.getInstance();
 
             try {
-                //FIXME: on Mac bash instead of cmd (on Linux too?)
                 new ProcessBuilder("cmd", "/c", "mode con:cols=" + SINGLETON_TUI_INSTANCE.TERMINAL_SIZE.getY() + " lines=" + SINGLETON_TUI_INSTANCE.TERMINAL_SIZE.getX())
                         .inheritIO().start().waitFor();
             } catch (InterruptedException | IOException e) {
                 try {
-                    //FIXME: on Mac bash instead of cmd (on Linux too?)
+                    //If running on MacOSX or Linux, run on bash instead of cmd
                     new ProcessBuilder("bash", "/c", "mode con:cols=" + SINGLETON_TUI_INSTANCE.TERMINAL_SIZE.getY() + " lines=" + SINGLETON_TUI_INSTANCE.TERMINAL_SIZE.getX())
                             .inheritIO().start().waitFor();
                 } catch (InterruptedException | IOException e2) {

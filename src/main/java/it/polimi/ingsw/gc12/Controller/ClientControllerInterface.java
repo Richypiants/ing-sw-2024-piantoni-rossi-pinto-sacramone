@@ -25,7 +25,7 @@ import java.util.*;
  *     <li>{@link #confirmObjectiveChoice(int)} - Confirms the chosen objective card.</li>
  *     <li>{@link #placeCard(String, GenericPair, int, Side, EnumMap, List, int)} - Places a card on the game board.</li>
  *     <li>{@link #receiveObjectiveChoice(List)} - Receives the list of objective cards to choose from.</li>
- *     <li>{@link #receiveCard(List)} - Receives an update related to some new received cards, such as a new card obtained in hand.</li>
+ *     <li>{@link #receiveCard(int)} - Receives an update related to some new received cards, such as a new card obtained in hand.</li>
  *     <li>{@link #replaceCard(List)} - Replaces cards on the game board, such as visible resources or top of the deck cards.</li>
  *     <li>{@link #toggleActive(String)} - Toggles the active state of a player.</li>
  *     <li>{@link #transition(int, int)} - Handles the transitions.</li>
@@ -112,11 +112,11 @@ public interface ClientControllerInterface extends ControllerInterface {
     void receiveObjectiveChoice(List<Integer> cardIDs);
 
     /**
-     * Receives an update related to some new received cards, such as a new card obtained in hand.
+     * Receives an update related to a new received card, such as a new card obtained in hand.
      *
-     * @param cardIDs A list of card IDs.
+     * @param cardID The ID of the received card.
      */
-    void receiveCard(List<Integer> cardIDs);
+    void receiveCard(int cardID);
 
     /**
      * Replaces cards on the game board, such as visible resources or top of the deck cards.

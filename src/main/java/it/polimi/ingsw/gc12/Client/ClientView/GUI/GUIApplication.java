@@ -42,6 +42,7 @@ public class GUIApplication extends Application {
                 stage.setMaximized(true);
                 //stage.setWidth(screen.getVisualBounds().getWidth());
                 //stage.setHeight(screen.getVisualBounds().getHeight());
+                //GUIView.setScreenSizes();
                 stage.setResizable(false);
             }
         });
@@ -55,11 +56,10 @@ public class GUIApplication extends Application {
 
         //stage.addEventHandler(MouseDragEvent.MOUSE_DRAGGED, (event) -> stage.setMaximized(true));
 
+        GUIView.setScreenSizes();
         stage.show();
 
         //FIXME: non funziona il requestFocus()...
         //stage.requestFocus();
-
-        GUIView.setScreenSizes();
     }
 }

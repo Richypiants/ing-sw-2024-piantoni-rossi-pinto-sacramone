@@ -12,17 +12,17 @@ public class PlayerTurnPlayState extends GameScreenState {
         TUICommands =
                 CLIENT_CONTROLLER.isThisClientTurn() ?
                 List.of(
-                    "'placeCard <x> <y> <inHandPosition> <side>' coordinates: x y",
-                    "    inHandPosition: [1]...[n], side: [front][back]",
-                    "'showField <playerID>' to show the player's field",
-                    "'moveField <x> <y>' moves the field by x cards right and y cards up",
-                    "'broadcastMessage <message>' to send a message to all players (max 200 chars)",
-                    "'directMessage <recipient> <message>' to send a private message @recipient (max 200 chars)") :
+                        "'[placeCard | pc] <x> <y> [1 | 2 | 3] [front | back]' to place a card ",
+                        "    on the field (<x>: x-coordinate, <y>: y-coordinate>)",
+                        "'[showField | sf] <playerID>' to show the player's field",
+                        "'[moveField | mf] <x> <y>' moves the field by x cards left and y cards down",
+                        "'[broadcastMessage | bm] <message>' to send a message to all players (200 chars max.)",
+                        "'[directMessage | dm] <recipient> <message>' to send a private message (200 chars max.)") :
                 List.of(
-                    "'showField <playerID>' to show the player's field",
-                    "'moveField <x> <y>' moves the field by x cards right and y cards up",
-                    "'broadcastMessage <message>' to send a message to all players (max 200 chars)",
-                    "'directMessage <recipient> <message>' to send a private message @recipient (max 200 chars)");
+                        "'[showField | sf] <playerID>' to show the player's field",
+                        "'[moveField | mf] <x> <y>' moves the field by x cards left and y cards down",
+                        "'[broadcastMessage | bm] <message>' to send a message to all players (200 chars max.)",
+                        "'[directMessage | dm] <recipient> <message>' to send a private message (200 chars max.)");
     }
 
     @Override
@@ -44,7 +44,7 @@ public class PlayerTurnPlayState extends GameScreenState {
     public void showField(int playerID) {
         ClientGame game = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
         if (playerID < 0 || playerID > game.getPlayersNumber())
-            throw new IllegalArgumentException("The provided ID doesn't match to a player's ID in the game.");
+            throw new IllegalArgumentException("The provided ID doesn't match to a player's ID in the game!");
 
         selectedView.showField(game.getPlayers().get(playerID - 1));
     }

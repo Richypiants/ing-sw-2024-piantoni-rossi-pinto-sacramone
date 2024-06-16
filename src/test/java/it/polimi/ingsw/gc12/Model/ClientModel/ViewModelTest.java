@@ -88,4 +88,19 @@ class ViewModelTest {
         assertInstanceOf(ClientGame.class, viewModel.getCurrentGame());
         assertEquals(targetClientGame, viewModel.getCurrentGame());
     }
+
+    @Test
+    void viewModelReset() {
+        Lobby lobby = new Lobby(UUID.randomUUID(), new Player("nickname"), 2);
+        viewModel.putLobby(lobby.getRoomUUID(), lobby);
+        viewModel.setOwnNickname("nickname");
+        viewModel.joinRoom(lobby);
+
+        viewModel.clearModel();
+        assertEquals(viewModel.getOwnNickname(), "");
+        assertEquals(viewModel.getLobbies().size(), 0);
+        assertNull(viewModel.getCurrentRoomUUID());
+        assertNull(viewModel.getCurrentLobby());
+        assertNull(viewModel.getCurrentGame());
+    }
 }

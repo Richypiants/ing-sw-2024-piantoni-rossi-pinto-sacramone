@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc12.Model;
 
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.PlaceCardCommand;
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReplaceCardCommand;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReplaceCardsCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ToggleActiveCommand;
 import it.polimi.ingsw.gc12.Listeners.Listenable;
 import it.polimi.ingsw.gc12.Listeners.Listener;
@@ -317,7 +317,7 @@ public class Game extends Room implements Listenable {
             COMMON_OBJECTIVES[1] = OBJECTIVE_CARDS_DECK.draw();
         } catch (EmptyDeckException ignored) {}
 
-        notifyListeners(new ReplaceCardCommand(List.of(
+        notifyListeners(new ReplaceCardsCommand(List.of(
                 new Triplet<>(COMMON_OBJECTIVES[0].ID, "objective_visible", 0),
                 new Triplet<>(COMMON_OBJECTIVES[1].ID, "objective_visible", 1)
         )));
@@ -388,7 +388,7 @@ public class Game extends Room implements Listenable {
      * Draws a card from the specified deck at a given position and replaces it with a new card from the appropriate deck.
      * If the deck to draw from is empty, the position in the deck will be set to null.
      *
-     * Notifies all the listeners with a {@link ReplaceCardCommand}.
+     * Notifies all the listeners with a {@link ReplaceCardsCommand}.
      *
      * @param deck     The array of visible cards from which to draw.
      * @param position The position of the card to draw.
@@ -415,7 +415,7 @@ public class Game extends Room implements Listenable {
         if (returnedCard == null)
             throw new EmptyDeckException();
 
-        notifyListeners(new ReplaceCardCommand(List.of(new Triplet<>(replacingCard == null ? -1 : replacingCard.ID, deckType + "_visible", position))));
+        notifyListeners(new ReplaceCardsCommand(List.of(new Triplet<>(replacingCard == null ? -1 : replacingCard.ID, deckType + "_visible", position))));
 
         return returnedCard;
     }
@@ -423,7 +423,7 @@ public class Game extends Room implements Listenable {
     /**
      * Peeks at the top card of the specified deck without removing it.
      *
-     * Notifies all the listeners with a {@link ReplaceCardCommand} showing the top card of the deck.
+     * Notifies all the listeners with a {@link ReplaceCardsCommand} showing the top card of the deck.
      *
      * @param deck The deck to peek from.
      * @param <T>  The type of cards in the deck.
@@ -431,7 +431,7 @@ public class Game extends Room implements Listenable {
      */
     public <T extends Card> T peekFrom(CardDeck<T> deck){
         T topDeckCard = deck.peek();
-        notifyListeners(new ReplaceCardCommand(List.of(new Triplet<>(topDeckCard == null ? -1 : topDeckCard.ID, deck.getDeckType() + "_deck", -1))));
+        notifyListeners(new ReplaceCardsCommand(List.of(new Triplet<>(topDeckCard == null ? -1 : topDeckCard.ID, deck.getDeckType() + "_deck", -1))));
 
         return topDeckCard;
     }

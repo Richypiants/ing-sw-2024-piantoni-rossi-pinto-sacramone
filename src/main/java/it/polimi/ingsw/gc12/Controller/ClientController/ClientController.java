@@ -28,7 +28,7 @@ public class ClientController implements ClientControllerInterface {
 
     private ClientController() {
         VIEWMODEL = new ViewModel();
-        ERROR_LOGGER = new ErrorLogger("src/main/java/it/polimi/ingsw/gc12/Utilities/errorLogger_" + this + ".txt");
+        ERROR_LOGGER = new ErrorLogger();
     }
 
     public static ClientController getInstance() {
@@ -53,7 +53,7 @@ public class ClientController implements ClientControllerInterface {
         }
     }
 
-    public void updateLobby(Lobby lobby) {
+    public synchronized void updateLobby(Lobby lobby) {
         //The received lobbies with a playersNumber equal to zero or below are removed from the ClientModel
         if(lobby.getPlayersNumber() <= 0)
             VIEWMODEL.removeLobby(lobby.getRoomUUID());
@@ -137,9 +137,8 @@ public class ClientController implements ClientControllerInterface {
         ViewState.getCurrentState().showPlacedCard(nickname);
     }
 
-    public synchronized void receiveCard(List<Integer> cardIDs) {
-        for (var cardID : cardIDs)
-            VIEWMODEL.getCurrentGame().addCardToHand(ViewModel.CARDS_LIST.get(cardID));
+    public synchronized void receiveCard(int cardID) {
+        VIEWMODEL.getCurrentGame().addCardToHand(ViewModel.CARDS_LIST.get(cardID));
 
         ViewState.getCurrentState().executeState();
     }

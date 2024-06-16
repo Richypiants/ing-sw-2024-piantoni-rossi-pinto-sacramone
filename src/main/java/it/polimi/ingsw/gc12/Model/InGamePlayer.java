@@ -221,7 +221,7 @@ public class InGamePlayer extends Player implements Listenable {
 
     /**
      * Adds the specified card to this player's hand.
-     *
+     * <p>
      * This method adds the given card to the player's hand and
      * notifies all registered listeners about the new card addition with a {@link ReceiveCardCommand}.
      *
@@ -229,7 +229,7 @@ public class InGamePlayer extends Player implements Listenable {
      */
     public void addCardToHand(PlayableCard pickedCard) {
         CARDS_IN_HAND.add(pickedCard);
-        notifyListeners(new ReceiveCardCommand(List.of(pickedCard.ID)));
+        notifyListeners(new ReceiveCardCommand(pickedCard.ID));
     }
 
     /**

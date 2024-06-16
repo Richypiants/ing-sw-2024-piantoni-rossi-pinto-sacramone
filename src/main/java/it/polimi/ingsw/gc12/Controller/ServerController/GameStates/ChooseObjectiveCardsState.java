@@ -52,6 +52,7 @@ public class ChooseObjectiveCardsState extends GameState {
             try {
                 pickObjective(target, objectiveCardsToPlayers.get(target).getFirst());
             } catch (CardNotInHandException | AlreadySetCardException ignored) {
+                //FIXME: fake, if exception is caught this method fails and leaveGame isn't completed and doesn't transition to AwaitingReconnectionState!
                 //The pickObjective for this player was already done, so the secretObjective is already set
                 //and the pickObjective throws AlreadySetCardException.
             }
@@ -63,7 +64,6 @@ public class ChooseObjectiveCardsState extends GameState {
         System.out.println("[SERVER]: Sending GameTransitionCommand to active clients in "+ GAME);
         GAME.increaseRound();
         GAME.nextPlayer();
-        //FIXME: remove this, make setState notify players and get round and current player from inside setState
 
         GAME_CONTROLLER.setState(new PlayerTurnPlayState(GAME_CONTROLLER, GAME));
     }

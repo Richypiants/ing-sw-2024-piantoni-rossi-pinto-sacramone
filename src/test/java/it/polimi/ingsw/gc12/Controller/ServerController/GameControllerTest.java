@@ -70,8 +70,8 @@ class GameControllerTest {
         associatedLobbyController.pickColor(inGamePlayer_2, Color.GREEN);
 
         gameAssociatedController = (GameController) inGamePlayer_1.getController();
-        gameAssociatedController.placeCard(inGamePlayer_1, new GenericPair<>(0, 0), ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_1.getListener()).getVirtualClient()).myClientController.lastReceivedCardIDs.getFirst(), Side.FRONT);
-        gameAssociatedController.placeCard(inGamePlayer_2, new GenericPair<>(0, 0), ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_2.getListener()).getVirtualClient()).myClientController.lastReceivedCardIDs.getFirst(), Side.FRONT);
+        gameAssociatedController.placeCard(inGamePlayer_1, new GenericPair<>(0, 0), ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_1.getListener()).getVirtualClient()).myClientController.lastReceivedCardID, Side.FRONT);
+        gameAssociatedController.placeCard(inGamePlayer_2, new GenericPair<>(0, 0), ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_2.getListener()).getVirtualClient()).myClientController.lastReceivedCardID, Side.FRONT);
 
         gameAssociatedController.pickObjective(inGamePlayer_1, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_1.getListener()).getVirtualClient()).myClientController.receivedObjectiveIDs.getFirst());
         gameAssociatedController.pickObjective(inGamePlayer_2, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_2.getListener()).getVirtualClient()).myClientController.receivedObjectiveIDs.getLast());

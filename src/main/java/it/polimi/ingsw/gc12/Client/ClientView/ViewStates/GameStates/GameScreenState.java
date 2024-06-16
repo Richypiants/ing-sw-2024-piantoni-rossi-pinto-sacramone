@@ -21,7 +21,7 @@ public abstract class GameScreenState extends ViewState {
         try {
             card = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getCardsInHand().get(inHandPosition);
         } catch (IndexOutOfBoundsException e) {
-            throw new IllegalArgumentException("nessuna carta presente alla posizione specificata della mano");
+            throw new IllegalArgumentException("There's no card in the specified hand position!");
         }
 
         try {
@@ -70,8 +70,4 @@ public abstract class GameScreenState extends ViewState {
     }
 
     public abstract void transition();
-
-    //TODO: when receiving victory:
-    //ClientController.getInstance().viewState = new LeaderboardScreenState();
-    //ClientController.getInstance().viewState.executeState();
 }

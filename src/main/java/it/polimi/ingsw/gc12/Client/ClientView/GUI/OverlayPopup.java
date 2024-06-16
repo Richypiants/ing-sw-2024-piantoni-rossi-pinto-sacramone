@@ -16,6 +16,7 @@ public class OverlayPopup extends Popup {
     private static OverlayPopup openedPopup = null;
 
     public OverlayPopup() {
+        //FIXME: dovrebbe farlo solo quando viene showato, non quando viene creato...
         if (openedPopup != null) openedPopup.hide();
         openedPopup = this;
     }

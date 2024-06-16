@@ -5,11 +5,11 @@ import it.polimi.ingsw.gc12.Utilities.Triplet;
 
 import java.util.List;
 
-public class ReplaceCardCommand implements ClientCommand {
+public class ReplaceCardsCommand implements ClientCommand {
 
     private final List<Triplet<Integer, String, Integer>> CARD_PLACEMENTS;
 
-    public ReplaceCardCommand(List<Triplet<Integer, String, Integer>> cardPlacements) {
+    public ReplaceCardsCommand(List<Triplet<Integer, String, Integer>> cardPlacements) {
         this.CARD_PLACEMENTS = cardPlacements;
     }
 

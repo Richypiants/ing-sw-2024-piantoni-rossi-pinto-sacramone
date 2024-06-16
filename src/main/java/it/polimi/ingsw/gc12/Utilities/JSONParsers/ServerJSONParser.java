@@ -165,7 +165,6 @@ public class ServerJSONParser extends JSONParser {
             );
         }
 
-        //FIXME: first ten cards return "01" instead of "001" and so on...
         for(var card : gc) {
             clientCards.add(new ClientCard(card.ID,
                     Map.of(

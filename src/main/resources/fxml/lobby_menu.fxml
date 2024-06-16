@@ -53,7 +53,8 @@
     </VBox>
 
     <VBox fx:id="changeNicknamePopupBox" styleClass="lobbyScreenPopupBox" visible="false">
-        <Label fx:id="nicknamePrompt" styleClass="popupText" alignment="CENTER" text="Choose a new nickname:">
+        <Label fx:id="nicknamePrompt" styleClass="popupText" alignment="CENTER"
+               text="Choose a new nickname (10 chars max.):">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>

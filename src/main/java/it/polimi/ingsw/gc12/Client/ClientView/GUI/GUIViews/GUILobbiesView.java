@@ -69,7 +69,7 @@ public class GUILobbiesView extends GUIView {
     @Override
     public void lobbiesScreen() {
         Platform.runLater(() -> {
-            MENU_BUTTONS_BOX.relocate(screenSizes.getX() * 12 / 100, screenSizes.getY() * 9 / 16);
+            MENU_BUTTONS_BOX.relocate(screenSizes.getX() * 10 / 100, screenSizes.getY() * 9 / 16);
 
             OWN_NICKNAME_LABEL.setText("Your nickname: " + VIEWMODEL.getOwnNickname());
 
@@ -104,8 +104,8 @@ public class GUILobbiesView extends GUIView {
             BACK_TO_TITLE_SCREEN_BUTTON.setOnAction(event -> ViewState.getCurrentState().quit());
 
             LOBBIES_PANE.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-            LOBBIES_PANE.setPrefSize(screenSizes.getX() * 3 / 5, screenSizes.getY() * 13 / 16);
-            LOBBIES_PANE.relocate(screenSizes.getX() * 3 / 10, (screenSizes.getY() - LOBBIES_PANE.getPrefHeight()) / 2);
+            LOBBIES_PANE.setPrefSize(screenSizes.getX() * 70 / 100, screenSizes.getY() * 13 / 16);
+            LOBBIES_PANE.relocate(screenSizes.getX() * 28 / 100, (screenSizes.getY() - LOBBIES_PANE.getPrefHeight()) / 2);
 
             LOBBIES_LIST.setMinHeight(LOBBIES_PANE.getPrefHeight() * 98 / 100);
             LOBBIES_LIST.setPrefWidth(LOBBIES_PANE.getPrefWidth() * 98 / 100);
@@ -132,26 +132,28 @@ public class GUILobbiesView extends GUIView {
     }
 
     private HBox createLobbyListElement(Lobby lobby) {
-        HBox lobbyBox = new HBox(30);
+        HBox lobbyBox = new HBox(20);
         lobbyBox.getStyleClass().add("lobbyBox");
         lobbyBox.setPrefSize(LOBBIES_LIST.getPrefWidth() - 10, 10);
 
+        Label lobbyUUIDLabel = new Label("" + lobby.getRoomUUID());
+        lobbyUUIDLabel.setMinWidth(230);
+
         HBox nicknamesBox = new HBox(10);
-        nicknamesBox.setPrefSize(lobbyBox.getPrefWidth() * 80 / 100 - 250, lobbyBox.getPrefHeight());
+        nicknamesBox.setPrefSize(lobbyBox.getPrefWidth() - 230 - 120 - 120 - 80, lobbyBox.getPrefHeight());
         nicknamesBox.getStyleClass().add("lobbyBox");
 
         for (var player : lobby.getPlayers()) {
-            Label playerName = new Label(player.getNickname());
-            playerName.setStyle("-fx-font-size: 14px; -fx-text-fill: " +
+            Label playerNameLabel = new Label(player.getNickname());
+            playerNameLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: " +
                     (player.getColor().equals(Color.NO_COLOR) ? "black" : player.getColor().name().toLowerCase()) + ";");
-            nicknamesBox.getChildren().add(playerName);
+            nicknamesBox.getChildren().add(playerNameLabel);
         }
 
-        Label playerCount = new Label(String.valueOf(lobby.getMaxPlayers()));
-        playerCount.setStyle("-fx-font-size: 16px;");
+        Label playerCountLabel = new Label(String.valueOf(lobby.getMaxPlayers()));
 
         HBox availableColorsBox = new HBox(10);
-        availableColorsBox.setPrefSize(lobbyBox.getPrefWidth() * 20 / 100, lobbyBox.getPrefHeight());
+        availableColorsBox.setMaxWidth(120);
         availableColorsBox.getStyleClass().add("lobbyBox");
 
         for (var color : lobby.getAvailableColors()) {
@@ -166,17 +168,17 @@ public class GUILobbiesView extends GUIView {
             availableColorsBox.getChildren().add(colorToken);
         }
 
-        lobbyBox.getChildren().addAll(nicknamesBox, playerCount, availableColorsBox);
+        lobbyBox.getChildren().addAll(lobbyUUIDLabel, nicknamesBox, playerCountLabel, availableColorsBox);
 
         if (VIEWMODEL.getCurrentLobby() == null && lobby.getPlayersNumber() < lobby.getMaxPlayers()) {
             Button joinButton = new Button("JOIN");
-            joinButton.setPrefWidth(250);
+            joinButton.setMinWidth(120);
             joinButton.setOnAction(e -> ViewState.getCurrentState().joinLobby(lobby.getRoomUUID()));
             lobbyBox.getChildren().add(joinButton);
         } else {
             if (lobby.equals(VIEWMODEL.getCurrentLobby())) {
                 Button leaveButton = new Button("LEAVE");
-                leaveButton.setPrefWidth(250);
+                leaveButton.setMinWidth(120);
                 leaveButton.setOnAction(e -> ViewState.getCurrentState().leaveLobby()
                 );
                 lobbyBox.getChildren().add(leaveButton);

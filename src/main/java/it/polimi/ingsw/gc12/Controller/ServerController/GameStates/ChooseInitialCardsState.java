@@ -53,26 +53,26 @@ public class ChooseInitialCardsState extends GameState {
     public void playerDisconnected(InGamePlayer target){
         //an arbitrary action of placing the initial card is done if the player hasn't done it before disconnecting
         //In other case, this function does nothing.
-        try {
-            placeCard(target, new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
-        } catch (CardNotInHandException | NotEnoughResourcesException | InvalidCardPositionException ignored) {
-            //The placeCard for this player was already done, so the coordinates pair (0,0) is already occupied by
-            //a card and the placeCard throws InvalidCardPositionException.
-        }
+
+        if (target.getPlacedCards().get(new GenericPair<>(0, 0)) == null)
+            try {
+                placeCard(target, new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
+            } catch (CardNotInHandException | NotEnoughResourcesException | InvalidCardPositionException ignored) {
+                //FIXME: fake, if exception is caught this method fails and leaveGame isn't completed and doesn't transition to AwaitingReconnectionState!
+                //The placeCard for this player was already done, so the coordinates pair (0,0) is already occupied by
+                //a card and the placeCard throws InvalidCardPositionException.
+            }
     }
 
     @Override
     public void transition() {
         for (InGamePlayer target : GAME.getPlayers()) {
             try {
-                //TODO: make receiveCardCommand send a single cardID and no longer a list?
                 target.addCardToHand(GAME.drawFrom(GAME.getResourceCardsDeck()));
                 target.addCardToHand(GAME.drawFrom(GAME.getResourceCardsDeck()));
                 target.addCardToHand(GAME.drawFrom(GAME.getGoldCardsDeck()));
             } catch (EmptyDeckException ignored) {}
         }
-
-        //TODO: make replaceCardCommand send a single card and no longer a list?
 
         GAME.generateCommonObjectives();
         GAME.peekFrom(GAME.getResourceCardsDeck());

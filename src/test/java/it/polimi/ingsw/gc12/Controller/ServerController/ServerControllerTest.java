@@ -90,7 +90,7 @@ public class ServerControllerTest {
         public List<Integer> receivedObjectiveIDs;
         public UUID receivedUUID;
         public Exception receivedException = null;
-        public List<Integer> lastReceivedCardIDs;
+    public int lastReceivedCardID;
         public String receivedMessage;
 
         @Override
@@ -139,7 +139,9 @@ public class ServerControllerTest {
         }
 
         @Override
-        public void receiveCard(List<Integer> cardIDs) { lastReceivedCardIDs = cardIDs; }
+        public void receiveCard(int cardID) {
+            lastReceivedCardID = cardID;
+        }
 
         @Override
         public void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {

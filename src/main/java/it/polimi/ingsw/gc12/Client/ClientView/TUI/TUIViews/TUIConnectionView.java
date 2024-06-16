@@ -58,9 +58,9 @@ public class TUIConnectionView extends TUIView {
         final int MAX_NICK_LENGTH = 10;
 
         do {
+            printToPosition(ansi().cursor(1, 1).a("Enter your nickname [" + MAX_NICK_LENGTH + " chars max.]: "));
             if(lastInputWasInvalid)
-                printToPosition(ansi().cursor(1, 1).a("The entered nickname is longer than " + MAX_NICK_LENGTH + " characters or is empty!"));
-            printToPosition(ansi().cursor(2, 1).a("Enter your nickname [MAX " + MAX_NICK_LENGTH + " chars]: "));
+                printToPosition(ansi().cursor(2, 1).a("The entered nickname is longer than " + MAX_NICK_LENGTH + " characters or is empty! Retry..."));
             lastInputWasInvalid = false;
             nickname = console.readLine().trim();
             if(nickname.length() > MAX_NICK_LENGTH || nickname.isEmpty())
@@ -71,7 +71,7 @@ public class TUIConnectionView extends TUIView {
                     .cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN));
         }while(lastInputWasInvalid);
 
-        printToPosition(ansi().cursor(2,1).a("Connecting to the server..."));
+        printToPosition(ansi().cursor(1, 1).a("Connecting to the server..."));
 
         ViewState.getCurrentState().connect(serverIPAddress, communicationTechnology, nickname);
     }
@@ -94,7 +94,7 @@ public class TUIConnectionView extends TUIView {
             System.exit(0);
         } else {
             clearTerminal();
-            printToPosition(ansi().cursor(2, 1).a("Connecting to the server..."));
+            printToPosition(ansi().cursor(1, 1).a("Connecting to the server..."));
         }
 
         return wantsToRetry.equals("yes");
@@ -102,15 +102,16 @@ public class TUIConnectionView extends TUIView {
 
     @Override
     public void connectedConfirmation() {
-        TUIParser.COMMAND_INPUT_COLUMN = 6 + VIEWMODEL.getOwnNickname().length();
         printToPosition(ansi().cursor(3, 1).a("Successfully connected to the server: nickname confirmed!"));
-        System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
-        listener.startReading();
         try {
             sleep(1000);
         } catch (InterruptedException e) {
             CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
         }
+
+        TUIParser.COMMAND_INPUT_COLUMN = 6 + VIEWMODEL.getOwnNickname().length();
+        System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
+        listener.startReading();
     }
 
 }

@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -35,19 +34,18 @@ public class ErrorLogger {
     /**
      * Constructs an ErrorLogger that logs to the specified file.
      * It also sets up the redirection of the standard error stream to the specified file.
-     *
-     * @param pathFile The path of the file where the logs will be written.
      */
-    public ErrorLogger(String pathFile) {
-        filePath = Paths.get(pathFile);
+    public ErrorLogger() {
         formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        String date = formatter.format(new Date());
+
         try {
-            err = new PrintStream(new FileOutputStream(pathFile));
+            err = new PrintStream(new FileOutputStream("log_" + date, false));
             System.setErr(err);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        System.err.println("New logging instance from client started at: " + formatter.format(new Date()));
+        System.err.println("New logging instance from client started at: " + date);
     }
 
     /**
