@@ -88,7 +88,7 @@ public class ClientController implements ClientControllerInterface {
                     .filter( (player) -> player.getNickname().equals(playerEntry.getKey())).findFirst().orElseThrow();
 
             for (var fieldEntry : PLAYERS_FIELD.get(playerEntry.getKey()).sequencedEntrySet())
-                clientPlayerInstance.placeCard(fieldEntry.getKey(), VIEWMODEL.CARDS_LIST.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
+                clientPlayerInstance.placeCard(fieldEntry.getKey(), ViewModel.CARDS_LIST.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());
         }
         VIEWMODEL.joinRoom(gameDTO);
 
@@ -109,13 +109,13 @@ public class ClientController implements ClientControllerInterface {
         ViewState.setCurrentState(newState);
 
         for (var cardID : cardIDs)
-            newState.objectivesSelection.add(VIEWMODEL.CARDS_LIST.get(cardID));
+            newState.objectivesSelection.add(ViewModel.CARDS_LIST.get(cardID));
 
         newState.executeState();
     }
 
     public void confirmObjectiveChoice(int cardID){
-        VIEWMODEL.getCurrentGame().setOwnObjective(VIEWMODEL.CARDS_LIST.get(cardID));
+        VIEWMODEL.getCurrentGame().setOwnObjective(ViewModel.CARDS_LIST.get(cardID));
         ViewState.getCurrentState().executeState();
     }
 
@@ -127,9 +127,9 @@ public class ClientController implements ClientControllerInterface {
                 .findAny()
                 .orElseThrow();
 
-        thisPlayer.placeCard(coordinates, VIEWMODEL.CARDS_LIST.get(cardID), playedSide);
+        thisPlayer.placeCard(coordinates, ViewModel.CARDS_LIST.get(cardID), playedSide);
         if (nickname.equals(VIEWMODEL.getOwnNickname()))
-            VIEWMODEL.getCurrentGame().removeCardFromHand(VIEWMODEL.CARDS_LIST.get(cardID));
+            VIEWMODEL.getCurrentGame().removeCardFromHand(ViewModel.CARDS_LIST.get(cardID));
         thisPlayer.setOwnedResources(ownedResources);
         thisPlayer.setOpenCorners(openCorners);
         thisPlayer.setPoints(points);
@@ -139,14 +139,14 @@ public class ClientController implements ClientControllerInterface {
 
     public synchronized void receiveCard(List<Integer> cardIDs) {
         for (var cardID : cardIDs)
-            VIEWMODEL.getCurrentGame().addCardToHand(VIEWMODEL.CARDS_LIST.get(cardID));
+            VIEWMODEL.getCurrentGame().addCardToHand(ViewModel.CARDS_LIST.get(cardID));
 
         ViewState.getCurrentState().executeState();
     }
 
     public synchronized void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {
         for(var cardPlacement : cardPlacements) {
-            ClientCard card = VIEWMODEL.CARDS_LIST.get(cardPlacement.getX());
+            ClientCard card = ViewModel.CARDS_LIST.get(cardPlacement.getX());
             switch (cardPlacement.getY().trim().toLowerCase()) {
                 case "resource_deck" -> VIEWMODEL.getCurrentGame().setTopDeckResourceCard(card);
                 case "gold_deck" -> VIEWMODEL.getCurrentGame().setTopDeckGoldCard(card);

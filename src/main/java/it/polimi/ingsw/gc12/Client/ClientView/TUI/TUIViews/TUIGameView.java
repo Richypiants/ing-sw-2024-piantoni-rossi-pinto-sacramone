@@ -242,6 +242,8 @@ public class TUIGameView extends TUIView{
                         TOP_LEFT_REDUCED_FIELD.getY() + REDUCED_FIELD_SIZE.getX() / 2
                 );
         int FIELD_SPACING = REDUCED_FIELD_SIZE.getY() + 1;
+        int INITIAL_NICKNAME_POSITION = 9;
+
         printToPosition(ansi().cursor(8, 82).bold().a("Opponents' Fields: "));
         /*TODO: Signal to players that the miniaturized fields are truncated and if you want to see them full-sized
            you should call xxxCommand*/
@@ -250,6 +252,10 @@ public class TUIGameView extends TUIView{
         ArrayList<ClientPlayer> players = VIEWMODEL.getCurrentGame().getPlayers();
         players.remove(VIEWMODEL.getCurrentGame().getThisPlayer());
         for (var player : players) {
+            printToPosition(ansi().cursor(
+                    INITIAL_NICKNAME_POSITION + (playerIndex * (REDUCED_FIELD_SIZE.getY()+1)),
+                    82).fg(Ansi.Color.valueOf(player.getColor().name())).a(player.getNickname()).reset());
+
             LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> field =
                     (player).getPlacedCards();
 
@@ -393,29 +399,29 @@ public class TUIGameView extends TUIView{
     private boolean checkCardOutOfFieldBorder(int printRow, int printColumn) {
         boolean outOfBounds = false;
 
-        if (printRow < FIELD_TOP_LEFT.getX() + 3) {
-            printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX(), FIELD_CENTER.getY())
+        if (printRow < FIELD_TOP_LEFT.getX() + 2) {
+            printToPosition(ansi().cursor(FIELD_TOP_LEFT.getX()-1, FIELD_CENTER.getY())
                     .a("^").cursorMove(-1, 1).a("|"));
             outOfBounds = true;
         }
 
-        if (printColumn < FIELD_TOP_LEFT.getY() + 3) {
-            printToPosition(ansi().cursor(FIELD_CENTER.getX(), FIELD_TOP_LEFT.getY()).a("<-"));
+        if (printColumn < FIELD_TOP_LEFT.getY() + 2) {
+            printToPosition(ansi().cursor(FIELD_CENTER.getX(), FIELD_TOP_LEFT.getY()-1).a("<-"));
             outOfBounds = true;
         }
 
-        if (printRow > FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 1 - CURSOR_OFFSET.getX() - 1 - 3) {
+        if (printRow > FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 1 - CURSOR_OFFSET.getX() - 1 - 2) {
             printToPosition(ansi().cursor(
-                    FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 2,
+                    FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX() - 1,
                     FIELD_CENTER.getY()
             ).a("|").cursorMove(-1, 1).a("v"));
             outOfBounds = true;
         }
 
-        if (printColumn > FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 1 - CURSOR_OFFSET.getY() - 1 - 3) {
+        if (printColumn > FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 1 - CURSOR_OFFSET.getY() - 1 - 2) {
             printToPosition(ansi().cursor(
                             FIELD_CENTER.getX(),
-                            FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 2)
+                            FIELD_TOP_LEFT.getY() + FIELD_SIZE.getY() - 1)
                     .a("->"));
             outOfBounds = true;
         }
