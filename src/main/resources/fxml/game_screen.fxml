@@ -11,9 +11,9 @@
     <Circle fx:id="newChatMessageNotification" visible="false"/> <!--> style="-fx-background-color: #EE4E4E;" <-->
     <Button fx:id="chatButton" styleClass="roundButton" mnemonicParsing="false"/>
     <Button fx:id="leaveButton" styleClass="roundButton" mnemonicParsing="false"/>
-    <Label fx:id="gameStateLabel" styleClass="titleScreenLabel"/>
+    <Label fx:id="gameStateLabel" styleClass="standardLabel" wrapText="true"/>
 
-    <HBox fx:id="opponentsFieldsPane" spacing="30"/>
+    <HBox fx:id="opponentsFieldsPane" spacing="30" alignment="CENTER"/>
 
     <AnchorPane fx:id="decksAndVisibleCardsPane">
         <Label fx:id="resourceCardsLabel" alignment="CENTER" text="Resource cards">
@@ -21,25 +21,19 @@
                 <Font name="Bell MT" size="24.0"/>
             </font>
         </Label>
-        <HBox fx:id="resourceCardsHBox" alignment="CENTER" spacing="10">
-            <!--> <ImageView fx:id="resourceDeck"/> <-->
-        </HBox>
+        <HBox fx:id="resourceCardsHBox" alignment="CENTER" spacing="10"/>
         <Label fx:id="goldCardsLabel" alignment="CENTER" text="Gold cards">
             <font>
                 <Font name="Bell MT" size="24.0"/>
             </font>
         </Label>
-        <HBox fx:id="goldCardsHBox" alignment="CENTER" spacing="10">
-            <!--> <ImageView fx:id="goldDeck"/> <-->
-        </HBox>
+        <HBox fx:id="goldCardsHBox" alignment="CENTER" spacing="10"/>
         <Label fx:id="commonObjectivesLabel" alignment="CENTER" text="Common Objectives">
             <font>
                 <Font name="Bell MT" size="24.0"/>
             </font>
         </Label>
-        <HBox fx:id="commonObjectivesHBox" alignment="CENTER" spacing="10">
-            <!--> <ImageView fx:id="secretObjective"/> <-->
-        </HBox>
+        <HBox fx:id="commonObjectivesHBox" alignment="CENTER" spacing="10"/>
         <HBox fx:id="secretObjectiveHBox" alignment="CENTER">
             <AnchorPane fx:id="secretObjectiveLabelPane">
                 <Label fx:id="secretObjectiveLabel" alignment="CENTER" text="Secret Objective">
@@ -53,7 +47,7 @@
 
     <AnchorPane fx:id="ownFieldPane">
         <VBox fx:id="ownFieldStatsBox" alignment="CENTER"/>
-        <ScrollPane fx:id="ownFieldScrollPane"/>
+        <ScrollPane fx:id="ownFieldScrollPane" pannable="true"/>
         <Button fx:id="zoomOwnFieldButton" mnemonicParsing="false"/>
         <Button fx:id="centerOwnFieldButton" mnemonicParsing="false"/>
     </AnchorPane>
@@ -88,28 +82,16 @@
         </VBox>
     </AnchorPane>
 
-    <VBox fx:id="awaitingStateMessageBox" styleClass="awaitingStateMessageBox" visible="false">
-        <Label fx:id="awaitingPrompt" styleClass="popupText" alignment="CENTER"
-               text="[GAME PAUSED] Awaiting for reconnection of other players...">
-            <font>
-                <Font name="Bell MT" size="30.0"/>
-            </font>
-        </Label>
+    <VBox fx:id="awaitingStateBox" styleClass="decoratedPopup" visible="false">
+        <Label fx:id="awaitingPrompt" styleClass="popupText"
+               text="[GAME PAUSED] Awaiting for reconnection of other players..."/>
+        <Button fx:id="awaitingExitButton" styleClass="rectangularButton" text="Back to title screen"/>
     </VBox>
 
-    <VBox fx:id="leaderboardVBox" visible="false">
-        <Label fx:id="leaderboardLabel" alignment="CENTER"
-               text="LEADERBOARD">
-            <font>
-                <Font name="Bell MT" size="30.0"/>
-            </font>
-        </Label>
-
-        <Label fx:id="winningPlayerLabel" alignment="CENTER">
-            <font>
-                <Font name="Bell MT" size="30.0"/>
-            </font>
-        </Label>
-
+    <VBox fx:id="leaderboardVBox" styleClass="decoratedPopup" visible="false">
+        <Label fx:id="leaderboardLabel" styleClass="rectangularButton, popupText" text="LEADERBOARD"
+               style="-fx-font-size: 40px"/>
+        <Label fx:id="winningPlayerLabel" styleClass="popupText"/>
+        <Button fx:id="leaderboardExitButton" styleClass="rectangularButton" text="Back to lobbies' screen"/>
     </VBox>
 </AnchorPane>

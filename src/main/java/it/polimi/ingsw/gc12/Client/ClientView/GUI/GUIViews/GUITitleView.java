@@ -22,7 +22,7 @@ public class GUITitleView extends GUIView {
     private final ImageView CRANIO_CREATIONS_LOGO;
     private final AnchorPane TITLE_SCREEN_BOX;
     private final ImageView TITLE_SCREEN_GAME_LOGO;
-    private Label TITLE_SCREEN_PROMPT;
+    private final Label TITLE_SCREEN_PROMPT;
 
     private GUITitleView() {
         try {
@@ -32,7 +32,8 @@ public class GUITitleView extends GUIView {
         }
         CRANIO_CREATIONS_LOGO = (ImageView) SCENE_ROOT.lookup("#cranioCreationsLogo");
         TITLE_SCREEN_BOX = (AnchorPane) SCENE_ROOT.lookup("#titleScreenBox");
-        TITLE_SCREEN_GAME_LOGO = (ImageView) TITLE_SCREEN_BOX.lookup("#titleScreenGameLogo");
+        TITLE_SCREEN_GAME_LOGO = (ImageView) SCENE_ROOT.lookup("#titleScreenGameLogo");
+        TITLE_SCREEN_PROMPT = (Label) SCENE_ROOT.lookup("#titleScreenPrompt");
     }
 
     public static GUITitleView getInstance() {
@@ -96,11 +97,7 @@ public class GUITitleView extends GUIView {
             );
             TITLE_SCREEN_GAME_LOGO.toFront();
 
-            TITLE_SCREEN_PROMPT = new Label("CLICK or PRESS ANY KEY to start");
-            TITLE_SCREEN_PROMPT.setId("titleScreenPrompt");
             TITLE_SCREEN_PROMPT.setPrefSize(500, 25);
-
-            TITLE_SCREEN_BOX.getChildren().add(TITLE_SCREEN_PROMPT);
 
             TITLE_SCREEN_PROMPT.relocate(
                     (TITLE_SCREEN_BOX.getPrefWidth() - TITLE_SCREEN_PROMPT.getPrefWidth()) / 2,

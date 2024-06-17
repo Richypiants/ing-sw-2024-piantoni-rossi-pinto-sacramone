@@ -51,8 +51,7 @@ public class GUIGameView extends GUIView {
 
     private final DataFormat PLACE_CARD_DATA_FORMAT = new DataFormat("text/genericpair<integer,side>");
     private final String RED_WHITE_STYLE = "-fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;";
-    private final String OVERLAY_POPUP_TEXT_STYLE = "-fx-font-family: Bell MT; -fx-font-size: 20; " +
-            "-fx-font-weight: bold; -fx-alignment: CENTER; -fx-text-alignment: CENTER; -fx-text-fill: #FADA5E;";
+
     private final Label RESOURCE_CARDS_LABEL;
     private final Label COMMON_OBJECTIVES_LABEL;
 
@@ -94,10 +93,12 @@ public class GUIGameView extends GUIView {
     private final HBox SECRET_OBJECTIVE_HBOX;
     private OverlayPopup openedAwaitingPopup = null;
     private final Label SECRET_OBJECTIVE_LABEL;
-    private final VBox AWAITING_STATE_MESSAGE_BOX;
+    private final VBox AWAITING_STATE_BOX;
+    private final Button AWAITING_EXIT_BUTTON;
     private final VBox LEADERBOARD_VBOX;
     private final Label LEADERBOARD_LABEL;
     private final Label WINNING_PLAYER_LABEL;
+    private final Button LEADERBOARD_EXIT_BUTTON;
     private final Label TO;
     private final Label GAME_STATE_LABEL;
 
@@ -135,10 +136,12 @@ public class GUIGameView extends GUIView {
         SECRET_OBJECTIVE_HBOX = (HBox) DECKS_AND_VISIBLE_CARDS_PANE.lookup("#secretObjectiveHBox");
         SECRET_OBJECTIVE_LABEL_PANE = (AnchorPane) DECKS_AND_VISIBLE_CARDS_PANE.lookup("#secretObjectiveLabelPane");
         SECRET_OBJECTIVE_LABEL = (Label) DECKS_AND_VISIBLE_CARDS_PANE.lookup("#secretObjectiveLabel");
-        AWAITING_STATE_MESSAGE_BOX = (VBox) SCENE_ROOT.lookup("#awaitingStateMessageBox");
+        AWAITING_STATE_BOX = (VBox) SCENE_ROOT.lookup("#awaitingStateBox");
+        AWAITING_EXIT_BUTTON = (Button) SCENE_ROOT.lookup("#awaitingExitButton");
         LEADERBOARD_VBOX = (VBox) SCENE_ROOT.lookup("#leaderboardVBox");
         LEADERBOARD_LABEL = (Label) SCENE_ROOT.lookup("#leaderboardLabel");
         WINNING_PLAYER_LABEL = (Label) SCENE_ROOT.lookup("#winningPlayerLabel");
+        LEADERBOARD_EXIT_BUTTON = (Button) SCENE_ROOT.lookup("#leaderboardExitButton");
         TO = (Label) SCENE_ROOT.lookup("#to");
         CHAT_VBOX = (VBox) SCENE_ROOT.lookup("#chatBox");
         GAME_STATE_LABEL = (Label) SCENE_ROOT.lookup("#gameStateLabel");
@@ -219,7 +222,7 @@ public class GUIGameView extends GUIView {
         return openCornerShape;
     }
 
-    private void generateFieldInteractionButton(Button button, String iconResourcePath) {
+    private void generateRectangularIconButton(Button button, String iconResourcePath) {
         ImageView image = new ImageView(String.valueOf(GUIGameView.class.getResource(iconResourcePath)));
         image.setFitHeight(20);
         image.setPreserveRatio(true);
@@ -385,7 +388,6 @@ public class GUIGameView extends GUIView {
 
         OWN_FIELD_STATS_BOX.setPrefSize(75, OWN_FIELD_PANE.getPrefHeight());
 
-        OWN_FIELD_SCROLL_PANE.setPannable(true);
         OWN_FIELD_SCROLL_PANE.setPrefSize(OWN_FIELD_PANE.getPrefWidth() - 75, OWN_FIELD_PANE.getPrefHeight());
         OWN_FIELD_SCROLL_PANE.setLayoutX(80);
 
@@ -394,7 +396,6 @@ public class GUIGameView extends GUIView {
 
         //TODO: CAMBIARE LE DIMENSIONI SOLO PREVIA COMUNICAZIONE A SACRAMONE
         SCOREBOARD_PANE.setPrefSize(screenSizes.getX() * 0.1328125, screenSizes.getY() * 0.5);
-        SCOREBOARD_PANE.setStyle("-fx-background-image: url('/images/scoreboard.png'); -fx-background-size: stretch;");
         SCOREBOARD_PANE.relocate(screenSizes.getX() * 10 / 100, screenSizes.getY() * 40 / 100);
         makePaneDraggable(SCOREBOARD_PANE);
 
@@ -476,7 +477,6 @@ public class GUIGameView extends GUIView {
 
         GAME_STATE_LABEL.setPrefWidth(160);
         GAME_STATE_LABEL.relocate(screenSizes.getX() * 32 / 100, screenSizes.getY() * 90 / 100);
-        GAME_STATE_LABEL.setWrapText(true);
 
         stage.getScene().setRoot(SCENE_ROOT);
         shouldReset = false;
@@ -531,10 +531,9 @@ public class GUIGameView extends GUIView {
                             player.equals(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex())
                             ) ? " (IN TURN)" : "")
             );
-            opponentName.setMaxWidth(100);
             opponentName.setAlignment(Pos.CENTER);
             opponentName.setPrefSize(opponentInfo.getPrefWidth(), opponentInfo.getPrefHeight() / 10);
-            opponentName.setStyle("-fx-background-image: url('/images/scroll_label.png'); -fx-background-size: stretch; -fx-background-position: bottom; -fx-font-size: 15px;");
+            opponentName.setStyle(RED_WHITE_STYLE);
 
             HBox opponentData = new HBox(5);
             opponentData.setAlignment(Pos.CENTER);
@@ -573,11 +572,11 @@ public class GUIGameView extends GUIView {
             opponentScrollField.getContent().setScaleY(0.75);
 
             Button zoomOpponentFieldButton = new Button();
-            generateFieldInteractionButton(zoomOpponentFieldButton, "/images/icons/zoom.png");
+            generateRectangularIconButton(zoomOpponentFieldButton, "/images/icons/zoom.png");
             zoomOpponentFieldButton.setOnMouseClicked((event) -> showField(player));
 
             Button centerOpponentFieldButton = new Button();
-            generateFieldInteractionButton(centerOpponentFieldButton, "/images/icons/aim.png");
+            generateRectangularIconButton(centerOpponentFieldButton, "/images/icons/aim.png");
             centerOpponentFieldButton.setOnMouseClicked((event) -> {
                 opponentScrollField.setHvalue((opponentScrollField.getHmax() + opponentScrollField.getHmin()) / 2);
                 opponentScrollField.setVvalue((opponentScrollField.getVmax() + opponentScrollField.getVmin()) / 2);
@@ -617,17 +616,19 @@ public class GUIGameView extends GUIView {
             //TODO. make imageView static and clear and avoid clearing children and refresh only the content
             RESOURCE_CARDS_HBOX.getChildren().clear();
 
-            ImageView resourceDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckResourceCard().GUI_SPRITES.get(Side.BACK))));
-            resourceDeck.setSmooth(true);
-            resourceDeck.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
-            resourceDeck.setPreserveRatio(true);
-            resourceDeck.setOnMouseClicked((event) ->
-                    ViewState.getCurrentState().drawFromDeck("Resource")
-            );
-            RESOURCE_CARDS_HBOX.getChildren().add(resourceDeck);
+            if (thisGame.getTopDeckResourceCard().ID != -1) {
+                ImageView resourceDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckResourceCard().GUI_SPRITES.get(Side.BACK))));
+                resourceDeck.setSmooth(true);
+                resourceDeck.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
+                resourceDeck.setPreserveRatio(true);
+                resourceDeck.setOnMouseClicked((event) ->
+                        ViewState.getCurrentState().drawFromDeck("Resource")
+                );
+                RESOURCE_CARDS_HBOX.getChildren().add(resourceDeck);
+            }
 
             for (int i = 0; i < thisGame.getPlacedResources().length; i++) {
-                if (thisGame.getPlacedResources()[i] != null) {
+                if (thisGame.getPlacedResources()[i].ID != -1) {
                     ImageView resource = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedResources()[i].GUI_SPRITES.get(Side.FRONT))));
                     resource.setSmooth(true);
                     resource.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
@@ -645,16 +646,18 @@ public class GUIGameView extends GUIView {
             //TODO. make imageView static and clear and avoid clearing children and refresh only the content
             GOLD_CARDS_HBOX.getChildren().clear();
 
-            ImageView goldDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckGoldCard().GUI_SPRITES.get(Side.BACK))));
+            if (thisGame.getTopDeckResourceCard().ID != -1) {
+                ImageView goldDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckGoldCard().GUI_SPRITES.get(Side.BACK))));
 
-            goldDeck.setSmooth(true);
-            goldDeck.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
-            goldDeck.setPreserveRatio(true);
-            goldDeck.setOnMouseClicked((event) -> ViewState.getCurrentState().drawFromDeck("Gold"));
-            GOLD_CARDS_HBOX.getChildren().add(goldDeck);
+                goldDeck.setSmooth(true);
+                goldDeck.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
+                goldDeck.setPreserveRatio(true);
+                goldDeck.setOnMouseClicked((event) -> ViewState.getCurrentState().drawFromDeck("Gold"));
+                GOLD_CARDS_HBOX.getChildren().add(goldDeck);
+            }
 
             for (int i = 0; i < thisGame.getPlacedGolds().length; i++) {
-                if (thisGame.getPlacedGolds()[i] != null) {
+                if (thisGame.getPlacedGolds()[i].ID != -1) {
                     ImageView gold = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getPlacedGolds()[i].GUI_SPRITES.get(Side.FRONT))));
                     gold.setSmooth(true);
                     gold.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
@@ -718,10 +721,10 @@ public class GUIGameView extends GUIView {
 
         drawField(OWN_FIELD_SCROLL_PANE, thisPlayer, true);
 
-        generateFieldInteractionButton(ZOOM_OWN_FIELD_BUTTON, "/images/icons/zoom.png");
+        generateRectangularIconButton(ZOOM_OWN_FIELD_BUTTON, "/images/icons/zoom.png");
         ZOOM_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> showField(thisPlayer));
 
-        generateFieldInteractionButton(CENTER_OWN_FIELD_BUTTON, "/images/icons/aim.png");
+        generateRectangularIconButton(CENTER_OWN_FIELD_BUTTON, "/images/icons/aim.png");
         CENTER_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> {
             OWN_FIELD_SCROLL_PANE.setHvalue((OWN_FIELD_SCROLL_PANE.getHmax() + OWN_FIELD_SCROLL_PANE.getHmin()) / 2);
             OWN_FIELD_SCROLL_PANE.setVvalue((OWN_FIELD_SCROLL_PANE.getVmax() + OWN_FIELD_SCROLL_PANE.getVmin()) / 2);
@@ -746,12 +749,12 @@ public class GUIGameView extends GUIView {
 
                 ImageView frontCardView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.FRONT))));
                 frontCardView.setSmooth(true);
-                frontCardView.setFitWidth(pane.getPrefWidth() * 0.8);
+                frontCardView.setFitWidth(pane.getPrefWidth() * 0.7);
                 frontCardView.setPreserveRatio(true);
 
                 ImageView backCardView = new ImageView(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.BACK))));
                 backCardView.setSmooth(true);
-                backCardView.setFitWidth(pane.getPrefWidth() * 0.8);
+                backCardView.setFitWidth(pane.getPrefWidth() * 0.7);
                 backCardView.setPreserveRatio(true);
 
                 pane.getChildren().addAll(backCardView, frontCardView);
@@ -869,15 +872,14 @@ public class GUIGameView extends GUIView {
     @Override
     public void showInitialCardsChoice() {
         Platform.runLater(() -> {
-            //double popupWidth = 720, popupHeight = 480;
-            //String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
+            ClientCard initialCard = VIEWMODEL.getCurrentGame().getCardsInHand().getFirst();
 
             VBox initialCardsChoiceVBox = new VBox(30);
             initialCardsChoiceVBox.setAlignment(Pos.CENTER);
             initialCardsChoiceVBox.setPrefSize(screenSizes.getX(), screenSizes.getY() * 60 / 100);
-            //initialCardsChoiceVBox.setStyle(style);
+
             Label cardLabel = new Label("Choose which side you want to play your assigned initial card on: ");
-            cardLabel.setStyle(OVERLAY_POPUP_TEXT_STYLE);
+            cardLabel.getStyleClass().add("popupText");
 
             HBox initialChoiceHBox = new HBox(100);
             initialChoiceHBox.setAlignment(Pos.CENTER);
@@ -886,8 +888,6 @@ public class GUIGameView extends GUIView {
             initialCardsChoiceVBox.getChildren().addAll(cardLabel, initialChoiceHBox);
 
             OverlayPopup createdPopup = drawOverlayPopup(initialCardsChoiceVBox, false);
-
-            ClientCard initialCard = VIEWMODEL.getCurrentGame().getCardsInHand().getFirst();
 
             ParallelTransition choiceTransition = new ParallelTransition();
 
@@ -923,15 +923,12 @@ public class GUIGameView extends GUIView {
     @Override
     public void showObjectiveCardsChoice(ArrayList<ClientCard> objectivesSelection) {
         Platform.runLater(() -> {
-            //double popupWidth = 720, popupHeight = 480;
-            //String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;";
-
             VBox objectiveChoiceVBox = new VBox(30);
             objectiveChoiceVBox.setAlignment(Pos.CENTER);
             objectiveChoiceVBox.setPrefSize(screenSizes.getX(), screenSizes.getY() * 60 / 100);
-            //objectiveChoiceVBox.setStyle(style);
+
             Label cardLabel = new Label("Choose which card you want to keep as your secret objective: ");
-            cardLabel.setStyle(OVERLAY_POPUP_TEXT_STYLE);
+            cardLabel.getStyleClass().add("popupText");
 
             HBox objectiveChoiceHBox = new HBox(100);
             objectiveChoiceHBox.setAlignment(Pos.CENTER);
@@ -999,7 +996,7 @@ public class GUIGameView extends GUIView {
             popupContent.getChildren().addAll(fieldPane);
 
             Button centerFieldButton = new Button();
-            generateFieldInteractionButton(centerFieldButton, "/images/icons/aim.png");
+            generateRectangularIconButton(centerFieldButton, "/images/icons/aim.png");
             centerFieldButton.setOnMouseClicked((event) -> {
                 fieldPane.setHvalue((fieldPane.getHmax() + fieldPane.getHmin()) / 2);
                 fieldPane.setVvalue((fieldPane.getVmax() + fieldPane.getVmin()) / 2);
@@ -1024,20 +1021,12 @@ public class GUIGameView extends GUIView {
     @Override
     public void awaitingScreen() {
         Platform.runLater(() -> {
-            //TODO: maybe spostare questo bottone in FXML (sia questo sia quello della leaderboard?)
-            // anche per evitare che poi venga riaggiunto in una seconda partita...
+            AWAITING_STATE_BOX.setPrefSize(screenSizes.getX() * 50 / 100, screenSizes.getY() * 40 / 100);
+            AWAITING_EXIT_BUTTON.setPrefSize(300, 50);
 
-            //FIXME: aggiungere l'exit button all'fxml e lookuppare la label di cui settare lo style
-            AWAITING_STATE_MESSAGE_BOX.getChildren().getFirst().setStyle(OVERLAY_POPUP_TEXT_STYLE);
+            openedAwaitingPopup = drawOverlayPopup(AWAITING_STATE_BOX, false);
 
-            Button exitButton = new Button("Back to title screen");
-            exitButton.getStyleClass().add("rectangularButton");
-
-            AWAITING_STATE_MESSAGE_BOX.getChildren().add(exitButton);
-
-            openedAwaitingPopup = drawOverlayPopup(AWAITING_STATE_MESSAGE_BOX, false);
-
-            exitButton.setOnMouseClicked((mouseEvent -> {
+            AWAITING_EXIT_BUTTON.setOnMouseClicked((mouseEvent -> {
                 resetGameScreen();
                 ViewState.getCurrentState().quit();
                 openedAwaitingPopup.hide();
@@ -1052,16 +1041,12 @@ public class GUIGameView extends GUIView {
     public void leaderboardScreen(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
         Platform.runLater(() -> {
             LEADERBOARD_VBOX.setPrefSize(screenSizes.getX() * 80 / 100, screenSizes.getY() * 90 / 100);
-
-            for (var child : LEADERBOARD_VBOX.getChildren())
-                child.setStyle(OVERLAY_POPUP_TEXT_STYLE);
-
-            Button exitButton = new Button("Back to lobbies' screen");
-            exitButton.getStyleClass().add("rectangularButton");
+            LEADERBOARD_EXIT_BUTTON.setPrefSize(300, 50);
 
             for (var row : leaderboard) {
                 HBox playerHBox = new HBox(20);
                 playerHBox.getStyleClass().add("lobbyBox");
+                playerHBox.setMaxWidth(500);
 
                 Label nameLabel = new Label(row.getX());
                 nameLabel.getStyleClass().add("titleScreenLabel");
@@ -1077,13 +1062,16 @@ public class GUIGameView extends GUIView {
             WINNING_PLAYER_LABEL.setText((gameEndedDueToDisconnections ?
                     "Since the game ended due to disconnections of all the other players, " : "") +
                     leaderboard.getFirst().getX() + " is the WINNER!");
-            WINNING_PLAYER_LABEL.setStyle(OVERLAY_POPUP_TEXT_STYLE);
 
-            LEADERBOARD_VBOX.getChildren().add(exitButton);
+            LEADERBOARD_VBOX.getChildren().remove(WINNING_PLAYER_LABEL);
+            LEADERBOARD_VBOX.getChildren().addLast(WINNING_PLAYER_LABEL);
+
+            LEADERBOARD_VBOX.getChildren().remove(LEADERBOARD_EXIT_BUTTON);
+            LEADERBOARD_VBOX.getChildren().addLast(LEADERBOARD_EXIT_BUTTON);
 
             OverlayPopup createdPopup = drawOverlayPopup(LEADERBOARD_VBOX, false);
 
-            exitButton.setOnMouseClicked((mouseEvent -> {
+            LEADERBOARD_EXIT_BUTTON.setOnMouseClicked((mouseEvent -> {
                 resetGameScreen();
                 ViewState.getCurrentState().toLobbies();
                 createdPopup.hide();

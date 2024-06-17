@@ -133,8 +133,11 @@ public class VictoryCalculationState extends GameState {
         System.out.println("[SERVER]: Sending lobbies to clients previously in " + GAME);
 
         GameController.MODEL.LOBBY_CONTROLLERS_LOCK.readLock().lock();
-        GAME.notifyListeners(new SetLobbiesCommand(GameController.MODEL.getLobbiesMap()));
-        GameController.MODEL.LOBBY_CONTROLLERS_LOCK.readLock().unlock();
+        try {
+            GAME.notifyListeners(new SetLobbiesCommand(GameController.MODEL.getLobbiesMap()));
+        } finally {
+            GameController.MODEL.LOBBY_CONTROLLERS_LOCK.readLock().unlock();
+        }
 
         int currentIndex = 0;
         synchronized (GAME_CONTROLLER) {

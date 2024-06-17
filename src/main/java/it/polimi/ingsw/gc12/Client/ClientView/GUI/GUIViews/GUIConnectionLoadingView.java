@@ -64,7 +64,6 @@ public class GUIConnectionLoadingView extends GUIView {
             addressField.setText("localhost");
         }
 
-        CONNECTION_LOADING_LABEL.setStyle("-fx-font-size: 30");
         CONNECTION_LOADING_LABEL.relocate((screenSizes.getX() - CONNECTION_LOADING_LABEL.getPrefWidth()) / 2, screenSizes.getY() * 0.45);
         LOADING_PROGRESS_INDICATOR.relocate((screenSizes.getX() - LOADING_PROGRESS_INDICATOR.getPrefWidth()) / 2, screenSizes.getY() * 0.55);
 

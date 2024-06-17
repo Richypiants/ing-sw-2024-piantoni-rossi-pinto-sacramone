@@ -251,7 +251,7 @@ public class TUIGameView extends TUIView{
         players.remove(VIEWMODEL.getCurrentGame().getThisPlayer());
         for (var player : players) {
             printToPosition(ansi().cursor(
-                    INITIAL_NICKNAME_POSITION + (playerIndex * (REDUCED_FIELD_SIZE.getY()+1)),
+                    INITIAL_NICKNAME_POSITION + (playerIndex * (REDUCED_FIELD_SIZE.getY() + 2)),
                     82).fg(Ansi.Color.valueOf(player.getColor().name())).a(player.getNickname()).reset());
 
             LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<ClientCard, Side>> field =

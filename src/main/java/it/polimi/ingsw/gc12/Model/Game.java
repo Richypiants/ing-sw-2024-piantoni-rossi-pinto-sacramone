@@ -417,6 +417,7 @@ public class Game extends Room implements Listenable {
         if (returnedCard == null)
             throw new EmptyDeckException();
 
+        System.out.println("[SERVER] Sending new visible card replacing the drawn one to clients in game " + this);
         notifyListeners(new ReplaceCardsCommand(List.of(new Triplet<>(replacingCard == null ? -1 : replacingCard.ID, deckType + "_visible", position))));
 
         return returnedCard;

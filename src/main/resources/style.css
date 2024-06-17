@@ -1,3 +1,91 @@
+.standardLabel {
+    -fx-font-family: Bell MT;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-text-fill: #368B84;
+}
+
+.standardTextField {
+    -fx-pref-width: 150.0;
+    -fx-pref-height: 10.0;
+    -fx-font-family: Bell MT;
+    -fx-font-size: 18;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-background-radius: 5.0 5.0 5.0 5.0;
+}
+
+.rectangularButton {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+    -fx-background-image: url("/images/medieval_button.png");
+    -fx-background-size: stretch;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: JUSTIFY;
+    -fx-wrap-text: true;
+    -fx-font-family: Castellar;
+    -fx-font-size: 16.0;
+}
+
+.roundButton {
+    -fx-background-radius: 50%;
+    -fx-min-width: 50px;
+    -fx-min-height: 50px;
+    -fx-max-width: 50px;
+    -fx-max-height: 50px;
+    -fx-background-color: transparent;
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+    -fx-border-radius: 25;
+    -fx-alignment: center;
+}
+
+.decoratedPopup {
+    -fx-background-image: url('/images/medieval_popup.png');
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+    -fx-spacing: 40;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+}
+
+.popupText {
+    -fx-font-family: Bell MT;
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-text-fill: /*#FADA5E; F8E473; */ EEDC82;
+}
+
+.scroll-pane {
+    -fx-background-insets: 0, 1;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.lobbyBox {
+    -fx-background-color: #B0E0E6;
+    -fx-border-color: black;
+    -fx-border-width: 1;
+    -fx-padding: 10;
+    -fx-alignment: CENTER-LEFT;
+    -fx-text-alignment: JUSTIFY;
+}
+
+.messageElement {
+    -fx-border-radius: 10;
+    -fx-background-color: transparent;
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+    -fx-padding: 10;
+}
+
 #titleScreenPane {
     -fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");
     -fx-background-repeat: no-repeat;
@@ -21,29 +109,10 @@
     -fx-text-alignment: CENTER;
 }
 
-.titleScreenLabel {
-    -fx-font-family: Bell MT;
-    -fx-font-size: 16;
-    -fx-font-weight: bold;
-    -fx-alignment: CENTER;
-    -fx-text-alignment: CENTER;
-    -fx-text-fill: #368B84;
-}
-
 #connectionPane {
     -fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");
     -fx-background-repeat: no-repeat;
     -fx-background-size: stretch;
-}
-
-.titleScreenTextField {
-    -fx-pref-width: 150.0;
-    -fx-pref-height: 10.0;
-    -fx-font-family: Bell MT;
-    -fx-font-size: 18;
-    -fx-alignment: CENTER;
-    -fx-text-alignment: CENTER;
-    -fx-background-radius: 5.0 5.0 5.0 5.0;
 }
 
 #connectionSetupBox {
@@ -73,37 +142,11 @@
     -fx-background-color: transparent;
 }
 
-.scroll-pane {
-    -fx-background-insets: 0, 1;
-}
-
-.scroll-pane > .viewport {
-    -fx-background-color: transparent;
-}
-
 #lobbiesList {
     -fx-spacing: 10;
     -fx-background-color: transparent;
     -fx-padding: 10 10 10 10;
     -fx-alignment: TOP-CENTER;
-}
-
-.lobbyBox {
-    -fx-background-color: #B0E0E6;
-    -fx-border-color: black;
-    -fx-border-width: 1;
-    -fx-padding: 10;
-    -fx-alignment: CENTER-LEFT;
-    -fx-text-alignment: JUSTIFY;
-}
-
-.awaitingStateMessageBox {
-    -fx-background-color: white;
-    -fx-border-color: black;
-    -fx-border-width: 1;
-    -fx-padding: 10;
-    -fx-spacing: 10;
-    -fx-alignment: CENTER;
 }
 
 #gameScreenPane {
@@ -113,23 +156,9 @@
 }
 
 #scoreboardPane {
-
-}
-
-#deckAndVisiblePane {
-
-}
-
-#opponentsFieldsPane {
-    -fx-alignment: CENTER;
-}
-
-#ownFieldPane {
-
-}
-
-#handPane {
-
+    -fx-background-image: url('/images/scoreboard.png');
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
 }
 
 #chatPane {
@@ -139,32 +168,6 @@
 
 #chatScrollPane {
     -fx-background-color: white;
-}
-
-.rectangularButton {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-text-fill: white;
-    -fx-background-image: url("/images/medieval_button.png");
-    -fx-background-size: stretch;
-    -fx-alignment: CENTER;
-    -fx-text-alignment: JUSTIFY;
-    -fx-wrap-text: true;
-    -fx-font-family: Castellar;
-    -fx-font-size: 16.0;
-}
-
-.roundButton {
-    -fx-background-radius: 50%;
-    -fx-min-width: 50px;
-    -fx-min-height: 50px;
-    -fx-max-width: 50px;
-    -fx-max-height: 50px;
-    -fx-background-color: transparent;
-    -fx-border-color: black;
-    -fx-border-width: 2px;
-    -fx-border-radius: 25;
-    -fx-alignment: center;
 }
 
 #sendButton {
@@ -178,22 +181,4 @@
     -fx-border-width: 1px;
     -fx-border-radius: 15;
     -fx-alignment: center;
-}
-
-.messageElement {
-    -fx-border-radius: 10;
-    -fx-background-color: transparent;
-    -fx-border-color: black;
-    -fx-border-width: 2px;
-    -fx-padding: 10;
-}
-
-.popupText {
-    -fx-font-family: Bell MT;
-    -fx-font-size: 20;
-    -fx-font-weight: bold;
-    -fx-alignment: CENTER;
-    -fx-text-alignment: CENTER;
-    -fx-text-fill: #FADA5E;
-    /* F8E473 / EEDC82 */
 }

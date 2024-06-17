@@ -74,9 +74,10 @@ public class GUILobbiesView extends GUIView {
             LOBBY_CREATION_POPUP_BOX.setPrefSize(screenSizes.getX() * 60 / 100, screenSizes.getY() * 60 / 100);
             CHANGE_NICKNAME_POPUP_BOX.setPrefSize(screenSizes.getX() * 60 / 100, screenSizes.getY() * 60 / 100);
 
-            NICKNAME_FIELD.setMaxWidth(200);
-
+            PLAYERS_NUMBER_SELECTOR.setMinWidth(100);
             PLAYERS_NUMBER_SELECTOR.setItems(FXCollections.observableArrayList(2, 3, 4));
+
+            CONFIRM_LOBBY_CREATION_BUTTON.setMinWidth(150);
 
             CREATE_LOBBY_BUTTON.setPrefSize(300, 50);
             CREATE_LOBBY_BUTTON.setOnMouseClicked(event -> {
@@ -92,6 +93,10 @@ public class GUILobbiesView extends GUIView {
                 lobbyCreationPopup.centerOnScreen();
                 lobbyCreationPopup.show(stage);
             });
+
+            NICKNAME_FIELD.setMaxWidth(250);
+
+            CONFIRM_NICKNAME_CHANGE_BUTTON.setMinWidth(150);
 
             CHANGE_NICKNAME_BUTTON.setPrefSize(300, 50);
             CHANGE_NICKNAME_BUTTON.setOnMouseClicked(event -> {
@@ -113,7 +118,8 @@ public class GUILobbiesView extends GUIView {
             BACK_TO_TITLE_SCREEN_BUTTON.setPrefSize(300, 50);
             BACK_TO_TITLE_SCREEN_BUTTON.setOnAction(event -> ViewState.getCurrentState().quit());
 
-            LOBBIES_PANE.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            //FIXME: are we sure we want "never"? anyway, it's already set in fxml, so we can cancel this
+            //LOBBIES_PANE.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             LOBBIES_PANE.setPrefSize(screenSizes.getX() * 89 / 100 - 320, screenSizes.getY() * 13 / 16);
             LOBBIES_PANE.relocate(screenSizes.getX() * 9 / 100 + 320, (screenSizes.getY() - LOBBIES_PANE.getPrefHeight()) / 2);
 

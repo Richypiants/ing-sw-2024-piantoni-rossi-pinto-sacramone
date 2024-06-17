@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 //FIXME: consider removing some Platform.runLater() and restricting some of them to necessary actions only
 public class GUIView extends View {
@@ -32,8 +33,8 @@ public class GUIView extends View {
 
     public static GenericPair<Double, Double> screenSizes;
 
-    public static GenericPair<Double, Double> cardSizes = new GenericPair<>(100.0, 66.0);
-    public static GenericPair<Double, Double> cornerScaleFactor = new GenericPair<>(2.0 / 9, 2.0 / 5);
+    protected static GenericPair<Double, Double> cardSizes = new GenericPair<>(100.0, 66.0);
+    protected static GenericPair<Double, Double> cornerScaleFactor = new GenericPair<>(2.0 / 9, 2.0 / 5);
 
     public GUIView() {
     }
@@ -129,12 +130,15 @@ public class GUIView extends View {
         }
 
         overlayPopup.getContent().add(content);
+        content.getStylesheets().add(Objects.requireNonNull(GUIView.class.getResource("/style.css")).toExternalForm());
+
         overlayPopup.setAutoFix(true);
         overlayPopup.centerOnScreen();
         overlayPopup.setHideOnEscape(false);
 
         overlayPopup.setX((screenSizes.getX() - popupContent.getPrefWidth()) / 2);
         overlayPopup.setY((screenSizes.getY() - popupContent.getPrefHeight()) / 2);
+
         return overlayPopup;
     }
 

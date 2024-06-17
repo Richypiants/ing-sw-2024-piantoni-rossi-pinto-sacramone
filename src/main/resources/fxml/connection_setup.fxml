@@ -13,22 +13,22 @@
     </AnchorPane>
 
     <VBox fx:id="connectionSetupBox">
-        <Label fx:id="nicknamePrompt" styleClass="titleScreenLabel" text="Choose your nickname: "/>
-        <TextField fx:id="nicknameField" styleClass="titleScreenTextField"
+        <Label fx:id="nicknamePrompt" styleClass="standardLabel" text="Choose your nickname: "/>
+        <TextField fx:id="nicknameField" styleClass="standardTextField"
                    promptText="Write your nickname here... [max 10 chars]:"/>
-        <Label fx:id="addressPrompt" styleClass="titleScreenLabel"
+        <Label fx:id="addressPrompt" styleClass="standardLabel"
                text="Enter the server IP address (empty: 'localhost'): "/>
-        <TextField fx:id="addressField" styleClass="titleScreenTextField" promptText="localhost"/>
-        <Label fx:id="connectionTechnologyPrompt" styleClass="titleScreenLabel"
+        <TextField fx:id="addressField" styleClass="standardTextField" promptText="localhost"/>
+        <Label fx:id="connectionTechnologyPrompt" styleClass="standardLabel"
                text="Choose the communication technology: "/>
         <HBox fx:id="connectionTechnologySetupBox">
             <fx:define>
                 <ToggleGroup fx:id="connectionTechnologyToggleGroup"/>
             </fx:define>
 
-            <RadioButton fx:id="socketRadioButton" styleClass="titleScreenLabel"
+            <RadioButton fx:id="socketRadioButton" styleClass="standardLabel"
                          toggleGroup="$connectionTechnologyToggleGroup" text="Socket"/>
-            <RadioButton fx:id="RMIRadioButton" styleClass="titleScreenLabel"
+            <RadioButton fx:id="RMIRadioButton" styleClass="standardLabel"
                          toggleGroup="$connectionTechnologyToggleGroup" text="RMI"/>
         </HBox>
         <Button fx:id="connectionSetupSendButton" styleClass="rectangularButton"

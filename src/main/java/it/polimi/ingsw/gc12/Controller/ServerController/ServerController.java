@@ -77,8 +77,10 @@ public abstract class ServerController implements ServerControllerInterface {
                         leaveGame(target);
                     else if (thisController instanceof LobbyController)
                         leaveLobby(target, true);
-                    else if (thisController instanceof ConnectionController)
+                    else if (thisController instanceof ConnectionController) {
                         removeActivePlayer(target);
+                        MODEL.removeListener(target.getListener());
+                    }
 
                     cancel();
             }

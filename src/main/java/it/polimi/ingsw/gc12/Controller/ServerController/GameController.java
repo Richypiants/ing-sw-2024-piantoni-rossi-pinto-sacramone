@@ -36,7 +36,7 @@ public class GameController extends ServerController {
 
     public void setState(GameState state) {
         currentGameState = state;
-        System.out.println("[SERVER]: Sending TGameTransitionCommand to clients in " + CONTROLLED_GAME);
+        System.out.println("[SERVER]: Sending GameTransitionCommand to clients in " + CONTROLLED_GAME);
         CONTROLLED_GAME.notifyListeners(new GameTransitionCommand(CONTROLLED_GAME.getRoundNumber(), CONTROLLED_GAME.getCurrentPlayerIndex()));
     }
 

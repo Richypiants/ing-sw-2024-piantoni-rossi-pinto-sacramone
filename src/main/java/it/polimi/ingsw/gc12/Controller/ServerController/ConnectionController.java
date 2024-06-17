@@ -30,8 +30,11 @@ public class ConnectionController extends ServerController {
         sender.getListener().notified(new SetNicknameCommand(nickname));
 
         MODEL.LOBBY_CONTROLLERS_LOCK.readLock().lock();
-        sender.getListener().notified(new SetLobbiesCommand(MODEL.getLobbiesMap()));
-        MODEL.LOBBY_CONTROLLERS_LOCK.readLock().unlock();
+        try {
+            sender.getListener().notified(new SetLobbiesCommand(MODEL.getLobbiesMap()));
+        } finally {
+            MODEL.LOBBY_CONTROLLERS_LOCK.readLock().unlock();
+        }
 
         sender.setPlayer(target);
         putActivePlayer(sender, target);
