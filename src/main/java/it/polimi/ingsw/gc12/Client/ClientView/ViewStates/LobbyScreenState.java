@@ -26,7 +26,10 @@ public class LobbyScreenState extends ViewState {
 
     @Override
     public void setNickname(String nickname) {
-        CLIENT.requestToServer(new SetNicknameCommand(nickname));
+        if (!nickname.isEmpty() && nickname.length() <= 10)
+            CLIENT.requestToServer(new SetNicknameCommand(nickname));
+        else
+            throw new IllegalArgumentException("The entered nickname is longer than 10 characters or is empty! Retry...");
     }
 
     @Override

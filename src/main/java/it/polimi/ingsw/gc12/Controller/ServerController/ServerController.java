@@ -88,9 +88,9 @@ public abstract class ServerController implements ServerControllerInterface {
     }
 
     public void keepAlive(NetworkSession sender) {
+        System.out.println("[CLIENT]: keepAlive command received from " + sender + ". Resetting timeout");
         sender.getTimeoutTask().cancel();
         renewTimeoutTimerTask(sender);
-        System.out.println("[CLIENT]: keepAlive command received from " + sender + ". Resetting timeout");
     }
 
     protected void generatePlayer(NetworkSession sender, String nickname) {
@@ -113,7 +113,6 @@ public abstract class ServerController implements ServerControllerInterface {
                     .findAny();
 
             if (selectedPlayer.isPresent()) {
-                System.out.println("[SERVER]: sending an Exception while trying to log in to " + sender);
                 sender.getListener().notified(
                         new ThrowExceptionCommand(
                                 new IllegalArgumentException("Provided nickname is already taken")

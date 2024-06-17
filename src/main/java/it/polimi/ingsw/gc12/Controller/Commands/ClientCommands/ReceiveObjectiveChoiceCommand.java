@@ -4,11 +4,11 @@ import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
 
 import java.util.List;
 
-public class ReceiveObjectiveChoice implements ClientCommand {
+public class ReceiveObjectiveChoiceCommand implements ClientCommand {
 
     private final List<Integer> CARD_IDS;
 
-    public ReceiveObjectiveChoice(List<Integer> CARD_IDS){
+    public ReceiveObjectiveChoiceCommand(List<Integer> CARD_IDS) {
         this.CARD_IDS = CARD_IDS;
     }
 

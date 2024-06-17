@@ -64,11 +64,7 @@ public class TUIParser {
 
         try {
             switch (command.toLowerCase()) {
-                case "setnickname", "sn" -> {
-                    String nickname = tokens.removeFirst();
-                    //TODO: invece di troncare, printare errore e reimmissione nickname?
-                    currentState.setNickname(nickname.substring(0, Math.min(nickname.length(), 10)));
-                }
+                case "setnickname", "sn" -> currentState.setNickname(tokens.removeFirst());
                 case "createlobby", "cl" -> {
                     errorMessage = "expected a valid maximum number of players for the lobby as first argument";
                     currentState.createLobby(Integer.parseInt(tokens.removeFirst()));

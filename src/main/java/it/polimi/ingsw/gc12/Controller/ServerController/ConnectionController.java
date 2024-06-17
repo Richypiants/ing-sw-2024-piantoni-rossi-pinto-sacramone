@@ -95,7 +95,7 @@ public class ConnectionController extends ServerController {
         }
         sender.setController(controller);
 
-        System.out.println("[SERVER]: sending UpdateLobbyCommand to clients");
+
     }
 
     @Override
@@ -121,7 +121,5 @@ public class ConnectionController extends ServerController {
             return;
         }
         sender.setController(MODEL.getLobbyController(lobbyUUID));
-
-        System.out.println("[SERVER]: sending UpdateLobbyCommand to clients");
     }
 }

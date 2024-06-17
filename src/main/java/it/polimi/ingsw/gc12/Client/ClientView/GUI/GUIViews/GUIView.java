@@ -132,6 +132,9 @@ public class GUIView extends View {
         overlayPopup.setAutoFix(true);
         overlayPopup.centerOnScreen();
         overlayPopup.setHideOnEscape(false);
+
+        overlayPopup.setX((screenSizes.getX() - popupContent.getPrefWidth()) / 2);
+        overlayPopup.setY((screenSizes.getY() - popupContent.getPrefHeight()) / 2);
         return overlayPopup;
     }
 

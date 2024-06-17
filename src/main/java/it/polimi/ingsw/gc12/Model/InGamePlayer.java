@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc12.Model;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ConfirmSelectionCommand;
 import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveCardCommand;
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveObjectiveChoice;
+import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ReceiveObjectiveChoiceCommand;
 import it.polimi.ingsw.gc12.Listeners.Listenable;
 import it.polimi.ingsw.gc12.Listeners.Listener;
 import it.polimi.ingsw.gc12.Model.Cards.GoldCard;
@@ -229,6 +229,7 @@ public class InGamePlayer extends Player implements Listenable {
      */
     public void addCardToHand(PlayableCard pickedCard) {
         CARDS_IN_HAND.add(pickedCard);
+        System.out.println("[SERVER]: sending ReceiveCardCommand to client");
         notifyListeners(new ReceiveCardCommand(pickedCard.ID));
     }
 
@@ -273,12 +274,13 @@ public class InGamePlayer extends Player implements Listenable {
      * Sets the selection of objective cards for this player.
      *
      * This method assigns the given list of objective cards as the player's selection and
-     * notifies all registered listeners about the new objective choice with a {@link ReceiveObjectiveChoice}.
+     * notifies all registered listeners about the new objective choice with a {@link ReceiveObjectiveChoiceCommand}.
      *
      * @param personalObjectiveCardsSelection The list of Objective Cards selected for this player.
      */
     public void setObjectivesSelection(ArrayList<ObjectiveCard> personalObjectiveCardsSelection) {
-        notifyListeners(new ReceiveObjectiveChoice(personalObjectiveCardsSelection.stream()
+        System.out.println("[SERVER]: Sending ReceiveObjectiveChoiceCommand to client");
+        notifyListeners(new ReceiveObjectiveChoiceCommand(personalObjectiveCardsSelection.stream()
                 .map((card) -> card.ID)
                 .toList())
         );
@@ -303,6 +305,7 @@ public class InGamePlayer extends Player implements Listenable {
      */
     public void setSecretObjective(ObjectiveCard objectiveCard) {
         this.secretObjective = objectiveCard;
+        System.out.println("[SERVER]: Sending ConfirmObjectiveChoiceCommand to client");
         notifyListeners(new ConfirmSelectionCommand(objectiveCard.ID));
     }
 

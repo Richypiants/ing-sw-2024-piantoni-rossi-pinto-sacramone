@@ -130,7 +130,7 @@ public class VictoryCalculationState extends GameState {
         // If putting players back into lobby, remember to re-add listeners to the lobby
         Lobby returnLobby = GAME.toLobby();
 
-        System.out.println("[SERVER]: Sending lobbies to clients previously in "+ GAME);
+        System.out.println("[SERVER]: Sending lobbies to clients previously in " + GAME);
 
         GameController.MODEL.LOBBY_CONTROLLERS_LOCK.readLock().lock();
         GAME.notifyListeners(new SetLobbiesCommand(GameController.MODEL.getLobbiesMap()));

@@ -17,6 +17,8 @@ public class GUIConnectionLoadingView extends GUIView {
     private static GUIConnectionLoadingView connectionLoadingScreenController = null;
 
     private final Parent SCENE_ROOT;
+    private final Label CONNECTION_LOADING_LABEL;
+    private final ProgressIndicator LOADING_PROGRESS_INDICATOR;
     private final VBox RETRY_CONNECTION_PANE;
     private final Label RETRY_CONNECTION_PROMPT_LABEL;
     private final Button YES_BUTTON;
@@ -28,6 +30,9 @@ public class GUIConnectionLoadingView extends GUIView {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        CONNECTION_LOADING_LABEL = (Label) SCENE_ROOT.lookup("#connectionLoadingLabel");
+        LOADING_PROGRESS_INDICATOR = (ProgressIndicator) SCENE_ROOT.lookup("#loadingProgressIndicator");
         RETRY_CONNECTION_PANE = (VBox) SCENE_ROOT.lookup("#retryConnectionPane");
         RETRY_CONNECTION_PROMPT_LABEL = (Label) SCENE_ROOT.lookup("#retryConnectionPromptLabel");
         YES_BUTTON = (Button) SCENE_ROOT.lookup("#yesButton");
@@ -50,8 +55,8 @@ public class GUIConnectionLoadingView extends GUIView {
         //Label error = ((Label) stage.getScene().getRoot().lookup("#error"));
         TextField addressField = (TextField) connectionSetupBox.lookup("#addressField");
 
-        if (nicknameField.getText().isEmpty()) {
-            //error.setText("Inserire un nickname prima di proseguire");
+        if (nicknameField.getText().isEmpty() || nicknameField.getText().length() > 10) {
+            printError(new IllegalArgumentException("The entered nickname is longer than 10 characters or is empty! Retry..."));
             return;
         }
 
@@ -59,14 +64,11 @@ public class GUIConnectionLoadingView extends GUIView {
             addressField.setText("localhost");
         }
 
+        CONNECTION_LOADING_LABEL.setStyle("-fx-font-size: 30");
+        CONNECTION_LOADING_LABEL.relocate((screenSizes.getX() - CONNECTION_LOADING_LABEL.getPrefWidth()) / 2, screenSizes.getY() * 0.45);
+        LOADING_PROGRESS_INDICATOR.relocate((screenSizes.getX() - LOADING_PROGRESS_INDICATOR.getPrefWidth()) / 2, screenSizes.getY() * 0.55);
+
         stage.getScene().setRoot(SCENE_ROOT);
-
-        Label downloadLabel = (Label) SCENE_ROOT.lookup("#download");
-        ProgressIndicator progressIndicator = (ProgressIndicator) SCENE_ROOT.lookup("#progress");
-        downloadLabel.setStyle("-fx-font-size: 30");
-
-        downloadLabel.relocate((screenSizes.getX() - downloadLabel.getPrefWidth()) / 2, screenSizes.getY() * 0.45);
-        progressIndicator.relocate((screenSizes.getX() - progressIndicator.getPrefWidth()) / 2, screenSizes.getY() * 0.55);
 
         // Before changing scene, we notify the chosen comm technology to the controller so that it initializes it
         new Thread(() -> ViewState.getCurrentState().connect(

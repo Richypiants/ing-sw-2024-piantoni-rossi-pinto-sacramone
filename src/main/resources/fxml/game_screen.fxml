@@ -16,8 +16,7 @@
     <HBox fx:id="opponentsFieldsPane" spacing="30"/>
 
     <AnchorPane fx:id="decksAndVisibleCardsPane">
-        <Label fx:id="resourceCardsLabel" alignment="CENTER"
-               text="Resource cards">
+        <Label fx:id="resourceCardsLabel" alignment="CENTER" text="Resource cards">
             <font>
                 <Font name="Bell MT" size="24.0"/>
             </font>
@@ -25,8 +24,7 @@
         <HBox fx:id="resourceCardsHBox" alignment="CENTER" spacing="10">
             <!--> <ImageView fx:id="resourceDeck"/> <-->
         </HBox>
-        <Label fx:id="goldCardsLabel" alignment="CENTER"
-               text="Gold cards">
+        <Label fx:id="goldCardsLabel" alignment="CENTER" text="Gold cards">
             <font>
                 <Font name="Bell MT" size="24.0"/>
             </font>
@@ -34,8 +32,7 @@
         <HBox fx:id="goldCardsHBox" alignment="CENTER" spacing="10">
             <!--> <ImageView fx:id="goldDeck"/> <-->
         </HBox>
-        <Label fx:id="commonObjectivesLabel" alignment="CENTER"
-               text="Common Objectives">
+        <Label fx:id="commonObjectivesLabel" alignment="CENTER" text="Common Objectives">
             <font>
                 <Font name="Bell MT" size="24.0"/>
             </font>
@@ -43,13 +40,14 @@
         <HBox fx:id="commonObjectivesHBox" alignment="CENTER" spacing="10">
             <!--> <ImageView fx:id="secretObjective"/> <-->
         </HBox>
-        <HBox fx:id="secretObjectiveHBox" alignment="CENTER" spacing="10">
-            <Label fx:id="secretObjectiveLabel" alignment="CENTER"
-                   text="Secret Objective">
-                <font>
-                    <Font name="Bell MT" size="24.0"/>
-                </font>
-            </Label>
+        <HBox fx:id="secretObjectiveHBox" alignment="CENTER">
+            <AnchorPane fx:id="secretObjectiveLabelPane">
+                <Label fx:id="secretObjectiveLabel" alignment="CENTER" text="Secret Objective">
+                    <font>
+                        <Font name="Bell MT" size="24.0"/>
+                    </font>
+                </Label>
+            </AnchorPane>
         </HBox>
     </AnchorPane>
 
@@ -60,7 +58,7 @@
         <Button fx:id="centerOwnFieldButton" mnemonicParsing="false"/>
     </AnchorPane>
 
-    <HBox fx:id="handPane" alignment="CENTER"/>
+    <HBox fx:id="ownHandPane" alignment="CENTER"/>
 
     <AnchorPane fx:id="scoreboardPane" visible="false"/>
 
@@ -80,7 +78,7 @@
             </HBox>
             <HBox fx:id="sendControls" alignment="CENTER" spacing="10">
                 <TextField fx:id="messageText" prefHeight="10.0" prefWidth="100.0"
-                           promptText="Scrivi qui il tuo messaggio...">
+                           promptText="Write your message here...">
                     <font>
                         <Font name="Bell MT" size="16.0"/>
                     </font>
@@ -99,15 +97,15 @@
         </Label>
     </VBox>
 
-    <VBox fx:id="leaderboardVBox" styleClass="lobbyScreenPopupBox" visible="false">
-        <Label fx:id="leaderboardLabel" styleClass="titleScreenLabel, popupText" alignment="CENTER"
+    <VBox fx:id="leaderboardVBox" visible="false">
+        <Label fx:id="leaderboardLabel" alignment="CENTER"
                text="LEADERBOARD">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>
         </Label>
 
-        <Label fx:id="winningPlayerLabel" styleClass="titleScreenLabel, popupText" alignment="CENTER">
+        <Label fx:id="winningPlayerLabel" alignment="CENTER">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>

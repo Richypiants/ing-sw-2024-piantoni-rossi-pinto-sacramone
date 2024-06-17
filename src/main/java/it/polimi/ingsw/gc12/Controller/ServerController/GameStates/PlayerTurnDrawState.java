@@ -96,9 +96,6 @@ public class PlayerTurnDrawState extends GameState {
 
         target.addCardToHand(drawnCard);
 
-        //FIXME: after managing correctly placeholder cards, remove this
-        System.out.println("[SERVER]: Sending drawn card to current player and new top deck card to clients in "+ GAME);
-
         transition();
     }
 
@@ -124,8 +121,6 @@ public class PlayerTurnDrawState extends GameState {
             throw new UnknownStringException();
 
         target.addCardToHand(drawnCard);
-
-        System.out.println("[SERVER]: Sending drawn card to current player and new visible card to clients in "+ GAME);
 
         transition();
     }
@@ -167,8 +162,6 @@ public class PlayerTurnDrawState extends GameState {
             GAME_CONTROLLER.getCurrentState().transition();
             return;
         }
-
-        System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME);
 
         GAME_CONTROLLER.setState(new PlayerTurnPlayState(GAME_CONTROLLER, GAME));
     }

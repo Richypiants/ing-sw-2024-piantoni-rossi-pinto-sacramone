@@ -102,7 +102,7 @@ public class TUITitleView extends TUIView{
             .cursorMove(-71, 1).a("██║ ╚████║██║  ██║   ██║   ╚██████╔╝██║  ██║██║  ██║███████╗██║███████║")
             .cursorMove(-71, 1).a("╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝").reset());
 
-        printToPosition(ansi().cursor(TUIParser.COMMAND_INPUT_ROW-2, 1).a("Press ENTER to start..."));
+        printToPosition(ansi().cursor(TUIParser.COMMAND_INPUT_ROW - 2, 1).a("Press ENTER to start..."));
         console.readLine();
         System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
 

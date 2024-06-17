@@ -26,7 +26,6 @@ public class ChooseInitialCardsState extends GameState {
                         .toList()
         );
 
-        System.out.println("[SERVER]: sending ReceiveCardCommand to clients");
         try {
             for (var target : GAME.getPlayers()) {
                 target.addCardToHand(initialCardsDeck.draw());
@@ -78,8 +77,6 @@ public class ChooseInitialCardsState extends GameState {
         GAME.peekFrom(GAME.getResourceCardsDeck());
         GAME.peekFrom(GAME.getGoldCardsDeck());
 
-        //FIXME: move this from here...
-        System.out.println("[SERVER]: Sending Top of the Deck, Common and Personal Objectives, GameTransitionCommand to clients in "+ GAME);
         ChooseObjectiveCardsState objectiveState = new ChooseObjectiveCardsState(GAME_CONTROLLER, GAME);
         GAME_CONTROLLER.setState(objectiveState);
 

@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 
@@ -46,16 +47,15 @@ public class GUITitleView extends GUIView {
         Platform.runLater(() -> {
             stage.getScene().setRoot(SCENE_ROOT);
 
-            //FIXME: why does this not work in fxml???
             CRANIO_CREATIONS_LOGO.setImage(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/images/cranio_creations_logo_no_bg.png"))));
             CRANIO_CREATIONS_LOGO.setSmooth(true);
-            CRANIO_CREATIONS_LOGO.setFitWidth(650);
-            CRANIO_CREATIONS_LOGO.setPreserveRatio(true);
+            CRANIO_CREATIONS_LOGO.setFitWidth(screenSizes.getX() * 40 / 100);
+            CRANIO_CREATIONS_LOGO.setFitHeight(screenSizes.getX() * 40 / 100);
             CRANIO_CREATIONS_LOGO.setVisible(true);
 
             CRANIO_CREATIONS_LOGO.relocate(
                     (screenSizes.getX() - CRANIO_CREATIONS_LOGO.getFitWidth()) / 2,
-                    screenSizes.getY() * 10 / 100
+                    (screenSizes.getY() - CRANIO_CREATIONS_LOGO.getFitHeight()) / 2
             );
 
             FadeTransition logoTransition = new FadeTransition(Duration.millis(3000), CRANIO_CREATIONS_LOGO);
@@ -67,30 +67,38 @@ public class GUITitleView extends GUIView {
             logoTransition.setOnFinished((event -> {
                 CRANIO_CREATIONS_LOGO.setVisible(false);
                 TITLE_SCREEN_BOX.setVisible(true);
+                TITLE_SCREEN_BOX.requestFocus();
             }));
 
             TITLE_SCREEN_BOX.setPrefSize(screenSizes.getX(), screenSizes.getY());
 
             TITLE_SCREEN_GAME_LOGO.setImage(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/images/only_center_logo_no_bg.png"))));
             TITLE_SCREEN_GAME_LOGO.setSmooth(true);
-            TITLE_SCREEN_GAME_LOGO.setFitWidth(650);
-            TITLE_SCREEN_GAME_LOGO.setFitHeight(650);
-            TITLE_SCREEN_GAME_LOGO.setPreserveRatio(true);
+            TITLE_SCREEN_GAME_LOGO.setFitWidth(screenSizes.getX() * 40 / 100);
+            TITLE_SCREEN_GAME_LOGO.setFitHeight(screenSizes.getX() * 40 / 100);
 
             FadeTransition backgroundTransition = new FadeTransition(Duration.millis(4000), TITLE_SCREEN_BOX);
             backgroundTransition.setFromValue(0.0);
             backgroundTransition.setToValue(1.0);
+            backgroundTransition.setOnFinished((event) -> {
+                TITLE_SCREEN_BOX.requestFocus();
+                TITLE_SCREEN_BOX.setOnMouseClicked((event2 -> ViewState.getCurrentState().keyPressed()));
+                TITLE_SCREEN_BOX.setOnKeyPressed((event2 -> {
+                    if (event2.getCode().equals(KeyCode.ESCAPE) || event2.getCode().equals(KeyCode.F11))
+                        return;
+                    ViewState.getCurrentState().keyPressed();
+                }));
+            });
 
             TITLE_SCREEN_GAME_LOGO.relocate(
                     (screenSizes.getX() - TITLE_SCREEN_GAME_LOGO.getFitWidth()) / 2,
                     screenSizes.getY() * 5 / 100
             );
+            TITLE_SCREEN_GAME_LOGO.toFront();
 
-            TITLE_SCREEN_PROMPT = new Label("Click HERE to start");
+            TITLE_SCREEN_PROMPT = new Label("CLICK or PRESS ANY KEY to start");
             TITLE_SCREEN_PROMPT.setId("titleScreenPrompt");
             TITLE_SCREEN_PROMPT.setPrefSize(500, 25);
-            TITLE_SCREEN_PROMPT.setOnMouseClicked((event -> ViewState.getCurrentState().keyPressed()));
-            TITLE_SCREEN_PROMPT.setOnKeyPressed((event -> ViewState.getCurrentState().keyPressed()));
 
             TITLE_SCREEN_BOX.getChildren().add(TITLE_SCREEN_PROMPT);
 
@@ -109,30 +117,31 @@ public class GUITitleView extends GUIView {
             ParallelTransition titleScreenBoxTransition = new ParallelTransition(backgroundTransition, fadeTransition);
             SequentialTransition titleScreenTransition = new SequentialTransition(logoTransition, titleScreenBoxTransition);
 
-            //FIXME: KeyEvent non ricevuto...
+            CRANIO_CREATIONS_LOGO.requestFocus();
             CRANIO_CREATIONS_LOGO.setOnMouseClicked((event) -> {
                 CRANIO_CREATIONS_LOGO.setVisible(false);
                 titleScreenTransition.jumpTo(logoTransition.getTotalDuration());
             });
             CRANIO_CREATIONS_LOGO.setOnKeyPressed((event) -> {
+                if (event.getCode().equals(KeyCode.ESCAPE) || event.getCode().equals(KeyCode.F11))
+                    return;
                 CRANIO_CREATIONS_LOGO.setVisible(false);
                 titleScreenTransition.jumpTo(logoTransition.getTotalDuration());
             });
 
-            TITLE_SCREEN_GAME_LOGO.setOnMouseClicked((event) -> {
-                if (!backgroundTransition.getStatus().equals(Animation.Status.STOPPED)) {
-                    titleScreenTransition.jumpTo(logoTransition.getTotalDuration().add(backgroundTransition.getTotalDuration()));
-                    event.consume();
-                }
+            TITLE_SCREEN_BOX.setOnMouseClicked((event) -> {
+                titleScreenTransition.jumpTo(logoTransition.getTotalDuration().add(backgroundTransition.getTotalDuration()).add(Duration.millis(999)));
+                event.consume();
             });
-            TITLE_SCREEN_GAME_LOGO.setOnKeyPressed((event) -> {
-                if (!backgroundTransition.getStatus().equals(Animation.Status.STOPPED)) {
-                    titleScreenTransition.jumpTo(logoTransition.getTotalDuration().add(backgroundTransition.getTotalDuration().add(Duration.millis(1000))));
-                    event.consume();
-                }
+            TITLE_SCREEN_BOX.setOnKeyPressed((event) -> {
+                if (event.getCode().equals(KeyCode.ESCAPE) || event.getCode().equals(KeyCode.F11))
+                    return;
+                titleScreenTransition.jumpTo(logoTransition.getTotalDuration().add(backgroundTransition.getTotalDuration()).add(Duration.millis(999)));
+                event.consume();
             });
 
             CRANIO_CREATIONS_LOGO.toFront();
+
             titleScreenTransition.play();
         });
     }

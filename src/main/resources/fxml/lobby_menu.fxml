@@ -5,27 +5,24 @@
 <?import javafx.scene.text.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1"
             fx:id="lobbiesMenuPane" xmlns="http://javafx.com/javafx/21" stylesheets="/style.css">
-    <VBox fx:id="buttonsBox">
+    <VBox fx:id="buttonsBox" alignment="CENTER">
         <Label fx:id="ownNicknameLabel" styleClass="titleScreenLabel">
             <font>
                 <Font name="Bell MT" size="14.0"/>
             </font>
         </Label>
-        <Button fx:id="createGameButton" styleClass="button" layoutX="51.0" layoutY="122.0" mnemonicParsing="false"
-                prefHeight="27.0" prefWidth="250.0" text="Create game">
+        <Button fx:id="createGameButton" styleClass="rectangularButton" mnemonicParsing="false" text="Create game">
             <font>
                 <Font name="Bell MT" size="14.0"/>
             </font>
         </Button>
-        <Button fx:id="nicknameButton" styleClass="button" layoutX="51.0" layoutY="200.0" mnemonicParsing="false"
-                prefHeight="27.0" prefWidth="250.0" text="Change nickname">
+        <Button fx:id="nicknameButton" styleClass="rectangularButton" mnemonicParsing="false" text="Change nickname">
             <font>
                 <Font name="Bell MT" size="14.0"/>
             </font>
         </Button>
-        <Button fx:id="backToTitleScreenButton" styleClass="button" layoutX="51.0" layoutY="278.0"
-                mnemonicParsing="false"
-                prefHeight="27.0" prefWidth="250.0" text="Back to title screen">
+        <Button fx:id="backToTitleScreenButton" styleClass="rectangularButton" mnemonicParsing="false"
+                text="Back to title screen">
             <font>
                 <Font name="Bell MT" size="14.0"/>
             </font>
@@ -36,7 +33,9 @@
         <VBox fx:id="lobbiesList" minHeight="0.0" minWidth="0.0"/>
     </ScrollPane>
 
-    <VBox fx:id="lobbyCreationPopupBox" styleClass="lobbyScreenPopupBox" visible="false">
+    <VBox fx:id="lobbyCreationPopupBox" visible="false" alignment="CENTER"
+          style="-fx-background-image: url('/images/medieval_popup.png'); -fx-background-repeat: no-repeat;
+          -fx-background-size: stretch; -fx-border-width: 1; -fx-spacing: 10;">
         <Label fx:id="playersNumberPrompt" styleClass="popupText" alignment="CENTER"
                text="Insert the maximum number of players for the game:">
             <font>
@@ -44,7 +43,7 @@
             </font>
         </Label>
         <ComboBox fx:id="maxPlayersSelector" prefWidth="150.0"/>
-        <Button fx:id="confirmLobbyCreationButton" styleClass="button" mnemonicParsing="false"
+        <Button fx:id="confirmLobbyCreationButton" styleClass="rectangularButton" mnemonicParsing="false"
                 prefHeight="27.0" prefWidth="141.0" text="OK">
             <font>
                 <Font name="Bell MT" size="14.0"/>
@@ -52,15 +51,17 @@
         </Button>
     </VBox>
 
-    <VBox fx:id="changeNicknamePopupBox" styleClass="lobbyScreenPopupBox" visible="false">
+    <VBox fx:id="changeNicknamePopupBox" visible="false" alignment="CENTER"
+          style="-fx-background-image: url('/images/medieval_popup.png'); -fx-background-repeat: no-repeat;
+          -fx-background-size: stretch; -fx-border-width: 1; -fx-spacing: 10;">
         <Label fx:id="nicknamePrompt" styleClass="popupText" alignment="CENTER"
-               text="Choose a new nickname (10 chars max.):">
+               text="Choose a new nickname [max 10 chars]:">
             <font>
                 <Font name="Bell MT" size="30.0"/>
             </font>
         </Label>
-        <TextField fx:id="nicknameField" prefWidth="150.0" promptText="nickname"/>
-        <Button fx:id="confirmNicknameChangeButton" styleClass="button" mnemonicParsing="false"
+        <TextField fx:id="nicknameField" promptText="nickname"/>
+        <Button fx:id="confirmNicknameChangeButton" styleClass="rectangularButton" mnemonicParsing="false"
                 prefHeight="27.0" prefWidth="141.0" text="OK">
             <font>
                 <Font name="Bell MT" size="14.0"/>

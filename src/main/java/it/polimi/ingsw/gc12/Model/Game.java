@@ -317,6 +317,7 @@ public class Game extends Room implements Listenable {
             COMMON_OBJECTIVES[1] = OBJECTIVE_CARDS_DECK.draw();
         } catch (EmptyDeckException ignored) {}
 
+        System.out.println("[SERVER]: Sending Common Objectives to clients in " + this);
         notifyListeners(new ReplaceCardsCommand(List.of(
                 new Triplet<>(COMMON_OBJECTIVES[0].ID, "objective_visible", 0),
                 new Triplet<>(COMMON_OBJECTIVES[1].ID, "objective_visible", 1)
@@ -368,6 +369,7 @@ public class Game extends Room implements Listenable {
     public void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
             throws InvalidCardPositionException, NotEnoughResourcesException, CardNotInHandException {
         target.placeCard(coordinates, card, playedSide);
+        System.out.println("[SERVER]: Sending card placed by current player to clients in " + this);
         notifyListeners(new PlaceCardCommand(target.getNickname(), coordinates, card.ID, playedSide,
                 target.getOwnedResources(), target.getOpenCorners(), target.getPoints()));
     }
@@ -431,6 +433,7 @@ public class Game extends Room implements Listenable {
      */
     public <T extends Card> T peekFrom(CardDeck<T> deck){
         T topDeckCard = deck.peek();
+        System.out.println("[SERVER]: Sending Top of the Deckto clients in " + this);
         notifyListeners(new ReplaceCardsCommand(List.of(new Triplet<>(topDeckCard == null ? -1 : topDeckCard.ID, deck.getDeckType() + "_deck", -1))));
 
         return topDeckCard;
@@ -446,6 +449,7 @@ public class Game extends Room implements Listenable {
      */
     public void toggleActive(InGamePlayer target) {
         target.toggleActive();
+        System.out.println("[SERVER]: sending ToggleActiveCommand to clients");
         notifyListeners(new ToggleActiveCommand(target.getNickname()));
     }
 

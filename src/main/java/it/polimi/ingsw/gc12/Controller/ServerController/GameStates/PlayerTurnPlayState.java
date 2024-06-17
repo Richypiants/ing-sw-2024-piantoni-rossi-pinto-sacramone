@@ -27,8 +27,6 @@ public class PlayerTurnPlayState extends GameState {
 
         GAME.placeCard(target, coordinates, card, playedSide);
 
-        System.out.println("[SERVER]: Sending card placed by current player to clients in "+ GAME);
-
         transition();
     }
 
@@ -44,7 +42,6 @@ public class PlayerTurnPlayState extends GameState {
                 GAME.initializeFinalPhaseCounter();
         //TODO: send alert a tutti i giocatori che si è entrati nella fase finale?
 
-        System.out.println("[SERVER]: Sending GameTransitionCommand to clients in "+ GAME);
         GAME_CONTROLLER.setState(new PlayerTurnDrawState(GAME_CONTROLLER, GAME));
 
         //Check if there's a card that can be drawn, if not, directly call the transition of the PlayerTurnDrawState

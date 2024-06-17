@@ -5,7 +5,6 @@ import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -15,11 +14,6 @@ import java.util.Date;
  * This logger redirects the standard error stream to a specified file and formats the log entries for improved readability and ease of use.
  */
 public class ErrorLogger {
-
-    /**
-     * The file path where the logs will be written.
-     */
-    Path filePath;
 
     /**
      * A formatter to format the timestamp in the log entries.
@@ -40,7 +34,7 @@ public class ErrorLogger {
         String date = formatter.format(new Date());
 
         try {
-            err = new PrintStream(new FileOutputStream("log_" + date, false));
+            err = new PrintStream(new FileOutputStream("log_" + date + ".txt", false));
             System.setErr(err);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

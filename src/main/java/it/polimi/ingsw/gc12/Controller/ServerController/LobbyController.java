@@ -90,7 +90,5 @@ public class LobbyController extends ServerController {
             MODEL.removePlayerFromLobby(sender.getPlayer(), CONTROLLED_LOBBY);
 
         sender.setController(ConnectionController.getInstance());
-
-        System.out.println("[SERVER]: sending UpdateLobbiesCommand to clients");
     }
 }

@@ -4,13 +4,10 @@
 <?import javafx.scene.layout.AnchorPane?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
             fx:id="titleScreenPane" stylesheets="/style.css">
-    <ImageView fx:id="cranioCreationsLogo" fitWidth="650.0" preserveRatio="true" visible="false"/>
+    <ImageView fx:id="cranioCreationsLogo" preserveRatio="true"/>
     <AnchorPane fx:id="titleScreenBox" visible="false">
-        <!-- why tags here not working??? -->
-        <ImageView fx:id="titleScreenGameLogo" fitWidth="650.0" fitHeight="650.0" preserveRatio="true">
-            <!-- <Image url="@/images/cranio_creations_logo_no_bg.png"/> -->
+        <ImageView fx:id="titleScreenGameLogo" preserveRatio="true">
         </ImageView>
-        <!-- <Label fx:id="titleScreenPrompt" styleClass="titleScreenLabel" text="Premi INVIO per iniziare"/> -->
     </AnchorPane>
 </AnchorPane>
 

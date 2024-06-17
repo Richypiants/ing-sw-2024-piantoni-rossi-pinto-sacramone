@@ -25,11 +25,10 @@ public class GUILobbiesView extends GUIView {
     private final Button CHANGE_NICKNAME_BUTTON;
     private final Button BACK_TO_TITLE_SCREEN_BUTTON;
     private final VBox LOBBY_CREATION_POPUP_BOX;
-    private final Label PLAYERS_NUMBER_PROMPT;
     private final ComboBox<Integer> PLAYERS_NUMBER_SELECTOR;
     private final Button CONFIRM_LOBBY_CREATION_BUTTON;
     private final VBox CHANGE_NICKNAME_POPUP_BOX;
-    private final Label CHANGE_NICKNAME_PROMPT;
+    private final TextField NICKNAME_FIELD;
     private final TextField CHANGE_NICKNAME_TEXTFIELD;
     private final Button CONFIRM_NICKNAME_CHANGE_BUTTON;
     private final ScrollPane LOBBIES_PANE;
@@ -48,11 +47,10 @@ public class GUILobbiesView extends GUIView {
         CHANGE_NICKNAME_BUTTON = (Button) SCENE_ROOT.lookup("#nicknameButton");
         BACK_TO_TITLE_SCREEN_BUTTON = (Button) SCENE_ROOT.lookup("#backToTitleScreenButton");
         LOBBY_CREATION_POPUP_BOX = (VBox) SCENE_ROOT.lookup("#lobbyCreationPopupBox");
-        PLAYERS_NUMBER_PROMPT = (Label) SCENE_ROOT.lookup("#playersNumberPrompt");
         PLAYERS_NUMBER_SELECTOR = (ComboBox<Integer>) SCENE_ROOT.lookup("#maxPlayersSelector");
         CONFIRM_LOBBY_CREATION_BUTTON = (Button) SCENE_ROOT.lookup("#confirmLobbyCreationButton");
         CHANGE_NICKNAME_POPUP_BOX = (VBox) SCENE_ROOT.lookup("#changeNicknamePopupBox");
-        CHANGE_NICKNAME_PROMPT = (Label) SCENE_ROOT.lookup("#nicknamePrompt");
+        NICKNAME_FIELD = (TextField) SCENE_ROOT.lookup("#nicknameField");
         CHANGE_NICKNAME_TEXTFIELD = (TextField) SCENE_ROOT.lookup("#nicknameField");
         CONFIRM_NICKNAME_CHANGE_BUTTON = (Button) SCENE_ROOT.lookup("#confirmNicknameChangeButton");
         LOBBIES_PANE = (ScrollPane) SCENE_ROOT.lookup("#lobbiesPane");
@@ -69,12 +67,18 @@ public class GUILobbiesView extends GUIView {
     @Override
     public void lobbiesScreen() {
         Platform.runLater(() -> {
-            MENU_BUTTONS_BOX.relocate(screenSizes.getX() * 10 / 100, screenSizes.getY() * 9 / 16);
+            MENU_BUTTONS_BOX.relocate(screenSizes.getX() * 9 / 100, screenSizes.getY() * 9 / 16);
 
             OWN_NICKNAME_LABEL.setText("Your nickname: " + VIEWMODEL.getOwnNickname());
 
+            LOBBY_CREATION_POPUP_BOX.setPrefSize(screenSizes.getX() * 60 / 100, screenSizes.getY() * 60 / 100);
+            CHANGE_NICKNAME_POPUP_BOX.setPrefSize(screenSizes.getX() * 60 / 100, screenSizes.getY() * 60 / 100);
+
+            NICKNAME_FIELD.setMaxWidth(200);
+
             PLAYERS_NUMBER_SELECTOR.setItems(FXCollections.observableArrayList(2, 3, 4));
 
+            CREATE_LOBBY_BUTTON.setPrefSize(300, 50);
             CREATE_LOBBY_BUTTON.setOnMouseClicked(event -> {
                 PLAYERS_NUMBER_SELECTOR.setValue(2);
 
@@ -89,11 +93,16 @@ public class GUILobbiesView extends GUIView {
                 lobbyCreationPopup.show(stage);
             });
 
+            CHANGE_NICKNAME_BUTTON.setPrefSize(300, 50);
             CHANGE_NICKNAME_BUTTON.setOnMouseClicked(event -> {
                 OverlayPopup nicknameChangePopup = drawOverlayPopup(CHANGE_NICKNAME_POPUP_BOX, true);
 
                 CONFIRM_NICKNAME_CHANGE_BUTTON.setOnAction(event2 -> {
-                    ViewState.getCurrentState().setNickname(CHANGE_NICKNAME_TEXTFIELD.getText());
+                    try {
+                        ViewState.getCurrentState().setNickname(CHANGE_NICKNAME_TEXTFIELD.getText());
+                    } catch (IllegalArgumentException e) {
+                        printError(e);
+                    }
                     nicknameChangePopup.hide();
                 });
 
@@ -101,11 +110,12 @@ public class GUILobbiesView extends GUIView {
                 nicknameChangePopup.show(stage);
             });
 
+            BACK_TO_TITLE_SCREEN_BUTTON.setPrefSize(300, 50);
             BACK_TO_TITLE_SCREEN_BUTTON.setOnAction(event -> ViewState.getCurrentState().quit());
 
             LOBBIES_PANE.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-            LOBBIES_PANE.setPrefSize(screenSizes.getX() * 70 / 100, screenSizes.getY() * 13 / 16);
-            LOBBIES_PANE.relocate(screenSizes.getX() * 28 / 100, (screenSizes.getY() - LOBBIES_PANE.getPrefHeight()) / 2);
+            LOBBIES_PANE.setPrefSize(screenSizes.getX() * 89 / 100 - 320, screenSizes.getY() * 13 / 16);
+            LOBBIES_PANE.relocate(screenSizes.getX() * 9 / 100 + 320, (screenSizes.getY() - LOBBIES_PANE.getPrefHeight()) / 2);
 
             LOBBIES_LIST.setMinHeight(LOBBIES_PANE.getPrefHeight() * 98 / 100);
             LOBBIES_LIST.setPrefWidth(LOBBIES_PANE.getPrefWidth() * 98 / 100);
@@ -114,7 +124,6 @@ public class GUILobbiesView extends GUIView {
             if (VIEWMODEL.inRoom())
                 LOBBIES_LIST.getChildren().add(createLobbyListElement(VIEWMODEL.getCurrentLobby()));
 
-            //TODO: invece di ricrearlo ogni volta, salvarlo e updatarlo?
             for (var lobby : VIEWMODEL.getLobbies().values()) {
                 if (!lobby.equals(VIEWMODEL.getCurrentLobby()))
                     LOBBIES_LIST.getChildren().add(createLobbyListElement(lobby));
@@ -173,14 +182,15 @@ public class GUILobbiesView extends GUIView {
         if (VIEWMODEL.getCurrentLobby() == null && lobby.getPlayersNumber() < lobby.getMaxPlayers()) {
             Button joinButton = new Button("JOIN");
             joinButton.setMinWidth(120);
+            joinButton.getStyleClass().add("rectangularButton");
             joinButton.setOnAction(e -> ViewState.getCurrentState().joinLobby(lobby.getRoomUUID()));
             lobbyBox.getChildren().add(joinButton);
         } else {
             if (lobby.equals(VIEWMODEL.getCurrentLobby())) {
                 Button leaveButton = new Button("LEAVE");
                 leaveButton.setMinWidth(120);
-                leaveButton.setOnAction(e -> ViewState.getCurrentState().leaveLobby()
-                );
+                leaveButton.getStyleClass().add("rectangularButton");
+                leaveButton.setOnAction(e -> ViewState.getCurrentState().leaveLobby());
                 lobbyBox.getChildren().add(leaveButton);
             }
         }

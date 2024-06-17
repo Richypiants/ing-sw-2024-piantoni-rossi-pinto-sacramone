@@ -61,7 +61,6 @@ public class ChooseObjectiveCardsState extends GameState {
 
     @Override
     public void transition() {
-        System.out.println("[SERVER]: Sending GameTransitionCommand to active clients in "+ GAME);
         GAME.increaseRound();
         GAME.nextPlayer();
 

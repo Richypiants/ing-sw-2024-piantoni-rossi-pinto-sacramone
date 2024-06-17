@@ -30,9 +30,9 @@ public class TUILobbiesView extends TUIView{
         for (Player player : lobby.getPlayers()) {
             Ansi.Color ansiColor = player.getColor().equals(Color.NO_COLOR) ? Ansi.Color.WHITE : Ansi.Color.valueOf(player.getColor().name());
             String coloredPlayer = Ansi.ansi().fg(ansiColor).a(player.getNickname()).reset().toString();
-            thisLobbyMessage.append(coloredPlayer).append("| ");
+            thisLobbyMessage.append(coloredPlayer).append(" | ");
         }
-        thisLobbyMessage.delete(thisLobbyMessage.length() - 2, thisLobbyMessage.length());
+        thisLobbyMessage.delete(thisLobbyMessage.length() - 3, thisLobbyMessage.length());
 
         thisLobbyMessage.append("}");
 
@@ -79,13 +79,14 @@ public class TUILobbiesView extends TUIView{
             i++;
             for (var lobby : VIEWMODEL.getLobbies().entrySet())
                 if (!lobby.getValue().equals(VIEWMODEL.getCurrentLobby()))
-                    printToPosition(ansi().cursor(i++, 1).a("   [UUID] " + buildLobbyMessage(lobby.getValue())));
+                    printToPosition(ansi().cursor(i++, 1).a("    [UUID] " + buildLobbyMessage(lobby.getValue())));
         }
     }
 
     @Override
     public void showNickname() {
         TUIParser.COMMAND_INPUT_COLUMN = 6 + VIEWMODEL.getOwnNickname().length();
+        System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN));
         lobbiesScreen();
     }
 }

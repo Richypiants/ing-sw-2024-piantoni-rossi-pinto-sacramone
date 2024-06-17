@@ -177,6 +177,7 @@ public class ServerModel implements Listenable {
         LOBBY_CONTROLLERS_LOCK.writeLock().lock();
         try {
             LOBBY_CONTROLLERS.put(lobby.getRoomUUID(), createdController);
+            System.out.println("[SERVER]: sending UpdateLobbyCommand to clients");
             notifyListeners(new UpdateLobbyCommand(lobby));
             return createdController;
         } finally {
@@ -195,11 +196,11 @@ public class ServerModel implements Listenable {
         LOBBY_CONTROLLERS_LOCK.writeLock().lock();
         try {
             Lobby lobby = controller.CONTROLLED_LOBBY;
-            //FIXME: a better solution? or does this get fixed by fixing constructors for Game & Lobby?
             while (lobby.getPlayersNumber() > 0)
                 lobby.removePlayer(lobby.getPlayers().getFirst());
 
             LOBBY_CONTROLLERS.remove(lobby.getRoomUUID());
+            System.out.println("[SERVER]: sending UpdateLobbyCommand to clients");
             notifyListeners(new UpdateLobbyCommand(lobby));
         } finally {
             LOBBY_CONTROLLERS_LOCK.writeLock().unlock();
@@ -220,6 +221,7 @@ public class ServerModel implements Listenable {
             LobbyController controller = LOBBY_CONTROLLERS.get(lobbyUUID);
             if (controller == null) throw new IllegalArgumentException();
             controller.CONTROLLED_LOBBY.addPlayer(target);
+            System.out.println("[SERVER]: sending UpdateLobbyCommand to clients");
             notifyListeners(new UpdateLobbyCommand(controller.CONTROLLED_LOBBY));
         } finally {
             LOBBY_CONTROLLERS_LOCK.readLock().unlock();
@@ -234,12 +236,13 @@ public class ServerModel implements Listenable {
      * @param lobby  The lobby from which to remove the player.
      */
     public void removePlayerFromLobby(Player target, Lobby lobby) {
-        LOBBY_CONTROLLERS_LOCK.readLock().lock();
+        LOBBY_CONTROLLERS_LOCK.writeLock().lock();
         try {
             lobby.removePlayer(target);
+            System.out.println("[SERVER]: sending UpdateLobbyCommand to clients");
             notifyListeners(new UpdateLobbyCommand(lobby));
         } finally {
-            LOBBY_CONTROLLERS_LOCK.readLock().unlock();
+            LOBBY_CONTROLLERS_LOCK.writeLock().unlock();
         }
     }
 
@@ -291,7 +294,7 @@ public class ServerModel implements Listenable {
 
     /**
      * Adds a listener to the list of the ones registered to lobbies updates, both inside or outside one.
-     *
+     * <p>
      * This method ensures thread-safe addition of listeners to the list.
      *
      * @param listener The listener to be added.
@@ -305,7 +308,7 @@ public class ServerModel implements Listenable {
 
     /**
      * Removes a listener from the list of the ones registered to lobbies updates, both inside or outside one.
-     *
+     * <p>
      * This method ensures thread-safe removal of listeners from the list.
      *
      * @param listener The listener to be removed.
@@ -319,7 +322,7 @@ public class ServerModel implements Listenable {
 
     /**
      * Notifies all registered listeners with the specified command.
-     *
+     * <p>
      * This method ensures thread-safe iteration over the listeners list while notifying them.
      *
      * @param command The command to be sent to all listeners.

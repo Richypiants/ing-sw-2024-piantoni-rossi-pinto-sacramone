@@ -36,6 +36,7 @@ public class GameController extends ServerController {
 
     public void setState(GameState state) {
         currentGameState = state;
+        System.out.println("[SERVER]: Sending TGameTransitionCommand to clients in " + CONTROLLED_GAME);
         CONTROLLED_GAME.notifyListeners(new GameTransitionCommand(CONTROLLED_GAME.getRoundNumber(), CONTROLLED_GAME.getCurrentPlayerIndex()));
     }
 
@@ -303,14 +304,11 @@ public class GameController extends ServerController {
                 if (CONTROLLED_GAME.getCurrentPlayer() == null || CONTROLLED_GAME.getCurrentPlayer().equals(targetPlayer))
                     currentGameState.playerDisconnected(targetPlayer);
 
-                System.out.println("[SERVER]: sending ToggleActiveCommand to clients");
-
                 if (CONTROLLED_GAME.getActivePlayers().size() == 1) {
+                    System.out.println("[SERVER]: Freezing " + CONTROLLED_GAME + " game");
                     CONTROLLED_GAME.notifyListeners(new PauseGameCommand());
 
                     currentGameState = new AwaitingReconnectionState(this, CONTROLLED_GAME);
-
-                    System.out.println("[SERVER]: Freezing " + CONTROLLED_GAME + " game");
                 }
             }
         });

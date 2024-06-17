@@ -6,17 +6,15 @@
 <?import javafx.scene.layout.VBox?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
             fx:id="connectionLoadingPane" stylesheets="/style.css">
-    <ProgressIndicator fx:id="progress" prefWidth="50.0"/>
-
-    <Label fx:id="download" styleClass="titleScreenLabel" prefWidth="500.0" prefHeight="20.0"
-           text="Opening the Codex... Please wait...">
-    </Label>
+    <Label fx:id="connectionLoadingLabel" styleClass="titleScreenLabel" prefWidth="500.0" prefHeight="20.0"
+           text="Opening the Codex... Please wait..."/>
+    <ProgressIndicator fx:id="loadingProgressIndicator" prefWidth="50.0"/>
 
     <VBox fx:id="retryConnectionPane" visible="false" spacing="100.0" alignment="CENTER">
         <Label fx:id="retryConnectionPromptLabel" styleClass="titleScreenLabel" prefWidth="500.0" prefHeight="20.0"/>
         <HBox spacing="300.0" alignment="CENTER">
-            <Button fx:id="yesButton" styleClass="button" text="Yes"/>
-            <Button fx:id="noButton" styleClass="button" text="No"/>
+            <Button fx:id="yesButton" styleClass="rectangularButton" text="Yes"/>
+            <Button fx:id="noButton" styleClass="rectangularButton" text="No"/>
         </HBox>
     </VBox>
 </AnchorPane>

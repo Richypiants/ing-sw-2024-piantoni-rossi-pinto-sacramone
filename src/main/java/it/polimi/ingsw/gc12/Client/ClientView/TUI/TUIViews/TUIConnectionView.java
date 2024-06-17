@@ -58,7 +58,7 @@ public class TUIConnectionView extends TUIView {
         final int MAX_NICK_LENGTH = 10;
 
         do {
-            printToPosition(ansi().cursor(1, 1).a("Enter your nickname [" + MAX_NICK_LENGTH + " chars max.]: "));
+            printToPosition(ansi().cursor(1, 1).a("Enter your nickname [max " + MAX_NICK_LENGTH + " chars]: "));
             if(lastInputWasInvalid)
                 printToPosition(ansi().cursor(2, 1).a("The entered nickname is longer than " + MAX_NICK_LENGTH + " characters or is empty! Retry..."));
             lastInputWasInvalid = false;
