@@ -17,7 +17,6 @@ import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 public class GameController extends ServerController {
@@ -83,15 +82,6 @@ public class GameController extends ServerController {
     public void placeCard(NetworkSession sender, GenericPair<Integer, Integer> coordinates, int cardID, Side playedSide) {
         System.out.println("[CLIENT]: PlaceCardCommand received and being executed");
         if (invalidCard(sender, cardID)) return;
-
-        if (Arrays.stream(Side.values()).noneMatch((side) -> side.equals(playedSide))) {
-            sender.getListener().notified(
-                    new ThrowExceptionCommand(
-                            new IllegalArgumentException("Invalid card side")
-                    )
-            );
-            return;
-        }
 
         InGamePlayer targetPlayer = (InGamePlayer) sender.getPlayer();
         Card targetCard = ServerModel.CARDS_LIST.get(cardID);

@@ -65,6 +65,29 @@ public class ServerControllerTest {
     };
 
     /**
+     * A stub implementation of the VirtualClient used for testing.
+     */
+    public static class VirtualClientImpl implements VirtualClient {
+
+        public ClientControllerInterfaceImpl myClientController = new ClientControllerInterfaceImpl();
+        public ClientCommand lastCommandReceived = null;
+        public List<ClientCommand> receivedCommandsList = new ArrayList<>();
+
+
+        @Override
+        public void requestToClient(ClientCommand command) {
+            lastCommandReceived = command;
+            receivedCommandsList.add(command);
+            command.execute(myClientController);
+            if (command instanceof PauseGameCommand) {
+                synchronized (this) {
+                    notify();
+                }
+            }
+        }
+    }
+
+    /**
      * Tests that hasNoPlayer method returns true when the player is not present
      * and the related exceptions are sent to the VirtualClient.
      */
@@ -435,36 +458,9 @@ public class ServerControllerTest {
         );
     }
 
-    /*
-     * The following section contains
-     * tests that verifies that it isn't possible
-     * to successfully execute the action implemented by the lobby controller while assigned to the connection/game controller
-     * So, every following test is a call sent from a wrong controller and a negative response is expected.
-     */
-
-    /**
-     * A stub implementation of the VirtualClient used for testing.
-     */
-    public static class VirtualClientImpl implements VirtualClient {
-
-        public ClientControllerInterfaceImpl myClientController = new ClientControllerInterfaceImpl();
-        public ClientCommand lastCommandReceived = null;
-        public List<ClientCommand> receivedCommandsList = new ArrayList<>();
-
-
-        @Override
-        public void requestToClient(ClientCommand command) {
-            lastCommandReceived = command;
-            receivedCommandsList.add(command);
-            command.execute(myClientController);
-            if (command instanceof PauseGameCommand) {
-                synchronized (this) {
-                    notify();
-                }
-            }
-        }
+    @Test
+    void successfulRenewTimeoutTimerTaskTest(){
+        gameController.renewTimeoutTimerTask(nonParticipantPlayer);
+        assertNotNull(nonParticipantPlayer.getTimeoutTask());
     }
-
-
-    //TODO: Complete testing with the missing methods
 }

@@ -10,9 +10,10 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.UnavailableColorException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.TimerTask;
+
 import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.createNetworkSessionStub;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 
 class LobbyControllerTest {
     static NetworkSession inLobbyPlayer;
@@ -55,4 +56,25 @@ class LobbyControllerTest {
         associatedLobbyController.leaveLobby(lobbyCreatorPlayer, true);
         assertEquals(1, associatedLobbyController.CONTROLLED_LOBBY.getPlayersNumber());
     }
+
+    @Test
+    void runTimeOutTimerTaskWhileInALobby(){
+        NetworkSession lobbyCreatorPlayer = createNetworkSessionStub(connectionController);
+        NetworkSession joiningPlayer = createNetworkSessionStub(connectionController);
+
+        connectionController.generatePlayer(lobbyCreatorPlayer, "lobbyCreatorPlayer");
+        connectionController.generatePlayer(joiningPlayer, "joiningPlayer");
+
+        connectionController.createLobby(lobbyCreatorPlayer, 2);
+        connectionController.joinLobby(joiningPlayer, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) joiningPlayer.getListener()).getVirtualClient()).myClientController.receivedUUID);
+
+        LobbyController associatedLobbyController = (LobbyController) lobbyCreatorPlayer.getController();
+
+        TimerTask task = associatedLobbyController.createTimeoutTask(joiningPlayer);
+        task.run();
+
+        assertEquals(1, associatedLobbyController.CONTROLLED_LOBBY.getPlayersNumber());
+        assertFalse( associatedLobbyController.CONTROLLED_LOBBY.getPlayers().contains(joiningPlayer.getPlayer()));
+    }
+
 }
