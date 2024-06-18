@@ -71,7 +71,7 @@ public abstract class ServerController implements ServerControllerInterface {
         target.scheduleTimeoutTimerTask(timeoutTask);
     }
 
-    TimerTask createTimeoutTask(NetworkSession target) {
+    protected TimerTask createTimeoutTask(NetworkSession target) {
         return new TimerTask() {
             @Override
             public void run() {
@@ -79,9 +79,9 @@ public abstract class ServerController implements ServerControllerInterface {
                         + " seconds or the game has sent an update and its state is inconsistent, disconnecting...");
                 ControllerInterface thisController = target.getController();
                 if (thisController instanceof GameController)
-                    leaveGame(target);
+                    ((GameController) thisController).leaveGame(target);
                 else if (thisController instanceof LobbyController)
-                    leaveLobby(target, true);
+                    ((LobbyController) thisController).leaveLobby(target, true);
                 else {
                     removeActivePlayer(target);
                     MODEL.removeListener(target.getListener());

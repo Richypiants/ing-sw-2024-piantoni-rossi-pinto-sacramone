@@ -236,13 +236,13 @@ public class ServerModel implements Listenable {
      * @param lobby  The lobby from which to remove the player.
      */
     public void removePlayerFromLobby(Player target, Lobby lobby) {
-        LOBBY_CONTROLLERS_LOCK.writeLock().lock();
+        LOBBY_CONTROLLERS_LOCK.readLock().lock();
         try {
             lobby.removePlayer(target);
             System.out.println("[SERVER]: sending UpdateLobbyCommand to clients");
             notifyListeners(new UpdateLobbyCommand(lobby));
         } finally {
-            LOBBY_CONTROLLERS_LOCK.writeLock().unlock();
+            LOBBY_CONTROLLERS_LOCK.readLock().unlock();
         }
     }
 

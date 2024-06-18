@@ -21,6 +21,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -67,6 +68,7 @@ public class GUIGameView extends GUIView {
     private final Parent SCENE_ROOT;
     private final AnchorPane OWN_FIELD_PANE;
     private final VBox OWN_FIELD_STATS_BOX;
+    private final AnchorPane OWN_FIELD_FRAME_PANE;
     private final ScrollPane OWN_FIELD_SCROLL_PANE;
     private final Circle NEW_CHAT_MESSAGE_NOTIFICATION;
     private final Button CENTER_OWN_FIELD_BUTTON;
@@ -110,9 +112,10 @@ public class GUIGameView extends GUIView {
         }
         OWN_FIELD_PANE = (AnchorPane) SCENE_ROOT.lookup("#ownFieldPane");
         OWN_FIELD_STATS_BOX = (VBox) OWN_FIELD_PANE.lookup("#ownFieldStatsBox");
-        OWN_FIELD_SCROLL_PANE = (ScrollPane) OWN_FIELD_PANE.lookup("#ownFieldScrollPane");
-        ZOOM_OWN_FIELD_BUTTON = (Button) OWN_FIELD_PANE.lookup("#zoomOwnFieldButton");
-        CENTER_OWN_FIELD_BUTTON = (Button) OWN_FIELD_PANE.lookup("#centerOwnFieldButton");
+        OWN_FIELD_FRAME_PANE = (AnchorPane) OWN_FIELD_PANE.lookup("#ownFieldFramePane");
+        OWN_FIELD_SCROLL_PANE = (ScrollPane) OWN_FIELD_FRAME_PANE.lookup("#ownFieldScrollPane");
+        ZOOM_OWN_FIELD_BUTTON = (Button) OWN_FIELD_FRAME_PANE.lookup("#zoomOwnFieldButton");
+        CENTER_OWN_FIELD_BUTTON = (Button) OWN_FIELD_FRAME_PANE.lookup("#centerOwnFieldButton");
         TOGGLE_SCOREBOARD_BUTTON = (Button) SCENE_ROOT.lookup("#scoreboardButton");
         NEW_CHAT_MESSAGE_NOTIFICATION = (Circle) SCENE_ROOT.lookup("#newChatMessageNotification");
         TOGGLE_CHAT_BUTTON = (Button) SCENE_ROOT.lookup("#chatButton");
@@ -194,7 +197,7 @@ public class GUIGameView extends GUIView {
             public final GenericPair<Integer, Integer> COORDINATES = openCorner;
         };
         openCornerShape.setFill(Color.TRANSPARENT);
-        openCornerShape.setStyle("-fx-stroke: gray; -fx-stroke-width: 2; -fx-stroke-dash-array: 4 8;");
+        openCornerShape.setStyle("-fx-stroke: white; -fx-stroke-width: 2; -fx-stroke-dash-array: 4 8;");
         openCornerShape.setArcWidth(10);
         openCornerShape.setArcHeight(10);
 
@@ -232,7 +235,51 @@ public class GUIGameView extends GUIView {
         button.setStyle("-fx-border-radius: 5; -fx-border-width: 1px; -fx-border-color: black; -fx-background-color: white");
     }
 
-    private void drawField(ScrollPane fieldPane, ClientPlayer player, boolean isInteractive) {
+    private AnchorPane generateFieldFramePane(Pane parentPane) {
+        AnchorPane fieldFramePane = new AnchorPane();
+        fieldFramePane.setPrefSize(parentPane.getPrefWidth(), parentPane.getPrefHeight());
+        fieldFramePane.setStyle("-fx-background-image: url('/images/game/fields_empty_frame.png'); -fx-background-size: stretch;" +
+                "-fx-background-repeat: no-repeat;");
+        fieldFramePane.setMouseTransparent(true);
+
+        ImageView greenCorner = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/game/green_frame_corner.png")));
+        greenCorner.setFitWidth(fieldFramePane.getPrefWidth() * 6 / 100);
+        greenCorner.setPreserveRatio(true);
+
+        ImageView redCorner = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/game/red_frame_corner.png")));
+        redCorner.setFitWidth(fieldFramePane.getPrefWidth() * 6 / 100);
+        redCorner.setPreserveRatio(true);
+
+        ImageView blueCorner = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/game/blue_frame_corner.png")));
+        blueCorner.setFitWidth(fieldFramePane.getPrefWidth() * 6 / 100);
+        blueCorner.setPreserveRatio(true);
+
+        ImageView purpleCorner = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/game/purple_frame_corner.png")));
+        purpleCorner.setFitWidth(fieldFramePane.getPrefWidth() * 6 / 100);
+        purpleCorner.setPreserveRatio(true);
+
+        fieldFramePane.getChildren().addAll(greenCorner, redCorner, blueCorner, purpleCorner);
+        greenCorner.relocate(
+                fieldFramePane.getPrefWidth() * 3.5 / 100 - greenCorner.getFitWidth() / 2,
+                fieldFramePane.getPrefHeight() * 6 / 100 - greenCorner.getFitWidth() / 2
+        );
+        redCorner.relocate(
+                fieldFramePane.getPrefWidth() * 96.5 / 100 - greenCorner.getFitWidth() / 2,
+                fieldFramePane.getPrefHeight() * 6 / 100 - greenCorner.getFitWidth() / 2
+        );
+        blueCorner.relocate(
+                fieldFramePane.getPrefWidth() * 3.5 / 100 - greenCorner.getFitWidth() / 2,
+                fieldFramePane.getPrefHeight() * 94 / 100 - greenCorner.getFitWidth() / 2
+        );
+        purpleCorner.relocate(
+                fieldFramePane.getPrefWidth() * 96.5 / 100 - greenCorner.getFitWidth() / 2,
+                fieldFramePane.getPrefHeight() * 94 / 100 - greenCorner.getFitWidth() / 2
+        );
+
+        return fieldFramePane;
+    }
+
+    private void drawField(ScrollPane fieldPane, ClientPlayer player, double scaleFactor, boolean isInteractive) {
         //TODO: resize this pane based on how many cards have been played and center the field on it? or not?
         GenericPair<Double, Double> clippedPaneSize = new GenericPair<>(
                 4000.0, 4000.0 * cardSizes.getY() / cardSizes.getX()
@@ -244,9 +291,9 @@ public class GUIGameView extends GUIView {
         fieldPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         AnchorPane clippedPane = new AnchorPane();
+        clippedPane.setPrefSize(clippedPaneSize.getX(), clippedPaneSize.getY());
         clippedPane.setStyle("-fx-background-image: url('/images/game/fields_bg.jpg'); -fx-background-size: cover;" +
                 "-fx-background-repeat: no-repeat;");
-        clippedPane.setPrefSize(clippedPaneSize.getX(), clippedPaneSize.getY());
         clippedPane.setCenterShape(true);
 
         for (var cardEntry : player.getPlacedCards().sequencedEntrySet()) {
@@ -282,7 +329,10 @@ public class GUIGameView extends GUIView {
             );
         }
 
-        fieldPane.setContent(clippedPane);
+        clippedPane.setScaleX(scaleFactor);
+        clippedPane.setScaleY(scaleFactor);
+
+        fieldPane.setContent(new Group(clippedPane));
         fieldPane.setHvalue((fieldPane.getHmax() + fieldPane.getHmin()) / 2);
         fieldPane.setVvalue((fieldPane.getVmax() + fieldPane.getVmin()) / 2);
     }
@@ -366,7 +416,14 @@ public class GUIGameView extends GUIView {
                 screenSizes.getX() * 68 / 100 - PADDING_SIZE,
                 screenSizes.getY() * 50 / 100 - PADDING_SIZE
         );
+
         OWN_FIELD_PANE.relocate(screenSizes.getX() * 30 / 100, screenSizes.getY() * 35 / 100);
+
+        OWN_FIELD_FRAME_PANE.setPrefSize(OWN_FIELD_PANE.getPrefWidth() - 75, OWN_FIELD_PANE.getPrefHeight());
+        OWN_FIELD_FRAME_PANE.setLayoutX(80);
+        AnchorPane ownFieldFramePane = generateFieldFramePane(OWN_FIELD_FRAME_PANE);
+        OWN_FIELD_FRAME_PANE.getChildren().add(ownFieldFramePane);
+        ownFieldFramePane.toFront();
 
         ImageView ownColorToken = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/" +
                 thisPlayer.getColor().name().toLowerCase() + ".png")));
@@ -374,9 +431,8 @@ public class GUIGameView extends GUIView {
         ownColorToken.setFitHeight(40);
         ownColorToken.setPreserveRatio(true);
 
-        ownColorToken.relocate(OWN_FIELD_PANE.getPrefWidth() - 50, OWN_FIELD_PANE.getPrefHeight() - 50);
-
-        OWN_FIELD_PANE.getChildren().add(ownColorToken);
+        OWN_FIELD_FRAME_PANE.getChildren().add(ownColorToken);
+        ownColorToken.relocate(OWN_FIELD_FRAME_PANE.getPrefWidth() * 95.5 / 100 - 50, OWN_FIELD_FRAME_PANE.getPrefHeight() * 93.5 / 100 - 50);
 
         if (thisGame.getPlayers().indexOf(thisPlayer) == 0) {
             ImageView firstPlayerToken = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/black.png")));
@@ -384,15 +440,15 @@ public class GUIGameView extends GUIView {
             firstPlayerToken.setFitHeight(25);
             firstPlayerToken.setPreserveRatio(true);
 
-            OWN_FIELD_PANE.getChildren().add(firstPlayerToken);
-            firstPlayerToken.relocate(OWN_FIELD_PANE.getPrefWidth() - 42.25, OWN_FIELD_PANE.getPrefHeight() - 42.25);
+            OWN_FIELD_FRAME_PANE.getChildren().add(firstPlayerToken);
+            firstPlayerToken.relocate(ownFieldFramePane.getPrefWidth() * 95.5 / 100 - 42.25, ownFieldFramePane.getPrefHeight() * 93.5 / 100 - 42.25);
             firstPlayerToken.toFront();
         }
 
         OWN_FIELD_STATS_BOX.setPrefSize(75, OWN_FIELD_PANE.getPrefHeight());
 
-        OWN_FIELD_SCROLL_PANE.setPrefSize(OWN_FIELD_PANE.getPrefWidth() - 75, OWN_FIELD_PANE.getPrefHeight());
-        OWN_FIELD_SCROLL_PANE.setLayoutX(80);
+        OWN_FIELD_SCROLL_PANE.setPrefSize(OWN_FIELD_FRAME_PANE.getPrefWidth() * 92 / 100, OWN_FIELD_FRAME_PANE.getPrefHeight() * 86 / 100);
+        OWN_FIELD_SCROLL_PANE.relocate(OWN_FIELD_FRAME_PANE.getPrefWidth() * 4 / 100, OWN_FIELD_FRAME_PANE.getPrefHeight() * 7 / 100);
 
         OWN_HAND_PANE.setPrefSize(screenSizes.getX() * 48 / 100, screenSizes.getY() * 15 / 100);
         OWN_HAND_PANE.relocate(screenSizes.getX() * 42 / 100, screenSizes.getY() * 85 / 100);
@@ -449,18 +505,18 @@ public class GUIGameView extends GUIView {
         scoreboardImage.setPreserveRatio(true);
         TOGGLE_SCOREBOARD_BUTTON.setGraphic(scoreboardImage);
         TOGGLE_SCOREBOARD_BUTTON.toFront();
-        TOGGLE_SCOREBOARD_BUTTON.relocate(screenSizes.getX() * 2 / 100, screenSizes.getY() * 95 / 100);
+        TOGGLE_SCOREBOARD_BUTTON.relocate(40, screenSizes.getY() - 50);
         TOGGLE_SCOREBOARD_BUTTON.setOnMouseClicked((event) -> togglePane(SCOREBOARD_PANE));
 
         NEW_CHAT_MESSAGE_NOTIFICATION.setRadius(10);
-        NEW_CHAT_MESSAGE_NOTIFICATION.relocate(screenSizes.getX() * 90 / 100 + 40, screenSizes.getY() * 95 / 100 + 5);
+        NEW_CHAT_MESSAGE_NOTIFICATION.relocate(screenSizes.getX() - 40 - 50 - 20 - 50 + 40, screenSizes.getY() - 50 + 5);
 
         ImageView chatImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/icons/chat.png")));
         chatImage.setFitHeight(30);
         chatImage.setPreserveRatio(true);
         TOGGLE_CHAT_BUTTON.setGraphic(chatImage);
         TOGGLE_CHAT_BUTTON.toFront();
-        TOGGLE_CHAT_BUTTON.relocate(screenSizes.getX() * 90 / 100, screenSizes.getY() * 95 / 100);
+        TOGGLE_CHAT_BUTTON.relocate(screenSizes.getX() - 40 - 50 - 20 - 50, screenSizes.getY() - 50);
         TOGGLE_CHAT_BUTTON.setOnMouseClicked((event) -> {
             togglePane(CHAT_PANE);
             NEW_CHAT_MESSAGE_NOTIFICATION.setVisible(false);
@@ -471,7 +527,7 @@ public class GUIGameView extends GUIView {
         leaveImage.setPreserveRatio(true);
         LEAVE_BUTTON.setGraphic(leaveImage);
         LEAVE_BUTTON.toFront();
-        LEAVE_BUTTON.relocate(screenSizes.getX() * 95 / 100, screenSizes.getY() * 95 / 100);
+        LEAVE_BUTTON.relocate(screenSizes.getX() - 40 - 50, screenSizes.getY() - 50);
         LEAVE_BUTTON.setOnMouseClicked((event) -> {
             resetGameScreen();
             ViewState.getCurrentState().quit();
@@ -514,22 +570,6 @@ public class GUIGameView extends GUIView {
         });
     }
 
-    private ImageView generateFieldCornerImage(String cornerImageResourceURL) {
-        return new ImageView();
-    }
-
-    private AnchorPane generateFieldFramePane(Pane parentPane) {
-        AnchorPane fieldFramePane = new AnchorPane();
-        fieldFramePane.setPrefSize(parentPane.getPrefWidth(), parentPane.getPrefHeight());
-        fieldFramePane.setStyle("-fx-background-image: url('/images/game/fields_empty_frame.png'); -fx-background-size: stretch;" +
-                "-fx-background-repeat: no-repeat;");
-        fieldFramePane.setMouseTransparent(true);
-
-        ImageView greenCorner = generateFieldCornerImage("");
-
-        return fieldFramePane;
-    }
-
     //TODO: centrare l'opponentField sulla carta nuova appena piazzata?
     private void showOpponentsFieldsMiniaturized() {
         OPPONENTS_FIELDS_PANE.getChildren().clear();
@@ -551,8 +591,9 @@ public class GUIGameView extends GUIView {
                             ) ? " (IN TURN)" : "")
             );
             opponentName.setAlignment(Pos.CENTER);
+            opponentName.setMaxWidth(200);
             opponentName.setPrefSize(opponentInfo.getPrefWidth(), opponentInfo.getPrefHeight() / 10);
-            opponentName.setStyle(RED_WHITE_STYLE);
+            opponentName.getStyleClass().add("rectangularButton");
 
             HBox opponentData = new HBox(5);
             opponentData.setAlignment(Pos.CENTER);
@@ -572,7 +613,7 @@ public class GUIGameView extends GUIView {
 
                 Label resourceInfo = new Label("" + resourceEntry.getValue());
                 resourceInfo.setPrefWidth(25);
-                resourceInfo.setStyle(RED_WHITE_STYLE + "-fx-font-size: 15px;");
+                resourceInfo.setStyle(RED_WHITE_STYLE + "-fx-font-size: 18px;");
                 resourceInfo.setAlignment(Pos.CENTER);
 
                 resourceData.getChildren().addAll(image, resourceInfo);
@@ -589,10 +630,7 @@ public class GUIGameView extends GUIView {
             opponentScrollField.setPrefSize(opponentField.getPrefWidth() * 92 / 100,
                     opponentField.getPrefHeight() * 86 / 100);
             opponentScrollField.setPannable(true);
-            drawField(opponentScrollField, player, false);
-
-            opponentScrollField.getContent().setScaleX(0.75);
-            opponentScrollField.getContent().setScaleY(0.75);
+            drawField(opponentScrollField, player, 0.75, false);
 
             Button zoomOpponentFieldButton = new Button();
             generateRectangularIconButton(zoomOpponentFieldButton, "/images/icons/zoom.png");
@@ -613,9 +651,9 @@ public class GUIGameView extends GUIView {
 
             opponentField.getChildren().addAll(fieldFramePane, opponentScrollField, zoomOpponentFieldButton, centerOpponentFieldButton, opponentColorToken);
             opponentScrollField.relocate(opponentField.getPrefWidth() * 4 / 100, opponentField.getPrefHeight() * 7 / 100);
-            zoomOpponentFieldButton.relocate(opponentField.getPrefWidth() - 50, 20);
-            centerOpponentFieldButton.relocate(opponentField.getPrefWidth() - 50, 60);
-            opponentColorToken.relocate(opponentField.getPrefWidth() - 50, opponentField.getPrefHeight() - 50);
+            zoomOpponentFieldButton.relocate(fieldFramePane.getPrefWidth() * 95.5 / 100 - 50, fieldFramePane.getPrefHeight() * 6.5 / 100 + 10);
+            centerOpponentFieldButton.relocate(fieldFramePane.getPrefWidth() * 95.5 / 100 - 50, fieldFramePane.getPrefHeight() * 6.5 / 100 + 50);
+            opponentColorToken.relocate(fieldFramePane.getPrefWidth() * 95.5 / 100 - 50, fieldFramePane.getPrefHeight() * 93.5 / 100 - 50);
             fieldFramePane.toFront();
 
             if (thisGame.getPlayers().indexOf(player) == 0) {
@@ -625,7 +663,7 @@ public class GUIGameView extends GUIView {
                 firstPlayerToken.setPreserveRatio(true);
 
                 opponentField.getChildren().add(firstPlayerToken);
-                firstPlayerToken.relocate(opponentField.getPrefWidth() - 42.25, opponentField.getPrefHeight() - 42.25);
+                firstPlayerToken.relocate(opponentField.getPrefWidth() * 95.5 / 100 - 42.25, opponentField.getPrefHeight() * 93.5 / 100 - 42.25);
                 firstPlayerToken.toFront();
             }
 
@@ -735,7 +773,7 @@ public class GUIGameView extends GUIView {
 
             Label resourceInfo = new Label("" + resourceEntry.getValue());
             resourceInfo.setPrefWidth(25);
-            resourceInfo.setStyle(RED_WHITE_STYLE + "-fx-font-size: 15px;");
+            resourceInfo.setStyle(RED_WHITE_STYLE + "-fx-font-size: 18px;");
             resourceInfo.setAlignment(Pos.CENTER);
 
             resourceData.getChildren().addAll(image, resourceInfo);
@@ -744,7 +782,7 @@ public class GUIGameView extends GUIView {
             resourceData.relocate(0, 0);
         }
 
-        drawField(OWN_FIELD_SCROLL_PANE, thisPlayer, true);
+        drawField(OWN_FIELD_SCROLL_PANE, thisPlayer, 1, true);
 
         generateRectangularIconButton(ZOOM_OWN_FIELD_BUTTON, "/images/icons/zoom.png");
         ZOOM_OWN_FIELD_BUTTON.setOnMouseClicked((event) -> showField(thisPlayer));
@@ -755,8 +793,8 @@ public class GUIGameView extends GUIView {
             OWN_FIELD_SCROLL_PANE.setVvalue((OWN_FIELD_SCROLL_PANE.getVmax() + OWN_FIELD_SCROLL_PANE.getVmin()) / 2);
         });
 
-        ZOOM_OWN_FIELD_BUTTON.relocate(OWN_FIELD_PANE.getPrefWidth() - 50, 20);
-        CENTER_OWN_FIELD_BUTTON.relocate(OWN_FIELD_PANE.getPrefWidth() - 50, 60);
+        ZOOM_OWN_FIELD_BUTTON.relocate(OWN_FIELD_FRAME_PANE.getPrefWidth() * 95.5 / 100 - 50, OWN_FIELD_FRAME_PANE.getPrefHeight() * 6.5 / 100 + 20);
+        CENTER_OWN_FIELD_BUTTON.relocate(OWN_FIELD_FRAME_PANE.getPrefWidth() * 95.5 / 100 - 50, OWN_FIELD_FRAME_PANE.getPrefHeight() * 6.5 / 100 + 60);
     }
 
     @Override
@@ -1009,15 +1047,16 @@ public class GUIGameView extends GUIView {
                             player.equals(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex())
                             ) ? " (IN TURN)" : "")
             );
-            playerNameLabel.setStyle(RED_WHITE_STYLE + "-fx-font-size: 20px;");
+            playerNameLabel.setPrefSize(300, 50);
+            playerNameLabel.getStyleClass().add("rectangularButton");
+            playerNameLabel.setStyle("-fx-font-size: 20px;");
 
             ScrollPane fieldPane = new ScrollPane();
             fieldPane.setPannable(true);
             fieldPane.setPrefSize(popupContent.getPrefWidth(), popupContent.getPrefHeight());
-            drawField(fieldPane, player, false);
-            fieldPane.getContent().setStyle("-fx-background-color: transparent");
-            fieldPane.getContent().setScaleX(1.5);
-            fieldPane.getContent().setScaleY(1.5);
+            drawField(fieldPane, player, 1.5, false);
+
+            ((Group) fieldPane.getContent()).getChildren().getFirst().setStyle("-fx-background-color: transparent;");
 
             popupContent.getChildren().addAll(fieldPane);
 
@@ -1034,13 +1073,9 @@ public class GUIGameView extends GUIView {
             OverlayPopup overlayPopup = drawOverlayPopup(popupContent, true);
 
             ((AnchorPane) overlayPopup.getContent().getFirst()).getChildren().add(playerNameLabel);
-
-            playerNameLabel.setOpacity(0.0);
+            playerNameLabel.relocate((popupContent.getPrefWidth() - playerNameLabel.getPrefWidth()) / 2, popupContent.getPrefHeight() / 20);
 
             overlayPopup.show(stage);
-
-            playerNameLabel.relocate((popupContent.getPrefWidth() - playerNameLabel.getWidth()) / 2, popupContent.getPrefHeight() / 20);
-            playerNameLabel.setOpacity(1.0);
         });
     }
 

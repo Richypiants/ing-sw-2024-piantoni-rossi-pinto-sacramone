@@ -47,9 +47,11 @@
 
     <AnchorPane fx:id="ownFieldPane">
         <VBox fx:id="ownFieldStatsBox" alignment="CENTER"/>
-        <ScrollPane fx:id="ownFieldScrollPane" pannable="true"/>
-        <Button fx:id="zoomOwnFieldButton" mnemonicParsing="false"/>
-        <Button fx:id="centerOwnFieldButton" mnemonicParsing="false"/>
+        <AnchorPane fx:id="ownFieldFramePane">
+            <ScrollPane fx:id="ownFieldScrollPane" pannable="true"/>
+            <Button fx:id="zoomOwnFieldButton" mnemonicParsing="false"/>
+            <Button fx:id="centerOwnFieldButton" mnemonicParsing="false"/>
+        </AnchorPane>
     </AnchorPane>
 
     <HBox fx:id="ownHandPane" alignment="CENTER"/>

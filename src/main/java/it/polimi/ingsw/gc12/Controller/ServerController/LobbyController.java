@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
+import it.polimi.ingsw.gc12.Network.Server.Server;
 import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnavailableColorException;
 
@@ -75,7 +76,7 @@ public class LobbyController extends ServerController {
     }
 
     @Override
-    public synchronized void leaveLobby(NetworkSession sender, boolean isInactive) {
+    public void leaveLobby(NetworkSession sender, boolean isInactive) {
         System.out.println("[CLIENT]: LeaveLobbyCommand received and being executed");
 
         if (isInactive) {
@@ -84,10 +85,14 @@ public class LobbyController extends ServerController {
             removeActivePlayer(sender);
         }
 
-        if (CONTROLLED_LOBBY.getPlayersNumber() == 1)
-            MODEL.destroyLobbyController(this);
-        else
-            MODEL.removePlayerFromLobby(sender.getPlayer(), CONTROLLED_LOBBY);
+        Server.getInstance().commandExecutorsPool.submit(() -> {
+            synchronized (this) {
+                if (CONTROLLED_LOBBY.getPlayersNumber() == 1)
+                    MODEL.destroyLobbyController(this);
+                else
+                    MODEL.removePlayerFromLobby(sender.getPlayer(), CONTROLLED_LOBBY);
+            }
+        });
 
         sender.setController(ConnectionController.getInstance());
     }
