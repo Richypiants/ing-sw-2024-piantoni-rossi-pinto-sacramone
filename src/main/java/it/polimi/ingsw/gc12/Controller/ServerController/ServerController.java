@@ -66,27 +66,30 @@ public abstract class ServerController implements ServerControllerInterface {
         return false;
     }
 
-    private void renewTimeoutTimerTask(NetworkSession target) {
-        TimerTask timeoutTask = new TimerTask() {
+    public void renewTimeoutTimerTask(NetworkSession target) {
+        TimerTask timeoutTask = createTimeoutTask(target);
+        target.scheduleTimeoutTimerTask(timeoutTask);
+    }
+
+    TimerTask createTimeoutTask(NetworkSession target) {
+        return new TimerTask() {
             @Override
             public void run() {
                 System.out.println("[SERVER]" + target + " didn't send any keepAlive in 15"
                         + " seconds or the game has sent an update and its state is inconsistent, disconnecting...");
                 ControllerInterface thisController = target.getController();
-                    if (thisController instanceof GameController)
-                        leaveGame(target);
-                    else if (thisController instanceof LobbyController)
-                        leaveLobby(target, true);
-                    else if (thisController instanceof ConnectionController) {
-                        removeActivePlayer(target);
-                        MODEL.removeListener(target.getListener());
-                    }
+                if (thisController instanceof GameController)
+                    leaveGame(target);
+                else if (thisController instanceof LobbyController)
+                    leaveLobby(target, true);
+                else {
+                    removeActivePlayer(target);
+                    MODEL.removeListener(target.getListener());
+                }
 
-                    cancel();
+                cancel();
             }
         };
-
-        target.scheduleTimeoutTimerTask(timeoutTask);
     }
 
     public void keepAlive(NetworkSession sender) {
