@@ -54,6 +54,8 @@ public class GUIApplication extends Application {
             //TODO: + show hint per rientrare in fullscreen
         });
 
+        stage.setOnCloseRequest((event) -> System.exit(1));
+
         //stage.addEventHandler(MouseDragEvent.MOUSE_DRAGGED, (event) -> stage.setMaximized(true));
 
         GUIView.setScreenSizes();

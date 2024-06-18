@@ -150,13 +150,13 @@
 }
 
 #gameScreenPane {
-    -fx-background-image: url("/images/title_screen_bg_old_scroll.jpg");
+    -fx-background-image: url("/images/game/game_screen_bg.jpg");
     -fx-background-repeat: no-repeat;
     -fx-background-size: stretch;
 }
 
 #scoreboardPane {
-    -fx-background-image: url('/images/scoreboard.png');
+    -fx-background-image: url('/images/game/scoreboard.png');
     -fx-background-repeat: no-repeat;
     -fx-background-size: stretch;
 }

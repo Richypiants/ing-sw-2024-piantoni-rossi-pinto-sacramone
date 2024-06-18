@@ -61,8 +61,6 @@ class PlayerTurnPlayStateTest {
 
         gameController.getCurrentState().pickObjective(game.getPlayers().getFirst(), (ObjectiveCard) ServerModel.CARDS_LIST.get(choice1));
         gameController.getCurrentState().pickObjective(game.getPlayers().getLast(), (ObjectiveCard) ServerModel.CARDS_LIST.get(choice2));
-
-
     }
 
 
@@ -82,5 +80,20 @@ class PlayerTurnPlayStateTest {
     void transitionFromDisconnectedPlayerTest() throws Exception {
         gameController.getCurrentState().playerDisconnected(game.getCurrentPlayer());
         assertInstanceOf(PlayerTurnDrawState.class, gameController.getCurrentState());
+    }
+
+    @Test
+    void drawPhaseSkippedIfNoCardsToDrawTest() throws Exception {
+        while (!game.getResourceCardsDeck().isEmpty())
+            game.getResourceCardsDeck().draw();
+        while (!game.getGoldCardsDeck().isEmpty())
+            game.getGoldCardsDeck().draw();
+        game.getPlacedResources()[0] = null;
+        game.getPlacedResources()[1] = null;
+        game.getPlacedGolds()[0] = null;
+        game.getPlacedGolds()[1] = null;
+
+        gameController.getCurrentState().transition();
+        assertInstanceOf(PlayerTurnPlayState.class, gameController.getCurrentState());
     }
 }

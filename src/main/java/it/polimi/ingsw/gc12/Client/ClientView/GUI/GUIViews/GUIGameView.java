@@ -222,8 +222,8 @@ public class GUIGameView extends GUIView {
         return openCornerShape;
     }
 
-    private void generateRectangularIconButton(Button button, String iconResourcePath) {
-        ImageView image = new ImageView(String.valueOf(GUIGameView.class.getResource(iconResourcePath)));
+    private void generateRectangularIconButton(Button button, String iconResourceURL) {
+        ImageView image = new ImageView(String.valueOf(GUIGameView.class.getResource(iconResourceURL)));
         image.setFitHeight(20);
         image.setPreserveRatio(true);
 
@@ -238,11 +238,14 @@ public class GUIGameView extends GUIView {
                 4000.0, 4000.0 * cardSizes.getY() / cardSizes.getX()
         );
 
+        fieldPane.setStyle("-fx-background-color: transparent;");
+
         fieldPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         fieldPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        //TODO: add background color or texture or image?
         AnchorPane clippedPane = new AnchorPane();
+        clippedPane.setStyle("-fx-background-image: url('/images/game/fields_bg.jpg'); -fx-background-size: cover;" +
+                "-fx-background-repeat: no-repeat;");
         clippedPane.setPrefSize(clippedPaneSize.getX(), clippedPaneSize.getY());
         clippedPane.setCenterShape(true);
 
@@ -316,10 +319,10 @@ public class GUIGameView extends GUIView {
         );
         OPPONENTS_FIELDS_PANE.relocate(PADDING_SIZE, PADDING_SIZE);
 
-        DECKS_AND_VISIBLE_CARDS_PANE.setPrefSize(screenSizes.getX() * 30 / 100, screenSizes.getY() * 65 / 100);
-        DECKS_AND_VISIBLE_CARDS_PANE.relocate(0, screenSizes.getY() * 35 / 100);
+        DECKS_AND_VISIBLE_CARDS_PANE.setPrefSize(screenSizes.getX() * 28 / 100, screenSizes.getY() * 65 / 100);
+        DECKS_AND_VISIBLE_CARDS_PANE.relocate(screenSizes.getX() * 2 / 100, screenSizes.getY() * 35 / 100);
 
-        ImageView resourceCardsLabelBanner = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/scroll_label.png")));
+        ImageView resourceCardsLabelBanner = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/game/scroll_label.png")));
         resourceCardsLabelBanner.setFitWidth(250);
         resourceCardsLabelBanner.setPreserveRatio(true);
         DECKS_AND_VISIBLE_CARDS_PANE.getChildren().add(resourceCardsLabelBanner);
@@ -329,7 +332,7 @@ public class GUIGameView extends GUIView {
         RESOURCE_CARDS_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
         RESOURCE_CARDS_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 10 / 100);
 
-        ImageView goldCardsLabelBanner = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/scroll_label.png")));
+        ImageView goldCardsLabelBanner = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/game/scroll_label.png")));
         goldCardsLabelBanner.setFitWidth(250);
         goldCardsLabelBanner.setPreserveRatio(true);
         DECKS_AND_VISIBLE_CARDS_PANE.getChildren().add(goldCardsLabelBanner);
@@ -339,7 +342,7 @@ public class GUIGameView extends GUIView {
         GOLD_CARDS_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
         GOLD_CARDS_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 35 / 100);
 
-        ImageView commonObjectivesLabelBanner = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/scroll_label.png")));
+        ImageView commonObjectivesLabelBanner = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/game/scroll_label.png")));
         commonObjectivesLabelBanner.setFitWidth(350);
         commonObjectivesLabelBanner.setFitHeight((double) (250 * 728) / 2408);
         DECKS_AND_VISIBLE_CARDS_PANE.getChildren().add(commonObjectivesLabelBanner);
@@ -350,7 +353,7 @@ public class GUIGameView extends GUIView {
         COMMON_OBJECTIVES_HBOX.setPrefSize(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth(), DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
         COMMON_OBJECTIVES_HBOX.relocate(0, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 60 / 100);
 
-        ImageView secretObjectiveLabelBanner = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/scroll_label.png")));
+        ImageView secretObjectiveLabelBanner = new ImageView(String.valueOf(GUIGameView.class.getResource("/images/game/scroll_label.png")));
         secretObjectiveLabelBanner.setFitWidth(260);
         secretObjectiveLabelBanner.setPreserveRatio(true);
         SECRET_OBJECTIVE_LABEL_PANE.getChildren().add(secretObjectiveLabelBanner);
@@ -360,7 +363,7 @@ public class GUIGameView extends GUIView {
         SECRET_OBJECTIVE_HBOX.setMinHeight(DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
 
         OWN_FIELD_PANE.setPrefSize(
-                screenSizes.getX() * 70 / 100 - PADDING_SIZE,
+                screenSizes.getX() * 68 / 100 - PADDING_SIZE,
                 screenSizes.getY() * 50 / 100 - PADDING_SIZE
         );
         OWN_FIELD_PANE.relocate(screenSizes.getX() * 30 / 100, screenSizes.getY() * 35 / 100);
@@ -511,6 +514,22 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    private ImageView generateFieldCornerImage(String cornerImageResourceURL) {
+        return new ImageView();
+    }
+
+    private AnchorPane generateFieldFramePane(Pane parentPane) {
+        AnchorPane fieldFramePane = new AnchorPane();
+        fieldFramePane.setPrefSize(parentPane.getPrefWidth(), parentPane.getPrefHeight());
+        fieldFramePane.setStyle("-fx-background-image: url('/images/game/fields_empty_frame.png'); -fx-background-size: stretch;" +
+                "-fx-background-repeat: no-repeat;");
+        fieldFramePane.setMouseTransparent(true);
+
+        ImageView greenCorner = generateFieldCornerImage("");
+
+        return fieldFramePane;
+    }
+
     //TODO: centrare l'opponentField sulla carta nuova appena piazzata?
     private void showOpponentsFieldsMiniaturized() {
         OPPONENTS_FIELDS_PANE.getChildren().clear();
@@ -561,10 +580,14 @@ public class GUIGameView extends GUIView {
             }
 
             AnchorPane opponentField = new AnchorPane();
+            opponentField.setStyle("-fx-background-color: transparent;");
             opponentField.setPrefSize(opponentData.getPrefWidth() - 60, opponentData.getPrefHeight());
 
+            AnchorPane fieldFramePane = generateFieldFramePane(opponentField);
+
             ScrollPane opponentScrollField = new ScrollPane();
-            opponentScrollField.setPrefSize(opponentField.getPrefWidth(), opponentField.getPrefHeight());
+            opponentScrollField.setPrefSize(opponentField.getPrefWidth() * 92 / 100,
+                    opponentField.getPrefHeight() * 86 / 100);
             opponentScrollField.setPannable(true);
             drawField(opponentScrollField, player, false);
 
@@ -588,10 +611,12 @@ public class GUIGameView extends GUIView {
             opponentColorToken.setFitHeight(40);
             opponentColorToken.setPreserveRatio(true);
 
-            opponentField.getChildren().addAll(opponentScrollField, zoomOpponentFieldButton, centerOpponentFieldButton, opponentColorToken);
+            opponentField.getChildren().addAll(fieldFramePane, opponentScrollField, zoomOpponentFieldButton, centerOpponentFieldButton, opponentColorToken);
+            opponentScrollField.relocate(opponentField.getPrefWidth() * 4 / 100, opponentField.getPrefHeight() * 7 / 100);
             zoomOpponentFieldButton.relocate(opponentField.getPrefWidth() - 50, 20);
             centerOpponentFieldButton.relocate(opponentField.getPrefWidth() - 50, 60);
             opponentColorToken.relocate(opponentField.getPrefWidth() - 50, opponentField.getPrefHeight() - 50);
+            fieldFramePane.toFront();
 
             if (thisGame.getPlayers().indexOf(player) == 0) {
                 ImageView firstPlayerToken = new ImageView(String.valueOf(GUIView.class.getResource("/images/misc/black.png")));
@@ -646,7 +671,7 @@ public class GUIGameView extends GUIView {
             //TODO. make imageView static and clear and avoid clearing children and refresh only the content
             GOLD_CARDS_HBOX.getChildren().clear();
 
-            if (thisGame.getTopDeckResourceCard().ID != -1) {
+            if (thisGame.getTopDeckGoldCard().ID != -1) {
                 ImageView goldDeck = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getTopDeckGoldCard().GUI_SPRITES.get(Side.BACK))));
 
                 goldDeck.setSmooth(true);
@@ -990,6 +1015,7 @@ public class GUIGameView extends GUIView {
             fieldPane.setPannable(true);
             fieldPane.setPrefSize(popupContent.getPrefWidth(), popupContent.getPrefHeight());
             drawField(fieldPane, player, false);
+            fieldPane.getContent().setStyle("-fx-background-color: transparent");
             fieldPane.getContent().setScaleX(1.5);
             fieldPane.getContent().setScaleY(1.5);
 
@@ -1041,6 +1067,9 @@ public class GUIGameView extends GUIView {
     public void leaderboardScreen(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
         Platform.runLater(() -> {
             LEADERBOARD_VBOX.setPrefSize(screenSizes.getX() * 80 / 100, screenSizes.getY() * 90 / 100);
+
+            LEADERBOARD_LABEL.setPrefSize(400, 75);
+
             LEADERBOARD_EXIT_BUTTON.setPrefSize(300, 50);
 
             for (var row : leaderboard) {

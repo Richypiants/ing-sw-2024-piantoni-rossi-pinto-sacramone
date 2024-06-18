@@ -45,12 +45,14 @@ public class PlayerTurnPlayState extends GameState {
         GAME_CONTROLLER.setState(new PlayerTurnDrawState(GAME_CONTROLLER, GAME));
 
         //Check if there's a card that can be drawn, if not, directly call the transition of the PlayerTurnDrawState
-        //The condition is computed in or(||) with the case that the currentPlayer is disconnected, so the PlayerTurnDrawState has to be skipped as well.
-        if(GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty()
-                && GAME.getPlacedResources().length == 0 && GAME.getPlacedGolds().length == 0
-                || !GAME.getCurrentPlayer().isActive()) {
-
+        //The condition is computed in or (||) with the case that the currentPlayer is disconnected, so the PlayerTurnDrawState has to be skipped as well.
+        if (checkNoCardsToDraw() || !GAME.getCurrentPlayer().isActive())
             GAME_CONTROLLER.getCurrentState().transition();
-        }
+    }
+
+    public boolean checkNoCardsToDraw() {
+        return GAME.getResourceCardsDeck().isEmpty() && GAME.getGoldCardsDeck().isEmpty()
+                && GAME.getPlacedResources()[0] == null && GAME.getPlacedResources()[1] == null &&
+                GAME.getPlacedGolds()[0] == null && GAME.getPlacedGolds()[1] == null;
     }
 }
