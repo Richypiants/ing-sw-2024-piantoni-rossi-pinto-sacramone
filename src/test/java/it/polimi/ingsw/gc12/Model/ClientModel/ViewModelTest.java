@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc12.Model.ClientModel;
 
-import it.polimi.ingsw.gc12.Model.Game;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
+import it.polimi.ingsw.gc12.Model.Server.Game;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Network;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Commands.ClientCommands.ClientCommand;
 
 /**
  * The {@code VirtualClient} interface represents a client entity in a networked environment,

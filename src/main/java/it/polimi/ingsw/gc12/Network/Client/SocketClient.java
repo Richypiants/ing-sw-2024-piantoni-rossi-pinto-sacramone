@@ -1,9 +1,9 @@
 package it.polimi.ingsw.gc12.Network.Client;
 
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
+import it.polimi.ingsw.gc12.Commands.ServerCommands.ServerCommand;
+import it.polimi.ingsw.gc12.Controller.Client.ClientController;
 import it.polimi.ingsw.gc12.Network.VirtualServer;
+import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
 
 import java.io.IOException;
 import java.net.Socket;

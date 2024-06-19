@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc12.Model.ClientModel;
 
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Room;
-import it.polimi.ingsw.gc12.Utilities.JSONParsers.ClientJSONParser;
+import it.polimi.ingsw.gc12.Utilities.JSONParsers.ClientParsers.ClientJSONParser;
 
 import java.util.*;
 
@@ -50,7 +50,7 @@ public class ViewModel {
      */
     private static Map<Integer, ClientCard> loadCards() {
         Map<Integer, ClientCard> tmp = new HashMap<>();
-        Objects.requireNonNull(ClientJSONParser.generateClientCardsFromJSON("/jsonFiles/client_cards.json"))
+        Objects.requireNonNull(ClientJSONParser.generateClientCardsFromJSON("/jsonFiles/ClientJsonFiles/client_cards.json"))
                 .forEach((card) -> tmp.put(card.ID, card));
         tmp.put(-1, new ClientCard(-1, null, null));
         return Collections.unmodifiableMap(tmp);

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Utilities;
 
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
+import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

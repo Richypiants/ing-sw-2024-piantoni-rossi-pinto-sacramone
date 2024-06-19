@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc12.Network.Client;
 
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
+import it.polimi.ingsw.gc12.Commands.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Commands.Command;
+import it.polimi.ingsw.gc12.Commands.ServerCommands.ServerCommand;
+import it.polimi.ingsw.gc12.Controller.Client.ClientController;
 import it.polimi.ingsw.gc12.Controller.ClientControllerInterface;
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
-import it.polimi.ingsw.gc12.Controller.Commands.Command;
-import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
 import it.polimi.ingsw.gc12.Listeners.NetworkListener;
 import it.polimi.ingsw.gc12.Network.NetworkSession;

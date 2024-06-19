@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Network;
 
-import it.polimi.ingsw.gc12.Controller.Commands.Command;
+import it.polimi.ingsw.gc12.Commands.Command;
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
 
 import java.io.IOException;

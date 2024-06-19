@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Listeners;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Commands.ClientCommands.ClientCommand;
 
 /**
  * A marker interface for objects that can have listeners attached to them.
