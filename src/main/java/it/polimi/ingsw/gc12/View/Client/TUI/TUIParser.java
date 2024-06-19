@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc12.View.Client.TUI;
 
-import it.polimi.ingsw.gc12.Controller.Client.ClientController;
 import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.ForbiddenActionException;
@@ -37,6 +36,7 @@ public class TUIParser {
                 try {
                     command = console.readLine();
                 } catch (NoSuchElementException ignored) {
+                    System.exit(-1); //Should never be reached
                 }
                 System.out.print(ansi().cursor(COMMAND_INPUT_ROW, COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
                 parseCommand(command);
@@ -48,12 +48,9 @@ public class TUIParser {
     }
 
     private void runCommand(ArrayList<String> tokens) {
-
         ViewState currentState = ViewState.getCurrentState();
         String errorMessage = "";
         String command;
-
-        //TODO: Every case has to check type parameters before calling the State method or eventually die
 
         try {
             command = tokens.removeFirst().trim();
@@ -117,18 +114,19 @@ public class TUIParser {
                 default -> throw new ForbiddenActionException();
             }
         } catch (NoSuchElementException e) {
-            ClientController.getInstance().ERROR_LOGGER.log(new NoSuchElementException("Invalid command format: not enough parameters received"));
+            ViewState.printError(new NoSuchElementException("Invalid command format: not enough parameters received"));
         } catch (IllegalArgumentException e) {
             if(!e.getMessage().isEmpty()) errorMessage = e.getMessage();
-            ClientController.getInstance().ERROR_LOGGER.log(new IllegalArgumentException("Invalid parameters given: " + errorMessage));
+            ViewState.printError(new IllegalArgumentException("Invalid parameters given: " + errorMessage));
         } catch (ForbiddenActionException e) {
-            ClientController.getInstance().ERROR_LOGGER.log(new ForbiddenActionException("Unknown command received: maybe check for misspelling?"));
+            ViewState.printError(new ForbiddenActionException("Unknown command received: maybe check for misspelling?"));
         }
     }
 
     public void parseCommand(String input) {
         String delimiters = " ";
         ArrayList<String> tokens = new ArrayList<>();
+        //FIXME: exception is thrown and is not caught when sometimes string to tokenize is null, I don't know exactly what causes this
         StringTokenizer tokenizer = new StringTokenizer(input, delimiters);
 
         while (tokenizer.hasMoreTokens()) {
@@ -138,12 +136,11 @@ public class TUIParser {
         runCommand(tokens);
     }
 
-    //TODO: sposterei nello state per single resp principle... oppure cambiare messaggi di exception per riflettere il check di tipo?
     private Side convertSide(String input) {
         return switch(input.trim().toLowerCase()){
             case "front" -> Side.FRONT;
             case "back" -> Side.BACK;
-            default -> throw new IllegalArgumentException("expected a valid side as argument" + input);
+            default -> throw new IllegalArgumentException("expected a valid side as argument, not " + input);
         };
     }
 
@@ -151,6 +148,6 @@ public class TUIParser {
         return Arrays.stream(Color.values())
                 .filter((color) -> color.name().equalsIgnoreCase(input))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("expected a valid color as first argument" + input));
+                .orElseThrow(() -> new IllegalArgumentException("expected a valid color as first argument, not" + input));
     }
 }

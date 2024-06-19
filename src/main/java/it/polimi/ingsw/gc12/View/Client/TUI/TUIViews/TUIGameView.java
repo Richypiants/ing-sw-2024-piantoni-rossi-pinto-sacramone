@@ -119,10 +119,6 @@ public class TUIGameView extends TUIView{
         showHand();
         updateChat();
         printStateCommandInfo();
-
-        //FIXME: al momento comandi filtrati per stato di gioco, replicati in ogni viewState, orribile anche perchè alla GUI non servono...
-        // però forse possiamo avere una lista di prompt e caricare quelli da mostrare a seconda di TUI o GUI?
-        // (per esempio, trascina una carta per posizionarla)
     }
 
     @Override
@@ -189,7 +185,7 @@ public class TUIGameView extends TUIView{
 
     @Override
     public void showCommonPlacedCards() {
-        //erasing old placed cards
+        //Erasing old placed cards
         for (int i = 12; i < 24; i++)
             printToPosition(ansi().cursor(i, 53).eraseLine(Ansi.Erase.BACKWARD));
 
@@ -284,7 +280,7 @@ public class TUIGameView extends TUIView{
 
     @Override
     public void showInitialCardsChoice() {
-        //erasing field area
+        //Erasing field area
         int fieldStartingColumn = FIELD_TOP_LEFT.getY();
         for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
             printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Ansi.Erase.FORWARD));
@@ -298,7 +294,7 @@ public class TUIGameView extends TUIView{
 
     @Override
     public void showObjectiveCardsChoice(ArrayList<ClientCard> objectivesSelection) {
-        //erasing field area
+        //Erasing field area
         int fieldStartingColumn = FIELD_TOP_LEFT.getY();
         for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
             printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Ansi.Erase.FORWARD));
@@ -339,7 +335,7 @@ public class TUIGameView extends TUIView{
 
         ClientPlayer player = VIEWMODEL.getCurrentGame().getPlayers().get(currentShownPlayerIndex);
 
-        //erasing field area
+        //Erasing field area
         int fieldStartingColumn = FIELD_TOP_LEFT.getY();
         for (int i = FIELD_TOP_LEFT.getX(); i < FIELD_TOP_LEFT.getX() + FIELD_SIZE.getX(); i++)
             printToPosition(ansi().cursor(i, fieldStartingColumn).eraseLine(Ansi.Erase.FORWARD));

@@ -72,8 +72,8 @@ public class RMIServerStub extends NetworkSession implements RMIVirtualServer {
                         //FIXME: not ideal to shut connection down... maybe don't accept more than a predefined number of connections?
                         new RejectedExecutionException("This server is currently busy, shutting down connection: try again later..."))
                 );
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
+            } catch (Exception e2) {
+                throw new RuntimeException(e2);
             }
         }
     }

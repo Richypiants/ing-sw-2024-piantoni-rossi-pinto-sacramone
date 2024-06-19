@@ -106,7 +106,7 @@ public class TUIConnectionView extends TUIView {
         try {
             sleep(1000);
         } catch (InterruptedException e) {
-            CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
+            throw new RuntimeException(e); //Should never happen
         }
 
         TUIParser.COMMAND_INPUT_COLUMN = 6 + VIEWMODEL.getOwnNickname().length();

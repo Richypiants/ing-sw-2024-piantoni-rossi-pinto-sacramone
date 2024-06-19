@@ -43,8 +43,10 @@ public class PlayerTurnPlayState extends GameScreenState {
 
     public void showField(int playerID) {
         ClientGame game = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
-        if (playerID < 0 || playerID > game.getPlayersNumber())
-            throw new IllegalArgumentException("The provided ID doesn't match to a player's ID in the game!");
+        if (playerID < 0 || playerID > game.getPlayersNumber()) {
+            selectedView.printError(new IllegalArgumentException("The provided ID doesn't match to a player's ID in the game!"));
+            return;
+        }
 
         selectedView.showField(game.getPlayers().get(playerID - 1));
     }
@@ -56,5 +58,10 @@ public class PlayerTurnPlayState extends GameScreenState {
     @Override
     public void transition() {
         currentState = new PlayerTurnDrawState();
+    }
+
+    @Override
+    public String toString() {
+        return "play phase";
     }
 }

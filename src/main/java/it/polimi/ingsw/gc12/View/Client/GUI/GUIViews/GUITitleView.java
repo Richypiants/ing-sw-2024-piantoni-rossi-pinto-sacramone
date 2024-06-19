@@ -28,7 +28,7 @@ public class GUITitleView extends GUIView {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/Client/fxml/title_screen.fxml")).load();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //Should never happen
         }
         CRANIO_CREATIONS_LOGO = (ImageView) SCENE_ROOT.lookup("#cranioCreationsLogo");
         TITLE_SCREEN_BOX = (AnchorPane) SCENE_ROOT.lookup("#titleScreenBox");
@@ -60,7 +60,7 @@ public class GUITitleView extends GUIView {
             );
 
             FadeTransition logoTransition = new FadeTransition(Duration.millis(3000), CRANIO_CREATIONS_LOGO);
-            logoTransition.setDelay(Duration.millis(1000));
+            logoTransition.setDelay(Duration.millis(1));
             logoTransition.setFromValue(0);
             logoTransition.setToValue(1);
             logoTransition.setCycleCount(2);
@@ -118,13 +118,13 @@ public class GUITitleView extends GUIView {
             });
 
             TITLE_SCREEN_BOX.setOnMouseClicked((event) -> {
-                titleScreenTransition.jumpTo(logoTransition.getTotalDuration().add(backgroundTransition.getTotalDuration()).add(Duration.millis(999)));
+                titleScreenTransition.jumpTo(logoTransition.getTotalDuration().add(backgroundTransition.getTotalDuration()));
                 event.consume();
             });
             TITLE_SCREEN_BOX.setOnKeyPressed((event) -> {
                 if (event.getCode().equals(KeyCode.ESCAPE) || event.getCode().equals(KeyCode.F11))
                     return;
-                titleScreenTransition.jumpTo(logoTransition.getTotalDuration().add(backgroundTransition.getTotalDuration()).add(Duration.millis(999)));
+                titleScreenTransition.jumpTo(logoTransition.getTotalDuration().add(backgroundTransition.getTotalDuration()));
                 event.consume();
             });
 

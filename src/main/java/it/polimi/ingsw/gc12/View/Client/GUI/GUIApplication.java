@@ -35,18 +35,12 @@ public class GUIApplication extends Application {
         stage.setTitle("Codex Naturalis");
         stage.getIcons().clear();
         stage.getIcons().add(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/Client/images/only_center_logo_no_bg.png"))));
-        //stage.initStyle(StageStyle.UNDECORATED);
-        //TODO: add custom toolbar on top of the stage and make it undecorated, and also make that draggable to the top
-        // so that one can maximize the window by dragging toolbar to the top (along with decommenting setSizes below)
 
         stage.addEventHandler(KeyEvent.KEY_PRESSED, (event) -> {
             if (event.getCode().equals(KeyCode.ESCAPE)) {
                 stage.setResizable(true);
                 stage.setFullScreen(false);
                 stage.setMaximized(true);
-                //stage.setWidth(screen.getVisualBounds().getWidth());
-                //stage.setHeight(screen.getVisualBounds().getHeight());
-                //GUIView.setScreenSizes();
                 stage.setResizable(false);
             }
         });
@@ -60,12 +54,7 @@ public class GUIApplication extends Application {
 
         stage.setOnCloseRequest((event) -> System.exit(1));
 
-        //stage.addEventHandler(MouseDragEvent.MOUSE_DRAGGED, (event) -> stage.setMaximized(true));
-
         GUIView.setScreenSizes();
         stage.show();
-
-        //FIXME: non funziona il requestFocus()...
-        //stage.requestFocus();
     }
 }

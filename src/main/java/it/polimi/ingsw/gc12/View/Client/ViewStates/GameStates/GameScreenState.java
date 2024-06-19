@@ -21,14 +21,11 @@ public abstract class GameScreenState extends ViewState {
         try {
             card = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getCardsInHand().get(inHandPosition);
         } catch (IndexOutOfBoundsException e) {
-            throw new IllegalArgumentException("There's no card in the specified hand position!");
+            selectedView.printError(new IllegalArgumentException("There's no card in the specified hand position!"));
+            return;
         }
 
-        try {
-            CLIENT.requestToServer(new PlaceCardCommand(coordinates, card.ID, playedSide));
-        } catch (Exception e) {
-            selectedView.printError(e);
-        }
+        CLIENT.requestToServer(new PlaceCardCommand(coordinates, card.ID, playedSide));
     }
 
     @Override
@@ -61,9 +58,10 @@ public abstract class GameScreenState extends ViewState {
         synchronized (CLIENT) {
             try {
                 selectedView.quittingScreen();
+                //Notified by CLIENT.requestToServer() function, which gets executed in another thread
                 CLIENT.wait();
             } catch (InterruptedException e) {
-                CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
+                throw new RuntimeException(e); //Should never happen
             }
         }
         super.quit();

@@ -198,7 +198,7 @@ public class ServerJSONParser extends JSONParser {
                     new FileWriter("src/main/java/it/polimi/ingsw/gc12/Utilities/jsonFiles/client_cards.json")
             );
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //Should never happen
         }
     }
 

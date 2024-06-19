@@ -22,7 +22,12 @@ public class LeaderboardScreenState extends ViewState {
     @Override
     public void toLobbies() {
         CLIENT_CONTROLLER.VIEWMODEL.leaveRoom();
-        currentState = new LobbyScreenState();
+        currentState = new LobbiesScreenState();
         currentState.executeState();
+    }
+
+    @Override
+    public String toString() {
+        return "leaderboard";
     }
 }

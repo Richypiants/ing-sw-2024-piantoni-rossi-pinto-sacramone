@@ -36,61 +36,62 @@ public abstract class ViewState {
         currentState = newState;
     }
 
+    public static void printError(Throwable error) {
+        selectedView.printError(error);
+        CLIENT_CONTROLLER.ERROR_LOGGER.log(error);
+    }
+
     public void keyPressed() {
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     public void setNickname(String nickname){
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     public void createLobby(int maxPlayers){
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     public void joinLobby(UUID lobbyUUID){
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     public void selectColor(Color color) {
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     public void leaveLobby(){
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     public void placeCard(GenericPair<Integer, Integer> coordinates, int inHandPosition, Side playedSide) {
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     public void drawFromDeck(String deck) {
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     public void drawFromVisibleCards(String deck, int position) {
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     public void showField(int opponentID){
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     //FIXME: TUI-only command, should be moved from here...?
     public void moveField(GenericPair<Integer, Integer> centerOffset) {
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     public void pickObjective(int cardID){
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     public void broadcastMessage(String message) {
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
-    }
-
-    public void directMessage(String receiverNickname, String message) {
-        selectedView.printError(new ForbiddenActionException("Cannot execute this command!"));
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     public void connect(String serverIPAddress, String communicationTechnology, String nickname) {
@@ -108,8 +109,8 @@ public abstract class ViewState {
     public void toLobbies() {
     }
 
-    public void printError(Throwable error) {
-        selectedView.printError(error);
+    public void directMessage(String receiverNickname, String message) {
+        selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
     public void quit() {

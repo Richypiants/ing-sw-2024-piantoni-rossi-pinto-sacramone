@@ -40,7 +40,8 @@ public class ChooseObjectiveCardsState extends GameScreenState {
         try {
             card = objectivesSelection.get(selection - 1);
         } catch (IndexOutOfBoundsException e) {
-            throw new IllegalArgumentException("There's no such objective card at that position!");
+            selectedView.printError(new IllegalArgumentException("There's no such objective card at that position!"));
+            return;
         }
 
         CLIENT.requestToServer(new PickObjectiveCommand(card.ID));
@@ -49,5 +50,10 @@ public class ChooseObjectiveCardsState extends GameScreenState {
     @Override
     public void transition() {
         currentState = new PlayerTurnPlayState();
+    }
+
+    @Override
+    public String toString() {
+        return "Objective Card picking phase";
     }
 }

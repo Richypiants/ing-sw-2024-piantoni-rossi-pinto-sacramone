@@ -9,9 +9,9 @@ import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 
 import java.util.UUID;
 
-public class LobbyScreenState extends ViewState {
+public class LobbiesScreenState extends ViewState {
 
-    public LobbyScreenState() {
+    public LobbiesScreenState() {
     }
 
     @Override
@@ -29,7 +29,7 @@ public class LobbyScreenState extends ViewState {
         if (!nickname.isEmpty() && nickname.length() <= 10)
             CLIENT.requestToServer(new SetNicknameCommand(nickname));
         else
-            throw new IllegalArgumentException("The entered nickname is longer than 10 characters or is empty! Retry...");
+            selectedView.printError(new IllegalArgumentException("The entered nickname is longer than 10 characters or is empty! Retry..."));
     }
 
     @Override
@@ -59,11 +59,17 @@ public class LobbyScreenState extends ViewState {
         synchronized (CLIENT) {
             try {
                 selectedView.quittingScreen();
+                //Notified by CLIENT.requestToServer() function, which gets executed in another thread
                 CLIENT.wait();
             } catch (InterruptedException e) {
-                CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
+                throw new RuntimeException(e); //Should never happen
             }
         }
         super.quit();
+    }
+
+    @Override
+    public String toString() {
+        return "lobbies screen";
     }
 }

@@ -1,7 +1,5 @@
 package it.polimi.ingsw.gc12.Utilities;
 
-import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
-
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -44,16 +42,12 @@ public class ErrorLogger {
 
     /**
      * Logs the given error with a timestamp and stack trace to the file.
-     * In addiction, prints only the message error without the stackTrace on the view to let the user understand what caused the error.
      *
      * @param error The throwable error to be logged.
      */
     public void log(Throwable error) {
         String timestamp = formatter.format(new Date());
         err.print("[" + timestamp + "] " + error.getMessage() + "\n" + Arrays.toString(error.getStackTrace()).replaceAll(" ", "\n") + "\n");
-
-        //FIXME: non dovremmo però stampare tutti gli errori... giusto?
-        ViewState.getCurrentState().printError(error);
     }
 }
 

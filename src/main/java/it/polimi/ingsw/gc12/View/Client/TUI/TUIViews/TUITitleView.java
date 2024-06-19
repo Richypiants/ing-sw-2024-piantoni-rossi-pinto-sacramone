@@ -84,7 +84,7 @@ public class TUITitleView extends TUIView{
         try {
             sleep(1000);
         } catch (Exception e) {
-            CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
+            throw new RuntimeException(e); //Should never happen
         }
 
         clearTerminal();

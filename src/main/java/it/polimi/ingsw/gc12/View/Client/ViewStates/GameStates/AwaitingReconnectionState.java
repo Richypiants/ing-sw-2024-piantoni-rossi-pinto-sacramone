@@ -21,13 +21,19 @@ public class AwaitingReconnectionState extends GameScreenState{
         ViewState.selectedView.awaitingScreen();
     }
 
+    //Never called at the moment and thus useless, as an awaiting game has one and only one active player by definition,
+    // and reconnecting means that there will be two active players, thus exiting the waiting state.
+    @Override
     public void restoreScreenState(){
-        //Never called at the moment, as an awaiting game has one and only one active player by definition, and
-        // reconnecting means that there will be two active players, thus exiting the waiting state
     }
 
     @Override
     public void transition() {
         ViewState.currentState = LAST_STATE;
+    }
+
+    @Override
+    public String toString() {
+        return "awaiting state";
     }
 }
