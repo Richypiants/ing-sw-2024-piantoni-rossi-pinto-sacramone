@@ -1,7 +1,7 @@
-package it.polimi.ingsw.gc12.Controller.ServerController;
+package it.polimi.ingsw.gc12.Controller.Server;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
-import it.polimi.ingsw.gc12.Listeners.ServerListener;
+import it.polimi.ingsw.gc12.Commands.ClientCommands.ThrowExceptionCommand;
+import it.polimi.ingsw.gc12.Listeners.Server.ServerListener;
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
@@ -10,7 +10,7 @@ import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnavailableColorException;
 import org.junit.jupiter.api.Test;
 
-import static it.polimi.ingsw.gc12.Controller.ServerController.ServerControllerTest.createNetworkSessionStub;
+import static it.polimi.ingsw.gc12.Controller.Server.ServerControllerTest.createNetworkSessionStub;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LobbyControllerTest {
@@ -33,7 +33,7 @@ class LobbyControllerTest {
     }
 
     @Test
-    void correctLeaveLobby() {
+    void correctLeaveLobby() throws InterruptedException {
         NetworkSession passivePlayer = createNetworkSessionStub(connectionController);
         NetworkSession lobbyCreatorPlayer = createNetworkSessionStub(connectionController);
         NetworkSession joiningPlayer = createNetworkSessionStub(connectionController);
@@ -48,7 +48,12 @@ class LobbyControllerTest {
         LobbyController associatedLobbyController = (LobbyController) lobbyCreatorPlayer.getController();
 
         associatedLobbyController.leaveLobby(lobbyCreatorPlayer, true);
-        //assertEquals(1, associatedLobbyController.CONTROLLED_LOBBY.getPlayersNumber());
+
+        synchronized (this) {
+            wait(10);
+        }
+
+        assertEquals(1, associatedLobbyController.CONTROLLED_LOBBY.getPlayersNumber());
     }
 
     @Test
