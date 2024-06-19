@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Model;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.UpdateLobbyCommand;
+import it.polimi.ingsw.gc12.Commands.ClientCommands.UpdateLobbyCommand;
 import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.FullLobbyException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.UnavailableColorException;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static it.polimi.ingsw.gc12.Controller.ServerController.ServerController.MODEL;
+import static it.polimi.ingsw.gc12.Controller.Server.ServerController.MODEL;
 
 /**
  * Represents a game lobby where players wait for new games to start.

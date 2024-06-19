@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Network;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Commands.ClientCommands.ClientCommand;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

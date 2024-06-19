@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc12.Controller;
 
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Controller.ServerController.ConnectionController;
-import it.polimi.ingsw.gc12.Controller.ServerController.GameController;
-import it.polimi.ingsw.gc12.Controller.ServerController.LobbyController;
-import it.polimi.ingsw.gc12.Controller.ServerController.ServerController;
+import it.polimi.ingsw.gc12.Controller.Client.ClientController;
+import it.polimi.ingsw.gc12.Controller.Server.ConnectionController;
+import it.polimi.ingsw.gc12.Controller.Server.GameController;
+import it.polimi.ingsw.gc12.Controller.Server.LobbyController;
+import it.polimi.ingsw.gc12.Controller.Server.ServerController;
 
 /**
  * The {@code ControllerInterface} serves as a common interface for the controllers

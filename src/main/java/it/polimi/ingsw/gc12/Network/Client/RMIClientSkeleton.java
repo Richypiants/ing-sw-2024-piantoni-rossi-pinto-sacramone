@@ -1,13 +1,13 @@
 package it.polimi.ingsw.gc12.Network.Client;
 
-import it.polimi.ingsw.gc12.Client.ClientView.ViewStates.ViewState;
-import it.polimi.ingsw.gc12.Controller.ClientController.ClientController;
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Commands.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Controller.Client.ClientController;
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
 import it.polimi.ingsw.gc12.Listeners.NetworkListener;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Network.RMIMainServer;
 import it.polimi.ingsw.gc12.Network.RMIVirtualClient;
+import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

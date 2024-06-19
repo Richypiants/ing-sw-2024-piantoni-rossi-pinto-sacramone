@@ -1,11 +1,11 @@
 package it.polimi.ingsw.gc12.Network.Server;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ClientCommands.ThrowExceptionCommand;
-import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
+import it.polimi.ingsw.gc12.Commands.ClientCommands.ThrowExceptionCommand;
+import it.polimi.ingsw.gc12.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
 import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
 import it.polimi.ingsw.gc12.Listeners.NetworkListener;
-import it.polimi.ingsw.gc12.Listeners.ServerListener;
+import it.polimi.ingsw.gc12.Listeners.Server.ServerListener;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Network.RMIVirtualClient;
 import it.polimi.ingsw.gc12.Network.RMIVirtualServer;

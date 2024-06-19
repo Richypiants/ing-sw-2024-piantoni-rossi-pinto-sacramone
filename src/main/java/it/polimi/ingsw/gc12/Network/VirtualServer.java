@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Network;
 
-import it.polimi.ingsw.gc12.Controller.Commands.ServerCommands.ServerCommand;
+import it.polimi.ingsw.gc12.Commands.ServerCommands.ServerCommand;
 
 /**
  * The {@code VirtualServer} interface represents a server entity in a networked environment,

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.Model;
 
+import it.polimi.ingsw.gc12.Model.Server.InGamePlayer;
 import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 
 import java.io.Serializable;

@@ -1,0 +1,184 @@
+.standardLabel {
+    -fx-font-family: Bell MT;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-text-fill: #368B84;
+}
+
+.standardTextField {
+    -fx-pref-width: 150.0;
+    -fx-pref-height: 10.0;
+    -fx-font-family: Bell MT;
+    -fx-font-size: 18;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-background-radius: 5.0 5.0 5.0 5.0;
+}
+
+.rectangularButton {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+    -fx-background-image: url("/Client/images/medieval_button.png");
+    -fx-background-size: stretch;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: JUSTIFY;
+    -fx-wrap-text: true;
+    -fx-font-family: Castellar;
+    -fx-font-size: 16.0;
+}
+
+.roundButton {
+    -fx-background-radius: 50%;
+    -fx-min-width: 50px;
+    -fx-min-height: 50px;
+    -fx-max-width: 50px;
+    -fx-max-height: 50px;
+    -fx-background-color: transparent;
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+    -fx-border-radius: 25;
+    -fx-alignment: center;
+}
+
+.decoratedPopup {
+    -fx-background-image: url('/Client/images/medieval_popup.png');
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+    -fx-spacing: 40;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+}
+
+.popupText {
+    -fx-font-family: Bell MT;
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-text-fill: /*#FADA5E; F8E473; */ EEDC82;
+}
+
+.scroll-pane {
+    -fx-background-insets: 0, 1;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.lobbyBox {
+    -fx-background-color: #B0E0E6;
+    -fx-border-color: black;
+    -fx-border-width: 1;
+    -fx-padding: 10;
+    -fx-alignment: CENTER-LEFT;
+    -fx-text-alignment: JUSTIFY;
+}
+
+.messageElement {
+    -fx-border-radius: 10;
+    -fx-background-color: transparent;
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+    -fx-padding: 10;
+}
+
+#titleScreenPane {
+    -fx-background-image: url("/Client/images/title_screen_bg_old_scroll.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+}
+
+#cranioCreationsLogo {
+    -fx-opacity: 0.0;
+}
+
+#titleScreenBox {
+    -fx-opacity: 0.0;
+}
+
+#titleScreenPrompt {
+    -fx-font-family: Bell MT;
+    -fx-font-size: 28;
+    -fx-font-weight: bold;
+    -fx-text-fill: #368B84;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+}
+
+#connectionPane {
+    -fx-background-image: url("/Client/images/title_screen_bg_old_scroll.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+}
+
+#connectionSetupBox {
+    -fx-spacing: 50;
+    -fx-opacity: 0.0;
+}
+
+#connectionTechnologySetupBox {
+    -fx-spacing: 200;
+}
+
+#connectionLoadingPane {
+    -fx-background-image: url("/Client/images/title_screen_bg_old_scroll.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+}
+
+#lobbiesMenuPane {
+    -fx-background-image: url("/Client/images/title_screen_bg_old_scroll.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+}
+
+#lobbiesPane {
+    -fx-alignment: CENTER;
+    -fx-text-alignment: JUSTIFY;
+    -fx-background-color: transparent;
+}
+
+#lobbiesList {
+    -fx-spacing: 10;
+    -fx-background-color: transparent;
+    -fx-padding: 10 10 10 10;
+    -fx-alignment: TOP-CENTER;
+}
+
+#gameScreenPane {
+    -fx-background-image: url("/Client/images/game/game_screen_bg.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+}
+
+#scoreboardPane {
+    -fx-background-image: url('/Client/images/game/scoreboard.png');
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+}
+
+#chatPane {
+    -fx-background-radius: 10%;
+    -fx-background-color: #7E734B;
+}
+
+#chatScrollPane {
+    -fx-background-color: white;
+}
+
+#sendButton {
+    -fx-background-radius: 30%;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-max-width: 30px;
+    -fx-max-height: 30px;
+    -fx-background-color: transparent;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+    -fx-border-radius: 15;
+    -fx-alignment: center;
+}

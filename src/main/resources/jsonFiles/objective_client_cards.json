@@ -2,8 +2,8 @@
     {
         "ID": 86,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/086_back.png",
-            "FRONT": "/images/cards/front/086.png"
+            "BACK": "/Client/images/cards/back/086_back.png",
+            "FRONT": "/Client/images/cards/front/086.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -211,8 +211,8 @@
     {
         "ID": 87,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/087.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/087.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -508,8 +508,8 @@
     {
         "ID": 88,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/088.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/088.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -805,8 +805,8 @@
     {
         "ID": 89,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/089.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/089.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -1102,8 +1102,8 @@
     {
         "ID": 90,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/090.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/090.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -1399,8 +1399,8 @@
     {
         "ID": 91,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/091.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/091.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -1728,8 +1728,8 @@
     {
         "ID": 92,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/092.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/092.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -2057,8 +2057,8 @@
     {
         "ID": 93,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/093.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/093.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -2386,8 +2386,8 @@
     {
         "ID": 94,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/094.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/094.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -2715,8 +2715,8 @@
     {
         "ID": 95,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/095.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/095.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -2980,8 +2980,8 @@
     {
         "ID": 96,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/096.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/096.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -3245,8 +3245,8 @@
     {
         "ID": 97,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/097.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/097.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -3510,8 +3510,8 @@
     {
         "ID": 98,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/098.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/098.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -3775,8 +3775,8 @@
     {
         "ID": 99,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/099.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/099.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -4056,8 +4056,8 @@
     {
         "ID": 100,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/100.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/100.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -4337,8 +4337,8 @@
     {
         "ID": 101,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective.png",
-            "FRONT": "/images/cards/front/101.png"
+            "BACK": "/Client/images/cards/back/objective.png",
+            "FRONT": "/Client/images/cards/front/101.png"
         },
         "TUI_SPRITES": {
             "FRONT": [
@@ -4618,8 +4618,8 @@
     {
         "ID": 102,
         "GUI_SPRITES": {
-            "BACK": "/images/cards/back/objective2.png",
-            "FRONT": "/images/cards/front/102.png"
+            "BACK": "/Client/images/cards/back/objective2.png",
+            "FRONT": "/Client/images/cards/front/102.png"
         },
         "TUI_SPRITES": {
             "FRONT": [

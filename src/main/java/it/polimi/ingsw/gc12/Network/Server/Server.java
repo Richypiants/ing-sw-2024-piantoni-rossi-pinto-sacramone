@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc12.Network.Server;
 
-import it.polimi.ingsw.gc12.Controller.ServerController.ConnectionController;
+import it.polimi.ingsw.gc12.Controller.Server.ConnectionController;
 import it.polimi.ingsw.gc12.Network.RMIMainServer;
 import it.polimi.ingsw.gc12.Network.RMIVirtualClient;
 import it.polimi.ingsw.gc12.Network.RMIVirtualServer;
