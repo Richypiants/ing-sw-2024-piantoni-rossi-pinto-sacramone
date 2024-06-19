@@ -44,7 +44,7 @@ public class Client {
             if (serverConnection != null)
                 serverConnection.close();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ClientController.getInstance().ERROR_LOGGER.log(e);
         }
         if (keepAlive != null)
             keepAlive.interrupt();
@@ -66,7 +66,7 @@ public class Client {
                     case "socket" -> Client.getClientInstance().serverConnection = SocketClient.getInstance();
                     case "rmi" -> Client.getClientInstance().session = RMIClientSkeleton.getInstance();
                     default ->
-                            throw new RuntimeException("Communication technology " + communicationTechnology + " not supported");
+                            ViewState.printError(new RuntimeException("Communication technology " + communicationTechnology + " not supported"));
                 }
             }
         });
@@ -77,6 +77,7 @@ public class Client {
         commandSenderExecutor.submit(() -> {
             try {
                 serverConnection.requestToServer(command);
+                //This notified is needed to make the Client exit from the quittingScreen when quitting
                 synchronized (this) {
                     this.notifyAll();
                 }

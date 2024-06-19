@@ -35,14 +35,14 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
             Client.getClientInstance().serverConnection =
                     ((RMIMainServer) registry.lookup("codex_naturalis_rmi")).accept(this);
 
-            //If connection to the server is successful, I wake up the connect() function continuously retrying to
-            // reconnect every 10 seconds
+            //If connection to the server is successful no exception is thrown; the program can get to the following line
+            // and I wake up the connect() function, which has been continuously retrying to reconnect every 10 seconds
             synchronized (ViewState.getCurrentState()) {
                 ViewState.getCurrentState().notifyAll();
             }
         } catch (RemoteException | NotBoundException e) {
             Client.getClientInstance().resetClient();
-            throw new RuntimeException(e);
+            ClientController.getInstance().ERROR_LOGGER.log(e);
         }
     }
 

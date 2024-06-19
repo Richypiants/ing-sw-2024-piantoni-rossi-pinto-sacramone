@@ -155,18 +155,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.6.0</version>
-                <configuration>
-                    <filters>
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
-                                <exclude>**/objective_client_cards.json</exclude>
-                                <exclude>module-info.java</exclude>
-                                <exclude>META-INF/MANIFEST.MF</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
-                </configuration>
                 <executions>
                     <execution>
                         <id>CodexNaturalisServer</id>
@@ -188,6 +176,9 @@
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>**/Client/**</exclude>
+                                        <exclude>**/objective_client_cards.json</exclude>
+                                        <exclude>module-info.java</exclude>
+                                        <exclude>META-INF/MANIFEST.MF</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
@@ -213,6 +204,9 @@
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>**/Server/**</exclude>
+                                        <exclude>**/objective_client_cards.json</exclude>
+                                        <exclude>module-info.java</exclude>
+                                        <exclude>META-INF/MANIFEST.MF</exclude>
                                     </excludes>
                                 </filter>
                                 <filter>

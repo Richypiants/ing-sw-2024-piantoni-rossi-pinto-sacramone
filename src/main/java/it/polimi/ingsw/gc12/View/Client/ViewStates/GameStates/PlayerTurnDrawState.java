@@ -36,29 +36,33 @@ public class PlayerTurnDrawState extends GameScreenState {
 
     @Override
     public void drawFromDeck(String deck) {
-        if (invalidDeck(deck)) throw new IllegalArgumentException("The provided deck doesn't exist!");
-        try {
-            CLIENT.requestToServer(new DrawFromDeckCommand(deck));
-        } catch (Exception e) {
-            selectedView.printError(e);
+        if (invalidDeck(deck)) {
+            selectedView.printError(new IllegalArgumentException("The provided deck doesn't exist!"));
         }
+
+        CLIENT.requestToServer(new DrawFromDeckCommand(deck));
     }
 
     @Override
     public void drawFromVisibleCards(String deck, int position) {
-        if (invalidDeck(deck)) throw new IllegalArgumentException("The provided visible card area doesn't exist!");
-        if (position != 1 && position != 2) throw new IllegalArgumentException("The provided position doesn't exist!");
-        try {
-            CLIENT.requestToServer(new DrawFromVisibleCardsCommand(deck, position - 1));
-        } catch (Exception e) {
-            selectedView.printError(e);
+        if (invalidDeck(deck)) {
+            selectedView.printError(new IllegalArgumentException("The provided visible card area doesn't exist!"));
+            return;
         }
+        if (position != 1 && position != 2) {
+            selectedView.printError(new IllegalArgumentException("The provided position doesn't exist!"));
+            return;
+        }
+
+        CLIENT.requestToServer(new DrawFromVisibleCardsCommand(deck, position - 1));
     }
 
     public void showField(int playerID) {
         ClientGame game = CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame();
-        if (playerID < 0 || playerID > game.getPlayersNumber())
-            throw new IllegalArgumentException("The provided ID doesn't match to a player's ID in the game!");
+        if (playerID < 0 || playerID > game.getPlayersNumber()) {
+            selectedView.printError(new IllegalArgumentException("The provided ID doesn't match to a player's ID in the game!"));
+            return;
+        }
 
         selectedView.showField(game.getPlayers().get(playerID - 1));
     }
@@ -75,5 +79,10 @@ public class PlayerTurnDrawState extends GameScreenState {
     @Override
     public void transition() {
         currentState = new PlayerTurnPlayState();
+    }
+
+    @Override
+    public String toString() {
+        return "draw phase";
     }
 }

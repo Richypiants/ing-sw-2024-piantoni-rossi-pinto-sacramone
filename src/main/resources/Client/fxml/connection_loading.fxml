@@ -10,8 +10,8 @@
            style="-fx-font-size: 30" text="Opening the Codex... Please wait..."/>
     <ProgressIndicator fx:id="loadingProgressIndicator" prefWidth="50.0"/>
 
-    <VBox fx:id="retryConnectionPane" visible="false" spacing="100.0" alignment="CENTER">
-        <Label fx:id="retryConnectionPromptLabel" styleClass="standardLabel" prefWidth="500.0" prefHeight="20.0"/>
+    <VBox fx:id="retryConnectionPane" visible="false" styleClass="decoratedPopup" spacing="100.0" alignment="CENTER">
+        <Label fx:id="retryConnectionPromptLabel" styleClass="popupText" wrapText="true"/>
         <HBox spacing="300.0" alignment="CENTER">
             <Button fx:id="yesButton" styleClass="rectangularButton" text="Yes"/>
             <Button fx:id="noButton" styleClass="rectangularButton" text="No"/>

@@ -53,7 +53,13 @@ public class SocketServerHandler extends SocketHandler implements VirtualServer 
     @Override
     protected void executeReceivedCommand(Command receivedCommand) {
         Client.getClientInstance().commandsReceivedExecutor.submit(
-                () -> ((ClientCommand) receivedCommand).execute((ClientControllerInterface) getController())
+                () -> {
+                    try {
+                        ((ClientCommand) receivedCommand).execute((ClientControllerInterface) getController());
+                    } catch (Exception e) {
+                        printError(e);
+                    }
+                }
         );
     }
 

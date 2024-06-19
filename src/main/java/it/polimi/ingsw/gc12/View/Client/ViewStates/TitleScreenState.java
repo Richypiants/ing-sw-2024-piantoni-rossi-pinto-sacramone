@@ -17,4 +17,9 @@ public class TitleScreenState extends ViewState {
     }
 
     //TODO: quit anche qui?
+
+    @Override
+    public String toString() {
+        return "title screen";
+    }
 }

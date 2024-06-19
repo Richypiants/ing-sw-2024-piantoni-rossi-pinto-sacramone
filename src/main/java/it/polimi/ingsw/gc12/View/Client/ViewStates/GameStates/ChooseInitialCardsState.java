@@ -45,4 +45,9 @@ public class ChooseInitialCardsState extends GameScreenState{
     @Override
     public void transition() {
     }
+
+    @Override
+    public String toString() {
+        return "Initial Card side choice phase";
+    }
 }

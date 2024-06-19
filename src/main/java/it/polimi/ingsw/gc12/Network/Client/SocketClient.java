@@ -41,8 +41,9 @@ public class SocketClient implements VirtualServer {
 
         Socket socket = new Socket(Client.getClientInstance().serverIPAddress, 5000);
 
-        //If connection to the server is successful, I wake up the connect() function continuously retrying to
-        // reconnect every 10 seconds
+        //If connection to the server is successful no exception is thrown; the program can get to the following line
+        // and I wake up the ConnectionSetupState.connect() function, which has been continuously retrying to reconnect
+        // every 10 seconds
         synchronized (ViewState.getCurrentState()) {
             ViewState.getCurrentState().notifyAll();
         }
@@ -69,13 +70,15 @@ public class SocketClient implements VirtualServer {
      *
      * @return The singleton instance of the SocketClient.
      */
-    public static SocketClient getInstance() { //TODO: sincronizzazione (serve?) ed eventualmente lazy
-        if (SINGLETON_SOCKET_CLIENT == null) {
-            try {
-                SINGLETON_SOCKET_CLIENT = new SocketClient();
-            } catch (IOException e) {
-                Client.getClientInstance().resetClient();
-                ClientController.getInstance().ERROR_LOGGER.log(e);
+    public static SocketClient getInstance() {
+        synchronized (SocketClient.class) {
+            if (SINGLETON_SOCKET_CLIENT == null) {
+                try {
+                    SINGLETON_SOCKET_CLIENT = new SocketClient();
+                } catch (IOException e) {
+                    Client.getClientInstance().resetClient();
+                    ClientController.getInstance().ERROR_LOGGER.log(e);
+                }
             }
         }
         return SINGLETON_SOCKET_CLIENT;

@@ -38,9 +38,8 @@ public class GUILobbiesView extends GUIView {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/Client/fxml/lobby_menu.fxml")).load();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //Should never happen
         }
-
         MENU_BUTTONS_BOX = (VBox) SCENE_ROOT.lookup("#buttonsBox");
         OWN_NICKNAME_LABEL = (Label) SCENE_ROOT.lookup("#ownNicknameLabel");
         CREATE_LOBBY_BUTTON = (Button) SCENE_ROOT.lookup("#createGameButton");
@@ -103,11 +102,7 @@ public class GUILobbiesView extends GUIView {
                 OverlayPopup nicknameChangePopup = drawOverlayPopup(CHANGE_NICKNAME_POPUP_BOX, true);
 
                 CONFIRM_NICKNAME_CHANGE_BUTTON.setOnAction(event2 -> {
-                    try {
-                        ViewState.getCurrentState().setNickname(CHANGE_NICKNAME_TEXTFIELD.getText());
-                    } catch (IllegalArgumentException e) {
-                        printError(e);
-                    }
+                    ViewState.getCurrentState().setNickname(CHANGE_NICKNAME_TEXTFIELD.getText());
                     nicknameChangePopup.hide();
                 });
 
@@ -118,8 +113,7 @@ public class GUILobbiesView extends GUIView {
             BACK_TO_TITLE_SCREEN_BUTTON.setPrefSize(300, 50);
             BACK_TO_TITLE_SCREEN_BUTTON.setOnAction(event -> ViewState.getCurrentState().quit());
 
-            //FIXME: are we sure we want "never"? anyway, it's already set in fxml, so we can cancel this
-            //LOBBIES_PANE.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            //FIXME: we might want to reskin LOBBIES_PANE's scrollbar...
             LOBBIES_PANE.setPrefSize(screenSizes.getX() * 89 / 100 - 320, screenSizes.getY() * 13 / 16);
             LOBBIES_PANE.relocate(screenSizes.getX() * 9 / 100 + 320, (screenSizes.getY() - LOBBIES_PANE.getPrefHeight()) / 2);
 

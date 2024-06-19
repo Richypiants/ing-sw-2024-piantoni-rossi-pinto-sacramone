@@ -28,7 +28,7 @@ public class GUIConnectionLoadingView extends GUIView {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/Client/fxml/connection_loading.fxml")).load();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //Should never happen
         }
 
         CONNECTION_LOADING_LABEL = (Label) SCENE_ROOT.lookup("#connectionLoadingLabel");
@@ -83,7 +83,7 @@ public class GUIConnectionLoadingView extends GUIView {
         AtomicBoolean wantsToRetry = new AtomicBoolean(true);
 
         Platform.runLater(() -> {
-            RETRY_CONNECTION_PANE.setPrefSize(screenSizes.getX() * 40 / 100, screenSizes.getY() * 40 / 100);
+            RETRY_CONNECTION_PANE.setPrefSize(screenSizes.getX() * 50 / 100, screenSizes.getY() * 50 / 100);
 
             String promptText = "It seems " + (
                     causedByNetworkError ?
@@ -91,10 +91,13 @@ public class GUIConnectionLoadingView extends GUIView {
                             "your chosen nickname is already in use"
             ) + ": would you like to retry? (Yes-No):";
 
+            RETRY_CONNECTION_PROMPT_LABEL.setMaxWidth(600);
+            RETRY_CONNECTION_PROMPT_LABEL.setMaxWidth(600);
             RETRY_CONNECTION_PROMPT_LABEL.setText(promptText);
 
             OverlayPopup retryConnectionPopup = drawOverlayPopup(RETRY_CONNECTION_PANE, false);
 
+            YES_BUTTON.setMinWidth(100);
             YES_BUTTON.setOnAction(event -> {
                 synchronized (this) {
                     wantsToRetry.set(true);
@@ -103,6 +106,7 @@ public class GUIConnectionLoadingView extends GUIView {
                 retryConnectionPopup.hide();
             });
 
+            NO_BUTTON.setMinWidth(100);
             NO_BUTTON.setOnAction(event -> {
                 synchronized (this) {
                     wantsToRetry.set(false);
@@ -119,7 +123,7 @@ public class GUIConnectionLoadingView extends GUIView {
             try {
                 this.wait();
             } catch (InterruptedException e) {
-                CLIENT_CONTROLLER.ERROR_LOGGER.log(e);
+                throw new RuntimeException(e); //Should never happen
             }
         }
 

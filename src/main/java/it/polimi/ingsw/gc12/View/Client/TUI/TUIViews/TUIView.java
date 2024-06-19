@@ -43,7 +43,7 @@ public class TUIView extends View {
                     new ProcessBuilder("bash", "/c", "mode con:cols=" + SINGLETON_TUI_INSTANCE.TERMINAL_SIZE.getY() + " lines=" + SINGLETON_TUI_INSTANCE.TERMINAL_SIZE.getX())
                             .inheritIO().start().waitFor();
                 } catch (InterruptedException | IOException e2) {
-                    throw new RuntimeException(e2);
+                    throw new RuntimeException(e2); //Should never happen for the 3 main OSs
                 }
             }
         }
@@ -71,7 +71,6 @@ public class TUIView extends View {
                 .a(error.getMessage()).reset()
                 .restoreCursorPosition()
         );
-        //FIXME: autoResetting... should keep it?
     }
 
     public void printToPosition(Ansi toPrint) {
@@ -80,7 +79,6 @@ public class TUIView extends View {
                 .restoreCursorPosition()
                 .eraseScreen(Ansi.Erase.FORWARD)
         );
-        //FIXME: autoResetting... should keep it?
     }
 
     @Override

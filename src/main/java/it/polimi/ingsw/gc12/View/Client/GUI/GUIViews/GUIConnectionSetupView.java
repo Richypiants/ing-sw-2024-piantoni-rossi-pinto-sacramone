@@ -32,15 +32,16 @@ public class GUIConnectionSetupView extends GUIView {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/Client/fxml/connection_setup.fxml")).load();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //Should never happen
         }
         CONNECTION_TITLE_SCREEN_GAME_LOGO = (ImageView) SCENE_ROOT.lookup("#connectionTitleScreenGameLogo");
         CONNECTION_SETUP_BOX = (VBox) SCENE_ROOT.lookup("#connectionSetupBox");
         APPEARING_LOGO = (ImageView) SCENE_ROOT.lookup("#appearingLogo");
         CONNECTION_SETUP_SEND_BUTTON = (Button) SCENE_ROOT.lookup("#connectionSetupSendButton");
 
-        HBox connectionTechnologySetupBox = (HBox) SCENE_ROOT.lookup("#connectionTechnologySetupBox");
-        CONNECTION_TOGGLE_GROUP = ((RadioButton) connectionTechnologySetupBox.getChildren().getFirst()).getToggleGroup();
+        CONNECTION_TOGGLE_GROUP =
+                ((RadioButton) ((HBox) SCENE_ROOT.lookup("#connectionTechnologySetupBox")).getChildren().getFirst())
+                        .getToggleGroup();
     }
 
     public static GUIConnectionSetupView getInstance() {

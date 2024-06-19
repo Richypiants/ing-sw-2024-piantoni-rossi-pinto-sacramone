@@ -107,7 +107,7 @@ public class GUIGameView extends GUIView {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/Client/fxml/game_screen.fxml")).load();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //Should never happen
         }
         OWN_FIELD_PANE = (AnchorPane) SCENE_ROOT.lookup("#ownFieldPane");
         OWN_FIELD_STATS_BOX = (VBox) OWN_FIELD_PANE.lookup("#ownFieldStatsBox");
@@ -220,13 +220,12 @@ public class GUIGameView extends GUIView {
             openCornerShape.setOnDragDropped((event) -> {
                 if (event.getTransferMode() == TransferMode.MOVE) {
                     var data = event.getDragboard().getContent(PLACE_CARD_DATA_FORMAT);
-                    if (!(data instanceof GenericPair<?, ?> placeCardData))
-                        throw new RuntimeException(); //FIXME: should never happen...
-
-                    ViewState.getCurrentState().placeCard(
-                            openCornerShape.COORDINATES, (Integer) placeCardData.getX(), (Side) placeCardData.getY()
-                    );
-                    event.setDropCompleted(event.getDragboard().hasContent(PLACE_CARD_DATA_FORMAT));
+                    if (data instanceof GenericPair<?, ?> placeCardData) {
+                        ViewState.getCurrentState().placeCard(
+                                openCornerShape.COORDINATES, (Integer) placeCardData.getX(), (Side) placeCardData.getY()
+                        );
+                        event.setDropCompleted(event.getDragboard().hasContent(PLACE_CARD_DATA_FORMAT));
+                    }
                 }
             });
         }
@@ -301,7 +300,8 @@ public class GUIGameView extends GUIView {
 
         AnchorPane clippedPane = new AnchorPane();
         clippedPane.setPrefSize(clippedPaneSize.getX(), clippedPaneSize.getY());
-        String backgroundName = "/images/game/fields_bg_" + player.getColor().name().toLowerCase() + ".jpg";
+        //FIXME: rimettere fields_bg_small.jpg oppure fixare i fields_bg colorati/più piccoli?
+        String backgroundName = "/Client/images/game/fields_bg_" + "small" + ".jpg";
         clippedPane.setStyle("-fx-background-image: url('" + backgroundName + "'); -fx-background-size: cover;" +
                 "-fx-background-repeat: no-repeat;");
         clippedPane.setCenterShape(true);
@@ -948,7 +948,6 @@ public class GUIGameView extends GUIView {
                 if (chatLog.size() >= 2 && !(chatLog.getLast().startsWith("[") || chatLog.getLast().startsWith("<")))
                     fullMessage = chatLog.get(chatLog.size() - 2) + fullMessage;
 
-
                 MESSAGES_BOX.getChildren().add(createMessageElement(fullMessage));
             }
 
@@ -1173,7 +1172,6 @@ public class GUIGameView extends GUIView {
         });
     }
 
-    //FIXME: separate parameter receiver from message both in signature here, in TUI and in viewModel?
     private HBox createMessageElement(String message) {
         HBox messageBox = new HBox(250);
         messageBox.setPadding(new Insets(15, 12, 15, 12));

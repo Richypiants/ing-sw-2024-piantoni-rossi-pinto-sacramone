@@ -116,11 +116,11 @@ public abstract class SocketHandler extends NetworkSession {
                 try {
                     command.wait();
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException(e); //Should never happen
                 }
             }
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //Should never happen
         }
 
         writeObject(command);
@@ -128,7 +128,7 @@ public abstract class SocketHandler extends NetworkSession {
         try {
             writeQueue.take();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //Should never happen
         }
         if (!writeQueue.isEmpty()) {
             Command notifiedCommand = writeQueue.peek();

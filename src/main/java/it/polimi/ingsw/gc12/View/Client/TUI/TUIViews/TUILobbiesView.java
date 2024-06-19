@@ -64,7 +64,8 @@ public class TUILobbiesView extends TUIView{
                                     '[quit]' to go back to title screen.
                 """
         ));
-        i+=7;
+
+        i += 7;
 
         printToPosition(ansi().cursor(i++, 1).a("[CURRENT LOBBY]: " + (
                         VIEWMODEL.inRoom() ?
