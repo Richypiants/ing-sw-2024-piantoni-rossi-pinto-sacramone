@@ -7,10 +7,10 @@ import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
+import it.polimi.ingsw.gc12.View.Client.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.View.Client.ViewStates.GameStates.AwaitingReconnectionState;
 import it.polimi.ingsw.gc12.View.Client.ViewStates.GameStates.PlayerTurnPlayState;
 import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
-import it.polimi.ingsw.gc12.View.GUI.OverlayPopup;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -153,7 +153,7 @@ public class GUIGameView extends GUIView {
         PADDING_SIZE = 20.0;
 
         RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS = new ArrayList<>();
-        //TODO: CAMBIARE LE COORDINATE SOLO PREVIA COMUNICAZIONE A SACRAMONE
+
         RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.187, 0.8918)); // 0
         RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.422, 0.8915)); // 1
         RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.658, 0.8915)); // 2
@@ -476,7 +476,6 @@ public class GUIGameView extends GUIView {
         OWN_HAND_PANE.setPrefSize(screenSizes.getX() * 43 / 100, screenSizes.getY() * 15 / 100);
         OWN_HAND_PANE.relocate(screenSizes.getX() * 46 / 100, screenSizes.getY() * 85 / 100);
 
-        //TODO: CAMBIARE LE DIMENSIONI SOLO PREVIA COMUNICAZIONE A SACRAMONE
         SCOREBOARD_PANE.setPrefSize(screenSizes.getX() * 0.1328125, screenSizes.getY() * 0.5);
         SCOREBOARD_PANE.relocate(screenSizes.getX() * 10 / 100, screenSizes.getY() * 40 / 100);
         makePaneDraggable(SCOREBOARD_PANE);

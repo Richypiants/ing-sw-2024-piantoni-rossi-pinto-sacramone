@@ -27,8 +27,6 @@ public class PlayerTurnPlayState extends GameScreenState {
 
     @Override
     public void executeState() {
-        //TODO: Which part of the TUI should be printed? player hand if in turn, common placed cards,
-        // miniaturized fields updated..., at the moment I'm refreshing everything
         selectedView.gameScreen();
     }
 

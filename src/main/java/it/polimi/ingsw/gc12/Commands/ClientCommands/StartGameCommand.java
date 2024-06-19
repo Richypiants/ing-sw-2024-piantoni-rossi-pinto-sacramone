@@ -5,14 +5,14 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 
 public class StartGameCommand implements ClientCommand {
 
-    private final ClientGame gameDTO;
+    private final ClientGame GAME_DTO;
 
     public StartGameCommand(ClientGame gameDTO) {
-        this.gameDTO = gameDTO;
+        this.GAME_DTO = gameDTO;
     }
 
     @Override
     public void execute(ClientControllerInterface clientController) {
-        clientController.startGame(gameDTO);
+        clientController.startGame(GAME_DTO);
     }
 }

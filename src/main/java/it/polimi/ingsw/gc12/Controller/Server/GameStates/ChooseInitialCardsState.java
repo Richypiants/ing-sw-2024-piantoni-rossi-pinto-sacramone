@@ -31,7 +31,7 @@ public class ChooseInitialCardsState extends GameState {
                 target.addCardToHand(initialCardsDeck.draw());
             }
         } catch (EmptyDeckException ignored) {
-            //cannot happen as deck has just been created
+            //Cannot happen as the deck has just been created
         }
     }
 

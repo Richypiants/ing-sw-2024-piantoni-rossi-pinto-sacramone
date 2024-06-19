@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Network.Server;
 
 import it.polimi.ingsw.gc12.Commands.ClientCommands.ClientCommand;
+import it.polimi.ingsw.gc12.Commands.ClientCommands.ThrowExceptionCommand;
 import it.polimi.ingsw.gc12.Commands.Command;
 import it.polimi.ingsw.gc12.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
@@ -58,7 +59,14 @@ public class SocketClientHandler extends SocketHandler implements VirtualClient 
                     )
             );
         } catch (RejectedExecutionException e) {
-            //TODO: implement answer
+            try {
+                this.getListener().notified(new ThrowExceptionCommand(
+                        //FIXME: not ideal to shut connection down... maybe don't accept more than a predefined number of connections?
+                        new RejectedExecutionException("This server is currently overloaded, shutting down connection: try again later..."))
+                );
+            } catch (Exception e2) {
+                throw new RuntimeException(e2);
+            }
         }
     }
 

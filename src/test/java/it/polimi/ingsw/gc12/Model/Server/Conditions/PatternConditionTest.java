@@ -23,8 +23,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-//TODO: think about all possible fails and tests
-
 class PatternConditionTest {
 
     private static ArrayList<ResourceCard> resourceCards;

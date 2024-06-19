@@ -78,9 +78,9 @@ public class TUILobbiesView extends TUIView{
             printToPosition(ansi().cursor(--i, 25).a("none"));
         else {
             i++;
-            for (var lobby : VIEWMODEL.getLobbies().entrySet())
-                if (!lobby.getValue().equals(VIEWMODEL.getCurrentLobby()))
-                    printToPosition(ansi().cursor(i++, 1).a("    [UUID] " + buildLobbyMessage(lobby.getValue())));
+            for (var lobby : VIEWMODEL.getLobbies().values())
+                if (!lobby.equals(VIEWMODEL.getCurrentLobby()))
+                    printToPosition(ansi().cursor(i++, 1).a("    [UUID] " + buildLobbyMessage(lobby)));
         }
     }
 

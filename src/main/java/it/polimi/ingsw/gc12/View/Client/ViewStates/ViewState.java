@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public abstract class ViewState {
 
-    //FIXME: maybe move these in GameScreenState?
+    //FIXME: maybe move these in GameScreenState? no, better to use this for lobbyScreen commands too
     public List<String> TUICommands = null;
 
     public final static ClientController CLIENT_CONTROLLER = ClientController.getInstance();

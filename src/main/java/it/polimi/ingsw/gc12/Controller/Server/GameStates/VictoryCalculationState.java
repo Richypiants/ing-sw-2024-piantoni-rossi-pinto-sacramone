@@ -25,7 +25,6 @@ public class VictoryCalculationState extends GameState {
     @Override
     public void playerDisconnected(InGamePlayer target) {}
 
-    //TODO: send steps in points calculation process for flavour?
     @Override
     public void transition() {
         ArrayList<InGamePlayer> players = GAME.getPlayers();
@@ -65,7 +64,7 @@ public class VictoryCalculationState extends GameState {
         // Sending leaderboard stats
         GAME.notifyListeners(new EndGameCommand(pointsStats, gameEndedDueToDisconnections));
 
-        /**
+        /*
          * OLD CODE that transforms the game into a lobby.
          * At the moment we're destroying the lobby.
          *
@@ -90,31 +89,24 @@ public class VictoryCalculationState extends GameState {
 
         System.out.println("[SERVER]: Sending lobbies to clients previously in "+ GAME.toString());
 
-        try {
-            // Sending lobbies list to players who were in this game (because they didn't have it updated)
-            for (var target : returnLobby.getPlayers()) {
-                keyReverseLookup(ServerController.getInstance().players, target::equals)
-                        //TODO : Handle exceptions in the correct way and not like this
-                        .requestToClient(
-                                new SetLobbiesCommand(
-                                        ServerController.getInstance().lobbiesAndGames.entrySet().stream()
-                                                .filter((entry) -> !(entry.getValue() instanceof Game))
-                                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                                )
-                        );
-            }
+        // Sending lobbies list to players who were in this game (because they didn't have it updated)
+        for (var target : returnLobby.getPlayers()) {
+            keyReverseLookup(ServerController.getInstance().players, target::equals)
+                    .requestToClient(
+                            new SetLobbiesCommand(
+                                    ServerController.getInstance().lobbiesAndGames.entrySet().stream()
+                                            .filter((entry) -> !(entry.getValue() instanceof Game))
+                                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                            )
+                    );
+        }
 
-            System.out.println("[SERVER]: Recreating lobby with clients in "+ GAME.toString());
-            // Update lobbies' lists of all other active players
-            for (var client : ServerController.getInstance().players.keySet())
-                if (!(ServerController.getInstance().players.get(client) instanceof InGamePlayer))
-                    //TODO : Handle exceptions in the correct way and not like this
-                    client.requestToClient(new UpdateLobbyCommand(lobbyUUID, returnLobby)); //updateLobby();
-
-        } //TODO: This will be deleted or well-handled.
-        catch (Throwable e) {
-            throw new RuntimeException(e);
-        }**/
+        System.out.println("[SERVER]: Recreating lobby with clients in "+ GAME.toString());
+        // Update lobbies' lists of all other active players
+        for (var client : ServerController.getInstance().players.keySet())
+            if (!(ServerController.getInstance().players.get(client) instanceof InGamePlayer))
+                client.requestToClient(new UpdateLobbyCommand(lobbyUUID, returnLobby)); //updateLobby();
+         */
 
         //Clearing the mappings to the game
 
@@ -124,7 +116,7 @@ public class VictoryCalculationState extends GameState {
             if (player.isActive())
                 GAME_CONTROLLER.getSessionFromActivePlayer(player).setController(ConnectionController.getInstance());
             else
-                GameController.INACTIVE_SESSIONS.remove(player.getNickname());
+                (GameController.INACTIVE_SESSIONS.remove(player.getNickname())).setController(ConnectionController.getInstance());
 
         //FIXME: Using a Lobby to convert the instances of InGamePlayer to Player and then discarding it. Better solutions?
         // If putting players back into lobby, remember to re-add listeners to the lobby
@@ -147,6 +139,8 @@ public class VictoryCalculationState extends GameState {
                 thisSession.setPlayer(thisPlayer);
                 GAME_CONTROLLER.putActivePlayer(thisSession, thisPlayer);
 
+                GAME.removeListener(thisSession.getListener());
+                inGamePlayer.removeListener(thisSession.getListener());
                 GameController.MODEL.addListener(thisSession.getListener());
 
                 currentIndex++;

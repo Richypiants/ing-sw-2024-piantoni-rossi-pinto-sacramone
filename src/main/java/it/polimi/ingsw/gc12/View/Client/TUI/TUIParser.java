@@ -148,6 +148,6 @@ public class TUIParser {
         return Arrays.stream(Color.values())
                 .filter((color) -> color.name().equalsIgnoreCase(input))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("expected a valid color as first argument, not" + input));
+                .orElseThrow(() -> new IllegalArgumentException("expected a valid color as first argument, not " + input));
     }
 }

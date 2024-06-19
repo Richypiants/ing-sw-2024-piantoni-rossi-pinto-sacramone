@@ -39,12 +39,13 @@ public class ClientController implements ClientControllerInterface {
         ViewState.printError(e);
     }
 
-    public void setNickname(String nickname){
+    //FIXME: only one single executor executes commands, can remove synchronized?
+    public synchronized void setNickname(String nickname) {
         VIEWMODEL.setOwnNickname(nickname);
         ViewState.getCurrentState().updateNickname();
     }
 
-    public void setLobbies(Map<UUID, Lobby> lobbies) {
+    public synchronized void setLobbies(Map<UUID, Lobby> lobbies) {
         VIEWMODEL.setLobbies(lobbies);
         if (!(ViewState.getCurrentState() instanceof LeaderboardScreenState)) {
             LobbiesScreenState newState = new LobbiesScreenState();
@@ -81,7 +82,7 @@ public class ClientController implements ClientControllerInterface {
         ViewState.setCurrentState(new ChooseInitialCardsState());
     }
 
-    public void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD) {
+    public synchronized void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD) {
         for(var playerEntry : PLAYERS_FIELD.entrySet()) {
             var clientPlayerInstance = gameDTO.getPlayers().stream()
                     .filter( (player) -> player.getNickname().equals(playerEntry.getKey())).findFirst().orElseThrow();
@@ -113,7 +114,7 @@ public class ClientController implements ClientControllerInterface {
         newState.executeState();
     }
 
-    public void confirmObjectiveChoice(int cardID){
+    public synchronized void confirmObjectiveChoice(int cardID) {
         VIEWMODEL.getCurrentGame().setOwnObjective(ViewModel.CARDS_LIST.get(cardID));
         ViewState.getCurrentState().executeState();
     }
@@ -167,7 +168,7 @@ public class ClientController implements ClientControllerInterface {
         ViewState.getCurrentState().executeState();
     }
 
-    public void pauseGame(){
+    public synchronized void pauseGame() {
         AwaitingReconnectionState newState = new AwaitingReconnectionState(ViewState.getCurrentState());
         ViewState.setCurrentState(newState);
         VIEWMODEL.getCurrentGame().setCurrentPlayerIndex(-1);
@@ -175,7 +176,7 @@ public class ClientController implements ClientControllerInterface {
         newState.executeState();
     }
 
-    public void toggleActive(String nickname){
+    public synchronized void toggleActive(String nickname) {
         ClientPlayer targetPlayer = VIEWMODEL.getCurrentGame().getPlayers().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
                 .findAny()
@@ -189,13 +190,13 @@ public class ClientController implements ClientControllerInterface {
         );
     }
 
-    public void endGame(List<Triplet<String, Integer, Integer>> pointsStats, boolean gameEndedDueToDisconnections) {
+    public synchronized void endGame(List<Triplet<String, Integer, Integer>> pointsStats, boolean gameEndedDueToDisconnections) {
         LeaderboardScreenState newState = new LeaderboardScreenState(pointsStats, gameEndedDueToDisconnections);
         ViewState.setCurrentState(newState);
         newState.executeState();
     }
 
-    public void addChatMessage(String senderNickname, String chatMessage, boolean isPrivate) {
+    public synchronized void addChatMessage(String senderNickname, String chatMessage, boolean isPrivate) {
         ViewState.getCurrentState().showReceivedChatMessage(((isPrivate) ? "<Private> " : "") + "[" + senderNickname + "] " + chatMessage);
     }
 

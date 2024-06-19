@@ -531,8 +531,8 @@ public class Game extends Room implements Listenable {
                 Arrays.stream(getCommonObjectives())
                         .map((card) -> card == null ? null : clientCards.get(card.ID))
                         .toArray(ClientCard[]::new),
-                clientCards.get(peekFrom(getResourceCardsDeck()) == null ? -1 : peekFrom(getResourceCardsDeck()).ID),
-                clientCards.get(peekFrom(getGoldCardsDeck()) == null ? -1 : peekFrom(getGoldCardsDeck()).ID),
+                clientCards.get(getResourceCardsDeck().peek() == null ? -1 : getResourceCardsDeck().peek().ID),
+                clientCards.get(getGoldCardsDeck().peek() == null ? -1 : getGoldCardsDeck().peek().ID),
                 receiver.getSecretObjective() == null ? null : clientCards.get(receiver.getSecretObjective().ID),
                 getRoundNumber(),
                 getPlayers().indexOf(getCurrentPlayer())

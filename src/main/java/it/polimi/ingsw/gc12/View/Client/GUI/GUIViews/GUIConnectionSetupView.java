@@ -77,11 +77,6 @@ public class GUIConnectionSetupView extends GUIView {
         CONNECTION_SETUP_SEND_BUTTON.setPrefSize(CONNECTION_SETUP_BOX.getMaxWidth(), 50);
         CONNECTION_SETUP_SEND_BUTTON.setOnMouseClicked(event -> connectionLoadingScreen());
 
-        //TODO: sostituire con un popup
-        /*Label error = new Label();
-        error.setId("#error");
-         */
-
         TranslateTransition centerLogoTransition = new TranslateTransition(Duration.millis(2000));
         centerLogoTransition.setNode(CONNECTION_TITLE_SCREEN_GAME_LOGO);
         centerLogoTransition.setInterpolator(Interpolator.EASE_BOTH);

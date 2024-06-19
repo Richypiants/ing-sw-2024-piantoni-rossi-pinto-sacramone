@@ -53,29 +53,37 @@ public class GameController extends ServerController {
 
     @Override
     public synchronized void generatePlayer(NetworkSession sender, String nickname) {
-        System.out.println("[SERVER]: sending SetNicknameCommand and RestoreGameCommand to client " + sender);
-        sender.getListener().notified(new SetNicknameCommand(nickname)); //setNickname();
+        //This is necessary because the createPlayer might have detected this player's INACTIVE_SESSION, but then this
+        // controller's VictoryCalculationState.transition() might be executed (entirely) before this function,
+        // thus eliminating the controller of the player being restored and invalidating both the game and the
+        // reconnection, which would still happen
+        if (this.equals(sender.getController())) {
+            System.out.println("[SERVER]: sending SetNicknameCommand and RestoreGameCommand to client " + sender);
+            sender.getListener().notified(new SetNicknameCommand(nickname)); //setNickname();
 
-        InGamePlayer targetPlayer = CONTROLLED_GAME.getPlayers().stream()
-                .filter((inGamePlayer -> inGamePlayer.getNickname().equals(nickname)))
-                .findAny()
-                .orElseThrow();
+            InGamePlayer targetPlayer = CONTROLLED_GAME.getPlayers().stream()
+                    .filter((inGamePlayer -> inGamePlayer.getNickname().equals(nickname)))
+                    .findAny()
+                    .orElseThrow();
 
-        if (currentGameState instanceof AwaitingReconnectionState)
-            //If game was in AwaitingReconnectingState, you need to resume it before sending the DTO
-            currentGameState.transition();
+            if (currentGameState instanceof AwaitingReconnectionState)
+                //If game was in AwaitingReconnectingState, you need to resume it before sending the DTO
+                currentGameState.transition();
 
-        sender.getListener().notified(new RestoreGameCommand(
-                CONTROLLED_GAME.generateDTO(targetPlayer),
-                currentGameState.getStringEquivalent(), //To let the client understand in which state it has to be recovered to.
-                CONTROLLED_GAME.generateTemporaryFieldsToPlayers() //fields related to the players inGame.
-        ));
+            sender.getListener().notified(new RestoreGameCommand(
+                    CONTROLLED_GAME.generateDTO(targetPlayer),
+                    currentGameState.getStringEquivalent(), //To let the client understand in which state it has to be recovered to.
+                    CONTROLLED_GAME.generateTemporaryFieldsToPlayers() //fields related to the players inGame.
+            ));
 
-        sender.setPlayer(targetPlayer);
-        putActivePlayer(sender, targetPlayer);
-        CONTROLLED_GAME.toggleActive(targetPlayer);
-        CONTROLLED_GAME.addListener(sender.getListener());
-        targetPlayer.addListener(sender.getListener());
+            sender.setPlayer(targetPlayer);
+            putActivePlayer(sender, targetPlayer);
+            CONTROLLED_GAME.toggleActive(targetPlayer);
+            CONTROLLED_GAME.addListener(sender.getListener());
+            targetPlayer.addListener(sender.getListener());
+        } else
+            ConnectionController.getInstance().generatePlayer(sender, nickname);
+        //If the controller had indeed been invalidated, a normal generatePlayer(...) needs to be executed
     }
 
     @Override

@@ -5,18 +5,17 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import it.polimi.ingsw.gc12.View.Client.GUI.GUIApplication;
+import it.polimi.ingsw.gc12.View.Client.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.View.Client.View;
-import it.polimi.ingsw.gc12.View.GUI.OverlayPopup;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.geometry.Pos;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
@@ -60,33 +59,35 @@ public class GUIView extends View {
 
     @Override
     public void printError(Throwable t) {
-        //TODO: popup con l'exception
         Platform.runLater(() -> {
-            String style = "-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1; -fx-padding: 10;";
-
-            //Popup error
             Popup errorPopup = new Popup();
 
-            VBox popupErrorBox = new VBox(10);
-            popupErrorBox.setAlignment(Pos.CENTER);
+            VBox errorPopupContent = new VBox();
 
-            Label error = new Label();
-            error.setAlignment(Pos.CENTER);
-            error.setTextAlignment(TextAlignment.CENTER);
-            // Button okError = new Button("Ok"); // se si ri-aggiunge bottone allora metterlo anche in addAll
+            Label error = new Label("ERROR");
 
-            popupErrorBox.getChildren().add(error);
-            errorPopup.getContent().addAll(popupErrorBox);
+            Label errorLabel = new Label(t.getMessage());
+            errorLabel.setPrefWidth(300);
+            errorLabel.setWrapText(true);
 
-            errorPopup.setHeight(500);
-            errorPopup.setWidth(700);
-            popupErrorBox.setStyle(style);
+            errorPopupContent.getChildren().addAll(error, errorLabel);
+            errorPopup.getContent().add(errorPopupContent);
+            VBox.setMargin(error, new Insets(20, 0, 0, 0));
+            VBox.setMargin(errorLabel, new Insets(0, 30, 30, 30));
+
+            errorPopupContent.getStylesheets().add(Objects.requireNonNull(GUIView.class.getResource("/Client/style.css")).toExternalForm());
+            errorPopupContent.getStyleClass().add("decoratedPopup");
+            error.getStyleClass().add("popupText");
+            errorLabel.getStyleClass().add("popupText");
+
+            error.setStyle("-fx-font-size: 18px");
+            errorLabel.setStyle("-fx-font-size: 12px");
 
             errorPopup.setAutoFix(true);
             errorPopup.setAutoHide(true);
             errorPopup.setHideOnEscape(true);
+            errorPopup.centerOnScreen();
 
-            error.setText(t.getMessage());
             errorPopup.show(stage);
         });
     }

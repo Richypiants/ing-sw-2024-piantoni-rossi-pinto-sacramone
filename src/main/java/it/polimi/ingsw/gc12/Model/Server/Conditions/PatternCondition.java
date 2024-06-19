@@ -160,11 +160,10 @@ public class PatternCondition implements PointsCondition {
             nodesInLastLevel = frontier.size();
         }
 
-        //FIXME: add Optional<> management and eventual exceptions?
         return result.stream()
                 .mapToInt(ArrayList::size)
                 .max()
-                .getAsInt();
+                .orElseThrow();
     }
 
     /**
@@ -176,7 +175,6 @@ public class PatternCondition implements PointsCondition {
      * @return {@code true} if the patterns are disjoint, {@code false} otherwise.
      */
     private boolean compatibleWith(PlayableCard pattern1, PlayableCard pattern2, InGamePlayer target) {
-        //FIXME: add try checks or exceptions?
         return disjoint(
                 fullPatternCoordinates(pattern1, target),
                 fullPatternCoordinates(pattern2, target)

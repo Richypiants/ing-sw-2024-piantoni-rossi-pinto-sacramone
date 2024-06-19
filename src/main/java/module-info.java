@@ -2,7 +2,6 @@ module it.polimi.ingsw.gc12 {
     requires javafx.controls;
     requires javafx.fxml;
 
-    requires org.controlsfx.controls;
     requires com.google.gson;
     requires java.rmi;
     requires jdk.javadoc;
@@ -20,7 +19,6 @@ module it.polimi.ingsw.gc12 {
     opens it.polimi.ingsw.gc12.Model.Server.Conditions to com.google.gson;
     exports it.polimi.ingsw.gc12.Model.ClientModel to com.google.gson;
     opens it.polimi.ingsw.gc12.Model.ClientModel to com.google.gson;
-
 
     exports it.polimi.ingsw.gc12.Utilities to com.google.gson, java.rmi;
     exports it.polimi.ingsw.gc12.Controller.Server to com.google.gson, java.rmi;
@@ -41,6 +39,8 @@ module it.polimi.ingsw.gc12 {
     opens it.polimi.ingsw.gc12.Network.Client to com.google.gson;
     exports it.polimi.ingsw.gc12.View.Client.GUI.GUIViews;
     opens it.polimi.ingsw.gc12.View.Client.GUI.GUIViews to javafx.fxml;
+    exports it.polimi.ingsw.gc12.View.Client.GUI;
+    opens it.polimi.ingsw.gc12.View.Client.GUI to javafx.graphics;
     exports it.polimi.ingsw.gc12.Utilities.Enums to com.google.gson, java.rmi;
     opens it.polimi.ingsw.gc12.Utilities.Enums to com.google.gson;
     exports it.polimi.ingsw.gc12.Utilities.JSONParsers to com.google.gson, java.rmi;

@@ -206,13 +206,6 @@ class GameTest {
         assertInstanceOf(PlayableCard.class, game.peekFrom(game.getResourceCardsDeck()));
     }
 
-    //FIXME: this test has to be corrected after moving attributes from states to game
-    /*@Test
-    void setStateTest(){
-        game.setState(new PlayerTurnPlayState(game, 1, 0));
-        assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
-    }*/
-
     @Test
     void successfulDecreaseFinalPhaseCounter(){
         game.initializeFinalPhaseCounter();
