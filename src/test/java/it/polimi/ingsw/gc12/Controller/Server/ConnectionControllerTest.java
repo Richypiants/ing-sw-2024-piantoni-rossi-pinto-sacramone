@@ -137,6 +137,7 @@ class ConnectionControllerTest {
     @Test
     void runTimeOutTimerTaskWhileConnected(){
         NetworkSession passivePlayer = createNetworkSessionStub(connectionController);
+        connectionController.generatePlayer(passivePlayer, "passivePlayer");
         connectionController.createTimeoutTask(passivePlayer).run();
         assertFalse(ServerController.MODEL.LOBBIES_LISTENERS.contains(passivePlayer.getListener()));
     }

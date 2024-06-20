@@ -169,7 +169,7 @@ public class GUIView extends View {
             reconnectingLabel.getStyleClass().add("popupText");
 
             Button exitButton = new Button("BACK TO TITLE SCREEN");
-            exitButton.getStyleClass().add("decoratedButton");
+            exitButton.getStyleClass().add("rectangularButton");
             exitButton.setMaxWidth(300);
 
             reconnectingPopupContent.getChildren().addAll(reconnectingLabel, exitButton);
@@ -181,6 +181,7 @@ public class GUIView extends View {
 
             exitButton.setOnMouseClicked((event) -> ViewState.getCurrentState().quit());
 
+            reconnectingPopup.centerOnScreen();
             reconnectingPopup.show(stage);
         });
     }

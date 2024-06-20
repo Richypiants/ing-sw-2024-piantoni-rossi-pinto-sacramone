@@ -92,7 +92,6 @@ public abstract class SocketHandler extends NetworkSession {
         Command receivedCommand = null;
         try {
             receivedCommand = (Command) objectInputStream.readObject();
-            //System.out.println("[SOCKET-HANDLER]: Received command " + receivedCommand.getClass() + " from {" + channel.getRemoteAddress() + "}");
         } catch (ClassNotFoundException e) {
             printError(e);
         }

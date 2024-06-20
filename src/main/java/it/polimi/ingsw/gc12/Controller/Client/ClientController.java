@@ -52,6 +52,10 @@ public class ClientController implements ClientControllerInterface {
 
     //TODO: check that without synchronized everything still works fine
     public void setNickname(String nickname) {
+        synchronized (CLIENT.DISCONNECTED_LOCK) {
+            CLIENT.disconnected = false;
+            CLIENT.DISCONNECTED_LOCK.notifyAll();
+        }
         VIEWMODEL.setOwnNickname(nickname);
         ViewState.getCurrentState().updateNickname();
     }

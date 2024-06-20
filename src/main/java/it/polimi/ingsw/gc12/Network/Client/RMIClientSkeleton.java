@@ -9,6 +9,7 @@ import it.polimi.ingsw.gc12.Network.RMIMainServer;
 import it.polimi.ingsw.gc12.Network.RMIVirtualClient;
 import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
 
+import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -28,7 +29,8 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
     private RMIClientSkeleton(ControllerInterface controller) {
         super(controller);
         try {
-            //System.setProperty("java.rmi.server.hostname", ipClient);
+            //FIXME: remove IP!
+            System.setProperty("java.rmi.server.hostname", "25.29.84.173");
 
             Registry registry = LocateRegistry.getRegistry(Client.getClientInstance().serverIPAddress, 5001);
             UnicastRemoteObject.exportObject(this, 0);
@@ -84,5 +86,13 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
     @Override
     protected NetworkListener createListener(NetworkSession session) {
         return null;
+    }
+
+    public void close() {
+        try {
+            UnicastRemoteObject.unexportObject(this, true);
+        } catch (NoSuchObjectException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

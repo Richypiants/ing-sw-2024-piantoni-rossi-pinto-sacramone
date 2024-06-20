@@ -44,16 +44,19 @@ public class Client {
 
     public void resetClient() {
         try {
-            if (serverConnection != null)
+            if (session != null) {
+                ((RMIClientSkeleton) session).close();
+            } else if (serverConnection != null) {
                 serverConnection.close();
+            }
         } catch (Exception e) {
             ClientController.getInstance().ERROR_LOGGER.log(e);
         }
         if (keepAlive != null)
             keepAlive.interrupt();
-        this.serverIPAddress = "localhost";
         this.serverConnection = null;
         this.session = null;
+        this.serverIPAddress = "localhost";
         this.keepAlive = null;
         this.disconnected = true;
 

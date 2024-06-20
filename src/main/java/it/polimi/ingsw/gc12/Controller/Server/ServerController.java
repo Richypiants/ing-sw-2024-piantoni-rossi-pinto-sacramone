@@ -84,7 +84,6 @@ public abstract class ServerController implements ServerControllerInterface {
                 else {
                     removeActivePlayer(target);
                     MODEL.removeListener(target.getListener());
-                    target.getPlayer().toggleActive();
                 }
 
                 cancel();
@@ -93,13 +92,6 @@ public abstract class ServerController implements ServerControllerInterface {
     }
 
     public void keepAlive(NetworkSession sender) {
-        Player targetPlayer = sender.getPlayer();
-
-        if (!targetPlayer.isActive()) {
-            sender.setPlayer(null);
-            createPlayer(sender, targetPlayer.getNickname());
-        }
-
         System.out.println("[CLIENT]: keepAlive command received from " + sender + ". Resetting timeout");
         sender.getTimeoutTask().cancel();
         renewTimeoutTimerTask(sender);

@@ -67,6 +67,11 @@ public class InGamePlayer extends Player implements Listenable {
     private ObjectiveCard secretObjective;
 
     /**
+     * The active status of this player, indicating whether the player is currently connected to the game and playing.
+     */
+    private boolean active;
+
+    /**
      * Constructs an InGamePlayer from the given Player instance.
      * Initializes the player's hand, resources, field, active status, and secret objective.
      *
@@ -87,6 +92,7 @@ public class InGamePlayer extends Player implements Listenable {
         }
         OWN_FIELD = new Field();
         secretObjective = null;
+        active = true;
 
     }
 
@@ -296,6 +302,23 @@ public class InGamePlayer extends Player implements Listenable {
      */
     public GenericPair<Integer, Integer> getCardCoordinates(PlayableCard placedCard) {
         return OWN_FIELD.getCardCoordinates(placedCard);
+    }
+
+    /**
+     * Returns the activity status of this player.
+     *
+     * @return {@code true} if the player is active, {@code false} otherwise.
+     */
+    public synchronized boolean isActive() {
+        return active;
+    }
+
+    /**
+     * Toggles the active status of this player.
+     * If the player is currently active, they will become inactive, and vice versa.
+     */
+    public synchronized void toggleActive() {
+        active = !active;
     }
 
     /**
