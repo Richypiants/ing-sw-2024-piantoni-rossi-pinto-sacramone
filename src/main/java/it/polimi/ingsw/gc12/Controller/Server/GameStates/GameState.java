@@ -9,7 +9,7 @@ import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.*;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 
-public abstract class GameState { //TODO: make all exceptions extends RuntimeException so that you can cancel them from here
+public abstract class GameState {
 
     protected final GameController GAME_CONTROLLER;
     protected final Game GAME;

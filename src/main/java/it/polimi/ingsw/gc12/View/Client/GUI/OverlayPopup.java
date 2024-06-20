@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc12.View.GUI;
+package it.polimi.ingsw.gc12.View.Client.GUI;
 
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;

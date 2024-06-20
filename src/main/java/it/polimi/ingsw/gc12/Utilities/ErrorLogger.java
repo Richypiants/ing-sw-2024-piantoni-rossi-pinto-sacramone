@@ -35,7 +35,7 @@ public class ErrorLogger {
             err = new PrintStream(new FileOutputStream("log_" + date + ".txt", false));
             System.setErr(err);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.err.println("Could not create a file for logging: logging on System.err...");
         }
         System.err.println("New logging instance from client started at: " + date);
     }

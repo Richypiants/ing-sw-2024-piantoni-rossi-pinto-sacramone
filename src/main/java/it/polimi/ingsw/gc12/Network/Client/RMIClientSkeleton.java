@@ -63,7 +63,13 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
      */
     @Override
     public void requestToClient(ClientCommand command) throws RemoteException {
-        Client.getClientInstance().commandsReceivedExecutor.submit(() -> command.execute(ClientController.getInstance()));
+        Client.getClientInstance().commandsReceivedExecutor.submit(() -> {
+            try {
+                command.execute(ClientController.getInstance());
+            } catch (Exception e) {
+                ClientController.getInstance().ERROR_LOGGER.log(e);
+            }
+        });
     }
 
     /**
@@ -77,7 +83,6 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
      */
     @Override
     protected NetworkListener createListener(NetworkSession session) {
-        //TODO: maybe set something here for this class too?
         return null;
     }
 }

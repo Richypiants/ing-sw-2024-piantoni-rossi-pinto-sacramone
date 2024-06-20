@@ -32,7 +32,10 @@ public class TUIConnectionView extends TUIView {
                     .eraseLine(Ansi.Erase.FORWARD)
             );
             printToPosition(ansi().a(prompt));
-            selection = console.readLine().trim().toLowerCase();
+            selection = console.readLine();
+            if (selection != null)
+                selection = selection.trim().toLowerCase();
+            //FIXME: ???
         } while (!validInput.contains(selection));
 
         return selection;

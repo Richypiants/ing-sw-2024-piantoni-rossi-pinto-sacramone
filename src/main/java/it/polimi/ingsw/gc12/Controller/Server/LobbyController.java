@@ -46,13 +46,13 @@ public class LobbyController extends ServerController {
                 Game newGame = new Game(CONTROLLED_LOBBY);
 
                 System.out.println("[SERVER]: sending StartGameCommand to clients starting game");
-                //TODO: estrarre la logica di evoluzione dei player da Game (altrimenti, fixare i get) E SINCRONIZZAREEEE
+
                 for (var player : CONTROLLED_LOBBY.getPlayers()) {
                     NetworkSession targetClient = getSessionFromActivePlayer(player);
                     InGamePlayer targetInGamePlayer = newGame.getPlayers().stream()
                             .filter((inGamePlayer) -> inGamePlayer.getNickname().equals(player.getNickname()))
                             .findFirst()
-                            .orElseThrow(); //TODO: strano... gestire?
+                            .orElseThrow();
 
                     putActivePlayer(targetClient, targetInGamePlayer);
                     targetClient.setPlayer(targetInGamePlayer);
@@ -60,7 +60,7 @@ public class LobbyController extends ServerController {
                     MODEL.removeListener(targetClient.getListener());
                     newGame.addListener(targetClient.getListener());
                     targetInGamePlayer.addListener(targetClient.getListener());
-                    //FIXME: remove all the UUIDs in commands
+
                     targetClient.getListener().notified(new StartGameCommand(newGame.generateDTO(targetInGamePlayer)));
                 }
 

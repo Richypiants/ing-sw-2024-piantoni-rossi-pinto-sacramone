@@ -15,6 +15,6 @@ public class ServerMain {
         } while (!interrupt.trim().equalsIgnoreCase("close"));
         Server.getInstance().commandExecutorsPool.shutdownNow();
         serverThread.interrupt();
-        //TODO: main doesn't completely stop, other shutdown to perform?
+        System.exit(0);
     }
 }

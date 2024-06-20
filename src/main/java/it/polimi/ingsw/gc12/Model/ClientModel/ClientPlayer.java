@@ -36,7 +36,7 @@ public class ClientPlayer extends Player implements Serializable {
     /**
      * Indicates whether the player is currently active.
      */
-    private boolean isActive = true; //TODO: implement visual activity management
+    private boolean isActive = true;
 
     /**
      * Constructs a new {@code ClientPlayer} with the specified parameters.

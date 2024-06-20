@@ -13,9 +13,6 @@ import java.util.Map;
  * This class is used to display the card's appearance and relevant details to the player.
  */
 public class ClientCard implements Serializable {
-    //TODO: abbiamo fatto un tentativo per fare merging con card,
-    // al momento non dovrebbe più essere rilevante in quanto il client riceve solamente degli ID,
-    // ma il server possiede gli sprite e i path delle risorse grafiche, a lui inutili, non so se questa cosa verrà risolta.
 
     /**
      * A unique card identifier to facilitate the card's retrieval.

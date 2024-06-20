@@ -25,7 +25,7 @@
 
     <VBox fx:id="changeNicknamePopupBox" styleClass="decoratedPopup" visible="false">
         <Label fx:id="nicknamePrompt" styleClass="popupText" text="Choose a new nickname [max 10 chars]:"/>
-        <TextField fx:id="nicknameField" styleClass="popupText" promptText="nickname"/>
+        <TextField fx:id="nicknameField" styleClass="standardLabel" promptText="nickname"/>
         <Button fx:id="confirmNicknameChangeButton" styleClass="rectangularButton" mnemonicParsing="false" text="OK"/>
     </VBox>
 </AnchorPane>

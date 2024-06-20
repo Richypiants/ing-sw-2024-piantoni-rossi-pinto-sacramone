@@ -30,8 +30,6 @@ public class ChooseObjectiveCardsState extends GameScreenState {
         selectedView.gameScreen();
         if (CLIENT_CONTROLLER.VIEWMODEL.getCurrentGame().getOwnObjective() == null)
             selectedView.showObjectiveCardsChoice(objectivesSelection);
-        //FIXME: ...cannot happen? If this is restored it means I had disconnected and the server has already
-        // played for me...
     }
 
     @Override

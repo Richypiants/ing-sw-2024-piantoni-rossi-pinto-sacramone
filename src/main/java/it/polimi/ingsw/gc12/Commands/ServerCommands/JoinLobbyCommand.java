@@ -7,14 +7,14 @@ import java.util.UUID;
 
 public class JoinLobbyCommand implements ServerCommand {
 
-    private final UUID lobbyUUID;
+    private final UUID LOBBY_UUID;
 
     public JoinLobbyCommand(UUID lobbyUUID) {
-        this.lobbyUUID = lobbyUUID;
+        this.LOBBY_UUID = lobbyUUID;
     }
 
     @Override
     public void execute(NetworkSession caller, ServerControllerInterface serverController) {
-        serverController.joinLobby(caller, lobbyUUID);
+        serverController.joinLobby(caller, LOBBY_UUID);
     }
 }

@@ -16,8 +16,6 @@ public class TitleScreenState extends ViewState {
         currentState.executeState();
     }
 
-    //TODO: quit anche qui?
-
     @Override
     public String toString() {
         return "title screen";

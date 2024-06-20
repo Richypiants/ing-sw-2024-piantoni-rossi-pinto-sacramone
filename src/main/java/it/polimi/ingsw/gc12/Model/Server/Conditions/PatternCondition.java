@@ -58,8 +58,6 @@ public class PatternCondition implements PointsCondition {
      * @param target The player who is playing the card.
      * @return The number of times the pattern condition is satisfied.
      */
-    //FIXME: ALL THIS CODE SHOULD BE CLEANED AND OPTIMIZED, IT IS TOO INTRICATE
-    // AND PROBABLY REPEATS OPERATION AND IS NOT DRY
     public int numberOfTimesSatisfied(Card thisCard, InGamePlayer target) {
         return largestMaximumCompatibilityClass(
                 target.getPlacedCards().entrySet().stream()
@@ -93,7 +91,7 @@ public class PatternCondition implements PointsCondition {
 
     /**
      * Finds the size of the largest compatibility class using a tree algorithm,
-     * determining the maximum number of disjoint patterns.
+     * determining the maximum number of disjoint patterns of the same type.
      * This method evaluates all potential starting cards for the patterns and
      * identifies the largest set of patterns that do not overlap.
      *
@@ -160,11 +158,10 @@ public class PatternCondition implements PointsCondition {
             nodesInLastLevel = frontier.size();
         }
 
-        //FIXME: add Optional<> management and eventual exceptions?
         return result.stream()
                 .mapToInt(ArrayList::size)
                 .max()
-                .getAsInt();
+                .orElseThrow();
     }
 
     /**
@@ -176,7 +173,6 @@ public class PatternCondition implements PointsCondition {
      * @return {@code true} if the patterns are disjoint, {@code false} otherwise.
      */
     private boolean compatibleWith(PlayableCard pattern1, PlayableCard pattern2, InGamePlayer target) {
-        //FIXME: add try checks or exceptions?
         return disjoint(
                 fullPatternCoordinates(pattern1, target),
                 fullPatternCoordinates(pattern2, target)

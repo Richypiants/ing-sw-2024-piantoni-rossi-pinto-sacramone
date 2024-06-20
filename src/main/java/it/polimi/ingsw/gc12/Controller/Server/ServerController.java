@@ -18,8 +18,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static it.polimi.ingsw.gc12.Utilities.Commons.keyReverseLookup;
 
-/*TODO: In case of high traffic volumes on network, we can reduce it by sending the updates to lobby states (creation, updates) only to clients
-        which aren't already in a lobby. */
 public abstract class ServerController implements ServerControllerInterface {
 
     public static final ServerModel MODEL = new ServerModel();

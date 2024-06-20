@@ -36,6 +36,8 @@ public class GUIApplication extends Application {
         stage.getIcons().clear();
         stage.getIcons().add(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/Client/images/only_center_logo_no_bg.png"))));
 
+        stage.setFullScreenExitHint("Press ESC to exit fullscreen. If you want to re-enter fullscreen afterwards, press F11.");
+
         stage.addEventHandler(KeyEvent.KEY_PRESSED, (event) -> {
             if (event.getCode().equals(KeyCode.ESCAPE)) {
                 stage.setResizable(true);
@@ -49,7 +51,6 @@ public class GUIApplication extends Application {
             if (event.getCode().equals(KeyCode.F11)) {
                 stage.setFullScreen(true);
             }
-            //TODO: + show hint per rientrare in fullscreen
         });
 
         stage.setOnCloseRequest((event) -> System.exit(1));

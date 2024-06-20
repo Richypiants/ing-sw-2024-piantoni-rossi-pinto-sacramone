@@ -7,11 +7,20 @@ import it.polimi.ingsw.gc12.Commands.ServerCommands.PickColorCommand;
 import it.polimi.ingsw.gc12.Commands.SetNicknameCommand;
 import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 
+import java.util.List;
 import java.util.UUID;
 
 public class LobbiesScreenState extends ViewState {
 
     public LobbiesScreenState() {
+        TUICommands = List.of(
+                "               '[createLobby | cl] <maxPlayers>' to create a new lobby,",
+                "               '[joinLobby | jl] <lobbyUUID>' to join an existing lobby,",
+                "               '[setNickname | sn] <newNickname>' to change your own nickname,",
+                "               '[selectColor | sc] <color>' to choose a color among the available ones,",
+                "               '[leaveLobby | ll]' to leave the lobby you are currently in,",
+                "               '[quit]' to go back to title screen."
+        );
     }
 
     @Override

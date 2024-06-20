@@ -4,7 +4,6 @@ import it.polimi.ingsw.gc12.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Commands.ClientCommands.EndGameCommand;
 import it.polimi.ingsw.gc12.Commands.ClientCommands.SetLobbiesCommand;
 import it.polimi.ingsw.gc12.Controller.Server.GameController;
-import it.polimi.ingsw.gc12.Controller.Server.ServerController;
 import it.polimi.ingsw.gc12.Controller.Server.ServerControllerTest;
 import it.polimi.ingsw.gc12.Listeners.Server.ServerListener;
 import it.polimi.ingsw.gc12.Model.Lobby;
@@ -32,8 +31,6 @@ class VictoryCalculationStateTest {
     Game game;
     NetworkSession client1;
     NetworkSession client2;
-    ServerController server;
-    ChooseObjectiveCardsState state;
     GameController gameController;
 
 
@@ -91,9 +88,8 @@ class VictoryCalculationStateTest {
 
     }
 
-    //FIXME: questo test è inutile ma non c'e altro modo di testare un metodo che non viene mai chiamato nel flusso di gioco e non fa nulla
     @Test
-    void DisconnectPlayer() throws Exception {
+    void disconnectPlayer() {
         VictoryCalculationState state = new VictoryCalculationState(gameController, game);
         state.playerDisconnected(game.getPlayers().getFirst());
     }

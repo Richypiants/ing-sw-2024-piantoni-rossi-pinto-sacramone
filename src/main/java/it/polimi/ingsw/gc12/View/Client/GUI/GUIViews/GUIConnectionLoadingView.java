@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc12.View.Client.GUI.GUIViews;
 
+import it.polimi.ingsw.gc12.View.Client.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
-import it.polimi.ingsw.gc12.View.GUI.OverlayPopup;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -79,7 +79,6 @@ public class GUIConnectionLoadingView extends GUIView {
 
     @Override
     public boolean retryConnectionPrompt(boolean causedByNetworkError) {
-        //TODO: restyle popup
         AtomicBoolean wantsToRetry = new AtomicBoolean(true);
 
         Platform.runLater(() -> {

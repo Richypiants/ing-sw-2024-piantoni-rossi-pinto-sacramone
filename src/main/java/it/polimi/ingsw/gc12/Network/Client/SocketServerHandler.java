@@ -54,6 +54,7 @@ public class SocketServerHandler extends SocketHandler implements VirtualServer 
     protected void executeReceivedCommand(Command receivedCommand) {
         Client.getClientInstance().commandsReceivedExecutor.submit(
                 () -> {
+                    printError(new IllegalArgumentException(String.valueOf(receivedCommand.getClass())));
                     try {
                         ((ClientCommand) receivedCommand).execute((ClientControllerInterface) getController());
                     } catch (Exception e) {

@@ -70,7 +70,7 @@ public class ViewModel {
      *
      * @return the player's own nickname
      */
-    public String getOwnNickname() {
+    public synchronized String getOwnNickname() {
         return ownNickname;
     }
 
@@ -79,7 +79,7 @@ public class ViewModel {
      *
      * @param ownNickname the new nickname
      */
-    public void setOwnNickname(String ownNickname) {
+    public synchronized void setOwnNickname(String ownNickname) {
         this.ownNickname = ownNickname;
     }
 
@@ -88,7 +88,7 @@ public class ViewModel {
      *
      * @return the map containing the lobbies
      */
-    public Map<UUID, Lobby> getLobbies() {
+    public synchronized Map<UUID, Lobby> getLobbies() {
         return lobbies;
     }
 
@@ -97,7 +97,7 @@ public class ViewModel {
      *
      * @param lobbies the new map of lobbies
      */
-    public void setLobbies(Map<UUID, Lobby> lobbies) {
+    public synchronized void setLobbies(Map<UUID, Lobby> lobbies) {
         this.lobbies = lobbies;
     }
 
@@ -107,7 +107,7 @@ public class ViewModel {
      * @param lobbyUUID the unique identifier of the lobby
      * @param lobby the lobby to add
      */
-    public void putLobby(UUID lobbyUUID, Lobby lobby) {
+    public synchronized void putLobby(UUID lobbyUUID, Lobby lobby) {
         lobbies.put(lobbyUUID, lobby);
     }
 
@@ -116,7 +116,7 @@ public class ViewModel {
      *
      * @param lobbyUUID the unique identifier of the lobby to remove
      */
-    public void removeLobby(UUID lobbyUUID) {
+    public synchronized void removeLobby(UUID lobbyUUID) {
         lobbies.remove(lobbyUUID);
     }
 
@@ -125,7 +125,7 @@ public class ViewModel {
      *
      * @return the UUID of the current lobby
      */
-    public UUID getCurrentRoomUUID() {
+    public synchronized UUID getCurrentRoomUUID() {
         return currentRoom == null ? null : currentRoom.getRoomUUID();
     }
 
@@ -134,7 +134,7 @@ public class ViewModel {
      *
      * @return true if the player is in a room, false otherwise
      */
-    public boolean inRoom() {
+    public synchronized boolean inRoom() {
         return currentRoom != null;
     }
 
@@ -143,14 +143,14 @@ public class ViewModel {
      *
      * @param room the room to join
      */
-    public void joinRoom(Room room) {
+    public synchronized void joinRoom(Room room) {
         currentRoom = room;
     }
 
     /**
      * Leaves the current room (lobby or client game).
      */
-    public void leaveRoom() {
+    public synchronized void leaveRoom() {
         currentRoom = null;
     }
 
@@ -161,7 +161,7 @@ public class ViewModel {
      *
      * @return the current lobby in which the player is in
      */
-    public Lobby getCurrentLobby() {
+    public synchronized Lobby getCurrentLobby() {
         return (Lobby) currentRoom;
     }
 
@@ -172,7 +172,7 @@ public class ViewModel {
      *
      * @return the current game in which the player is in
      */
-    public ClientGame getCurrentGame() {
+    public synchronized ClientGame getCurrentGame() {
         return (ClientGame) currentRoom;
     }
 }

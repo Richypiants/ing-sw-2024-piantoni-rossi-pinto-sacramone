@@ -29,8 +29,9 @@ public class PlayerTurnDrawState extends GameState {
                         PlayableCard drawnCard = GAME.drawFrom(GAME.getResourceCardsDeck());
                         GAME.peekFrom(GAME.getResourceCardsDeck());
                         return drawnCard;
-                    } catch (EmptyDeckException ignored) {}
-                    return null;
+                    } catch (EmptyDeckException ignored) {
+                        return null;
+                    }
                 }
         );
 
@@ -40,8 +41,9 @@ public class PlayerTurnDrawState extends GameState {
                         PlayableCard drawnCard = GAME.drawFrom(GAME.getGoldCardsDeck());
                         GAME.peekFrom(GAME.getGoldCardsDeck());
                         return drawnCard;
-                    } catch (EmptyDeckException ignored) {}
-                    return null;
+                    } catch (EmptyDeckException ignored) {
+                        return null;
+                    }
                 }
         );
 
@@ -54,8 +56,9 @@ public class PlayerTurnDrawState extends GameState {
                             PlayableCard drawnCard = GAME.drawFrom(GAME.getPlacedResources(), index);
                             GAME.peekFrom(GAME.getResourceCardsDeck());
                             return drawnCard;
-                        } catch (EmptyDeckException ignored) {}
-                        return null;
+                        } catch (EmptyDeckException ignored) {
+                            return null;
+                        }
                     }
             );
         }
@@ -152,10 +155,6 @@ public class PlayerTurnDrawState extends GameState {
             GAME.initializeFinalPhaseCounter();
             GAME.decreaseFinalPhaseCounter();
         }
-
-        //TODO: segnalare ai giocatori connessi che si stanno giocando i turni finali,
-        // attraverso la GameTransitionCommand [Un campo Boolean, il # di Turno in cui finirà la partita,
-        // il contatore decrementato?
 
         if (GAME.getFinalPhaseCounter() == 0) {
             GAME_CONTROLLER.setState(new VictoryCalculationState(GAME_CONTROLLER, GAME));

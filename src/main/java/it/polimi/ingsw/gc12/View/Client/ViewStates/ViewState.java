@@ -13,7 +13,6 @@ import java.util.UUID;
 
 public abstract class ViewState {
 
-    //FIXME: maybe move these in GameScreenState?
     public List<String> TUICommands = null;
 
     public final static ClientController CLIENT_CONTROLLER = ClientController.getInstance();
@@ -81,7 +80,6 @@ public abstract class ViewState {
         selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }
 
-    //FIXME: TUI-only command, should be moved from here...?
     public void moveField(GenericPair<Integer, Integer> centerOffset) {
         selectedView.printError(new ForbiddenActionException("Cannot execute this command in " + this + "!"));
     }

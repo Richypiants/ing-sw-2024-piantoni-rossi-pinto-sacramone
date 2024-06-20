@@ -40,7 +40,6 @@ public class CardDeck<T extends Card> {
             this.push(copy.removeFirst());
         }
 
-        //FIXME: maybe use enums previously put inside the XYZCard classes?
         String deckType = peek().toString().trim().toLowerCase();
         DECK_TYPE = deckType.substring(1, deckType.indexOf("card"));
     }

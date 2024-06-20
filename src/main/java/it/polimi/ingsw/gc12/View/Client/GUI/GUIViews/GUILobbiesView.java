@@ -2,8 +2,8 @@ package it.polimi.ingsw.gc12.View.Client.GUI.GUIViews;
 
 import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Utilities.Enums.Color;
+import it.polimi.ingsw.gc12.View.Client.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
-import it.polimi.ingsw.gc12.View.GUI.OverlayPopup;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;

@@ -8,8 +8,8 @@ public class ReceiveObjectiveChoiceCommand implements ClientCommand {
 
     private final List<Integer> CARD_IDS;
 
-    public ReceiveObjectiveChoiceCommand(List<Integer> CARD_IDS) {
-        this.CARD_IDS = CARD_IDS;
+    public ReceiveObjectiveChoiceCommand(List<Integer> cardIDs) {
+        this.CARD_IDS = cardIDs;
     }
 
     @Override

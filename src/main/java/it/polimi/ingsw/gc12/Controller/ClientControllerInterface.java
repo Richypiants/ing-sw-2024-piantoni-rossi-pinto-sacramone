@@ -57,9 +57,9 @@ public interface ClientControllerInterface extends ControllerInterface {
      *
      * @param gameDTO The game data transfer object containing all the relevant game's common information.
      * @param currentState The current state of the game, such as the initial phase, the placing phase or drawing phase.
-     * @param PLAYERS_FIELD A map representing the players' fields, containing all the IDs of the placed cards up to this moment.
+     * @param playersField A map representing the players' fields, containing all the IDs of the placed cards up to this moment.
      */
-    void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD);
+    void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> playersField);
 
     /**
      * Sets all the available lobbies, replacing the old info currently stored on the model.
@@ -138,8 +138,9 @@ public interface ClientControllerInterface extends ControllerInterface {
      *
      * @param round The current round of the game.
      * @param currentPlayerIndex The index of the current player.
+     * @param turnsLeftUntilGameEnds The number of turns before the game ends and the leaderboard arrives.
      */
-    void transition(int round, int currentPlayerIndex);
+    void transition(int round, int currentPlayerIndex, int turnsLeftUntilGameEnds);
 
     /**
      * Pauses the game, until the game ends or someone reconnects.

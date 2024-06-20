@@ -72,29 +72,6 @@ class GameTest {
         assertEquals(game.getActivePlayers().size(), lobby.getPlayers().size());
     }
 
-    //FIXME: this test has to be corrected after moving attributes from states to game
-    /*@Test
-    void getPlayers(){
-        ArrayList<InGamePlayer> playersOfThisGame = game.getPlayers();
-        assertEquals( game.getPlayers().size(), playersOfThisGame.size());
-        assertEquals(game.getMaxPlayers(), playersOfThisGame.size());
-    }*/
-
-    //FIXME: this test has to be corrected after moving attributes from states to game
-    /*@Test
-    void getActivePlayers(){
-        ArrayList<InGamePlayer> activePlayersOfThisGame = game.getActivePlayers();
-        assertTrue(activePlayersOfThisGame.size() <= game.getMaxPlayers() && activePlayersOfThisGame.size() <= game.getPlayers().size());
-    }*/
-
-    //FIXME: this test has to be corrected after moving attributes from states to game
-    /*@Test
-    void nextPlayer() {
-        lobby.addPlayer(player2);
-        game.getCurrentState().nextPlayer();
-        assertEquals(game.getPlayers().getFirst(), game.getCurrentPlayer());
-    }*/
-
     @Test
     void increaseRound() {
         Game tempGame = new Game(lobby);
@@ -102,15 +79,6 @@ class GameTest {
         tempGame.increaseRound();
         assertEquals(initialTurnNumber + 1, tempGame.getRoundNumber());
     }
-
-    //FIXME: this test has to be corrected after moving attributes from states to game
-    /*@Test
-    void getCurrentPlayer() {
-        game.setState(new PlayerTurnDrawState(game, 0, -1));
-        InGamePlayer actualCurrentPlayer = game.getCurrentPlayer();
-        assertNotNull(actualCurrentPlayer);
-        assertTrue(game.getPlayers().contains(actualCurrentPlayer));
-    }*/
 
     @Test
     void setCommonObjectives(){
@@ -205,13 +173,6 @@ class GameTest {
     void successfulPeekFromTest(){
         assertInstanceOf(PlayableCard.class, game.peekFrom(game.getResourceCardsDeck()));
     }
-
-    //FIXME: this test has to be corrected after moving attributes from states to game
-    /*@Test
-    void setStateTest(){
-        game.setState(new PlayerTurnPlayState(game, 1, 0));
-        assertInstanceOf(PlayerTurnPlayState.class, game.getCurrentState());
-    }*/
 
     @Test
     void successfulDecreaseFinalPhaseCounter(){

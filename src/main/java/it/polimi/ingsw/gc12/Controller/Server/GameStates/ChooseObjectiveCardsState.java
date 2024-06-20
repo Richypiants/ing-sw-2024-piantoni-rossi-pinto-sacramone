@@ -52,9 +52,7 @@ public class ChooseObjectiveCardsState extends GameState {
             try {
                 pickObjective(target, objectiveCardsToPlayers.get(target).getFirst());
             } catch (CardNotInHandException | AlreadySetCardException ignored) {
-                //FIXME: fake, if exception is caught this method fails and leaveGame isn't completed and doesn't transition to AwaitingReconnectionState!
-                //The pickObjective for this player was already done, so the secretObjective is already set
-                //and the pickObjective throws AlreadySetCardException.
+                System.exit(-1);
             }
         }
     }
