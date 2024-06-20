@@ -123,7 +123,4 @@ class AwaitingReconnectionStateTest {
                         Side.FRONT
                 ));
     }
-
-    //TODO: Per testare la lambda contenuta nel costruttore è necessario passare il tempo di Timeout come parametro al costruttore,
-    // così è adattabile alle esigenze di testing,
 }

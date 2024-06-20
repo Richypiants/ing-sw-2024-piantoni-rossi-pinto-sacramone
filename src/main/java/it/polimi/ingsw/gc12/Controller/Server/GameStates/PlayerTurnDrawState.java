@@ -30,9 +30,6 @@ public class PlayerTurnDrawState extends GameState {
                         GAME.peekFrom(GAME.getResourceCardsDeck());
                         return drawnCard;
                     } catch (EmptyDeckException ignored) {
-                        //FIXME: alla luce del fatto che il catch vuoto di una exception negli stati iniziali faceva crashare la
-                        // playerDisconnected, forse tutti i return null vanno messi qui dentro perchè altrimenti non vengono eseguiti?
-                        // Magari potrebbe essere stato questo a far crashare il game ieri?
                         return null;
                     }
                 }
@@ -158,10 +155,6 @@ public class PlayerTurnDrawState extends GameState {
             GAME.initializeFinalPhaseCounter();
             GAME.decreaseFinalPhaseCounter();
         }
-
-        //TODO: segnalare ai giocatori connessi che si stanno giocando i turni finali,
-        // attraverso la GameTransitionCommand [Un campo Boolean, il # di Turno in cui finirà la partita,
-        // il contatore decrementato?
 
         if (GAME.getFinalPhaseCounter() == 0) {
             GAME_CONTROLLER.setState(new VictoryCalculationState(GAME_CONTROLLER, GAME));

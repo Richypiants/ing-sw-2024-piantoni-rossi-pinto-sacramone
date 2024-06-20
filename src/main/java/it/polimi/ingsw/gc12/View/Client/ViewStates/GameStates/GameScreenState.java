@@ -39,7 +39,6 @@ public abstract class GameScreenState extends ViewState {
     }
 
     //TODO: could show message timestamp (only when on receiving, so that it corresponds to the local timezone or local machine's clock)
-    //FIXME: estrarre tra le costanti anche la dimensione della chat?
     @Override
     public void showReceivedChatMessage(String message) {
         if (message.length() < 90)

@@ -40,7 +40,7 @@ public class TUIParser {
                 }
                 System.out.print(ansi().cursor(COMMAND_INPUT_ROW, COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
                 parseCommand(command);
-            } while (!command.equals("quit"));
+            } while (command != null && !command.equals("quit"));
         }
         );
         reader.setDaemon(false);
@@ -104,8 +104,6 @@ public class TUIParser {
                     );
                 }
                 case "showfield", "sf" -> currentState.showField(Integer.parseInt(tokens.removeFirst()));
-                //FIXME: this could be only a TUI function, consider extending this behavior to other functions
-                // exclusive to TUI or consider adding this to viewStates too
                 case "movefield", "mf" -> currentState.moveField(
                         new GenericPair<>(Integer.parseInt(tokens.removeFirst()), Integer.parseInt(tokens.removeFirst()))
                 );
@@ -124,10 +122,10 @@ public class TUIParser {
     }
 
     public void parseCommand(String input) {
+        if (input == null) return;
+
         String delimiters = " ";
         ArrayList<String> tokens = new ArrayList<>();
-        //FIXME: exception is thrown and is not caught when sometimes string to tokenize is null, I don't know exactly what causes this
-        // for example it happens while pressing CTRL+C when TUIParser is listening for commands
         StringTokenizer tokenizer = new StringTokenizer(input, delimiters);
 
         while (tokenizer.hasMoreTokens()) {

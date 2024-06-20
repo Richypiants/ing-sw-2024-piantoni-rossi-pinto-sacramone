@@ -171,7 +171,7 @@ public class TUIGameView extends TUIView{
             EnumMap<Resource, Integer> playerResources = player.getOwnedResources();
             Ansi playerNickname = ansi().fg(Ansi.Color.valueOf(player.getColor().name())).a(player.getNickname());
             if (!player.isActive())
-                playerNickname.a(" [I]"); //FIXME: altri modi?
+                playerNickname.a(" [X]");
 
             printToPosition(ansi().cursor(i, 2).a("[#" + (i - 2) + "] ").a(playerNickname).reset()
                     .cursor(i, 26).a(player.getPoints()) //POINTS
@@ -242,8 +242,6 @@ public class TUIGameView extends TUIView{
         int INITIAL_NICKNAME_POSITION = 9;
 
         printToPosition(ansi().cursor(8, 82).bold().a("Opponents' Fields: "));
-        /*TODO: Signal to players that the miniaturized fields are truncated and if you want to see them full-sized
-           you should call xxxCommand*/
 
         int playerIndex = 0;
         ArrayList<ClientPlayer> players = VIEWMODEL.getCurrentGame().getPlayers();

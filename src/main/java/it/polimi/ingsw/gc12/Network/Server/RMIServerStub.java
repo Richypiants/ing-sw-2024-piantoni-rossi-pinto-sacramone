@@ -69,7 +69,6 @@ public class RMIServerStub extends NetworkSession implements RMIVirtualServer {
         } catch (RejectedExecutionException e) {
             try {
                 this.getListener().notified(new ThrowExceptionCommand(
-                        //FIXME: not ideal to shut connection down... maybe don't accept more than a predefined number of connections?
                         new RejectedExecutionException("This server is currently overloaded, shutting down connection: try again later..."))
                 );
             } catch (Exception e2) {

@@ -67,7 +67,6 @@ public class PlayerTurnDrawState extends GameScreenState {
         selectedView.showField(game.getPlayers().get(playerID - 1));
     }
 
-    //FIXME: TUI-only function, could be moved inside...
     public void moveField(GenericPair<Integer, Integer> centerOffset) {
         selectedView.moveField(centerOffset);
     }

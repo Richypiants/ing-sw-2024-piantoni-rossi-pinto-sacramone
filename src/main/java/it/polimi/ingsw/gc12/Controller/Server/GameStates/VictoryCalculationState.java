@@ -64,53 +64,6 @@ public class VictoryCalculationState extends GameState {
         // Sending leaderboard stats
         GAME.notifyListeners(new EndGameCommand(pointsStats, gameEndedDueToDisconnections));
 
-        /*
-         * OLD CODE that transforms the game into a lobby.
-         * At the moment we're destroying the lobby.
-         *
-         *
-        //Removing disconnected players (we were keeping them until end of game hoping they would reconnect)
-        for (var player : players)
-            if(!player.isActive())
-                ServerController.getInstance().playersToLobbiesAndGames.remove(player);
-
-        UUID lobbyUUID = keyReverseLookup(ServerController.getInstance().lobbiesAndGames, GAME::equals);
-         Lobby returnLobby = GAME.toLobby();
-
-        ServerController.getInstance().lobbiesAndGames.put(lobbyUUID, returnLobby);
-
-        for(var player : returnLobby.getPlayers()) {
-            ServerController.getInstance().players.put(
-                    keyReverseLookup(ServerController.getInstance().players, player::equals),
-                    player
-            );
-            ServerController.getInstance().playersToLobbiesAndGames.put(player, returnLobby);
-        }
-
-        System.out.println("[SERVER]: Sending lobbies to clients previously in "+ GAME.toString());
-
-        // Sending lobbies list to players who were in this game (because they didn't have it updated)
-        for (var target : returnLobby.getPlayers()) {
-            keyReverseLookup(ServerController.getInstance().players, target::equals)
-                    .requestToClient(
-                            new SetLobbiesCommand(
-                                    ServerController.getInstance().lobbiesAndGames.entrySet().stream()
-                                            .filter((entry) -> !(entry.getValue() instanceof Game))
-                                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                            )
-                    );
-        }
-
-        System.out.println("[SERVER]: Recreating lobby with clients in "+ GAME.toString());
-        // Update lobbies' lists of all other active players
-        for (var client : ServerController.getInstance().players.keySet())
-            if (!(ServerController.getInstance().players.get(client) instanceof InGamePlayer))
-                client.requestToClient(new UpdateLobbyCommand(lobbyUUID, returnLobby)); //updateLobby();
-         */
-
-        //Clearing the mappings to the game
-
-
         //Removing all active and inactive players from the Map containing all the mappings.
         for (var player : GAME.getPlayers())
             if (player.isActive())
@@ -118,8 +71,9 @@ public class VictoryCalculationState extends GameState {
             else
                 (GameController.INACTIVE_SESSIONS.remove(player.getNickname())).setController(ConnectionController.getInstance());
 
-        //FIXME: Using a Lobby to convert the instances of InGamePlayer to Player and then discarding it. Better solutions?
-        // If putting players back into lobby, remember to re-add listeners to the lobby
+        //Re-creating the lobby to re-convert the InGamePlayers in normal Players,and then discarding it
+        //In future releases, one might consider keeping this lobby and the players in it, so that they
+        // can start a new game if they want.
         Lobby returnLobby = GAME.toLobby();
 
         System.out.println("[SERVER]: Sending lobbies to clients previously in " + GAME);
@@ -147,8 +101,6 @@ public class VictoryCalculationState extends GameState {
             }
         }
 
-        //TODO: add players to a new lobby now that the game doesn't start until the colors are chosen?
-        // and eventually move code above this instruction inside destroyGameController
         GameController.MODEL.destroyGameController(GAME_CONTROLLER);
     }
 }

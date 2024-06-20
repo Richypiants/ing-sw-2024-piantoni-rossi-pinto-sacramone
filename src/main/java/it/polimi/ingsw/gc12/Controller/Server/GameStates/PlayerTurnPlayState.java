@@ -40,7 +40,6 @@ public class PlayerTurnPlayState extends GameState {
         if (GAME.getFinalPhaseCounter() == -1)
             if (GAME.getCurrentPlayer().getPoints() >= 20)
                 GAME.initializeFinalPhaseCounter();
-        //TODO: send alert a tutti i giocatori che si è entrati nella fase finale?
 
         GAME_CONTROLLER.setState(new PlayerTurnDrawState(GAME_CONTROLLER, GAME));
 

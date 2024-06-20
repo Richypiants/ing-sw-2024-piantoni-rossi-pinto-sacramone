@@ -138,8 +138,9 @@ public interface ClientControllerInterface extends ControllerInterface {
      *
      * @param round The current round of the game.
      * @param currentPlayerIndex The index of the current player.
+     * @param turnsLeftUntilGameEnds The number of turns before the game ends and the leaderboard arrives.
      */
-    void transition(int round, int currentPlayerIndex);
+    void transition(int round, int currentPlayerIndex, int turnsLeftUntilGameEnds);
 
     /**
      * Pauses the game, until the game ends or someone reconnects.

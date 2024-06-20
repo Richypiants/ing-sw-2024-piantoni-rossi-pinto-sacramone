@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc12.Model.Lobby;
 import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.Enums.Color;
 import it.polimi.ingsw.gc12.View.Client.TUI.TUIParser;
+import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
 import org.fusesource.jansi.Ansi;
 
 import static org.fusesource.jansi.Ansi.ansi;
@@ -54,18 +55,10 @@ public class TUILobbiesView extends TUIView{
         printToPosition(ansi().cursor(i++,1).bold()
                 .a("[PLAYER]: ").a(VIEWMODEL.getOwnNickname()));
 
-        printToPosition(ansi().cursor(++i, 1).a(
-                """
-                                    '[createLobby | cl] <maxPlayers>' to create a new lobby,
-                                    '[joinLobby | jl] <lobbyUUID>' to join an existing lobby,
-                                    '[setNickname | sn] <newNickname>' to change your own nickname,
-                                    '[selectColor | sc] <color>' to choose a color among the available ones,
-                                    '[leaveLobby | ll]' to leave the lobby you are currently in,
-                                    '[quit]' to go back to title screen.
-                """
-        ));
+        for (var command : ViewState.getCurrentState().TUICommands)
+            printToPosition(ansi().cursor(++i, 1).a(command));
 
-        i += 7;
+        i += 2;
 
         printToPosition(ansi().cursor(i++, 1).a("[CURRENT LOBBY]: " + (
                         VIEWMODEL.inRoom() ?

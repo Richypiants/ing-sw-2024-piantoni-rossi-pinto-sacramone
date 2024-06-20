@@ -58,10 +58,6 @@ public class ChooseInitialCardsState extends GameState {
             try {
                 placeCard(target, new GenericPair<>(0, 0), target.getCardsInHand().getFirst(), Side.FRONT);
             } catch (CardNotInHandException | NotEnoughResourcesException | InvalidCardPositionException ignored) {
-                //FIXME: fake, if exception is caught this method fails and leaveGame isn't completed and doesn't transition to AwaitingReconnectionState!
-                //The placeCard for this player was already done, so the coordinates pair (0,0) is already occupied by
-                //a card and the placeCard throws InvalidCardPositionException.
-                //TODO: non sono sicuro che ci vada
                 System.exit(-1);
             }
     }

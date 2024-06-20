@@ -298,17 +298,12 @@ public class GUIGameView extends GUIView {
 
         AnchorPane clippedPane = new AnchorPane();
         clippedPane.setPrefSize(clippedPaneSize.getX(), clippedPaneSize.getY());
-        //FIXME: rimettere fields_bg_small.jpg oppure fixare i fields_bg colorati/più piccoli?
-        String backgroundName = "/Client/images/game/fields_bg_" + "small" + ".jpg";
-        clippedPane.setStyle("-fx-background-image: url('" + backgroundName + "'); -fx-background-size: cover;" +
+        clippedPane.setStyle("-fx-background-image: url('/Client/images/game/fields_bg_small.jpg'); -fx-background-size: cover;" +
                 "-fx-background-repeat: no-repeat;");
         clippedPane.setCenterShape(true);
 
         for (var cardEntry : player.getPlacedCards().sequencedEntrySet()) {
             ImageView cardImage = new ImageView(String.valueOf(GUIView.class.getResource(cardEntry.getValue().getX().GUI_SPRITES.get(cardEntry.getValue().getY()))));
-
-            //FIXME: correct this: it is needed to get this later, but which size?
-            // or maybe later when needed use cardSizes like this, after having decided if values are correct
             cardImage.setSmooth(true);
             cardImage.setFitWidth(cardSizes.getX());
             cardImage.setFitHeight(cardSizes.getY());

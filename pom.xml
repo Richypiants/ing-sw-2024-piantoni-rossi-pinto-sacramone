@@ -184,6 +184,7 @@
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>**/Client/**</exclude>
+                                        <exclude>**/CardGeneratorJSONParser.*</exclude>
                                         <exclude>**/objective_client_cards.json</exclude>
                                         <exclude>module-info.java</exclude>
                                         <exclude>META-INF/MANIFEST.MF</exclude>
