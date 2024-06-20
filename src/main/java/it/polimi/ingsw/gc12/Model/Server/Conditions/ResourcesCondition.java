@@ -46,7 +46,7 @@ public class ResourcesCondition implements PointsCondition {
                 .mapToInt((resourceType) -> target.getOwnedResources().get(resourceType)
                         /
                         CONDITION.get(resourceType)
-                ).min().getAsInt();
+                ).min().orElseThrow();
     }
 
 

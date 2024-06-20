@@ -29,8 +29,12 @@ public class PlayerTurnDrawState extends GameState {
                         PlayableCard drawnCard = GAME.drawFrom(GAME.getResourceCardsDeck());
                         GAME.peekFrom(GAME.getResourceCardsDeck());
                         return drawnCard;
-                    } catch (EmptyDeckException ignored) {}
-                    return null;
+                    } catch (EmptyDeckException ignored) {
+                        //FIXME: alla luce del fatto che il catch vuoto di una exception negli stati iniziali faceva crashare la
+                        // playerDisconnected, forse tutti i return null vanno messi qui dentro perchè altrimenti non vengono eseguiti?
+                        // Magari potrebbe essere stato questo a far crashare il game ieri?
+                        return null;
+                    }
                 }
         );
 
@@ -40,8 +44,9 @@ public class PlayerTurnDrawState extends GameState {
                         PlayableCard drawnCard = GAME.drawFrom(GAME.getGoldCardsDeck());
                         GAME.peekFrom(GAME.getGoldCardsDeck());
                         return drawnCard;
-                    } catch (EmptyDeckException ignored) {}
-                    return null;
+                    } catch (EmptyDeckException ignored) {
+                        return null;
+                    }
                 }
         );
 
@@ -54,8 +59,9 @@ public class PlayerTurnDrawState extends GameState {
                             PlayableCard drawnCard = GAME.drawFrom(GAME.getPlacedResources(), index);
                             GAME.peekFrom(GAME.getResourceCardsDeck());
                             return drawnCard;
-                        } catch (EmptyDeckException ignored) {}
-                        return null;
+                        } catch (EmptyDeckException ignored) {
+                            return null;
+                        }
                     }
             );
         }

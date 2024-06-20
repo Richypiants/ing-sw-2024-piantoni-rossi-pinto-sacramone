@@ -93,7 +93,7 @@ public class PatternCondition implements PointsCondition {
 
     /**
      * Finds the size of the largest compatibility class using a tree algorithm,
-     * determining the maximum number of disjoint patterns.
+     * determining the maximum number of disjoint patterns of the same type.
      * This method evaluates all potential starting cards for the patterns and
      * identifies the largest set of patterns that do not overlap.
      *

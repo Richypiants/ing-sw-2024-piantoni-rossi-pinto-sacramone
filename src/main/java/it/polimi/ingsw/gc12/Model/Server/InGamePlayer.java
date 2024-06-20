@@ -23,13 +23,13 @@ import java.util.stream.Collectors;
 
 /**
  * Represents a player who is currently in a game.
- *
+ * <p>
  * This class extends the basic {@link Player} class to include attributes and methods
  * specific to a player who is in a game. It maintains the player's hand of cards,
  * their owned resources, their field, their secret objective, and their points.
  * Additionally, it keeps track of the player's activity or inactivity due to
  * network or voluntary disconnections.
- *
+ * <p>
  * The class also implements the {@link Listenable} interface to allow for
  * registering, removing, and notifying listeners about various in-game events
  * such as card placements, addition of card in hand and secret objective related updates.
@@ -171,7 +171,7 @@ public class InGamePlayer extends Player implements Listenable {
 
         OWN_FIELD.addCard(coordinates, card, playedSide);
 
-        //Foreach Corner of the given card that is valid and non-empty, increment the corresponding Resource by 1
+        //Foreach orner of the given card that is valid and non-empty, increment the corresponding Resource by 1
         for (var res : card.getCorners(playedSide)
                 .values().stream()
                 .filter((resource) ->
@@ -191,7 +191,7 @@ public class InGamePlayer extends Player implements Listenable {
         //For every corner on the played side of the given card:
         card.getCorners(playedSide).keySet().stream()
                 .map((offset) ->
-                        //optionally get a given card which gets covered
+                        //optionally get a given card which gets covered...
                         Optional.ofNullable(
                                 OWN_FIELD.getPlacedCards().get(
                                         new GenericPair<>(
@@ -199,17 +199,17 @@ public class InGamePlayer extends Player implements Listenable {
                                                 coordinates.getY() + offset.getY()
                                         )
                                 )
-                                //and optionally get the corresponding resource covered
+                                //...and optionally get the corresponding resource covered...
                         ).flatMap((coveredCorner) -> Optional.of(
                                         coveredCorner.getX()
                                                 .getCornerResource(coveredCorner.getY(), -offset.getX(), -offset.getY())
                                 )
                         )
                 )
-                //keep only the non-empty optionals containing found resources
+                //...keep only the non-empty optionals containing found resources...
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                //filter out eventual empties and not_a_corners (can't happen but still) covered and decrement
+                //...and filter out eventual empties and not_a_corners (can't happen, but still) covered and decrement
                 .filter((coveredResource) ->
                         !(coveredResource.equals(Resource.NOT_A_CORNER) || coveredResource.equals(Resource.EMPTY))
                 ).forEach((coveredResource) -> incrementOwnedResource(coveredResource, -1));

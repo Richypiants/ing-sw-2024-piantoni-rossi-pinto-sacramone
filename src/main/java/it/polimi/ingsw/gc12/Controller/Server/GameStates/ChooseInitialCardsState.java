@@ -32,6 +32,7 @@ public class ChooseInitialCardsState extends GameState {
             }
         } catch (EmptyDeckException ignored) {
             //Cannot happen as the deck has just been created
+            System.exit(-1);
         }
     }
 
@@ -60,6 +61,8 @@ public class ChooseInitialCardsState extends GameState {
                 //FIXME: fake, if exception is caught this method fails and leaveGame isn't completed and doesn't transition to AwaitingReconnectionState!
                 //The placeCard for this player was already done, so the coordinates pair (0,0) is already occupied by
                 //a card and the placeCard throws InvalidCardPositionException.
+                //TODO: non sono sicuro che ci vada
+                System.exit(-1);
             }
     }
 
@@ -70,7 +73,9 @@ public class ChooseInitialCardsState extends GameState {
                 target.addCardToHand(GAME.drawFrom(GAME.getResourceCardsDeck()));
                 target.addCardToHand(GAME.drawFrom(GAME.getResourceCardsDeck()));
                 target.addCardToHand(GAME.drawFrom(GAME.getGoldCardsDeck()));
-            } catch (EmptyDeckException ignored) {}
+            } catch (EmptyDeckException ignored) {
+                System.exit(-1);
+            }
         }
 
         GAME.generateCommonObjectives();

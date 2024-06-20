@@ -118,6 +118,7 @@ public class Game extends Room implements Listenable {
             PLACED_GOLD_CARDS[1] = GOLD_CARDS_DECK.draw();
         } catch(EmptyDeckException ignored) {
             //cannot happen as deck has just been initialized
+            System.exit(-1);
         }
 
         this.COMMON_OBJECTIVES = new ObjectiveCard[2];
@@ -147,7 +148,10 @@ public class Game extends Room implements Listenable {
         for (var player : playersList) {
             try {
                 returnLobby.addPlayer(player);
-            } catch (FullLobbyException ignored) {}
+            } catch (FullLobbyException ignored) {
+                //Cannot happen as the lobby has just been created
+                System.exit(-1);
+            }
         }
 
         return returnLobby;
@@ -318,7 +322,9 @@ public class Game extends Room implements Listenable {
         try {
             COMMON_OBJECTIVES[0] = OBJECTIVE_CARDS_DECK.draw();
             COMMON_OBJECTIVES[1] = OBJECTIVE_CARDS_DECK.draw();
-        } catch (EmptyDeckException ignored) {}
+        } catch (EmptyDeckException ignored) {
+            System.exit(-1);
+        }
 
         System.out.println("[SERVER]: Sending Common Objectives to clients in " + this);
         notifyListeners(new ReplaceCardsCommand(List.of(
@@ -350,7 +356,9 @@ public class Game extends Room implements Listenable {
             try {
                 personalObjectiveCardsSelection.add(OBJECTIVE_CARDS_DECK.draw());
                 personalObjectiveCardsSelection.add(OBJECTIVE_CARDS_DECK.draw());
-            } catch (EmptyDeckException ignored) {} //FIXME: non viene mai lanciata, System.exit(-1)
+            } catch (EmptyDeckException ignored) {
+                System.exit(-1);
+            }
             objectivesSelection.put(target, personalObjectiveCardsSelection);
             target.setObjectivesSelection(personalObjectiveCardsSelection);
         }

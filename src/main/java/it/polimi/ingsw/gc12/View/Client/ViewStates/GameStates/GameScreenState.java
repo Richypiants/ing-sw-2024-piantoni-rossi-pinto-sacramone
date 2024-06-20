@@ -30,16 +30,15 @@ public abstract class GameScreenState extends ViewState {
 
     @Override
     public void broadcastMessage(String message) {
-        //TODO: message timestamp? add it to the message or send it as parameter? (to avoid local timezone conversions...)
         CLIENT.requestToServer(new BroadcastMessageCommand(message));
     }
 
     @Override
     public void directMessage(String receiverNickname, String message) {
-        //TODO: message timestamp? add it to the message or send it as parameter? (to avoid local timezone conversions...)
         CLIENT.requestToServer(new DirectMessageCommand(receiverNickname, message));
     }
 
+    //TODO: could show message timestamp (only when on receiving, so that it corresponds to the local timezone or local machine's clock)
     //FIXME: estrarre tra le costanti anche la dimensione della chat?
     @Override
     public void showReceivedChatMessage(String message) {

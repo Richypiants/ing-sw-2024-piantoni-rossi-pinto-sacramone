@@ -169,8 +169,11 @@ public class TUIGameView extends TUIView{
 
         for (ClientPlayer player : VIEWMODEL.getCurrentGame().getPlayers()) {
             EnumMap<Resource, Integer> playerResources = player.getOwnedResources();
+            Ansi playerNickname = ansi().fg(Ansi.Color.valueOf(player.getColor().name())).a(player.getNickname());
+            if (!player.isActive())
+                playerNickname.a(" [I]"); //FIXME: altri modi?
 
-            printToPosition(ansi().cursor(i, 2).a("[#" + (i - 2) + "] ").fg(Ansi.Color.valueOf(player.getColor().name())).a(player.getNickname()).reset()
+            printToPosition(ansi().cursor(i, 2).a("[#" + (i - 2) + "] ").a(playerNickname).reset()
                     .cursor(i, 26).a(player.getPoints()) //POINTS
                     .cursor(i, 36).a(playerResources.containsKey(Resource.FUNGI) ? playerResources.get(Resource.FUNGI) : "0") //FUNGI
                     .cursor(i, 48).a(playerResources.containsKey(Resource.PLANT) ? playerResources.get(Resource.PLANT) : "0") //PLANT

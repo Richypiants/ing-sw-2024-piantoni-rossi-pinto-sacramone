@@ -211,7 +211,6 @@ public class GUIGameView extends GUIView {
 
         if (isInteractive) {
             openCornerShape.setOnDragOver((event) -> {
-                //TODO: implement visual effects
                 if (event.getGestureSource() != openCornerShape && event.getDragboard().hasContent(PLACE_CARD_DATA_FORMAT)) {
                     event.acceptTransferModes(TransferMode.MOVE);
                 }
@@ -288,7 +287,6 @@ public class GUIGameView extends GUIView {
     }
 
     private void drawField(ScrollPane fieldPane, ClientPlayer player, double scaleFactor, boolean isInteractive) {
-        //TODO: resize this pane based on how many cards have been played and center the field on it? or not?
         GenericPair<Double, Double> clippedPaneSize = new GenericPair<>(
                 4000.0, 4000.0 * cardSizes.getY() / cardSizes.getX()
         );
@@ -693,6 +691,22 @@ public class GUIGameView extends GUIView {
                 firstPlayerToken.toFront();
             }
 
+            if (!player.isActive()) {
+                HBox inactivityPane = new HBox();
+                inactivityPane.setPrefSize(opponentField.getPrefWidth(), opponentField.getPrefHeight());
+                inactivityPane.setStyle("-fx-background-color: black;");
+                inactivityPane.setOpacity(0.8);
+                inactivityPane.setAlignment(Pos.CENTER);
+
+                Label inactivityLabel = new Label("INACTIVE");
+                inactivityLabel.getStyleClass().add("popupText");
+
+                inactivityPane.getChildren().add(inactivityLabel);
+
+                opponentField.getChildren().add(inactivityPane);
+                inactivityPane.toFront();
+            }
+
             opponentData.getChildren().addAll(opponentStats, opponentField);
             opponentInfo.getChildren().addAll(opponentName, opponentData);
             OPPONENTS_FIELDS_PANE.getChildren().add(opponentInfo);
@@ -702,7 +716,6 @@ public class GUIGameView extends GUIView {
     @Override
     public void showCommonPlacedCards() {
         Platform.runLater(() -> {
-            //TODO. make imageView static and clear and avoid clearing children and refresh only the content
             RESOURCE_CARDS_HBOX.getChildren().clear();
 
             if (thisGame.getTopDeckResourceCard().ID != -1) {
@@ -732,7 +745,6 @@ public class GUIGameView extends GUIView {
                 }
             }
 
-            //TODO. make imageView static and clear and avoid clearing children and refresh only the content
             GOLD_CARDS_HBOX.getChildren().clear();
 
             if (thisGame.getTopDeckGoldCard().ID != -1) {
@@ -761,7 +773,6 @@ public class GUIGameView extends GUIView {
                 }
             }
 
-            //TODO. make imageView static and clear and avoid clearing children and refresh only the content
             COMMON_OBJECTIVES_HBOX.getChildren().clear();
 
             for (int i = 0; i < thisGame.getCommonObjectives().length; i++) {
@@ -855,23 +866,17 @@ public class GUIGameView extends GUIView {
                 frontCardView.setOnMouseClicked((event) -> backCardView.toFront());
                 backCardView.setOnMouseClicked((event) -> frontCardView.toFront());
 
-                //TODO: Complete implementation of drag-and-drop of cards with all DragEvents specified, and this is horrible...
                 int inHandPosition = i + 1;
 
-                //FIXME: Refactor image/dragboard/imageview
                 frontCardView.setOnDragDetected((event) -> {
                     Dragboard cardDragboard = frontCardView.startDragAndDrop(TransferMode.MOVE);
+
                     Image image = new Image(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.FRONT))), 100, 150, true, true);
                     cardDragboard.setDragView(image, cardSizes.getX() / 2, cardSizes.getY() / 2);
+
                     ClipboardContent cardClipboard = new ClipboardContent();
                     cardClipboard.put(PLACE_CARD_DATA_FORMAT, new GenericPair<>(inHandPosition, Side.FRONT));
                     cardDragboard.setContent(cardClipboard);
-                });
-
-                frontCardView.setOnDragDone((event) -> {
-                    if (event.getTransferMode() == TransferMode.MOVE && event.isDropCompleted()) {
-                    }
-                    //TODO: visually clear card from hand?
                 });
 
                 backCardView.setOnDragDetected((event) -> {
@@ -881,12 +886,6 @@ public class GUIGameView extends GUIView {
                     ClipboardContent cardClipboard = new ClipboardContent();
                     cardClipboard.put(PLACE_CARD_DATA_FORMAT, new GenericPair<>(inHandPosition, Side.BACK));
                     cardDragboard.setContent(cardClipboard);
-                });
-
-                backCardView.setOnDragDone((event) -> {
-                    if (event.getTransferMode() == TransferMode.MOVE && event.isDropCompleted()) {
-                    }
-                    //TODO: visually clear card from hand?
                 });
 
                 OWN_HAND_PANE.getChildren().add(pane);

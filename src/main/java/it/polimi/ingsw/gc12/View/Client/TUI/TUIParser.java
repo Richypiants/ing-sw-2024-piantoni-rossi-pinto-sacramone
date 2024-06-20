@@ -127,6 +127,7 @@ public class TUIParser {
         String delimiters = " ";
         ArrayList<String> tokens = new ArrayList<>();
         //FIXME: exception is thrown and is not caught when sometimes string to tokenize is null, I don't know exactly what causes this
+        // for example it happens while pressing CTRL+C when TUIParser is listening for commands
         StringTokenizer tokenizer = new StringTokenizer(input, delimiters);
 
         while (tokenizer.hasMoreTokens()) {
