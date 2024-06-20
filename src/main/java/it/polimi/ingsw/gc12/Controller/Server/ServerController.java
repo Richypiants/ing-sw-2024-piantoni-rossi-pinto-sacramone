@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc12.Controller.Server;
 
 import it.polimi.ingsw.gc12.Commands.ClientCommands.ThrowExceptionCommand;
+import it.polimi.ingsw.gc12.Commands.KeepAliveCommand;
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
 import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
 import it.polimi.ingsw.gc12.Model.Player;
@@ -83,6 +84,7 @@ public abstract class ServerController implements ServerControllerInterface {
                 else {
                     removeActivePlayer(target);
                     MODEL.removeListener(target.getListener());
+                    target.getPlayer().toggleActive();
                 }
 
                 cancel();
@@ -91,9 +93,18 @@ public abstract class ServerController implements ServerControllerInterface {
     }
 
     public void keepAlive(NetworkSession sender) {
+        Player targetPlayer = sender.getPlayer();
+
+        if (!targetPlayer.isActive()) {
+            sender.setPlayer(null);
+            createPlayer(sender, targetPlayer.getNickname());
+        }
+
         System.out.println("[CLIENT]: keepAlive command received from " + sender + ". Resetting timeout");
         sender.getTimeoutTask().cancel();
         renewTimeoutTimerTask(sender);
+
+        sender.getListener().notified(new KeepAliveCommand());
     }
 
     protected void generatePlayer(NetworkSession sender, String nickname) {

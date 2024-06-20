@@ -57,10 +57,6 @@ public class InGamePlayer extends Player implements Listenable {
     private final Field OWN_FIELD;
 
     /**
-     * The active status of this player, indicating whether the player is currently connected to the game and playing.
-     */
-    private boolean active;
-    /**
      * The points currently accumulated by this player.
      */
     private int points;
@@ -90,7 +86,6 @@ public class InGamePlayer extends Player implements Listenable {
             OWNED_RESOURCES.put(r, 0);
         }
         OWN_FIELD = new Field();
-        active = true;
         secretObjective = null;
 
     }
@@ -120,23 +115,6 @@ public class InGamePlayer extends Player implements Listenable {
      */
     public int getPoints() {
         return points;
-    }
-
-    /**
-     * Returns the activity status of this player.
-     *
-     * @return {@code true} if the player is active, {@code false} otherwise.
-     */
-    public boolean isActive() {
-        return active;
-    }
-
-    /**
-     * Toggles the active status of this player.
-     * If the player is currently active, they will become inactive, and vice versa.
-     */
-    public void toggleActive() {
-        active = !active;
     }
 
     /**
@@ -273,7 +251,7 @@ public class InGamePlayer extends Player implements Listenable {
 
     /**
      * Sets the selection of objective cards for this player.
-     *
+     * <p>
      * This method assigns the given list of objective cards as the player's selection and
      * notifies all registered listeners about the new objective choice with a {@link ReceiveObjectiveChoiceCommand}.
      *
@@ -298,7 +276,7 @@ public class InGamePlayer extends Player implements Listenable {
 
     /**
      * Sets this player's secret Objective Card.
-     *
+     * <p>
      * This method assigns the given Objective Card as the player's secret objective and
      * notifies all registered listeners about the selection confirmation with a {@link ConfirmSelectionCommand}.
      *
@@ -322,7 +300,7 @@ public class InGamePlayer extends Player implements Listenable {
 
     /**
      * Adds a listener to the list of this player's listeners.
-     *
+     * <p>
      * This method ensures thread-safe addition of listeners to the list.
      *
      * @param listener The listener to be added.
@@ -336,7 +314,7 @@ public class InGamePlayer extends Player implements Listenable {
 
     /**
      * Removes a listener from the list of this player's listeners.
-     *
+     * <p>
      * This method ensures thread-safe removal of listeners from the list.
      *
      * @param listener The listener to be removed.
@@ -350,7 +328,7 @@ public class InGamePlayer extends Player implements Listenable {
 
     /**
      * Notifies all registered listeners with the specified command.
-     *
+     * <p>
      * This method ensures thread-safe iteration over the listeners list while notifying them.
      *
      * @param command The command to be sent to all listeners.

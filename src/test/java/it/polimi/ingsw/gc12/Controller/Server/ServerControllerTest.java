@@ -122,6 +122,11 @@ public class ServerControllerTest {
         }
 
         @Override
+        public void keepAlive() {
+
+        }
+
+    @Override
         public void setNickname(String nickname) {
 
         }
@@ -177,7 +182,7 @@ public class ServerControllerTest {
         }
 
         @Override
-        public void transition(int round, int currentPlayerIndex) {
+        public void transition(int round, int currentPlayerIndex, int turnsLeftUntilGameEnds) {
 
         }
 

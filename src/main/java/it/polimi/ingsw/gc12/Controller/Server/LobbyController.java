@@ -83,6 +83,7 @@ public class LobbyController extends ServerController {
             sender.getTimeoutTask().cancel();
             MODEL.removeListener(sender.getListener());
             removeActivePlayer(sender);
+            sender.getPlayer().toggleActive();
         }
 
         Server.getInstance().commandExecutorsPool.submit(() -> {

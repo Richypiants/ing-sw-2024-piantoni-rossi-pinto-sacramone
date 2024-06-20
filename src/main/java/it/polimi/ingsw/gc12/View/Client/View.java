@@ -25,6 +25,8 @@ public abstract class View {
 
     public abstract void connectedConfirmation();
 
+    public abstract void disconnectedScreen();
+
     public abstract void quittingScreen();
 
     public abstract void lobbiesScreen();

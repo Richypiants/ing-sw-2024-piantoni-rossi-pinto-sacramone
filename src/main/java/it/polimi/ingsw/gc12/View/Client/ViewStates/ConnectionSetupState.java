@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc12.View.Client.ViewStates;
 
+import it.polimi.ingsw.gc12.Commands.KeepAliveCommand;
 import it.polimi.ingsw.gc12.Commands.ServerCommands.CreatePlayerCommand;
-import it.polimi.ingsw.gc12.Commands.ServerCommands.KeepAliveCommand;
 
 import static java.lang.Thread.sleep;
 
@@ -68,9 +68,21 @@ public class ConnectionSetupState extends ViewState {
         CLIENT.keepAlive = new Thread(() -> {
             while (true) {
                 CLIENT.requestToServer(new KeepAliveCommand());
+                synchronized (CLIENT.DISCONNECTED_LOCK) {
+                    try {
+                        wait(15000);
+                        if (CLIENT.disconnected) {
+                            selectedView.disconnectedScreen();
+                        } else
+                            CLIENT.disconnected = true;
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+
                 try {
                     sleep(5000);
-                } catch (Exception e) {
+                } catch (InterruptedException e) {
                     //When disconnecting we interrupt keepAlive thread as we no longer have to send pings to server
                     break;
                 }

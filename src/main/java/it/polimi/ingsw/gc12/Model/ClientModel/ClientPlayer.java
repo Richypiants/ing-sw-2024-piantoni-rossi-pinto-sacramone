@@ -128,20 +128,4 @@ public class ClientPlayer extends Player implements Serializable {
     public void setPoints(int points){
         this.points = points;
     }
-
-    /**
-     * Returns whether the player is currently active.
-     *
-     * @return {@code true} if the player is active, {@code false} otherwise
-     */
-    public boolean isActive(){
-        return isActive;
-    }
-
-    /**
-     * Toggles the player's active status.
-     */
-    public void toggleActive(){
-        isActive = !isActive;
-    }
 }

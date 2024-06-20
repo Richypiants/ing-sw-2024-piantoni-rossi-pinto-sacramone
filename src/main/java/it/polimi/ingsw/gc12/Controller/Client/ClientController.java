@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientGame;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.ClientModel.ViewModel;
 import it.polimi.ingsw.gc12.Model.Lobby;
+import it.polimi.ingsw.gc12.Network.Client.Client;
 import it.polimi.ingsw.gc12.Utilities.Enums.Resource;
 import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.ErrorLogger;
@@ -24,10 +25,13 @@ public class ClientController implements ClientControllerInterface {
 
     public final ViewModel VIEWMODEL;
 
+    public final Client CLIENT;
+
     public final ErrorLogger ERROR_LOGGER;
 
     private ClientController() {
         VIEWMODEL = new ViewModel();
+        CLIENT = Client.getClientInstance();
         ERROR_LOGGER = new ErrorLogger();
     }
 
@@ -37,6 +41,13 @@ public class ClientController implements ClientControllerInterface {
 
     public void throwException(Exception e) {
         ViewState.printError(e);
+    }
+
+    public void keepAlive() {
+        synchronized (CLIENT.DISCONNECTED_LOCK) {
+            CLIENT.disconnected = false;
+            CLIENT.DISCONNECTED_LOCK.notifyAll();
+        }
     }
 
     //TODO: check that without synchronized everything still works fine

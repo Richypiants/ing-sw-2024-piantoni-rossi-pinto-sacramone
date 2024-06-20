@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc12.Utilities.Triplet;
 import it.polimi.ingsw.gc12.View.Client.GUI.GUIApplication;
 import it.polimi.ingsw.gc12.View.Client.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.View.Client.View;
+import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -154,6 +155,42 @@ public class GUIView extends View {
     }
 
     @Override
+    public void awaitingScreen() {
+        GUIGameView.getInstance().awaitingScreen();
+    }
+
+    @Override
+    public void disconnectedScreen() {
+        Platform.runLater(() -> {
+            VBox reconnectingPopupContent = new VBox();
+            reconnectingPopupContent.getStyleClass().add("decoratedPopup");
+
+            Label reconnectingLabel = new Label("Connection to server lost: trying to reconnect...");
+            reconnectingLabel.getStyleClass().add("popupText");
+
+            Button exitButton = new Button("BACK TO TITLE SCREEN");
+            exitButton.getStyleClass().add("decoratedButton");
+            exitButton.setMaxWidth(300);
+
+            reconnectingPopupContent.getChildren().addAll(reconnectingLabel, exitButton);
+
+            VBox.setMargin(reconnectingLabel, new Insets(30, 30, 0, 30));
+            VBox.setMargin(exitButton, new Insets(0, 0, 30, 0));
+
+            OverlayPopup reconnectingPopup = drawOverlayPopup(reconnectingPopupContent, false);
+
+            exitButton.setOnMouseClicked((event) -> ViewState.getCurrentState().quit());
+
+            reconnectingPopup.show(stage);
+        });
+    }
+
+    @Override
+    public void quittingScreen() {
+        //TODO: implement quitting screen for GUI
+    }
+
+    @Override
     public void lobbiesScreen() {
         GUILobbiesView.getInstance().lobbiesScreen();
     }
@@ -166,16 +203,6 @@ public class GUIView extends View {
     @Override
     public void gameScreen() {
         GUIGameView.getInstance().gameScreen();
-    }
-
-    @Override
-    public void awaitingScreen() {
-        GUIGameView.getInstance().awaitingScreen();
-    }
-
-    @Override
-    public void quittingScreen() {
-        //TODO: implement quitting screen for GUI
     }
 
     @Override

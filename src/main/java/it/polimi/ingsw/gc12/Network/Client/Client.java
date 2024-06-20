@@ -31,6 +31,9 @@ public class Client {
     public NetworkSession session;
     public Thread keepAlive;
 
+    public final Object DISCONNECTED_LOCK = new Object();
+    public boolean disconnected;
+
     private Client() {
         resetClient();
     }
@@ -52,6 +55,7 @@ public class Client {
         this.serverConnection = null;
         this.session = null;
         this.keepAlive = null;
+        this.disconnected = true;
 
         if (commandSenderExecutor != null)
             this.commandSenderExecutor.shutdownNow();

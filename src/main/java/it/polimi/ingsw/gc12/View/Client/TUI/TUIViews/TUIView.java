@@ -102,6 +102,12 @@ public class TUIView extends View {
     }
 
     @Override
+    public void disconnectedScreen() {
+        clearTerminal();
+        printToPosition(ansi().cursor(1, 1).a("Connection to server lost: trying to reconnect..."));
+    }
+
+    @Override
     public void quittingScreen() {
         clearTerminal();
         printToPosition(ansi().cursor(1, 1).a("Returning to title screen..."));
