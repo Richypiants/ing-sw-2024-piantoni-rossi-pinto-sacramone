@@ -1,10 +1,51 @@
 # Software Engineering Project 2023/2024
 
---- insert game banner here ---
+## Codex Naturalis
 
-Group project following the conclusion of the Software Engineering course in the Computer Science and Engineering Bachelor's Degree at Politecnico di Milano (2023/2024).
+<img src="https://m.media-amazon.com/images/I/814qEh0JKdS._AC_SX679_.jpg" width=192px height=192 px align="right" />
 
-Teacher: Cugola Gianpaolo
+Official game site: [**CranioCreations**](https://www.craniocreations.it/prodotto/codex-naturalis).
+
+[**Game rules**](FIleReadMe/CODEX_Rulebook_EN.pdf)
+
+**Codex Naturalis** game following the conclusion of the **Software Engineering** course in the Computer Science and
+Engineering Bachelor's Degree at Politecnico di Milano (2023/2024).
+
+Teacher: Cugola Gianpaolo.
+
+## Project specification
+
+The project consists of a Java version of the board game **Codex Naturalis**, made by Cranio creation.
+
+[**Project Requirements**](FIleReadMe/requirements.pdf)
+
+**The final version of the game includes:**
+
+* initial UML diagram;
+* final UML diagram, generated from the code by automated tools;
+* working game implementation;
+* source code of the implementation;
+* source code of tests.
+
+### List of functionalities:
+
+| Functionality                | Status |
+|:-----------------------------|:------:|
+| Basic rules                  |   ✅    |
+| Complete rules               |   ✅    |
+| Socket                       |   ✅    |
+| RMI                          |   ✅    |
+| GUI                          |   ✅    |
+| TUI                          |   ✅    |
+| Multiple games               |   ✅    |
+| Resilience to disconnections |   ✅    |
+| Chat                         |   ✅    |
+| Persistence                  |   ⛔    |
+
+## Software  used:
+
+* **Intellij IDEA Ultimate** - main IDE
+* **Lucid charts** - UML diagrams
 
 Authors: 
 - Piantoni Riccardo
@@ -12,19 +53,10 @@ Authors:
 - Pinto Federico
 - Sacramone Jacopo
 
-Project description: the project is about building an implementation of the board game "Codex Naturalis" from XXX COMPANY using the Java programming language.
 
-Official site: ---site link here---
 
-Rulebook: ---rulebook file goes here---
 
-Requirements: ---requirements file goes here---
 
-List of functionalities:
----functionalities table (all to be included, specifying if it has been implemented or not)---
-
-Software and Java Packages used:
----list here---
 
 Features:
 ---features list here---
