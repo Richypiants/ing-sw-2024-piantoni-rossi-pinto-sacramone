@@ -52,17 +52,19 @@ public abstract class GameScreenState extends ViewState {
 
     @Override
     public void quit() {
-        CLIENT.requestToServer(new LeaveGameCommand());
-        synchronized (CLIENT) {
-            try {
-                selectedView.quittingScreen();
-                //Notified by CLIENT.requestToServer() function, which gets executed in another thread
-                CLIENT.wait();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e); //Should never happen
+        new Thread(() -> {
+            synchronized (CLIENT) {
+                try {
+                    CLIENT.requestToServer(new LeaveGameCommand());
+                    selectedView.quittingScreen();
+                    //Notified by CLIENT.requestToServer() function, which gets executed in another thread
+                    CLIENT.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e); //Should never happen
+                }
             }
-        }
-        super.quit();
+            super.quit();
+        });
     }
 
     public abstract void transition();

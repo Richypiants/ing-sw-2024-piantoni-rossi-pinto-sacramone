@@ -43,7 +43,7 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
                 ViewState.getCurrentState().notifyAll();
             }
         } catch (RemoteException | NotBoundException e) {
-            Client.getClientInstance().resetClient();
+            //Client.getClientInstance().resetClient();
             ClientController.getInstance().ERROR_LOGGER.log(e);
         }
     }
@@ -69,6 +69,7 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
             try {
                 command.execute(ClientController.getInstance());
             } catch (Exception e) {
+                close();
                 ClientController.getInstance().ERROR_LOGGER.log(e);
             }
         });
@@ -91,8 +92,11 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
     public void close() {
         try {
             UnicastRemoteObject.unexportObject(this, true);
-        } catch (NoSuchObjectException e) {
-            throw new RuntimeException(e);
+        } catch (NoSuchObjectException ignored) {
+            //Already unexported? Not a problem, we don't care
+        } finally {
+            Client.getClientInstance().session = null;
+            Client.getClientInstance().serverConnection = null;
         }
     }
 }

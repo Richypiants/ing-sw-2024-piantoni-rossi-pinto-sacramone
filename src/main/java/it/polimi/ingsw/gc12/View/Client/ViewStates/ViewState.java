@@ -28,11 +28,15 @@ public abstract class ViewState {
     }
 
     public static ViewState getCurrentState() {
-        return currentState;
+        synchronized (ViewState.class) {
+            return currentState;
+        }
     }
 
     public static void setCurrentState(ViewState newState) {
-        currentState = newState;
+        synchronized (ViewState.class) {
+            currentState = newState;
+        }
     }
 
     public static void printError(Throwable error) {

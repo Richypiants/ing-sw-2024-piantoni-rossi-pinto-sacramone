@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 //FIXME: consider removing some Platform.runLater() and restricting some of them to necessary actions only
 public class GUIView extends View {
@@ -161,9 +162,13 @@ public class GUIView extends View {
 
     @Override
     public void disconnectedScreen() {
+        AtomicReference<OverlayPopup> reconnectingPopup = new AtomicReference<>();
+
+        //TODO: centrare il popup
         Platform.runLater(() -> {
             VBox reconnectingPopupContent = new VBox();
             reconnectingPopupContent.getStyleClass().add("decoratedPopup");
+            reconnectingPopupContent.setPrefSize(600, 350);
 
             Label reconnectingLabel = new Label("Connection to server lost: trying to reconnect...");
             reconnectingLabel.getStyleClass().add("popupText");
@@ -177,13 +182,25 @@ public class GUIView extends View {
             VBox.setMargin(reconnectingLabel, new Insets(30, 30, 0, 30));
             VBox.setMargin(exitButton, new Insets(0, 0, 30, 0));
 
-            OverlayPopup reconnectingPopup = drawOverlayPopup(reconnectingPopupContent, false);
+            reconnectingPopup.set(drawOverlayPopup(reconnectingPopupContent, false));
 
             exitButton.setOnMouseClicked((event) -> ViewState.getCurrentState().quit());
 
-            reconnectingPopup.centerOnScreen();
-            reconnectingPopup.show(stage);
+            reconnectingPopup.get().centerOnScreen();
+            reconnectingPopup.get().show(stage);
         });
+
+        new Thread(() -> {
+            synchronized (CLIENT_CONTROLLER.CLIENT.DISCONNECTED_LOCK) {
+                try {
+                    CLIENT_CONTROLLER.CLIENT.DISCONNECTED_LOCK.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            Platform.runLater(() -> reconnectingPopup.get().hide());
+        }).start();
     }
 
     @Override

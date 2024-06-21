@@ -113,7 +113,6 @@ public class GUILobbiesView extends GUIView {
             BACK_TO_TITLE_SCREEN_BUTTON.setPrefSize(300, 50);
             BACK_TO_TITLE_SCREEN_BUTTON.setOnAction(event -> ViewState.getCurrentState().quit());
 
-            //FIXME: we might want to reskin LOBBIES_PANE's scrollbar...
             LOBBIES_PANE.setPrefSize(screenSizes.getX() * 89 / 100 - 320, screenSizes.getY() * 13 / 16);
             LOBBIES_PANE.relocate(screenSizes.getX() * 9 / 100 + 320, (screenSizes.getY() - LOBBIES_PANE.getPrefHeight()) / 2);
 
@@ -121,12 +120,18 @@ public class GUILobbiesView extends GUIView {
             LOBBIES_LIST.setPrefWidth(LOBBIES_PANE.getPrefWidth() * 98 / 100);
             LOBBIES_LIST.getChildren().clear();
 
-            if (VIEWMODEL.inRoom())
-                LOBBIES_LIST.getChildren().add(createLobbyListElement(VIEWMODEL.getCurrentLobby()));
+            //FIXME: brutto...
+            Lobby currentLobby;
+            try {
+                currentLobby = VIEWMODEL.getCurrentLobby();
+                if (VIEWMODEL.inRoom() && currentLobby != null)
+                    LOBBIES_LIST.getChildren().add(createLobbyListElement(currentLobby));
 
-            for (var lobby : VIEWMODEL.getLobbies().values()) {
-                if (!lobby.equals(VIEWMODEL.getCurrentLobby()))
-                    LOBBIES_LIST.getChildren().add(createLobbyListElement(lobby));
+                for (var lobby : VIEWMODEL.getLobbies().values()) {
+                    if (!lobby.equals(currentLobby))
+                        LOBBIES_LIST.getChildren().add(createLobbyListElement(lobby));
+                }
+            } catch (ClassCastException ignored) {
             }
 
             stage.getScene().setRoot(SCENE_ROOT);

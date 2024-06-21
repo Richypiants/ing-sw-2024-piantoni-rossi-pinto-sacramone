@@ -76,7 +76,7 @@ public class SocketClient implements VirtualServer {
                 try {
                     SINGLETON_SOCKET_CLIENT = new SocketClient();
                 } catch (IOException e) {
-                    Client.getClientInstance().resetClient();
+                    //Client.getClientInstance().resetClient();
                     ClientController.getInstance().ERROR_LOGGER.log(e);
                 }
             }
@@ -90,6 +90,7 @@ public class SocketClient implements VirtualServer {
     public void close() {
         SINGLETON_SOCKET_CLIENT = null;
         serverHandler.close();
+        Client.getClientInstance().serverConnection = null;
     }
 
     /**

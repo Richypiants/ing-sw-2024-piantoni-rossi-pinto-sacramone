@@ -63,6 +63,8 @@ public class ClientController implements ClientControllerInterface {
     public void setLobbies(Map<UUID, Lobby> lobbies) {
         VIEWMODEL.setLobbies(lobbies);
         if (!(ViewState.getCurrentState() instanceof LeaderboardScreenState)) {
+            VIEWMODEL.leaveRoom();
+
             LobbiesScreenState newState = new LobbiesScreenState();
             ViewState.setCurrentState(newState);
             newState.executeState();
@@ -100,7 +102,7 @@ public class ClientController implements ClientControllerInterface {
     public void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD) {
         for(var playerEntry : PLAYERS_FIELD.entrySet()) {
             var clientPlayerInstance = gameDTO.getPlayers().stream()
-                    .filter( (player) -> player.getNickname().equals(playerEntry.getKey())).findFirst().orElseThrow();
+                    .filter((player) -> player.getNickname().equals(playerEntry.getKey())).findFirst().orElseThrow();
 
             for (var fieldEntry : PLAYERS_FIELD.get(playerEntry.getKey()).sequencedEntrySet())
                 clientPlayerInstance.placeCard(fieldEntry.getKey(), ViewModel.CARDS_LIST.get(fieldEntry.getValue().getX()), fieldEntry.getValue().getY());

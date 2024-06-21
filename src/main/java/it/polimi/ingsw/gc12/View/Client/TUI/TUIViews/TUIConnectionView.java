@@ -25,18 +25,20 @@ public class TUIConnectionView extends TUIView {
     }
 
     private String readUntil(Ansi prompt, List<String> validInput) {
-        String selection;
-        do {
-            clearTerminal();
-            System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN)
-                    .eraseLine(Ansi.Erase.FORWARD)
-            );
-            printToPosition(ansi().a(prompt));
-            selection = console.readLine();
-            if (selection != null)
+        String selection = null;
+        try {
+            do {
+                clearTerminal();
+                System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN)
+                        .eraseLine(Ansi.Erase.FORWARD)
+                );
+                printToPosition(ansi().a(prompt));
+                selection = console.readLine();
                 selection = selection.trim().toLowerCase();
-            //FIXME: ???
-        } while (!validInput.contains(selection));
+            } while (!validInput.contains(selection));
+        } catch (Exception e) {
+            System.exit(-1);
+        }
 
         return selection;
     }

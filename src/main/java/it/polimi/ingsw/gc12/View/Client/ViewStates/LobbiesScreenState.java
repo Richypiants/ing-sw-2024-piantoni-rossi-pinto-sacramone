@@ -63,18 +63,20 @@ public class LobbiesScreenState extends ViewState {
 
     @Override
     public void quit() {
-        if (CLIENT_CONTROLLER.VIEWMODEL.inRoom())
-            CLIENT.requestToServer(new LeaveLobbyCommand(true));
-        synchronized (CLIENT) {
-            try {
-                selectedView.quittingScreen();
-                //Notified by CLIENT.requestToServer() function, which gets executed in another thread
-                CLIENT.wait();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e); //Should never happen
+        new Thread(() -> {
+            synchronized (CLIENT) {
+                try {
+                    if (CLIENT_CONTROLLER.VIEWMODEL.inRoom())
+                        CLIENT.requestToServer(new LeaveLobbyCommand(true));
+                    selectedView.quittingScreen();
+                    //Notified by CLIENT.requestToServer() function, which gets executed in another thread
+                    CLIENT.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e); //Should never happen
+                }
             }
-        }
-        super.quit();
+            super.quit();
+        });
     }
 
     @Override

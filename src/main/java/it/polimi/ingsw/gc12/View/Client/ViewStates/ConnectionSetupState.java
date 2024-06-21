@@ -2,9 +2,6 @@ package it.polimi.ingsw.gc12.View.Client.ViewStates;
 
 import it.polimi.ingsw.gc12.Commands.KeepAliveCommand;
 import it.polimi.ingsw.gc12.Commands.ServerCommands.CreatePlayerCommand;
-import it.polimi.ingsw.gc12.Controller.Client.ClientController;
-import it.polimi.ingsw.gc12.Network.Client.RMIClientSkeleton;
-import it.polimi.ingsw.gc12.Network.Client.SocketClient;
 
 import static java.lang.Thread.sleep;
 
@@ -20,6 +17,8 @@ public class ConnectionSetupState extends ViewState {
 
     @Override
     public void connect(String serverIPAddress, String communicationTechnology, String nickname) {
+        boolean isDisconnected;
+
         synchronized (this) {
             do {
                 CLIENT.setupCommunication(serverIPAddress, communicationTechnology);
@@ -30,7 +29,12 @@ public class ConnectionSetupState extends ViewState {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e); //Should never happen
                 }
-                if (CLIENT.serverConnection == null)
+
+                synchronized (CLIENT.DISCONNECTED_LOCK) {
+                    isDisconnected = CLIENT.disconnected;
+                }
+
+                if (CLIENT.serverConnection == null && !isDisconnected)
                     if (!selectedView.retryConnectionPrompt(true)) {
                         selectedView.quittingScreen();
                         System.exit(0);
@@ -50,8 +54,13 @@ public class ConnectionSetupState extends ViewState {
             }
         }
 
-        if (CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname().isEmpty()) {
+        synchronized (CLIENT.DISCONNECTED_LOCK) {
+            isDisconnected = CLIENT.disconnected;
+        }
+
+        if (CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname().isEmpty() && !isDisconnected) {
             if (selectedView.retryConnectionPrompt(false)) {
+                CLIENT_CONTROLLER.VIEWMODEL.clearModel();
                 currentState = new TitleScreenState();
                 currentState.executeState();
             } else {
@@ -69,6 +78,7 @@ public class ConnectionSetupState extends ViewState {
         }
 
         CLIENT.keepAlive = new Thread(() -> {
+            CLIENT.disconnected = true;
             while (true) {
                 CLIENT.requestToServer(new KeepAliveCommand());
                 synchronized (CLIENT.DISCONNECTED_LOCK) {
@@ -76,7 +86,8 @@ public class ConnectionSetupState extends ViewState {
                         CLIENT.DISCONNECTED_LOCK.wait(15000);
                         if (CLIENT.disconnected) {
                             selectedView.disconnectedScreen();
-                            tryReconnection();
+                            (new Thread(this::tryReconnection)).start();
+                            break;
                         } else
                             CLIENT.disconnected = true;
                     } catch (InterruptedException e) {
@@ -98,30 +109,9 @@ public class ConnectionSetupState extends ViewState {
 
     private void tryReconnection() {
         String ownNickname = CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname();
-        while (true) {
-            CLIENT_CONTROLLER.VIEWMODEL.clearModel();
-            try {
-                if (CLIENT.session != null) {
-                    ((RMIClientSkeleton) CLIENT.session).close();
-                    CLIENT.session = RMIClientSkeleton.getInstance();
-                } else if (CLIENT.serverConnection != null) {
-                    CLIENT.serverConnection.close();
-                    CLIENT.serverConnection = SocketClient.getInstance();
-                }
-            } catch (Exception e) {
-                ClientController.getInstance().ERROR_LOGGER.log(e);
-            }
-            CLIENT.requestToServer(new CreatePlayerCommand(ownNickname));
-            try {
-                CLIENT.DISCONNECTED_LOCK.wait(15000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            if (!CLIENT.disconnected) {
-                CLIENT.disconnected = true;
-                break;
-            }
-        }
+        CLIENT_CONTROLLER.VIEWMODEL.clearModel();
+        ViewState.setCurrentState(new ConnectionSetupState());
+        ViewState.getCurrentState().connect(CLIENT.serverIPAddress, CLIENT.communicationTechnology, ownNickname);
     }
 
     @Override

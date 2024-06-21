@@ -27,6 +27,8 @@ public class Client {
     private ExecutorService commandSenderExecutor;
 
     public String serverIPAddress;
+    public String communicationTechnology;
+
     public VirtualServer serverConnection;
     public NetworkSession session;
     public Thread keepAlive;
@@ -58,7 +60,7 @@ public class Client {
         this.session = null;
         this.serverIPAddress = "localhost";
         this.keepAlive = null;
-        this.disconnected = true;
+        this.disconnected = false;
 
         if (commandSenderExecutor != null)
             this.commandSenderExecutor.shutdownNow();
@@ -67,11 +69,25 @@ public class Client {
 
     public void setupCommunication(String serverIPAddress, String communicationTechnology) {
         Client.getClientInstance().serverIPAddress = serverIPAddress;
+        Client.getClientInstance().communicationTechnology = communicationTechnology;
         commandSenderExecutor.submit(() -> {
             synchronized (ViewState.getCurrentState()) {
                 switch (communicationTechnology.trim().toLowerCase()) {
-                    case "socket" -> Client.getClientInstance().serverConnection = SocketClient.getInstance();
-                    case "rmi" -> Client.getClientInstance().session = RMIClientSkeleton.getInstance();
+                    case "socket" -> {
+                        if (serverConnection != null) {
+                            try {
+                                serverConnection.close();
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        Client.getClientInstance().serverConnection = SocketClient.getInstance();
+                    }
+                    case "rmi" -> {
+                        if (session != null)
+                            ((RMIClientSkeleton) session).close();
+                        Client.getClientInstance().session = RMIClientSkeleton.getInstance();
+                    }
                     default ->
                             ViewState.printError(new RuntimeException("Communication technology " + communicationTechnology + " not supported"));
                 }
@@ -84,12 +100,13 @@ public class Client {
         commandSenderExecutor.submit(() -> {
             try {
                 serverConnection.requestToServer(command);
+            } catch (Exception e) {
+                ClientController.getInstance().ERROR_LOGGER.log(e);
+            } finally {
                 //This notified is needed to make the Client exit from the quittingScreen when quitting
                 synchronized (this) {
                     this.notifyAll();
                 }
-            } catch (Exception e) {
-                ClientController.getInstance().ERROR_LOGGER.log(e);
             }
         });
     }
