@@ -97,7 +97,7 @@ public abstract class ServerController implements ServerControllerInterface {
         sender.getTimeoutTask().cancel();
         renewTimeoutTimerTask(sender);
 
-        if (sender.getPlayer() instanceof InGamePlayer targetPlayer && targetPlayer.isActive())
+        if (!(sender.getPlayer() instanceof InGamePlayer targetPlayer) || targetPlayer.isActive())
             sender.getListener().notified(new KeepAliveCommand());
     }
 
