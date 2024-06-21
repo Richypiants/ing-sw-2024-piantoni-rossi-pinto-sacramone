@@ -38,7 +38,6 @@ public abstract class GameScreenState extends ViewState {
         CLIENT.requestToServer(new DirectMessageCommand(receiverNickname, message));
     }
 
-    //TODO: could show message timestamp (only when on receiving, so that it corresponds to the local timezone or local machine's clock)
     @Override
     public void showReceivedChatMessage(String message) {
         if (message.length() < 90)

@@ -37,8 +37,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -59,6 +61,7 @@ public class GUIGameView extends GUIView {
 
     private ClientGame thisGame = null;
     private ClientPlayer thisPlayer = null;
+    private final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH-mm-ss");
 
     private final ArrayList<GenericPair<Double, Double>> RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS;
 
@@ -940,6 +943,8 @@ public class GUIGameView extends GUIView {
                 String fullMessage = chatLog.getLast();
                 if (chatLog.size() >= 2 && !(chatLog.getLast().startsWith("[") || chatLog.getLast().startsWith("<")))
                     fullMessage = chatLog.get(chatLog.size() - 2) + fullMessage;
+
+                fullMessage = "[" + TIMESTAMP_FORMATTER.format(new Date()) + "] " + fullMessage;
 
                 MESSAGES_BOX.getChildren().add(createMessageElement(fullMessage));
             }

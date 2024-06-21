@@ -147,7 +147,6 @@ public class GUIView extends View {
 
     @Override
     public void connectedConfirmation() {
-        //TODO: maybe consider deleting this for TUI also?
     }
 
     @Override
@@ -164,7 +163,6 @@ public class GUIView extends View {
     public void disconnectedScreen() {
         AtomicReference<OverlayPopup> reconnectingPopup = new AtomicReference<>();
 
-        //TODO: centrare il popup
         Platform.runLater(() -> {
             VBox reconnectingPopupContent = new VBox();
             reconnectingPopupContent.getStyleClass().add("decoratedPopup");

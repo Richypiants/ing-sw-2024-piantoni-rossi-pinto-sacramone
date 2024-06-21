@@ -2,50 +2,57 @@
 
 ## Codex Naturalis
 
-<img src="https://m.media-amazon.com/images/I/814qEh0JKdS._AC_SX679_.jpg" width=192px height=192 px align="right" />
+<img alt="Codex Naturalis game logo" src="https://m.media-amazon.com/images/I/814qEh0JKdS._AC_SX679_.jpg" width=192px height=192 px align="right" />
 
 Official game site: [**CranioCreations**](https://www.craniocreations.it/prodotto/codex-naturalis).
 
-[**Game rules**](FIleReadMe/CODEX_Rulebook_EN.pdf)
+[**Game rules** (EN)](FIleReadMe/CODEX_Rulebook_EN.pdf)
+[**Game rules** (IT)](FIleReadMe/CODEX_Rulebook_IT.pdf)
 
-**Codex Naturalis** game following the conclusion of the **Software Engineering** course in the Computer Science and
+Software Engineering group project following the conclusion of the **Software Engineering** course in the Computer
+Science and
 Engineering Bachelor's Degree at Politecnico di Milano (2023/2024).
 
-Teacher: Cugola Gianpaolo.
+Teacher: Cugola Gianpaolo
 
 ## Project specification
 
-The project consists of a Java version of the board game **Codex Naturalis**, made by Cranio creation.
+The project consists of a Java version of the board game **Codex Naturalis**, made by Cranio Creations.
 
-[**Project Requirements**](FIleReadMe/requirements.pdf)
+[**Project requirements**](FIleReadMe/requirements.pdf)
 
 **The final version of the game includes:**
 
-* initial UML diagram;
-* final UML diagram, generated from the code by automated tools;
+* high-level, general UML diagram;
+* detailed UML diagram, generated from the code by automated tools;
 * working game implementation;
 * source code of the implementation;
 * source code of tests.
 
 ### List of functionalities:
 
-| Functionality                | Status |
-|:-----------------------------|:------:|
-| Basic rules                  |   ✅    |
-| Complete rules               |   ✅    |
-| Socket                       |   ✅    |
-| RMI                          |   ✅    |
-| GUI                          |   ✅    |
-| TUI                          |   ✅    |
-| Multiple games               |   ✅    |
-| Resilience to disconnections |   ✅    |
-| Chat                         |   ✅    |
-| Persistence                  |   ⛔    |
+| Functionality                | Implemented |
+|:-----------------------------|:-----------:|
+| Basic rules                  |      ✅      |
+| Complete rules               |      ✅      |
+| Socket                       |      ✅      |
+| RMI                          |      ✅      |
+| TUI                          |      ✅      |
+| GUI                          |      ✅      |
+| Multiple games               |      ✅      |
+| Resilience to disconnections |      ✅      |
+| Chat                         |      ✅      |
+| Persistence                  |      ⛔      |
 
-## Software  used:
+## Software used:
 
-* **Intellij IDEA Ultimate** - main IDE
-* **Lucid charts** - UML diagrams
+* [**Intellij IDEA Ultimate** (Educational license)](https://www.jetbrains.com/idea/) - main IDE for development
+* [**LucidChart** (EDU license)](https://www.lucidchart.com/pages/it) - online tool for composing UML diagrams
+
+### External libraries:
+
+* [**Gson**](https://github.com/google/gson) - for (de)serialization of JSON resources
+* [**Jansi**](https://github.com/fusesource/jansi) - for TUI rendering
 
 Authors: 
 - Piantoni Riccardo
