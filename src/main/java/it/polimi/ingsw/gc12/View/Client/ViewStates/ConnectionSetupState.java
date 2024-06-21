@@ -19,13 +19,13 @@ public class ConnectionSetupState extends ViewState {
     public void connect(String serverIPAddress, String communicationTechnology, String nickname) {
         boolean isDisconnected;
 
-        synchronized (this) {
+        synchronized (ViewState.class) {
             do {
                 CLIENT.setupCommunication(serverIPAddress, communicationTechnology);
                 try {
                     //Wait 5 seconds before asking whether to retry connecting to the server.
                     //Notified by SocketClient or RMIClientSkeleton when they successfully establish a connection
-                    this.wait(5000);
+                    ViewState.class.wait(25000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e); //Should never happen
                 }
@@ -46,9 +46,9 @@ public class ConnectionSetupState extends ViewState {
 
         //We use the wait timeout to handle both a network error and the notification of a nickname already in use.
         //This wait(...) gets notified by the updateNickname function below.
-        synchronized (this) {
+        synchronized (ViewState.class) {
             try {
-                this.wait(5000);
+                ViewState.class.wait(5000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e); //Should never happen
             }
@@ -73,8 +73,8 @@ public class ConnectionSetupState extends ViewState {
     @Override
     public void updateNickname() {
         selectedView.connectedConfirmation();
-        synchronized (this) {
-            this.notifyAll();
+        synchronized (ViewState.class) {
+            ViewState.class.notifyAll();
         }
 
         CLIENT.keepAlive = new Thread(() -> {

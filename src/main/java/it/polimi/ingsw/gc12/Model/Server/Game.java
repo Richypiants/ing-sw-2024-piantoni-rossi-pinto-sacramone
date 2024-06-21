@@ -400,7 +400,7 @@ public class Game extends Room implements Listenable {
     /**
      * Draws a card from the specified deck at a given position and replaces it with a new card from the appropriate deck.
      * If the deck to draw from is empty, the position in the deck will be set to null.
-     *
+     * <p>
      * Notifies all the listeners with a {@link ReplaceCardsCommand}.
      *
      * @param deck     The array of visible cards from which to draw.
@@ -436,7 +436,7 @@ public class Game extends Room implements Listenable {
 
     /**
      * Peeks at the top card of the specified deck without removing it.
-     *
+     * <p>
      * Notifies all the listeners with a {@link ReplaceCardsCommand} showing the top card of the deck.
      *
      * @param deck The deck to peek from.
@@ -453,7 +453,7 @@ public class Game extends Room implements Listenable {
 
     /**
      * Toggles the active status of the specified player.
-     *
+     * <p>
      * This method changes the player's active status to its opposite (active to inactive or inactive to active)
      * and notifies listeners of this change with a {@link ToggleActiveCommand}.
      *
@@ -467,7 +467,7 @@ public class Game extends Room implements Listenable {
 
     /**
      * Adds a listener to the list of game listeners.
-     *
+     * <p>
      * This method ensures thread-safe addition of listeners to the list.
      *
      * @param listener The listener to be added.
@@ -481,7 +481,7 @@ public class Game extends Room implements Listenable {
 
     /**
      * Removes a listener from the list of game listeners.
-     *
+     * <p>
      * This method ensures thread-safe removal of listeners from the list.
      *
      * @param listener The listener to be removed.
@@ -495,7 +495,7 @@ public class Game extends Room implements Listenable {
 
     /**
      * Notifies all registered listeners with the specified command.
-     *
+     * <p>
      * This method ensures thread-safe iteration over the listeners list while notifying them.
      *
      * @param command The command to be sent to all listeners.

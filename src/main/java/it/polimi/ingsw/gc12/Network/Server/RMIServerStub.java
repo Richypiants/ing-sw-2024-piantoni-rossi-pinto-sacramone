@@ -40,6 +40,7 @@ public class RMIServerStub extends NetworkSession implements RMIVirtualServer {
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("[SOCKET]: New connection accepted from {" + client + "}");
     }
 
     /**

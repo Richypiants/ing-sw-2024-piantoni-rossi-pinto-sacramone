@@ -43,9 +43,9 @@ public class SocketClient implements VirtualServer {
 
         //If connection to the server is successful no exception is thrown; the program can get to the following line
         // and I wake up the ConnectionSetupState.connect() function, which has been continuously retrying to reconnect
-        // every 10 seconds
-        synchronized (ViewState.getCurrentState()) {
-            ViewState.getCurrentState().notifyAll();
+        // every 5 seconds
+        synchronized (ViewState.class) {
+            ViewState.class.notifyAll();
         }
 
         serverHandler = new SocketServerHandler(socket, ClientController.getInstance());
@@ -76,7 +76,6 @@ public class SocketClient implements VirtualServer {
                 try {
                     SINGLETON_SOCKET_CLIENT = new SocketClient();
                 } catch (IOException e) {
-                    //Client.getClientInstance().resetClient();
                     ClientController.getInstance().ERROR_LOGGER.log(e);
                 }
             }

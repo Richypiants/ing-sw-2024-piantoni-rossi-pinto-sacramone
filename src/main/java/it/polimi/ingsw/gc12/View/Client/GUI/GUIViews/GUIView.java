@@ -188,15 +188,17 @@ public class GUIView extends View {
 
             reconnectingPopup.get().centerOnScreen();
             reconnectingPopup.get().show(stage);
+            GUIGameView.getInstance().shouldReset = true;
         });
 
         new Thread(() -> {
             synchronized (CLIENT_CONTROLLER.CLIENT.DISCONNECTED_LOCK) {
-                try {
-                    CLIENT_CONTROLLER.CLIENT.DISCONNECTED_LOCK.wait();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                while (CLIENT_CONTROLLER.CLIENT.disconnected)
+                    try {
+                        CLIENT_CONTROLLER.CLIENT.DISCONNECTED_LOCK.wait();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
             }
 
             Platform.runLater(() -> reconnectingPopup.get().hide());

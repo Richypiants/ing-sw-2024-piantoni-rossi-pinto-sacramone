@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc12.Commands.KeepAliveCommand;
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
 import it.polimi.ingsw.gc12.Controller.ServerControllerInterface;
 import it.polimi.ingsw.gc12.Model.Player;
+import it.polimi.ingsw.gc12.Model.Server.InGamePlayer;
 import it.polimi.ingsw.gc12.Model.Server.ServerModel;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Utilities.Enums.Color;
@@ -96,7 +97,8 @@ public abstract class ServerController implements ServerControllerInterface {
         sender.getTimeoutTask().cancel();
         renewTimeoutTimerTask(sender);
 
-        sender.getListener().notified(new KeepAliveCommand());
+        if (sender.getPlayer() instanceof InGamePlayer targetPlayer && targetPlayer.isActive())
+            sender.getListener().notified(new KeepAliveCommand());
     }
 
     protected void generatePlayer(NetworkSession sender, String nickname) {

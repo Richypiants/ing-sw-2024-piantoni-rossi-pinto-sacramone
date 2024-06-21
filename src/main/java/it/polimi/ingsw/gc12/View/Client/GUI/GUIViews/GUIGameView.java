@@ -89,7 +89,7 @@ public class GUIGameView extends GUIView {
     private final AnchorPane DECKS_AND_VISIBLE_CARDS_PANE;
     private final Label GOLD_CARDS_LABEL;
     private final HBox GOLD_CARDS_HBOX;
-    private boolean shouldReset = true;
+    protected boolean shouldReset = true;
     private final HBox COMMON_OBJECTIVES_HBOX;
     private final HBox SECRET_OBJECTIVE_HBOX;
     private OverlayPopup openedAwaitingPopup = null;

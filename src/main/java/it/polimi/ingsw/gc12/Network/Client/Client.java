@@ -71,16 +71,11 @@ public class Client {
         Client.getClientInstance().serverIPAddress = serverIPAddress;
         Client.getClientInstance().communicationTechnology = communicationTechnology;
         commandSenderExecutor.submit(() -> {
-            synchronized (ViewState.getCurrentState()) {
+            synchronized (ViewState.class) {
                 switch (communicationTechnology.trim().toLowerCase()) {
                     case "socket" -> {
-                        if (serverConnection != null) {
-                            try {
-                                serverConnection.close();
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
+                        if (serverConnection != null)
+                            serverConnection.close();
                         Client.getClientInstance().serverConnection = SocketClient.getInstance();
                     }
                     case "rmi" -> {

@@ -40,9 +40,6 @@ public interface VirtualServer {
      * <p>
      * Implementations of this method should encapsulate the details of how the communication
      * channel is closed, such as releasing resources and terminating connections.
-     * </p>
-     *
-     * @throws Exception if an error occurs while closing the communication channel.
      */
-    void close() throws Exception;
+    void close();
 }

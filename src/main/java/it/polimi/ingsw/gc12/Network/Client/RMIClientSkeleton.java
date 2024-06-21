@@ -22,29 +22,29 @@ import java.rmi.server.UnicastRemoteObject;
 public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClient {
 
     /**
+     * The singleton instance of the RMIClientSkeleton.
+     */
+    private static RMIClientSkeleton SINGLETON_RMI_CLIENT = null;
+
+    /**
      * Constructs a new {@code RMIClientSkeleton} instance.
      *
      * @param controller The controller interface for managing client operations.
      */
-    private RMIClientSkeleton(ControllerInterface controller) {
+    private RMIClientSkeleton(ControllerInterface controller) throws RemoteException, NotBoundException {
         super(controller);
-        try {
-            //FIXME: remove IP!
-            System.setProperty("java.rmi.server.hostname", "25.29.84.173");
+        //FIXME: remove IP!
+        System.setProperty("java.rmi.server.hostname", "25.29.84.173");
 
-            Registry registry = LocateRegistry.getRegistry(Client.getClientInstance().serverIPAddress, 5001);
-            UnicastRemoteObject.exportObject(this, 0);
-            Client.getClientInstance().serverConnection =
-                    ((RMIMainServer) registry.lookup("codex_naturalis_rmi")).accept(this);
+        Registry registry = LocateRegistry.getRegistry(Client.getClientInstance().serverIPAddress, 5001);
+        UnicastRemoteObject.exportObject(this, 0);
+        Client.getClientInstance().serverConnection =
+                ((RMIMainServer) registry.lookup("codex_naturalis_rmi")).accept(this);
 
-            //If connection to the server is successful no exception is thrown; the program can get to the following line
-            // and I wake up the connect() function, which has been continuously retrying to reconnect every 10 seconds
-            synchronized (ViewState.getCurrentState()) {
-                ViewState.getCurrentState().notifyAll();
-            }
-        } catch (RemoteException | NotBoundException e) {
-            //Client.getClientInstance().resetClient();
-            ClientController.getInstance().ERROR_LOGGER.log(e);
+        //If connection to the server is successful no exception is thrown; the program can get to the following line
+        // and I wake up the connect() function, which has been continuously retrying to reconnect every 5 seconds
+        synchronized (ViewState.class) {
+            ViewState.class.notifyAll();
         }
     }
 
@@ -54,7 +54,16 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
      * @return The instance of RMIClientSkeleton.
      */
     public static RMIClientSkeleton getInstance() {
-        return new RMIClientSkeleton(ClientController.getInstance());
+        synchronized (RMIClientSkeleton.class) {
+            if (SINGLETON_RMI_CLIENT == null) {
+                try {
+                    SINGLETON_RMI_CLIENT = new RMIClientSkeleton(ClientController.getInstance());
+                } catch (RemoteException | NotBoundException e) {
+                    ClientController.getInstance().ERROR_LOGGER.log(e);
+                }
+            }
+            return SINGLETON_RMI_CLIENT;
+        }
     }
 
     /**
@@ -95,6 +104,7 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
         } catch (NoSuchObjectException ignored) {
             //Already unexported? Not a problem, we don't care
         } finally {
+            SINGLETON_RMI_CLIENT = null;
             Client.getClientInstance().session = null;
             Client.getClientInstance().serverConnection = null;
         }
