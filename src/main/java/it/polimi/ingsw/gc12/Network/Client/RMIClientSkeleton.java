@@ -34,7 +34,7 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
     private RMIClientSkeleton(ControllerInterface controller) throws RemoteException, NotBoundException {
         super(controller);
         //FIXME: remove IP!
-        System.setProperty("java.rmi.server.hostname", "25.29.84.173");
+        //System.setProperty("java.rmi.server.hostname", ipClient);
 
         Registry registry = LocateRegistry.getRegistry(Client.getClientInstance().serverIPAddress, 5001);
         UnicastRemoteObject.exportObject(this, 0);
