@@ -28,7 +28,9 @@ public interface RMIVirtualServer extends Remote, VirtualServer {
      * <p>
      * Due to the internal implementation of RMI, a channel cannot be directly closed, but this method has to be implemented
      * to guarantee consistency and adherence with the {@code VirtualServer} interface contract.
+     * </p>
+     * @throws RemoteException if there is a communication-related exception.
      */
     @Override
-    void close();
+    void close() throws RemoteException;
 }

@@ -76,7 +76,7 @@ public class LobbiesScreenState extends ViewState {
                 }
             }
             super.quit();
-        });
+        }).start();
     }
 
     @Override

@@ -149,4 +149,12 @@ public abstract class NetworkSession implements Serializable {
      * @return The listener associated with the session.
      */
     protected abstract NetworkListener createListener(NetworkSession session);
+
+    /**
+     * Closes the communication channel of this NetworkSession.
+     * <p>
+     * Implementations of this method should encapsulate the details of how the communication
+     * channel is closed, such as releasing resources and terminating connections.
+     */
+    public abstract void close();
 }

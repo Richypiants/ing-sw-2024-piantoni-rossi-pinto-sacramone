@@ -80,10 +80,6 @@ public class RMIServerStub extends NetworkSession implements RMIVirtualServer {
 
     /**
      * Closes the communication over the RMI channel.
-     * <p>
-     * Due to the internal implementation of RMI, a channel cannot be directly closed, but this method has to be implemented
-     * to guarantee consistency and adherence with the {@code RMIVirtualServer} interface contract.
-     * <\p>
      */
     @Override
     public void close() {

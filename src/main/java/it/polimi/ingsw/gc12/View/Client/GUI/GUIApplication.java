@@ -8,6 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -18,6 +19,13 @@ public class GUIApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException, InterruptedException {
+        //FIXME: are these all needed?
+        Font.loadFont(GUIApplication.class.getResourceAsStream("/Client/fonts/MedievalSharp-Regular.ttf"), 16);
+        Font.loadFont(GUIApplication.class.getResourceAsStream("/Client/fonts/MedievalSharp-Regular.ttf"), 18);
+        Font.loadFont(GUIApplication.class.getResourceAsStream("/Client/fonts/MedievalSharp-Regular.ttf"), 20);
+        Font.loadFont(GUIApplication.class.getResourceAsStream("/Client/fonts/MedievalSharp-Regular.ttf"), 22);
+        Font.loadFont(GUIApplication.class.getResourceAsStream("/Client/fonts/MedievalSharp-Regular.ttf"), 24);
+
         stage.setFullScreen(true);
         stage.setResizable(false);
         GUIView.stage = stage;

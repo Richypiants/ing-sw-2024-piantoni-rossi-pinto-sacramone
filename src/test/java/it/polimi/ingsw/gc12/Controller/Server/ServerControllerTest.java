@@ -51,6 +51,10 @@ public class ServerControllerTest {
                         new VirtualClientImpl()
                 );
             }
+
+            @Override
+            public void close() {
+            }
         };
         session.scheduleTimeoutTimerTask(new TimerTask() {
             @Override

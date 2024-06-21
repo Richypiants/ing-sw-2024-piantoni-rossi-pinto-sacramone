@@ -30,6 +30,10 @@ class GameControllerTest {
                         new ServerControllerTest.VirtualClientImpl()
                 );
             }
+
+            @Override
+            public void close() {
+            }
         };
         session.scheduleTimeoutTimerTask(new TimerTask() {
             @Override

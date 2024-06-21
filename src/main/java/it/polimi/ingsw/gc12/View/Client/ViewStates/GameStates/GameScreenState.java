@@ -63,7 +63,7 @@ public abstract class GameScreenState extends ViewState {
                 }
             }
             super.quit();
-        });
+        }).start();
     }
 
     public abstract void transition();

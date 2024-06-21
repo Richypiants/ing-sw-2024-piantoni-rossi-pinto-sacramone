@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc12.Model.Player;
 import it.polimi.ingsw.gc12.Utilities.Enums.Side;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
+import it.polimi.ingsw.gc12.View.Client.GUI.GUIApplication;
 import it.polimi.ingsw.gc12.View.Client.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.View.Client.ViewStates.GameStates.AwaitingReconnectionState;
 import it.polimi.ingsw.gc12.View.Client.ViewStates.GameStates.PlayerTurnPlayState;
@@ -34,6 +35,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -552,6 +554,8 @@ public class GUIGameView extends GUIView {
             shouldReset = true;
         });
 
+        //FIXME: does this work?
+        GAME_STATE_LABEL.setFont(Font.loadFont(GUIApplication.class.getResourceAsStream("/Client/fonts/MedievalSharp-Regular.ttf"), 20));
         GAME_STATE_LABEL.setPrefSize(180, 150);
         GAME_STATE_LABEL.relocate(screenSizes.getX() * 34 / 100, screenSizes.getY() * 83.5 / 100);
 
@@ -967,6 +971,7 @@ public class GUIGameView extends GUIView {
 
             Label cardLabel = new Label("Choose which side you want to play your assigned initial card on: ");
             cardLabel.getStyleClass().add("popupText");
+            cardLabel.setStyle("-fx-font-size: 24;");
 
             HBox initialChoiceHBox = new HBox(100);
             initialChoiceHBox.setAlignment(Pos.CENTER);
@@ -1016,6 +1021,7 @@ public class GUIGameView extends GUIView {
 
             Label cardLabel = new Label("Choose which card you want to keep as your secret objective: ");
             cardLabel.getStyleClass().add("popupText");
+            cardLabel.setStyle("-fx-font-size: 24;");
 
             HBox objectiveChoiceHBox = new HBox(100);
             objectiveChoiceHBox.setAlignment(Pos.CENTER);

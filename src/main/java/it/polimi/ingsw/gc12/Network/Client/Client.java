@@ -47,7 +47,7 @@ public class Client {
     public void resetClient() {
         try {
             if (session != null) {
-                ((RMIClientSkeleton) session).close();
+                session.close();
             } else if (serverConnection != null) {
                 serverConnection.close();
             }
@@ -74,13 +74,18 @@ public class Client {
             synchronized (ViewState.class) {
                 switch (communicationTechnology.trim().toLowerCase()) {
                     case "socket" -> {
-                        if (serverConnection != null)
-                            serverConnection.close();
+                        if (serverConnection != null) {
+                            try {
+                                serverConnection.close();
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                         Client.getClientInstance().serverConnection = SocketClient.getInstance();
                     }
                     case "rmi" -> {
                         if (session != null)
-                            ((RMIClientSkeleton) session).close();
+                            session.close();
                         Client.getClientInstance().session = RMIClientSkeleton.getInstance();
                     }
                     default ->

@@ -26,8 +26,8 @@
     -fx-alignment: CENTER;
     -fx-text-alignment: JUSTIFY;
     -fx-wrap-text: true;
-    -fx-font-family: Castellar;
-    -fx-font-size: 16.0;
+    -fx-font-family: MedievalSharp;
+    -fx-font-size: 24;
 }
 
 .roundButton {
@@ -70,6 +70,8 @@
 }
 
 .lobbyBox {
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
     -fx-background-color: #B0E0E6;
     -fx-border-color: black;
     -fx-border-width: 1;
@@ -163,11 +165,11 @@
 
 #chatPane {
     -fx-background-radius: 10%;
-    -fx-background-color: #7E734B;
+    -fx-background-color: #5B5437;
 }
 
 #chatScrollPane {
-    -fx-background-color: white;
+    -fx-background-color: #AEA175;
 }
 
 #sendButton {
