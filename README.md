@@ -82,9 +82,9 @@ Download :
 * Complete the on-screen instructions to start a game -> Ensure to enter the IP address used by the server when you have
   to choose the IP to connect to.
 
-**IMPORTANT -->** : Once these steps are completed, you can play without any issues. However,<br> if your goal is to
-play as hosts not connected to the same network, you will need to use a VPN to create a virtual network (such
-as [Hamachi](https://vpn.net/)).
+**IMPORTANT -->** : If you aim to play with different devices over the net, you can achieve this by using a third-party
+software such as [Hamachi](https://vpn.net/), ZeroTier, Wireguard or properly set forward rules on the router where the
+server is located.
 
 ## Software used:
 
