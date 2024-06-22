@@ -21,7 +21,7 @@ import java.util.function.ToIntBiFunction;
 import static org.fusesource.jansi.Ansi.ansi;
 
 /**
- * The TUIGameView class represents the textual user interface (TUI) view for displaying the game
+ * The TUIGameView class represents the Textual User Interface (TUI) view for displaying the game
  * and all the details composing the game board.
  * <p>
  * This class handles the rendering of various game elements including player stats, cards, decks, opponent fields,
@@ -359,7 +359,7 @@ public class TUIGameView extends TUIView{
     }
 
     /**
-     * Prints the current chat log messages in the bottom-right corner of the screen.
+     * Prints the current chat log messages in the top-right corner of the screen.
      */
     @Override
     public void updateChat() {
@@ -557,6 +557,9 @@ public class TUIGameView extends TUIView{
 
     /**
      * Prints the leaderboard at the end of the game, showing player rankings and points.
+     *
+     * @param leaderboard List of triplets containing player names, scores, and ranks.
+     * @param gameEndedDueToDisconnections True if the game ended due to disconnections.
      */
     @Override
     public void leaderboardScreen(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
@@ -605,7 +608,7 @@ public class TUIGameView extends TUIView{
     }
 
     /**
-     * Prints the player's hand (front and back sides) in the bottom left corner of the screen.
+     * Prints the player's hand (front and back sides) in the center left part of the screen.
      */
     @Override
     public void showHand() {

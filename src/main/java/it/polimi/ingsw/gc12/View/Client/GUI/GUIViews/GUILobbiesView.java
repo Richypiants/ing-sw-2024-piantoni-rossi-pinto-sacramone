@@ -15,6 +15,10 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
+/**
+ * Singleton class representing the lobbies view in the Graphical User Interface (GUI).
+ * It extends the GUIView class and implements methods for displaying and interacting with the lobbies.
+ */
 public class GUILobbiesView extends GUIView {
 
     /**
@@ -78,6 +82,10 @@ public class GUILobbiesView extends GUIView {
         return lobbiesScreenController;
     }
 
+    /**
+     * Displays the lobbies screen, showing the player's nickname, the action buttons, the current lobby,
+     * and other active lobbies.
+     */
     @Override
     public void lobbiesScreen() {
         OverlayPopup.closeLingeringOpenedPopup();

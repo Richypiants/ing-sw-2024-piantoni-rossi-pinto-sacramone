@@ -16,6 +16,10 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Singleton class representing the title view in the Graphical User Interface (GUI).
+ * It extends the GUIView class and implements methods for displaying the title screen.
+ */
 public class GUITitleView extends GUIView {
 
     /**
@@ -58,6 +62,9 @@ public class GUITitleView extends GUIView {
         return titleScreenController;
     }
 
+    /**
+     * Displays the title screen with the logos animations, waits for user input to proceed, and transitions to the next view state.
+     */
     @Override
     public void titleScreen() {
         OverlayPopup.closeLingeringOpenedPopup();

@@ -24,16 +24,21 @@ import static org.fusesource.jansi.Ansi.ansi;
  */
 public class TUIView extends View {
 
-    /** Singleton instance of TUIView. */
-    private static TUIView SINGLETON_TUI_INSTANCE = null;
-
-    /** Instance of TUIParser for parsing user input commands. */
-    public static TUIParser listener;
-
-    /** Console instance for reading user input. */
+    /**
+     * Console instance for reading user input.
+     */
     public static final Console console = System.console();
-
-    /** Terminal size configuration (rows x columns).*/
+    /**
+     * Instance of TUIParser for parsing user input commands.
+     */
+    public static TUIParser listener;
+    /**
+     * Singleton instance of TUIView.
+     */
+    private static TUIView SINGLETON_TUI_INSTANCE = null;
+    /**
+     * Terminal size configuration (rows x columns).
+     */
     private final GenericPair<Integer, Integer> TERMINAL_SIZE = new GenericPair<>(49, 211); //x: rows, y:columns
 
     /**
@@ -227,22 +232,19 @@ public class TUIView extends View {
     }
 
     /**
+     * Displays the user's hand of cards.
+     */
+    @Override
+    public void showHand() {
+        TUIGameView.getInstance().showHand();
+    }
+
+    /**
      * Displays the common placed cards on the game board.
      */
     @Override
     public void showCommonPlacedCards(){
         TUIGameView.getInstance().showCommonPlacedCards();
-    }
-
-    /**
-     * Displays the leaderboard screen with the given points statistics.
-     *
-     * @param POINTS_STATS List of triplets containing player names, scores, and ranks.
-     * @param gameEndedDueToDisconnections True if the game ended due to disconnections.
-     */
-    @Override
-    public void leaderboardScreen(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
-        TUIGameView.getInstance().leaderboardScreen(POINTS_STATS, gameEndedDueToDisconnections);
     }
 
     /**
@@ -266,10 +268,13 @@ public class TUIView extends View {
     }
 
     /**
-     * Displays the user's hand of cards.
+     * Displays the leaderboard screen with the given points statistics.
+     *
+     * @param leaderboard List of triplets containing player names, scores, and ranks.
+     * @param gameEndedDueToDisconnections True if the game ended due to disconnections.
      */
     @Override
-    public void showHand() {
-        TUIGameView.getInstance().showHand();
+    public void leaderboardScreen(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
+        TUIGameView.getInstance().leaderboardScreen(leaderboard, gameEndedDueToDisconnections);
     }
 }

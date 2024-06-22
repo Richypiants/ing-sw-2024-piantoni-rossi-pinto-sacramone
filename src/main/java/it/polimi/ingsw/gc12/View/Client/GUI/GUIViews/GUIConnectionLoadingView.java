@@ -12,6 +12,10 @@ import javafx.scene.layout.VBox;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Singleton class representing the connection setup view in the Graphical User Interface (GUI).
+ * It extends the GUIView class and implements methods for handling connection establishment and retry prompts.
+ */
 public class GUIConnectionLoadingView extends GUIView {
 
     /**
@@ -60,6 +64,10 @@ public class GUIConnectionLoadingView extends GUIView {
         return connectionLoadingScreenController;
     }
 
+    /**
+     * Shows the loading screen while waiting for the connection to be established (if data is admissible), and
+     * prompts the current view state to start an attempt to connect to the server.
+     */
     @Override
     protected void connectionLoadingScreen() {
         OverlayPopup.closeLingeringOpenedPopup();
@@ -68,7 +76,6 @@ public class GUIConnectionLoadingView extends GUIView {
         VBox connectionSetupBox = (VBox) titleScreenPane.lookup("#connectionSetupBox");
 
         TextField nicknameField = (TextField) connectionSetupBox.lookup("#nicknameField");
-        //Label error = ((Label) stage.getScene().getRoot().lookup("#error"));
         TextField addressField = (TextField) connectionSetupBox.lookup("#addressField");
 
         if (nicknameField.getText().isEmpty() || nicknameField.getText().length() > 10) {
@@ -93,6 +100,13 @@ public class GUIConnectionLoadingView extends GUIView {
         )).start();
     }
 
+    /**
+     * Displays a prompt popup, asking the user if they want to retry the connection after the failed
+     * attempt (due to a network error or nickname conflict).
+     *
+     * @param causedByNetworkError True if the retry prompt is due to a network error, false if due to nickname conflict.
+     * @return True if the user chooses to retry, false otherwise.
+     */
     @Override
     public boolean retryConnectionPrompt(boolean causedByNetworkError) {
         AtomicBoolean wantsToRetry = new AtomicBoolean(true);

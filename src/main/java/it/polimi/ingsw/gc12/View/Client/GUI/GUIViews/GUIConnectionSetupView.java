@@ -19,6 +19,10 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Singleton class representing the connection setup view in the Graphical User Interface (GUI).
+ * It extends the GUIView class and implements methods for handling connection setup.
+ */
 public class GUIConnectionSetupView extends GUIView {
 
     /**
@@ -76,6 +80,10 @@ public class GUIConnectionSetupView extends GUIView {
         return CONNECTION_TOGGLE_GROUP;
     }
 
+    /**
+     * Displays the connection setup screen, allowing the user to input server IP address, communication technology,
+     * and nickname for connecting to the server.
+     */
     @Override
     public void connectionSetupScreen() {
         OverlayPopup.closeLingeringOpenedPopup();

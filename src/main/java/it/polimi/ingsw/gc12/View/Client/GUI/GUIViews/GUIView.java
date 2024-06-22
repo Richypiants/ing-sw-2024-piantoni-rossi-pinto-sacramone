@@ -25,6 +25,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Singleton class representing the Graphical User Interface (GUI) view.
+ * It extends the abstract View class and implements various methods for displaying
+ * different screens and handling user input in the terminal.
+ */
 public class GUIView extends View {
 
     /**
@@ -84,7 +89,8 @@ public class GUIView extends View {
      * Generates a new OverlayPopup having the desired graphic layout and the given content.
      *
      * @param popupContent The content to be added to the new popup.
-     * @param isCloseable  The boolean specifying if the popup should contain a standard close button or not.
+     * @param isCloseable  True if the popup should contain a standard close button (allowing it to be
+     *                     closed), False otherwise.
      * @return The OverlayPopup newly created.
      */
     public static OverlayPopup drawOverlayPopup(Pane popupContent, boolean isCloseable) {
@@ -124,31 +130,36 @@ public class GUIView extends View {
         return overlayPopup;
     }
 
+    /**
+     * Shows an error popup containing the message of the given Throwable on the screen.
+     *
+     * @param error The throwable containing the error message.
+     */
     @Override
-    public void printError(Throwable t) {
+    public void printError(Throwable error) {
         Platform.runLater(() -> {
             Popup errorPopup = new Popup();
 
             VBox errorPopupContent = new VBox();
 
-            Label error = new Label("ERROR");
+            Label errorLabel = new Label("ERROR");
 
-            Label errorLabel = new Label(t.getMessage());
-            errorLabel.setPrefWidth(300);
-            errorLabel.setWrapText(true);
+            Label errorMessageLabel = new Label(error.getMessage());
+            errorMessageLabel.setPrefWidth(300);
+            errorMessageLabel.setWrapText(true);
 
-            errorPopupContent.getChildren().addAll(error, errorLabel);
+            errorPopupContent.getChildren().addAll(errorLabel, errorMessageLabel);
             errorPopup.getContent().add(errorPopupContent);
-            VBox.setMargin(error, new Insets(20, 0, 0, 0));
-            VBox.setMargin(errorLabel, new Insets(0, 30, 30, 30));
+            VBox.setMargin(errorLabel, new Insets(20, 0, 0, 0));
+            VBox.setMargin(errorMessageLabel, new Insets(0, 30, 30, 30));
 
             errorPopupContent.getStylesheets().add(Objects.requireNonNull(GUIView.class.getResource("/Client/style.css")).toExternalForm());
             errorPopupContent.getStyleClass().add("decoratedPopup");
-            error.getStyleClass().add("popupText");
             errorLabel.getStyleClass().add("popupText");
+            errorMessageLabel.getStyleClass().add("popupText");
 
-            error.setStyle("-fx-font-size: 18px");
-            errorLabel.setStyle("-fx-font-size: 12px");
+            errorLabel.setStyle("-fx-font-size: 18px");
+            errorMessageLabel.setStyle("-fx-font-size: 12px");
 
             errorPopup.setAutoFix(true);
             errorPopup.setAutoHide(true);
@@ -166,30 +177,44 @@ public class GUIView extends View {
         GUIConnectionLoadingView.getInstance().connectionLoadingScreen();
     }
 
+    /**
+     * Displays the title screen.
+     */
     @Override
     public void titleScreen() {
         GUITitleView.getInstance().titleScreen();
     }
 
+    /**
+     * Displays the connection setup screen.
+     */
     @Override
     public void connectionSetupScreen() {
         GUIConnectionSetupView.getInstance().connectionSetupScreen();
     }
 
-    @Override
-    public void connectedConfirmation() {
-    }
 
+    /**
+     * Prompts the user to retry the connection if it failed.
+     *
+     * @param causedByNetworkError True if the connection failed due to a network error.
+     * @return True if the user decides to retry the connection.
+     */
     @Override
     public boolean retryConnectionPrompt(boolean causedByNetworkError) {
         return GUIConnectionLoadingView.getInstance().retryConnectionPrompt(causedByNetworkError);
     }
 
+    /**
+     * Displays a confirmation message for a successful connection (not needed/implemented for the GUI).
+     */
     @Override
-    public void awaitingScreen() {
-        GUIGameView.getInstance().awaitingScreen();
+    public void connectedConfirmation() {
     }
 
+    /**
+     * Displays the disconnected screen and attempts to reconnect.
+     */
     @Override
     public void disconnectedScreen() {
         OverlayPopup.closeLingeringOpenedPopup();
@@ -236,6 +261,9 @@ public class GUIView extends View {
         }).start();
     }
 
+    /**
+     * Displays the quitting screen.
+     */
     @Override
     public void quittingScreen() {
         OverlayPopup.closeLingeringOpenedPopup();
@@ -259,55 +287,106 @@ public class GUIView extends View {
         });
     }
 
+    /**
+     * Displays the lobbies screen.
+     */
     @Override
     public void lobbiesScreen() {
         GUILobbiesView.getInstance().lobbiesScreen();
     }
 
+    /**
+     * Displays the user's nickname.
+     */
     @Override
     public void showNickname() {
         GUILobbiesView.getInstance().showNickname();
     }
 
+    /**
+     * Displays the game screen.
+     */
     @Override
     public void gameScreen() {
         GUIGameView.getInstance().gameScreen();
     }
 
+    /**
+     * Displays the awaiting screen while waiting for other players.
+     */
+    @Override
+    public void awaitingScreen() {
+        GUIGameView.getInstance().awaitingScreen();
+    }
+
+    /**
+     * Updates the chat screen.
+     */
     @Override
     public void updateChat() {
         GUIGameView.getInstance().updateChat();
     }
 
+    /**
+     * Displays the initial card choice screen.
+     */
     @Override
     public void showInitialCardsChoice() {
         GUIGameView.getInstance().showInitialCardsChoice();
     }
 
+    /**
+     * Displays the objective card choice screen.
+     *
+     * @param objectivesSelection List of objective cards to choose from.
+     */
     @Override
     public void showObjectiveCardsChoice(ArrayList<ClientCard> objectivesSelection) {
         GUIGameView.getInstance().showObjectiveCardsChoice(objectivesSelection);
     }
 
+    /**
+     * Displays the user's hand of cards.
+     */
     @Override
     public void showHand() {
         GUIGameView.getInstance().showHand();
     }
 
+    /**
+     * Displays the common placed cards on the game board.
+     */
     @Override
     public void showCommonPlacedCards() {
         GUIGameView.getInstance().showCommonPlacedCards();
     }
 
+    /**
+     * Displays the field of the specified player.
+     *
+     * @param player The player whose field is to be displayed.
+     */
     @Override
     public void showField(ClientPlayer player) {
         GUIGameView.getInstance().showField(player);
     }
 
+    /**
+     * Moves the field currently displayed by x cards left and y cards down (not needed/implemented
+     * for the GUI, as this is already managed in gameScreen).
+     *
+     * @param centerOffset The offset by which to move the field view.
+     */
     @Override
     public void moveField(GenericPair<Integer, Integer> centerOffset) {
     }
 
+    /**
+     * Displays the leaderboard screen with the given points statistics.
+     *
+     * @param leaderboard                  List of triplets containing player names, scores, and ranks.
+     * @param gameEndedDueToDisconnections True if the game ended due to disconnections.
+     */
     @Override
     public void leaderboardScreen(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
         GUIGameView.getInstance().leaderboardScreen(leaderboard, gameEndedDueToDisconnections);

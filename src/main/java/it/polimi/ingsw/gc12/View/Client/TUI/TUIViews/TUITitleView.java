@@ -38,7 +38,7 @@ public class TUITitleView extends TUIView{
     }
 
     /**
-     * Displays the title screen which the ASCIIArts, waits for user input to proceed, and transitions to the next view state.
+     * Displays the title screen which shows the ASCIIArts, waits for user input to proceed, and transitions to the next view state.
      */
     @Override
     public void titleScreen() {

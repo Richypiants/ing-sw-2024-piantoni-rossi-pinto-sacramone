@@ -71,7 +71,7 @@ public class TUILobbiesView extends TUIView{
     }
 
     /**
-     * Displays the lobbies screen, showing the player's nickname, available commands, current lobby,
+     * Displays the lobbies screen, showing the player's nickname, the available commands, the current lobby,
      * and other active lobbies.
      */
     @Override

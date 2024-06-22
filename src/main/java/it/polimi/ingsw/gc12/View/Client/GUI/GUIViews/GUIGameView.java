@@ -44,6 +44,13 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+/**
+ * The GUIGameView class represents the Graphical User Interface (GUI) view for displaying the game
+ * and all the details composing the game board.
+ * <p>
+ * This class handles the rendering of various game elements including player stats, cards, decks, opponent fields,
+ * and the player's own field.
+ */
 public class GUIGameView extends GUIView {
 
     /**
@@ -275,8 +282,8 @@ public class GUIGameView extends GUIView {
      * field, and also specifying whether a card drag action should have any effect on it.
      *
      * @param openCorner    The coordinates of the given open corner on the field.
-     * @param isInteractive The boolean value indicating whether a placeCard command should be sent when
-     *                      a card is dragged on the resulting graphic element.
+     * @param isInteractive True if a placeCard command should be issued when a card is dragged on the
+     *                      resulting graphic element, False otherwise.
      * @return The rectangular-shaped element representing the open corner.
      */
     private Rectangle generateOpenCornerShape(GenericPair<Integer, Integer> openCorner, boolean isInteractive) {
@@ -383,8 +390,8 @@ public class GUIGameView extends GUIView {
      * @param fieldPane The ScrollPane which will contain the field.
      * @param player The player of whom the field being drawn belongs to.
      * @param scaleFactor The scale factor of the field, allowing it to be resized bigger or smaller at will.
-     * @param isInteractive The boolean value specifying whether the user should be able to drag and place cards
-     *                      on the resulting field.
+     * @param isInteractive True if the user should be able to drag and place cards on the resulting field,
+     *                      False otherwise.
      */
     private void drawField(ScrollPane fieldPane, ClientPlayer player, double scaleFactor, boolean isInteractive) {
         GenericPair<Double, Double> clippedPaneSize = new GenericPair<>(
@@ -682,6 +689,9 @@ public class GUIGameView extends GUIView {
         shouldReset = false;
     }
 
+    /**
+     * Shows all the game elements composing the game board and illustrating the information related to the game.
+     */
     @Override
     public void gameScreen() {
         Platform.runLater(() -> {
@@ -836,6 +846,9 @@ public class GUIGameView extends GUIView {
         }
     }
 
+    /**
+     * Shows the common placed cards (resources, gold, objectives) on the left side of the screen.
+     */
     @Override
     public void showCommonPlacedCards() {
         Platform.runLater(() -> {
@@ -962,6 +975,9 @@ public class GUIGameView extends GUIView {
         CENTER_OWN_FIELD_BUTTON.relocate(OWN_FIELD_FRAME_PANE.getPrefWidth() * 95.5 / 100 - 50, OWN_FIELD_FRAME_PANE.getPrefHeight() * 6.5 / 100 + 60);
     }
 
+    /**
+     * Shows the player's hand (front sides by default, but toggleable) at the bottom of the screen.
+     */
     @Override
     public void showHand() {
         Platform.runLater(() -> {
@@ -1068,6 +1084,10 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    /**
+     * Updates the chat pane with the new log messages, also adding the timestamp indicating when
+     * the message has been received.
+     */
     @Override
     public void updateChat() {
         Platform.runLater(() -> {
@@ -1089,6 +1109,9 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    /**
+     * Renders the popup containing the two sides of the assigned initial card for the user to choose from.
+     */
     @Override
     public void showInitialCardsChoice() {
         Platform.runLater(() -> {
@@ -1141,6 +1164,11 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    /**
+     * Renders the popup containing the two secret objective cards received for the user to choose from.
+     *
+     * @param objectivesSelection The list of objective cards available for selection.
+     */
     @Override
     public void showObjectiveCardsChoice(ArrayList<ClientCard> objectivesSelection) {
         Platform.runLater(() -> {
@@ -1194,6 +1222,11 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    /**
+     * Renders the field of a given player in a new popup that zooms it to make it more visible.
+     *
+     * @param player The player whose field is to be displayed.
+     */
     @Override
     public void showField(ClientPlayer player) {
         Platform.runLater(() ->
@@ -1238,6 +1271,10 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    /**
+     * Signals to the user with a popup that he is the only remaining player connected to the game, and that
+     * the game is currently paused due to disconnections.
+     */
     @Override
     public void awaitingScreen() {
         OverlayPopup.closeLingeringOpenedPopup();
@@ -1257,6 +1294,12 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    /**
+     * Shows the leaderboard at the end of the game in a new popup, containing player rankings and points.
+     *
+     * @param leaderboard                  List of triplets containing player names, scores, and ranks.
+     * @param gameEndedDueToDisconnections True if the game ended due to disconnections.
+     */
     @Override
     public void leaderboardScreen(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
         Platform.runLater(() -> {
