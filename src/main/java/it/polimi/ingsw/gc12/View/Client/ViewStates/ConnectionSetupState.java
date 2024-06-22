@@ -43,7 +43,7 @@ public class ConnectionSetupState extends ViewState {
                 try {
                     // Wait 25 seconds before asking whether to retry connecting to the server.
                     // Notified by SocketClient or RMIClientSkeleton when they successfully establish a connection.
-                    ViewState.class.wait(25000);
+                    ViewState.class.wait(30000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e); // Should never happen
                 }

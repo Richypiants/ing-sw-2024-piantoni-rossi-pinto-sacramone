@@ -17,14 +17,30 @@ import static org.fusesource.jansi.Ansi.ansi;
  */
 public class TUIParser {
 
-    /** The singleton instance of the {@code TUIParser}. */
-    private static TUIParser SINGLETON_TUI_LISTENER;
-    /** The row of the terminal where commands submitted by the client are written */
+    /**
+     * The row of the terminal where commands submitted by the client are written.
+     */
     public static int COMMAND_INPUT_ROW = 48;
-    /** The column of the terminal where commands submitted by the client are written */
+    /**
+     * The column of the terminal where commands submitted by the client are written.
+     */
     public static int COMMAND_INPUT_COLUMN = 6;
-    /** The row of the terminal where exceptions are printed */
+    /**
+     * The row of the terminal where exceptions are printed.
+     */
     public static int EXCEPTIONS_ROW = 49;
+    /**
+     * The Thread which continuously reads and parses input from the console after being started.
+     */
+    public static Thread parserThread;
+    /**
+     * A boolean value which is true if the TUIParser is currently reading from the console.
+     */
+    public static boolean isReading = false;
+    /**
+     * The singleton instance of the {@code TUIParser}.
+     */
+    private static TUIParser SINGLETON_TUI_LISTENER;
 
     /**
      * Private constructor to enforce Singleton pattern.
@@ -37,9 +53,11 @@ public class TUIParser {
      * @return The singleton instance of TUIParser.
      */
     public static TUIParser getInstance() {
-        if (SINGLETON_TUI_LISTENER == null)
-            SINGLETON_TUI_LISTENER = new TUIParser();
-        return SINGLETON_TUI_LISTENER;
+        synchronized (TUIParser.class) {
+            if (SINGLETON_TUI_LISTENER == null)
+                SINGLETON_TUI_LISTENER = new TUIParser();
+            return SINGLETON_TUI_LISTENER;
+        }
     }
 
     /**
@@ -47,7 +65,8 @@ public class TUIParser {
      */
     public void startReading() {
         Console console = System.console();
-        Thread reader = new Thread(() -> {
+        isReading = true;
+        parserThread = new Thread(() -> {
             String command = "";
             do {
                 try {
@@ -57,11 +76,9 @@ public class TUIParser {
                 }
                 System.out.print(ansi().cursor(COMMAND_INPUT_ROW, COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
                 parseCommand(command);
-            } while (command != null && !command.equals("quit"));
-        }
-        );
-        reader.setDaemon(false);
-        reader.start();
+            } while (isReading && command != null && !command.equalsIgnoreCase("quit"));
+        });
+        parserThread.start();
     }
 
     /**

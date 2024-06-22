@@ -151,7 +151,9 @@ public class TUIConnectionView extends TUIView {
 
         TUIParser.COMMAND_INPUT_COLUMN = 6 + VIEWMODEL.getOwnNickname().length();
         System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
-        listener.startReading();
+
+        if (TUIParser.parserThread == null)
+            listener.startReading();
     }
 
 }

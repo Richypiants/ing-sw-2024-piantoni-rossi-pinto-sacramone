@@ -43,6 +43,9 @@ public class TUITitleView extends TUIView{
     @Override
     public void titleScreen() {
         TUIParser.COMMAND_INPUT_COLUMN = 6 + VIEWMODEL.getOwnNickname().length();
+        TUIParser.isReading = false;
+        TUIParser.parserThread = null;
+
         System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN));
         clearTerminal();
 

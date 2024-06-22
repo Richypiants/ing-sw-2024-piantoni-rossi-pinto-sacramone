@@ -112,6 +112,8 @@ public class GameController extends ServerController {
                 //If game was in AwaitingReconnectingState, you need to resume it before sending the DTO
                 currentGameState.transition();
 
+            CONTROLLED_GAME.setPlayerActivity(targetPlayer, true);
+
             sender.getListener().notified(new RestoreGameCommand(
                     CONTROLLED_GAME.generateDTO(targetPlayer),
                     currentGameState.getStringEquivalent(), //To let the client understand in which state it has to be recovered to.
@@ -120,7 +122,6 @@ public class GameController extends ServerController {
 
             sender.setPlayer(targetPlayer);
             putActivePlayer(sender, targetPlayer);
-            CONTROLLED_GAME.setPlayerActivity(targetPlayer, true);
             CONTROLLED_GAME.addListener(sender.getListener());
             targetPlayer.addListener(sender.getListener());
         } else

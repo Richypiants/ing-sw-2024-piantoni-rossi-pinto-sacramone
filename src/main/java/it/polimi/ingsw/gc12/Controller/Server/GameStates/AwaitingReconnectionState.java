@@ -24,7 +24,7 @@ public class AwaitingReconnectionState extends GameState {
     private final TimerTask terminateGame;
 
     /** Timeout duration in milliseconds after which the game will proceed to victory calculation. */
-    private static final int TIMEOUT_GAME_ENDED = 60000;
+    private static final int TIMEOUT_GAME_ENDED = 90000;
 
     /**
      * Constructs an AwaitingReconnectionState object with the specified controller and game.
