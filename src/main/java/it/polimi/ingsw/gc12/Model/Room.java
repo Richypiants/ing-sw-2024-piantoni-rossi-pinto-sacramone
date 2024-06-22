@@ -32,23 +32,28 @@ public abstract class Room implements Serializable {
         LIST_OF_PLAYERS = listOfPlayers;
     }
 
+    /**
+     * Returns the UUID of the room.
+     *
+     * @return The UUID of the room.
+     */
     public UUID getRoomUUID() {
         return ROOM_UUID;
     }
 
     /**
-     * Returns the list of players currently in the lobby.
+     * Returns the list of players currently in the room.
      *
-     * @return A copy of the list of players in the lobby.
+     * @return A copy of the list of players in the room.
      */
     public ArrayList<? extends Player> getPlayers() {
         return new ArrayList<>(LIST_OF_PLAYERS);
     }
 
     /**
-     * Returns the number of players currently in the lobby.
+     * Returns the number of players currently in the room.
      *
-     * @return The number of players in the lobby.
+     * @return The number of players in the room.
      */
     public int getPlayersNumber() {
         return LIST_OF_PLAYERS.size();

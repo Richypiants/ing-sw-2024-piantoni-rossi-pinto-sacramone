@@ -6,6 +6,8 @@ import it.polimi.ingsw.gc12.Model.ClientModel.ClientPlayer;
 import it.polimi.ingsw.gc12.Model.ClientModel.ViewModel;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
+import it.polimi.ingsw.gc12.View.Client.GUI.GUIViews.GUIView;
+import it.polimi.ingsw.gc12.View.Client.TUI.TUIViews.TUIView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +15,22 @@ import java.util.List;
 /**
  * Abstract base class representing the view of a client-side application.
  * It defines methods for displaying different screens and handling user interactions.
+ * Existing view implementations include:
+ *  * <ul>
+ *  *     <li>{@link TUIView}</li>
+ *  *     <li>{@link GUIView}</li>
+ *  * </ul>
  */
 public abstract class View {
 
-    /** Singleton instance of the client controller. */
+    /**
+     * Singleton instance of the client controller.
+     */
     protected final static ClientController CLIENT_CONTROLLER = ClientController.getInstance();
 
-    /** Singleton instance of the view model managed by the client controller. */
+    /**
+     * Singleton instance of the view model managed by the client controller.
+     */
     protected final static ViewModel VIEWMODEL = CLIENT_CONTROLLER.VIEWMODEL;
 
     /**

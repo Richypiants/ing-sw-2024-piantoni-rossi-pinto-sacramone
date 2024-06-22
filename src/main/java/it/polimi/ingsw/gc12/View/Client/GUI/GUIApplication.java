@@ -14,8 +14,24 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
+/**
+ * Represents the main JavaFX application for the Graphical User Interface implementation.
+ * <p>
+ * This class extends the {@link Application} class from JavaFX, enabling the GUI to be launched with
+ * all the routine methods needed by JavaFX and setting the initial stage with the desired characteristics.
+ * </p>
+ */
 public class GUIApplication extends Application {
 
+    /**
+     * The main entry point for this JavaFX application. The start method is called after the init method
+     * has returned, and after the system is ready for the application to begin running.
+     * The stage is set up to reflect the wanted appearance and implement the needed functionalities.
+     * <p>
+     * NOTE: This method is called on the JavaFX Application Thread.
+     *
+     * @param stage the primary stage for this application, onto which the application scene can be set.
+     */
     @Override
     public void start(Stage stage) {
         //FIXME: are these all needed?
@@ -62,7 +78,7 @@ public class GUIApplication extends Application {
 
         stage.setOnCloseRequest((event) -> System.exit(1));
 
-        GUIView.setScreenSizes();
+        GUIView.setWindowSize();
         stage.show();
     }
 }

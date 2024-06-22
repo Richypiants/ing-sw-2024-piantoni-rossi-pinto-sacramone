@@ -46,26 +46,68 @@ import java.util.stream.Collectors;
 
 public class GUIGameView extends GUIView {
 
+    /**
+     * The singleton instance of the {@code GUIGameView}.
+     */
     private static GUIGameView gameScreenController = null;
 
-    private final DataFormat PLACE_CARD_DATA_FORMAT = new DataFormat("text/genericpair<integer,side>");
-    private final String RED_WHITE_STYLE = "-fx-font-family: 'Bell MT'; -fx-background-color: #AEA175; -fx-border-color: #5B5437; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;";
-
-    private final List<Transition> RUNNING_TRANSITIONS;
-
-    private final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:mm:ss");
-    private final Label RESOURCE_CARDS_LABEL;
-
-    private ClientGame thisGame = null;
-    private ClientPlayer thisPlayer = null;
-    private final Label COMMON_OBJECTIVES_LABEL;
-
-    private final ArrayList<GenericPair<Double, Double>> RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS;
-
+    /**
+     * The width and height of a single card.
+     */
+    private final GenericPair<Double, Double> CARD_SIZES;
+    /**
+     * The values representing the percentage of a card's width and height occupied by one of the card's corners.
+     */
+    private final GenericPair<Double, Double> CORNER_SCALE_FACTOR;
+    /**
+     * The padding length used to relocate the main panes of the game screen.
+     */
     private final double PADDING_SIZE;
+
+    /**
+     * The MIME type format of the data moved by card-to-openCorner drag actions.
+     */
+    private final DataFormat PLACE_CARD_DATA_FORMAT;
+    /**
+     * The format of the timestamp printed together with chat messages.
+     */
+    private final SimpleDateFormat TIMESTAMP_FORMATTER;
+    /**
+     * The string containing the CSS values used to restyle some graphic elements.
+     */
+    private final String LIGHT_DARK_BROWN_STYLE;
+    /**
+     * The list of all transitions running indefinitely, stored so that their reference isn't lost and that
+     * they can be stopped and garbage collected, thus avoiding memory leaks.
+     */
+    private final List<Transition> RUNNING_TRANSITIONS;
+    /**
+     * The list of the percentage offsets of the players' tokens in relation to the width and height of the
+     * scoreboard pane and its background image.
+     */
+    private final ArrayList<GenericPair<Double, Double>> RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS;
+    private final Label RESOURCE_CARDS_LABEL;
+    private final Label COMMON_OBJECTIVES_LABEL;
+    /**
+     * The boolean value indicating whether the content of the gameScreen and its panes should be completely
+     * reset because it might have become inconsistent with the data inside the viewModel.
+     */
+    protected boolean shouldReset;
+    /**
+     * The game present in the viewModel at the moment this gameScreen was shown.
+     * It is stored only for code readability and reducing synchronized accesses to the viewModel.
+     */
+    private ClientGame thisGame;
+    /**
+     * The player representing this client in the current game.
+     * It is stored only for code readability and optimization purposes.
+     */
+    private ClientPlayer thisPlayer;
+    /**
+     * The eventually opened awaiting popup, stored so that it can be hidden when exiting the awaiting state.
+     */
+    private OverlayPopup openedAwaitingPopup;
     private final Button ZOOM_OWN_FIELD_BUTTON;
-    protected boolean shouldReset = true;
-    private OverlayPopup openedAwaitingPopup = null;
 
     private final Parent SCENE_ROOT;
     private final AnchorPane OWN_FIELD_PANE;
@@ -104,6 +146,11 @@ public class GUIGameView extends GUIView {
     private final Label TO;
     private final Label GAME_STATE_LABEL;
 
+    /**
+     * Constructs a {@code GUIGameView} instance (private constructor to prevent external
+     * instantiation at will).
+     * On initialization, it loads the graphical elements from the correct .fxml file.
+     */
     private GUIGameView() {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/Client/fxml/game_screen.fxml")).load();
@@ -149,9 +196,21 @@ public class GUIGameView extends GUIView {
         CHAT_VBOX = (VBox) SCENE_ROOT.lookup("#chatBox");
         GAME_STATE_LABEL = (Label) SCENE_ROOT.lookup("#gameStateLabel");
 
-        RUNNING_TRANSITIONS = new ArrayList<>();
-
+        CARD_SIZES = new GenericPair<>(100.0, 66.0);
+        CORNER_SCALE_FACTOR = new GenericPair<>(2.0 / 9, 2.0 / 5);
         PADDING_SIZE = 20.0;
+
+        PLACE_CARD_DATA_FORMAT = new DataFormat("text/genericpair<integer,side>");
+        TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:mm:ss");
+        LIGHT_DARK_BROWN_STYLE = "-fx-font-family: 'Bell MT'; -fx-background-color: #AEA175; -fx-border-color: #5B5437; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+
+        thisGame = null;
+        thisPlayer = null;
+        shouldReset = true;
+
+        openedAwaitingPopup = null;
+
+        RUNNING_TRANSITIONS = new ArrayList<>();
 
         RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS = new ArrayList<>();
 
@@ -187,6 +246,12 @@ public class GUIGameView extends GUIView {
         RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS.add(new GenericPair<>(0.422, 0.1623)); // 29
     }
 
+    /**
+     * Returns the singleton instance of the {@code GUIGameView}, also initializing it if it had never been
+     * instantiated, as per the Singleton pattern.
+     *
+     * @return The singleton instance
+     */
     public static GUIGameView getInstance() {
         if (gameScreenController == null) {
             gameScreenController = new GUIGameView();
@@ -194,6 +259,10 @@ public class GUIGameView extends GUIView {
         return gameScreenController;
     }
 
+    /**
+     * Stops all the running transitions indefinitely running, avoiding memory leaks and allowing them
+     * to be deallocated and garbage collected.
+     */
     private void deleteAllRunningTransitions() {
         while (!RUNNING_TRANSITIONS.isEmpty()) {
             RUNNING_TRANSITIONS.getLast().stop();
@@ -201,8 +270,17 @@ public class GUIGameView extends GUIView {
         }
     }
 
+    /**
+     * Generates the rectangular-shaped element representing an open corner given its coordinates on the
+     * field, and also specifying whether a card drag action should have any effect on it.
+     *
+     * @param openCorner    The coordinates of the given open corner on the field.
+     * @param isInteractive The boolean value indicating whether a placeCard command should be sent when
+     *                      a card is dragged on the resulting graphic element.
+     * @return The rectangular-shaped element representing the open corner.
+     */
     private Rectangle generateOpenCornerShape(GenericPair<Integer, Integer> openCorner, boolean isInteractive) {
-        var openCornerShape = new Rectangle(cardSizes.getX(), cardSizes.getY()) {
+        var openCornerShape = new Rectangle(CARD_SIZES.getX(), CARD_SIZES.getY()) {
             public final GenericPair<Integer, Integer> COORDINATES = openCorner;
         };
         openCornerShape.setFill(Color.TRANSPARENT);
@@ -233,6 +311,12 @@ public class GUIGameView extends GUIView {
         return openCornerShape;
     }
 
+    /**
+     * Restyles the given icon button, setting to it the standard wanted style.
+     *
+     * @param button The button element to be styled.
+     * @param iconResourceURL The string representing the URL to the icon image.
+     */
     private void generateRectangularIconButton(Button button, String iconResourceURL) {
         ImageView image = new ImageView(String.valueOf(GUIGameView.class.getResource(iconResourceURL)));
         image.setFitHeight(20);
@@ -243,6 +327,12 @@ public class GUIGameView extends GUIView {
         button.setStyle("-fx-border-radius: 5; -fx-border-width: 1px; -fx-border-color: black; -fx-background-color: white");
     }
 
+    /**
+     * Produces an AnchorPane for styling the frame around the card fields of the players.
+     *
+     * @param parentPane The pane which will contain the resulting AnchorPane.
+     * @return The generated AnchorPane containing the styled frame for the field.
+     */
     private AnchorPane generateFieldFramePane(Pane parentPane) {
         AnchorPane fieldFramePane = new AnchorPane();
         fieldFramePane.setPrefSize(parentPane.getPrefWidth(), parentPane.getPrefHeight());
@@ -287,9 +377,18 @@ public class GUIGameView extends GUIView {
         return fieldFramePane;
     }
 
+    /**
+     * Draws a field and all the cards places on it on the given ScrollPane.
+     *
+     * @param fieldPane The ScrollPane which will contain the field.
+     * @param player The player of whom the field being drawn belongs to.
+     * @param scaleFactor The scale factor of the field, allowing it to be resized bigger or smaller at will.
+     * @param isInteractive The boolean value specifying whether the user should be able to drag and place cards
+     *                      on the resulting field.
+     */
     private void drawField(ScrollPane fieldPane, ClientPlayer player, double scaleFactor, boolean isInteractive) {
         GenericPair<Double, Double> clippedPaneSize = new GenericPair<>(
-                4000.0, 4000.0 * cardSizes.getY() / cardSizes.getX()
+                4000.0, 4000.0 * CARD_SIZES.getY() / CARD_SIZES.getX()
         );
 
         fieldPane.setStyle("-fx-background-color: transparent;");
@@ -306,17 +405,17 @@ public class GUIGameView extends GUIView {
         for (var cardEntry : player.getPlacedCards().sequencedEntrySet()) {
             ImageView cardImage = new ImageView(String.valueOf(GUIView.class.getResource(cardEntry.getValue().getX().GUI_SPRITES.get(cardEntry.getValue().getY()))));
             cardImage.setSmooth(true);
-            cardImage.setFitWidth(cardSizes.getX());
-            cardImage.setFitHeight(cardSizes.getY());
+            cardImage.setFitWidth(CARD_SIZES.getX());
+            cardImage.setFitHeight(CARD_SIZES.getY());
             cardImage.setPreserveRatio(true);
 
             clippedPane.getChildren().add(cardImage);
 
             cardImage.relocate(
                     (clippedPaneSize.getX() - cardImage.getFitWidth()) / 2 +
-                            cardImage.getFitWidth() * (1 - cornerScaleFactor.getX()) * cardEntry.getKey().getX(),
+                            cardImage.getFitWidth() * (1 - CORNER_SCALE_FACTOR.getX()) * cardEntry.getKey().getX(),
                     (clippedPaneSize.getY() - cardImage.getFitHeight()) / 2 -
-                            cardImage.getFitHeight() * (1 - cornerScaleFactor.getY()) * cardEntry.getKey().getY()
+                            cardImage.getFitHeight() * (1 - CORNER_SCALE_FACTOR.getY()) * cardEntry.getKey().getY()
             );
         }
 
@@ -328,10 +427,10 @@ public class GUIGameView extends GUIView {
             clippedPane.getChildren().add(openCornerShape);
 
             openCornerShape.relocate(
-                    (clippedPaneSize.getX() - cardSizes.getX()) / 2 +
-                            cardSizes.getX() * (1 - cornerScaleFactor.getX()) * openCorner.getX(),
-                    (clippedPaneSize.getY() - cardSizes.getY()) / 2 -
-                            cardSizes.getY() * (1 - cornerScaleFactor.getY()) * openCorner.getY()
+                    (clippedPaneSize.getX() - CARD_SIZES.getX()) / 2 +
+                            CARD_SIZES.getX() * (1 - CORNER_SCALE_FACTOR.getX()) * openCorner.getX(),
+                    (clippedPaneSize.getY() - CARD_SIZES.getY()) / 2 -
+                            CARD_SIZES.getY() * (1 - CORNER_SCALE_FACTOR.getY()) * openCorner.getY()
             );
 
             FadeTransition openCornerTransition = new FadeTransition(Duration.millis(1000), openCornerShape);
@@ -354,16 +453,21 @@ public class GUIGameView extends GUIView {
             lastPlacedCardCoordinates = new GenericPair<>(0, 0);
         }
         fieldPane.setHvalue((fieldPane.getHmax() + fieldPane.getHmin()) * (
-                clippedPaneSize.getX() / 2 + cardSizes.getX() * (1 - cornerScaleFactor.getX()) * lastPlacedCardCoordinates.getX()
+                clippedPaneSize.getX() / 2 + CARD_SIZES.getX() * (1 - CORNER_SCALE_FACTOR.getX()) * lastPlacedCardCoordinates.getX()
         ) / clippedPaneSize.getX());
         fieldPane.setVvalue((fieldPane.getVmax() + fieldPane.getVmin()) * (
-                clippedPaneSize.getY() / 2 - cardSizes.getY() * (1 - cornerScaleFactor.getY()) * lastPlacedCardCoordinates.getY()
+                clippedPaneSize.getY() / 2 - CARD_SIZES.getY() * (1 - CORNER_SCALE_FACTOR.getY()) * lastPlacedCardCoordinates.getY()
         ) / clippedPaneSize.getY());
 
         openCornersBlinkTransition.play();
         RUNNING_TRANSITIONS.add(openCornersBlinkTransition);
     }
 
+    /**
+     * Enables the given pane to be dragged around on the screen.
+     *
+     * @param pane The pane to be made draggable.
+     */
     private void makePaneDraggable(Pane pane) {
         AtomicReference<Double> xOffset = new AtomicReference<>(0.0);
         AtomicReference<Double> yOffset = new AtomicReference<>(0.0);
@@ -377,6 +481,11 @@ public class GUIGameView extends GUIView {
         pane.setOnMouseDragged((event) -> pane.relocate(event.getScreenX() + xOffset.get(), event.getScreenY() + yOffset.get()));
     }
 
+    /**
+     * Toggles the visibility of the given pane.
+     *
+     * @param popupPane The pane whose visibility is to be toggled.
+     */
     private void togglePane(Pane popupPane) {
         Platform.runLater(() -> {
             popupPane.setVisible(!popupPane.isVisible());
@@ -384,6 +493,9 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    /**
+     * Initializes the game screen elements, resetting all of them to their default values and contents.
+     */
     private void resetGameScreen() {
         OverlayPopup.closeLingeringOpenedPopup();
 
@@ -391,13 +503,13 @@ public class GUIGameView extends GUIView {
         thisPlayer = thisGame.getThisPlayer();
 
         OPPONENTS_FIELDS_PANE.setPrefSize(
-                screenSizes.getX() - 2 * PADDING_SIZE,
-                screenSizes.getY() * 35 / 100 - 2 * PADDING_SIZE
+                windowSize.getX() - 2 * PADDING_SIZE,
+                windowSize.getY() * 35 / 100 - 2 * PADDING_SIZE
         );
         OPPONENTS_FIELDS_PANE.relocate(PADDING_SIZE, PADDING_SIZE);
 
-        DECKS_AND_VISIBLE_CARDS_PANE.setPrefSize(screenSizes.getX() * 28 / 100, screenSizes.getY() * 65 / 100);
-        DECKS_AND_VISIBLE_CARDS_PANE.relocate(screenSizes.getX() * 2 / 100, screenSizes.getY() * 35 / 100);
+        DECKS_AND_VISIBLE_CARDS_PANE.setPrefSize(windowSize.getX() * 28 / 100, windowSize.getY() * 65 / 100);
+        DECKS_AND_VISIBLE_CARDS_PANE.relocate(windowSize.getX() * 2 / 100, windowSize.getY() * 35 / 100);
 
         ImageView resourceCardsLabelBanner = new ImageView(String.valueOf(GUIGameView.class.getResource("/Client/images/game/scroll_label.png")));
         resourceCardsLabelBanner.setFitWidth(250);
@@ -443,11 +555,11 @@ public class GUIGameView extends GUIView {
         SECRET_OBJECTIVE_HBOX.setMinHeight(DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
 
         OWN_FIELD_PANE.setPrefSize(
-                screenSizes.getX() * 68 / 100 - PADDING_SIZE,
-                screenSizes.getY() * 50 / 100 - PADDING_SIZE
+                windowSize.getX() * 68 / 100 - PADDING_SIZE,
+                windowSize.getY() * 50 / 100 - PADDING_SIZE
         );
 
-        OWN_FIELD_PANE.relocate(screenSizes.getX() * 30 / 100, screenSizes.getY() * 35 / 100);
+        OWN_FIELD_PANE.relocate(windowSize.getX() * 30 / 100, windowSize.getY() * 35 / 100);
 
         OWN_FIELD_FRAME_PANE.setPrefSize(OWN_FIELD_PANE.getPrefWidth() - 75, OWN_FIELD_PANE.getPrefHeight());
         OWN_FIELD_FRAME_PANE.setLayoutX(80);
@@ -480,15 +592,15 @@ public class GUIGameView extends GUIView {
         OWN_FIELD_SCROLL_PANE.setPrefSize(OWN_FIELD_FRAME_PANE.getPrefWidth() * 92 / 100, OWN_FIELD_FRAME_PANE.getPrefHeight() * 86 / 100);
         OWN_FIELD_SCROLL_PANE.relocate(OWN_FIELD_FRAME_PANE.getPrefWidth() * 4 / 100, OWN_FIELD_FRAME_PANE.getPrefHeight() * 7 / 100);
 
-        OWN_HAND_PANE.setPrefSize(screenSizes.getX() * 43 / 100, screenSizes.getY() * 15 / 100);
-        OWN_HAND_PANE.relocate(screenSizes.getX() * 46 / 100, screenSizes.getY() * 85 / 100);
+        OWN_HAND_PANE.setPrefSize(windowSize.getX() * 43 / 100, windowSize.getY() * 15 / 100);
+        OWN_HAND_PANE.relocate(windowSize.getX() * 46 / 100, windowSize.getY() * 85 / 100);
 
-        SCOREBOARD_PANE.setPrefSize(screenSizes.getX() * 0.1328125, screenSizes.getY() * 0.5);
-        SCOREBOARD_PANE.relocate(screenSizes.getX() * 10 / 100, screenSizes.getY() * 40 / 100);
+        SCOREBOARD_PANE.setPrefSize(windowSize.getX() * 0.1328125, windowSize.getY() * 0.5);
+        SCOREBOARD_PANE.relocate(windowSize.getX() * 10 / 100, windowSize.getY() * 40 / 100);
         makePaneDraggable(SCOREBOARD_PANE);
 
-        CHAT_PANE.setPrefSize(screenSizes.getX() * 30 / 100, screenSizes.getY() * 70 / 100);
-        CHAT_PANE.relocate(screenSizes.getX() * 60 / 100, screenSizes.getY() * 10 / 100);
+        CHAT_PANE.setPrefSize(windowSize.getX() * 30 / 100, windowSize.getY() * 70 / 100);
+        CHAT_PANE.relocate(windowSize.getX() * 60 / 100, windowSize.getY() * 10 / 100);
         makePaneDraggable(CHAT_PANE);
 
         CHAT_SCROLL_PANE.setPrefWidth(CHAT_PANE.getPrefWidth() * 80 / 100);
@@ -534,18 +646,18 @@ public class GUIGameView extends GUIView {
         scoreboardImage.setPreserveRatio(true);
         TOGGLE_SCOREBOARD_BUTTON.setGraphic(scoreboardImage);
         TOGGLE_SCOREBOARD_BUTTON.toFront();
-        TOGGLE_SCOREBOARD_BUTTON.relocate(40, screenSizes.getY() - 50);
+        TOGGLE_SCOREBOARD_BUTTON.relocate(40, windowSize.getY() - 50);
         TOGGLE_SCOREBOARD_BUTTON.setOnMouseClicked((event) -> togglePane(SCOREBOARD_PANE));
 
         NEW_CHAT_MESSAGE_NOTIFICATION.setRadius(10);
-        NEW_CHAT_MESSAGE_NOTIFICATION.relocate(screenSizes.getX() - 40 - 50 - 20 - 50 + 40, screenSizes.getY() - 50 + 5);
+        NEW_CHAT_MESSAGE_NOTIFICATION.relocate(windowSize.getX() - 40 - 50 - 20 - 50 + 40, windowSize.getY() - 50 + 5);
 
         ImageView chatImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/Client/images/icons/chat.png")));
         chatImage.setFitHeight(30);
         chatImage.setPreserveRatio(true);
         TOGGLE_CHAT_BUTTON.setGraphic(chatImage);
         TOGGLE_CHAT_BUTTON.toFront();
-        TOGGLE_CHAT_BUTTON.relocate(screenSizes.getX() - 40 - 50 - 20 - 50, screenSizes.getY() - 50);
+        TOGGLE_CHAT_BUTTON.relocate(windowSize.getX() - 40 - 50 - 20 - 50, windowSize.getY() - 50);
         TOGGLE_CHAT_BUTTON.setOnMouseClicked((event) -> {
             togglePane(CHAT_PANE);
             NEW_CHAT_MESSAGE_NOTIFICATION.setVisible(false);
@@ -556,13 +668,13 @@ public class GUIGameView extends GUIView {
         leaveImage.setPreserveRatio(true);
         LEAVE_BUTTON.setGraphic(leaveImage);
         LEAVE_BUTTON.toFront();
-        LEAVE_BUTTON.relocate(screenSizes.getX() - 40 - 50, screenSizes.getY() - 50);
+        LEAVE_BUTTON.relocate(windowSize.getX() - 40 - 50, windowSize.getY() - 50);
         LEAVE_BUTTON.setOnMouseClicked((event) -> showQuittingConfirmationPrompt());
 
         //FIXME: does this work?
         GAME_STATE_LABEL.setFont(Font.loadFont(GUIApplication.class.getResourceAsStream("/Client/fonts/MedievalSharp-Regular.ttf"), 20));
         GAME_STATE_LABEL.setPrefSize(180, 150);
-        GAME_STATE_LABEL.relocate(screenSizes.getX() * 34 / 100, screenSizes.getY() * 83.5 / 100);
+        GAME_STATE_LABEL.relocate(windowSize.getX() * 34 / 100, windowSize.getY() * 83.5 / 100);
 
         deleteAllRunningTransitions();
 
@@ -603,6 +715,9 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    /**
+     * Helper function that encapsulates the logic used in showing the fields of opponent players.
+     */
     private void showOpponentsFieldsMiniaturized() {
         OPPONENTS_FIELDS_PANE.getChildren().clear();
 
@@ -645,7 +760,7 @@ public class GUIGameView extends GUIView {
 
                 Label resourceInfo = new Label("" + resourceEntry.getValue());
                 resourceInfo.setPrefWidth(25);
-                resourceInfo.setStyle(RED_WHITE_STYLE + "-fx-font-size: 18px;");
+                resourceInfo.setStyle(LIGHT_DARK_BROWN_STYLE + "-fx-font-size: 18px;");
                 resourceInfo.setAlignment(Pos.CENTER);
 
                 resourceData.getChildren().addAll(image, resourceInfo);
@@ -806,6 +921,10 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    /**
+     * Helper function that encapsulates the logic used in showing the field of the player corresponding
+     * to this client.
+     */
     private void showOwnField() {
         OWN_FIELD_STATS_BOX.getChildren().clear();
 
@@ -819,7 +938,7 @@ public class GUIGameView extends GUIView {
 
             Label resourceInfo = new Label("" + resourceEntry.getValue());
             resourceInfo.setPrefWidth(25);
-            resourceInfo.setStyle(RED_WHITE_STYLE + "-fx-font-size: 18px;");
+            resourceInfo.setStyle(LIGHT_DARK_BROWN_STYLE + "-fx-font-size: 18px;");
             resourceInfo.setAlignment(Pos.CENTER);
 
             resourceData.getChildren().addAll(image, resourceInfo);
@@ -881,7 +1000,7 @@ public class GUIGameView extends GUIView {
                     Dragboard cardDragboard = frontCardView.startDragAndDrop(TransferMode.MOVE);
 
                     Image image = new Image(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.FRONT))), 100, 150, true, true);
-                    cardDragboard.setDragView(image, cardSizes.getX() / 2, cardSizes.getY() / 2);
+                    cardDragboard.setDragView(image, CARD_SIZES.getX() / 2, CARD_SIZES.getY() / 2);
 
                     ClipboardContent cardClipboard = new ClipboardContent();
                     cardClipboard.put(PLACE_CARD_DATA_FORMAT, new GenericPair<>(inHandPosition, Side.FRONT));
@@ -891,7 +1010,7 @@ public class GUIGameView extends GUIView {
                 backCardView.setOnDragDetected((event) -> {
                     Dragboard cardDragboard = backCardView.startDragAndDrop(TransferMode.MOVE);
                     Image image = new Image(String.valueOf(GUIView.class.getResource(card.GUI_SPRITES.get(Side.BACK))), 100, 150, true, true);
-                    cardDragboard.setDragView(image, cardSizes.getX() / 2, cardSizes.getY() / 2);
+                    cardDragboard.setDragView(image, CARD_SIZES.getX() / 2, CARD_SIZES.getY() / 2);
                     ClipboardContent cardClipboard = new ClipboardContent();
                     cardClipboard.put(PLACE_CARD_DATA_FORMAT, new GenericPair<>(inHandPosition, Side.BACK));
                     cardDragboard.setContent(cardClipboard);
@@ -902,6 +1021,9 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    /**
+     * Helper function that encapsulates the logic used in updating the positions of the tokens on the scoreboard.
+     */
     private void updateScoreboard() {
         Platform.runLater(() -> {
             SCOREBOARD_PANE.getChildren().clear();
@@ -974,7 +1096,7 @@ public class GUIGameView extends GUIView {
 
             VBox initialCardsChoiceVBox = new VBox(30);
             initialCardsChoiceVBox.setAlignment(Pos.CENTER);
-            initialCardsChoiceVBox.setPrefSize(screenSizes.getX(), screenSizes.getY() * 60 / 100);
+            initialCardsChoiceVBox.setPrefSize(windowSize.getX(), windowSize.getY() * 60 / 100);
 
             Label cardLabel = new Label("Choose which side you want to play your assigned initial card on: ");
             cardLabel.getStyleClass().add("popupText");
@@ -1024,7 +1146,7 @@ public class GUIGameView extends GUIView {
         Platform.runLater(() -> {
             VBox objectiveChoiceVBox = new VBox(30);
             objectiveChoiceVBox.setAlignment(Pos.CENTER);
-            objectiveChoiceVBox.setPrefSize(screenSizes.getX(), screenSizes.getY() * 60 / 100);
+            objectiveChoiceVBox.setPrefSize(windowSize.getX(), windowSize.getY() * 60 / 100);
 
             Label cardLabel = new Label("Choose which card you want to keep as your secret objective: ");
             cardLabel.getStyleClass().add("popupText");
@@ -1077,7 +1199,7 @@ public class GUIGameView extends GUIView {
         Platform.runLater(() ->
         {
             AnchorPane popupContent = new AnchorPane();
-            popupContent.setPrefSize(screenSizes.getX() * 90 / 100, screenSizes.getY() * 90 / 100);
+            popupContent.setPrefSize(windowSize.getX() * 90 / 100, windowSize.getY() * 90 / 100);
 
             Label playerNameLabel = new Label(
                     player.getNickname() + (thisGame.getCurrentPlayerIndex() > 0 &&
@@ -1121,7 +1243,7 @@ public class GUIGameView extends GUIView {
         OverlayPopup.closeLingeringOpenedPopup();
 
         Platform.runLater(() -> {
-            AWAITING_STATE_BOX.setPrefSize(screenSizes.getX() * 50 / 100, screenSizes.getY() * 40 / 100);
+            AWAITING_STATE_BOX.setPrefSize(windowSize.getX() * 50 / 100, windowSize.getY() * 40 / 100);
             AWAITING_EXIT_BUTTON.setPrefSize(300, 50);
 
             openedAwaitingPopup = drawOverlayPopup(AWAITING_STATE_BOX, false);
@@ -1138,7 +1260,7 @@ public class GUIGameView extends GUIView {
     @Override
     public void leaderboardScreen(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
         Platform.runLater(() -> {
-            LEADERBOARD_VBOX.setPrefSize(screenSizes.getX() * 80 / 100, screenSizes.getY() * 90 / 100);
+            LEADERBOARD_VBOX.setPrefSize(windowSize.getX() * 80 / 100, windowSize.getY() * 90 / 100);
 
             LEADERBOARD_LABEL.setPrefSize(400, 75);
 
@@ -1183,6 +1305,10 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    /**
+     * Helper function that encapsulates the logic used in showing the prompt popup for asking the user to
+     * confirm that they want to quit the game.
+     */
     private void showQuittingConfirmationPrompt() {
         Platform.runLater(() -> {
             VBox quittingConfirmationPopupContent = new VBox();
@@ -1214,6 +1340,12 @@ public class GUIGameView extends GUIView {
         });
     }
 
+    /**
+     * Creates a graphic element representing a message to be added to the chat.
+     *
+     * @param message The message to be added to the chat.
+     * @return The HBox containing the given message.
+     */
     private HBox createMessageElement(String message) {
         HBox messageBox = new HBox(250);
         messageBox.setPadding(new Insets(15, 12, 15, 12));

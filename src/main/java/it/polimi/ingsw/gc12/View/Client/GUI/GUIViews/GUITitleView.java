@@ -18,13 +18,21 @@ import java.util.Objects;
 
 public class GUITitleView extends GUIView {
 
+    /**
+     * The singleton instance of the {@code GUITitleView}.
+     */
     private static GUITitleView titleScreenController = null;
+
     private final Parent SCENE_ROOT;
     private final ImageView CRANIO_CREATIONS_LOGO;
     private final AnchorPane TITLE_SCREEN_BOX;
     private final ImageView TITLE_SCREEN_GAME_LOGO;
     private final Label TITLE_SCREEN_PROMPT;
 
+    /**
+     * Constructs a {@code GUITitleView} instance (private constructor to prevent external instantiation at will).
+     * On initialization, it loads the graphical elements from the correct .fxml file.
+     */
     private GUITitleView() {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/Client/fxml/title_screen.fxml")).load();
@@ -37,6 +45,12 @@ public class GUITitleView extends GUIView {
         TITLE_SCREEN_PROMPT = (Label) SCENE_ROOT.lookup("#titleScreenPrompt");
     }
 
+    /**
+     * Returns the singleton instance of the {@code GUITitleView}, also initializing it if it had never been
+     * instantiated, as per the Singleton pattern.
+     *
+     * @return The singleton instance
+     */
     public static GUITitleView getInstance() {
         if (titleScreenController == null) {
             titleScreenController = new GUITitleView();
@@ -53,13 +67,13 @@ public class GUITitleView extends GUIView {
 
             CRANIO_CREATIONS_LOGO.setImage(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/Client/images/cranio_creations_logo_no_bg.png"))));
             CRANIO_CREATIONS_LOGO.setSmooth(true);
-            CRANIO_CREATIONS_LOGO.setFitWidth(screenSizes.getX() * 40 / 100);
-            CRANIO_CREATIONS_LOGO.setFitHeight(screenSizes.getX() * 40 / 100);
+            CRANIO_CREATIONS_LOGO.setFitWidth(windowSize.getX() * 40 / 100);
+            CRANIO_CREATIONS_LOGO.setFitHeight(windowSize.getX() * 40 / 100);
             CRANIO_CREATIONS_LOGO.setVisible(true);
 
             CRANIO_CREATIONS_LOGO.relocate(
-                    (screenSizes.getX() - CRANIO_CREATIONS_LOGO.getFitWidth()) / 2,
-                    (screenSizes.getY() - CRANIO_CREATIONS_LOGO.getFitHeight()) / 2
+                    (windowSize.getX() - CRANIO_CREATIONS_LOGO.getFitWidth()) / 2,
+                    (windowSize.getY() - CRANIO_CREATIONS_LOGO.getFitHeight()) / 2
             );
 
             FadeTransition logoTransition = new FadeTransition(Duration.millis(3000), CRANIO_CREATIONS_LOGO);
@@ -74,16 +88,16 @@ public class GUITitleView extends GUIView {
                 TITLE_SCREEN_BOX.requestFocus();
             }));
 
-            TITLE_SCREEN_BOX.setPrefSize(screenSizes.getX(), screenSizes.getY());
+            TITLE_SCREEN_BOX.setPrefSize(windowSize.getX(), windowSize.getY());
 
             TITLE_SCREEN_GAME_LOGO.setImage(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/Client/images/only_center_logo_no_bg.png"))));
             TITLE_SCREEN_GAME_LOGO.setSmooth(true);
-            TITLE_SCREEN_GAME_LOGO.setFitWidth(screenSizes.getX() * 40 / 100);
-            TITLE_SCREEN_GAME_LOGO.setFitHeight(screenSizes.getX() * 40 / 100);
+            TITLE_SCREEN_GAME_LOGO.setFitWidth(windowSize.getX() * 40 / 100);
+            TITLE_SCREEN_GAME_LOGO.setFitHeight(windowSize.getX() * 40 / 100);
 
             TITLE_SCREEN_GAME_LOGO.relocate(
-                    (screenSizes.getX() - TITLE_SCREEN_GAME_LOGO.getFitWidth()) / 2,
-                    screenSizes.getY() * 5 / 100
+                    (windowSize.getX() - TITLE_SCREEN_GAME_LOGO.getFitWidth()) / 2,
+                    windowSize.getY() * 5 / 100
             );
             TITLE_SCREEN_GAME_LOGO.toFront();
 

@@ -14,6 +14,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GUIConnectionLoadingView extends GUIView {
 
+    /**
+     * The singleton instance of the {@code GUIConnectionLoadingView}.
+     */
     private static GUIConnectionLoadingView connectionLoadingScreenController = null;
 
     private final Parent SCENE_ROOT;
@@ -24,6 +27,11 @@ public class GUIConnectionLoadingView extends GUIView {
     private final Button YES_BUTTON;
     private final Button NO_BUTTON;
 
+    /**
+     * Constructs a {@code GUIConnectionLoadingView} instance (private constructor to prevent external
+     * instantiation at will).
+     * On initialization, it loads the graphical elements from the correct .fxml file.
+     */
     private GUIConnectionLoadingView() {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/Client/fxml/connection_loading.fxml")).load();
@@ -39,6 +47,12 @@ public class GUIConnectionLoadingView extends GUIView {
         NO_BUTTON = (Button) SCENE_ROOT.lookup("#noButton");
     }
 
+    /**
+     * Returns the singleton instance of the {@code GUIConnectionLoadingView}, also initializing it if it had never been
+     * instantiated, as per the Singleton pattern.
+     *
+     * @return The singleton instance
+     */
     public static GUIConnectionLoadingView getInstance() {
         if (connectionLoadingScreenController == null) {
             connectionLoadingScreenController = new GUIConnectionLoadingView();
@@ -66,8 +80,8 @@ public class GUIConnectionLoadingView extends GUIView {
             addressField.setText("localhost");
         }
 
-        CONNECTION_LOADING_LABEL.relocate((screenSizes.getX() - CONNECTION_LOADING_LABEL.getPrefWidth()) / 2, screenSizes.getY() * 0.45);
-        LOADING_PROGRESS_INDICATOR.relocate((screenSizes.getX() - LOADING_PROGRESS_INDICATOR.getPrefWidth()) / 2, screenSizes.getY() * 0.55);
+        CONNECTION_LOADING_LABEL.relocate((windowSize.getX() - CONNECTION_LOADING_LABEL.getPrefWidth()) / 2, windowSize.getY() * 0.45);
+        LOADING_PROGRESS_INDICATOR.relocate((windowSize.getX() - LOADING_PROGRESS_INDICATOR.getPrefWidth()) / 2, windowSize.getY() * 0.55);
 
         stage.getScene().setRoot(SCENE_ROOT);
 
@@ -84,7 +98,7 @@ public class GUIConnectionLoadingView extends GUIView {
         AtomicBoolean wantsToRetry = new AtomicBoolean(true);
 
         Platform.runLater(() -> {
-            RETRY_CONNECTION_PANE.setPrefSize(screenSizes.getX() * 50 / 100, screenSizes.getY() * 50 / 100);
+            RETRY_CONNECTION_PANE.setPrefSize(windowSize.getX() * 50 / 100, windowSize.getY() * 50 / 100);
 
             String promptText = "It seems " + (
                     causedByNetworkError ?

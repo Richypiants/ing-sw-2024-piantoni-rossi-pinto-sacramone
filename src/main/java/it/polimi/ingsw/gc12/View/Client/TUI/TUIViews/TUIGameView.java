@@ -47,6 +47,14 @@ public class TUIGameView extends TUIView{
         return gameView;
     }
 
+    /**
+     * Renders the TUI sprite of the standard size for the given ClientCard on the specified Side.
+     * It is also able to render null cards.
+     *
+     * @param card The card to be rendered in Ansi characters.
+     * @param side The side to be rendered.
+     * @return The Ansi object containing the formatting information to be printed by the AnsiConsole.
+     */
     private Ansi standardAnsi(ClientCard card, Side side) {
         if (card == null) return Ansi.ansi();
         if (card.ID == -1) return Ansi.ansi();
@@ -70,6 +78,14 @@ public class TUIGameView extends TUIView{
         return sprite;
     }
 
+    /**
+     * Renders the TUI sprite of the upscaled (bigger) size for the given ClientCard on the specified Side.
+     * It is also able to render null cards.
+     *
+     * @param card The card to be rendered in Ansi characters.
+     * @param side The side to be rendered.
+     * @return The Ansi object containing the formatting information to be printed by the AnsiConsole.
+     */
     private Ansi upscaledAnsi(ClientCard card, Side side) {
         if (card.ID == -1) return Ansi.ansi();
 

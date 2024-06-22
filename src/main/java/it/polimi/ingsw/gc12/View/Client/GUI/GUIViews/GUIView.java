@@ -25,24 +25,42 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-//FIXME: consider removing some Platform.runLater() and restricting some of them to necessary actions only
 public class GUIView extends View {
 
+    /**
+     * The main stage of the GUI, shared among all subclasses of this class to simplify managing
+     * the scene and switching the root node at will.
+     */
+    public static Stage stage;
+    /**
+     * The size (width and height) of the window in which the stage is rendered.
+     * These values are set to the screen's width and height only once when the application is launched,
+     * but they may be changed at will to reflect adjustments to the window size if needed.
+     */
+    public static GenericPair<Double, Double> windowSize;
+    /**
+     * The singleton instance of the {@code GUIView}.
+     */
     private static GUIView SINGLETON_GUI_INSTANCE = null;
 
-    public static Stage stage;
-
-    public static GenericPair<Double, Double> screenSizes;
-
-    protected static GenericPair<Double, Double> cardSizes = new GenericPair<>(100.0, 66.0);
-    protected static GenericPair<Double, Double> cornerScaleFactor = new GenericPair<>(2.0 / 9, 2.0 / 5);
-
-    public GUIView() {
+    /**
+     * Constructs an instance of a GUIView. This method is not public in concordance with the
+     * Singleton pattern, but also cannot be private because subclasses need to call it.
+     */
+    protected GUIView() {
     }
 
+    /**
+     * Returns the singleton instance of the {@code GUIView}, also initializing it if it had never been
+     * instantiated, as per the Singleton pattern.
+     * In the latter case, this method also launches the {@code GUIApplication}.
+     *
+     * @return The singleton instance
+     */
     public static GUIView getInstance() {
         if (SINGLETON_GUI_INSTANCE == null) {
-            new Thread(() -> Application.launch(GUIApplication.class)).start(); //starting the GUI thread
+            //Starting the GUI on another thread so that it doesn't block the flow of the current thread.
+            new Thread(() -> Application.launch(GUIApplication.class)).start();
 
             GUITitleView.getInstance();
             GUIConnectionSetupView.getInstance();
@@ -55,8 +73,55 @@ public class GUIView extends View {
         return SINGLETON_GUI_INSTANCE;
     }
 
-    public static void setScreenSizes() {
-        screenSizes = new GenericPair<>(stage.getWidth(), stage.getHeight());
+    /**
+     * Stores new width and height values for the stage window.
+     */
+    public static void setWindowSize() {
+        windowSize = new GenericPair<>(stage.getWidth(), stage.getHeight());
+    }
+
+    /**
+     * Generates a new OverlayPopup having the desired graphic layout and the given content.
+     *
+     * @param popupContent The content to be added to the new popup.
+     * @param isCloseable  The boolean specifying if the popup should contain a standard close button or not.
+     * @return The OverlayPopup newly created.
+     */
+    public static OverlayPopup drawOverlayPopup(Pane popupContent, boolean isCloseable) {
+        OverlayPopup overlayPopup = new OverlayPopup();
+
+        AnchorPane content = new AnchorPane();
+        content.setVisible(false);
+        content.setPrefSize(popupContent.getPrefWidth(), popupContent.getPrefHeight());
+        content.getChildren().add(popupContent);
+        popupContent.setVisible(true);
+
+        if (isCloseable) {
+            ImageView closeImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/Client/images/icons/close.png")));
+            closeImage.setFitHeight(20);
+            closeImage.setPreserveRatio(true);
+
+            Button XButton = new Button();
+            XButton.setGraphic(closeImage);
+            XButton.setPrefSize(25, 25);
+            XButton.setStyle("-fx-border-radius: 5; -fx-border-width: 1px; -fx-border-color: black; -fx-background-color: white");
+            XButton.setOnMouseClicked((event) -> overlayPopup.hide());
+
+            content.getChildren().add(XButton);
+            XButton.relocate(content.getPrefWidth() - 50, 20);
+        }
+
+        overlayPopup.getContent().add(content);
+        content.getStylesheets().add(Objects.requireNonNull(GUIView.class.getResource("/Client/style.css")).toExternalForm());
+
+        overlayPopup.setAutoFix(true);
+        overlayPopup.centerOnScreen();
+        overlayPopup.setHideOnEscape(false);
+
+        overlayPopup.setX((windowSize.getX() - popupContent.getPrefWidth()) / 2);
+        overlayPopup.setY((windowSize.getY() - popupContent.getPrefHeight()) / 2);
+
+        return overlayPopup;
     }
 
     @Override
@@ -94,43 +159,9 @@ public class GUIView extends View {
         });
     }
 
-    public static OverlayPopup drawOverlayPopup(Pane popupContent, boolean isCloseable) {
-        OverlayPopup overlayPopup = new OverlayPopup();
-
-        AnchorPane content = new AnchorPane();
-        content.setVisible(false);
-        content.setPrefSize(popupContent.getPrefWidth(), popupContent.getPrefHeight());
-        content.getChildren().add(popupContent);
-        popupContent.setVisible(true);
-
-        if (isCloseable) {
-            ImageView closeImage = new ImageView(String.valueOf(GUIGameView.class.getResource("/Client/images/icons/close.png")));
-            closeImage.setFitHeight(20);
-            closeImage.setPreserveRatio(true);
-
-            Button XButton = new Button();
-            XButton.setGraphic(closeImage);
-            XButton.setPrefSize(25, 25);
-            XButton.setStyle("-fx-border-radius: 5; -fx-border-width: 1px; -fx-border-color: black; -fx-background-color: white");
-            XButton.setOnMouseClicked((event) -> overlayPopup.hide());
-
-            content.getChildren().add(XButton);
-            XButton.relocate(content.getPrefWidth() - 50, 20);
-        }
-
-        overlayPopup.getContent().add(content);
-        content.getStylesheets().add(Objects.requireNonNull(GUIView.class.getResource("/Client/style.css")).toExternalForm());
-
-        overlayPopup.setAutoFix(true);
-        overlayPopup.centerOnScreen();
-        overlayPopup.setHideOnEscape(false);
-
-        overlayPopup.setX((screenSizes.getX() - popupContent.getPrefWidth()) / 2);
-        overlayPopup.setY((screenSizes.getY() - popupContent.getPrefHeight()) / 2);
-
-        return overlayPopup;
-    }
-
+    /**
+     * Shows the connection loading screen on the GUI.
+     */
     protected void connectionLoadingScreen() {
         GUIConnectionLoadingView.getInstance().connectionLoadingScreen();
     }

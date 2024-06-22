@@ -17,7 +17,11 @@ import java.io.IOException;
 
 public class GUILobbiesView extends GUIView {
 
+    /**
+     * The singleton instance of the {@code GUILobbiesView}.
+     */
     private static GUILobbiesView lobbiesScreenController = null;
+
     private final Parent SCENE_ROOT;
     private final VBox MENU_BUTTONS_BOX;
     private final Label OWN_NICKNAME_LABEL;
@@ -34,6 +38,11 @@ public class GUILobbiesView extends GUIView {
     private final ScrollPane LOBBIES_PANE;
     private final VBox LOBBIES_LIST;
 
+    /**
+     * Constructs a {@code GUILobbiesView} instance (private constructor to prevent external
+     * instantiation at will).
+     * On initialization, it loads the graphical elements from the correct .fxml file.
+     */
     private GUILobbiesView() {
         try {
             SCENE_ROOT = new FXMLLoader(GUIView.class.getResource("/Client/fxml/lobby_menu.fxml")).load();
@@ -56,6 +65,12 @@ public class GUILobbiesView extends GUIView {
         LOBBIES_LIST = (VBox) LOBBIES_PANE.getContent();
     }
 
+    /**
+     * Returns the singleton instance of the {@code GUILobbiesView}, also initializing it if it had never been
+     * instantiated, as per the Singleton pattern.
+     *
+     * @return The singleton instance
+     */
     public static GUILobbiesView getInstance() {
         if (lobbiesScreenController == null) {
             lobbiesScreenController = new GUILobbiesView();
@@ -68,12 +83,12 @@ public class GUILobbiesView extends GUIView {
         OverlayPopup.closeLingeringOpenedPopup();
 
         Platform.runLater(() -> {
-            MENU_BUTTONS_BOX.relocate(screenSizes.getX() * 9 / 100, screenSizes.getY() * 9 / 16);
+            MENU_BUTTONS_BOX.relocate(windowSize.getX() * 9 / 100, windowSize.getY() * 9 / 16);
 
             OWN_NICKNAME_LABEL.setText("Your nickname: " + VIEWMODEL.getOwnNickname());
 
-            LOBBY_CREATION_POPUP_BOX.setPrefSize(screenSizes.getX() * 60 / 100, screenSizes.getY() * 60 / 100);
-            CHANGE_NICKNAME_POPUP_BOX.setPrefSize(screenSizes.getX() * 60 / 100, screenSizes.getY() * 60 / 100);
+            LOBBY_CREATION_POPUP_BOX.setPrefSize(windowSize.getX() * 60 / 100, windowSize.getY() * 60 / 100);
+            CHANGE_NICKNAME_POPUP_BOX.setPrefSize(windowSize.getX() * 60 / 100, windowSize.getY() * 60 / 100);
 
             PLAYERS_NUMBER_SELECTOR.setMinWidth(100);
             PLAYERS_NUMBER_SELECTOR.setItems(FXCollections.observableArrayList(2, 3, 4));
@@ -115,8 +130,8 @@ public class GUILobbiesView extends GUIView {
             BACK_TO_TITLE_SCREEN_BUTTON.setPrefSize(300, 50);
             BACK_TO_TITLE_SCREEN_BUTTON.setOnAction(event -> ViewState.getCurrentState().quit());
 
-            LOBBIES_PANE.setPrefSize(screenSizes.getX() * 89 / 100 - 320, screenSizes.getY() * 13 / 16);
-            LOBBIES_PANE.relocate(screenSizes.getX() * 9 / 100 + 320, (screenSizes.getY() - LOBBIES_PANE.getPrefHeight()) / 2);
+            LOBBIES_PANE.setPrefSize(windowSize.getX() * 89 / 100 - 320, windowSize.getY() * 13 / 16);
+            LOBBIES_PANE.relocate(windowSize.getX() * 9 / 100 + 320, (windowSize.getY() - LOBBIES_PANE.getPrefHeight()) / 2);
 
             LOBBIES_LIST.setMinHeight(LOBBIES_PANE.getPrefHeight() * 98 / 100);
             LOBBIES_LIST.setPrefWidth(LOBBIES_PANE.getPrefWidth() * 98 / 100);
@@ -145,6 +160,12 @@ public class GUILobbiesView extends GUIView {
         Platform.runLater(() -> OWN_NICKNAME_LABEL.setText("Your nickname: " + VIEWMODEL.getOwnNickname()));
     }
 
+    /**
+     * Creates a graphic element representing a lobby to be added to the lobbies' ScrollPane.
+     *
+     * @param lobby The lobby to be added to the pane.
+     * @return The HBox containing the information of the given lobby.
+     */
     private HBox createLobbyListElement(Lobby lobby) {
         HBox lobbyBox = new HBox(20);
         lobbyBox.getStyleClass().add("lobbyBox");
