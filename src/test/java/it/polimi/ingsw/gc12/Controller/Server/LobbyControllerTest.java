@@ -71,9 +71,7 @@ class LobbyControllerTest {
 
         LobbyController associatedLobbyController = (LobbyController) lobbyCreatorPlayer.getController();
 
-        Server.getInstance().commandExecutorsPool.submit(() -> {
-            associatedLobbyController.leaveLobby(joiningPlayer, isInactive);
-        });
+        Server.getInstance().commandExecutorsPool.submit(() -> associatedLobbyController.leaveLobby(joiningPlayer, isInactive));
 
         synchronized (this) {
             wait(10);
@@ -99,9 +97,7 @@ class LobbyControllerTest {
 
         assertInstanceOf(LobbyController.class, joiningPlayer.getController());
 
-        Server.getInstance().commandExecutorsPool.submit(() -> {
-            associatedLobbyController.createTimeoutTask(joiningPlayer).run();
-        });
+        Server.getInstance().commandExecutorsPool.submit(() -> associatedLobbyController.createTimeoutTask(joiningPlayer).run());
 
         synchronized (this) {
             wait(10);

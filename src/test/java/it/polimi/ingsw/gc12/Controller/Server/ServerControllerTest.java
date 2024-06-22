@@ -60,13 +60,11 @@ public class ServerControllerTest {
             @Override
             public void run() {
             }
-
-            ;
         });
 
 
         return session;
-    };
+    }
 
     /**
      * A stub implementation of the VirtualClient used for testing.
@@ -119,6 +117,7 @@ public class ServerControllerTest {
         public Exception receivedException = null;
     public int lastReceivedCardID;
         public String receivedMessage;
+    public List<Triplet<String, Integer, Integer>> receivedLeaderboard;
 
         @Override
         public void throwException(Exception e) {
@@ -197,7 +196,7 @@ public class ServerControllerTest {
 
         @Override
         public void endGame(List<Triplet<String, Integer, Integer>> pointsStats, boolean gameEndedDueToDisconnections) {
-
+            receivedLeaderboard = pointsStats;
         }
 
         @Override

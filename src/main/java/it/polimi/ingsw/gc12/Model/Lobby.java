@@ -16,11 +16,11 @@ import static it.polimi.ingsw.gc12.Controller.Server.ServerController.MODEL;
 
 /**
  * Represents a game lobby where players wait for new games to start.
- *
+ * <p>
  * This class extends the {@link Room} class and manages the list of players who have joined the lobby.
  * It also handles the color management, showing their availability to the players and
  * keeps track of the maximum number of players allowed in the lobby.
- *
+ * <p>
  * As an implementation of the {@link Serializable} interface, instances of this class can be serialized,
  * allowing for network transmission of lobby information.
  */

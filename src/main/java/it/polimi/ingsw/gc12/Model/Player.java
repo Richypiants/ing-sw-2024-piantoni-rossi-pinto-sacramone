@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 /**
  * Represents a player outside of games, typically in a lobby.
- *
+ * <p>
  * This class stores basic information about a player such as their nickname and color.
  * It implements {@link Serializable} to allow player instances to be serialized.
  */

@@ -267,7 +267,6 @@ public class ClientController implements ClientControllerInterface {
         }
     }
 
-    //FIXME: implementare visivamente numero di turni alla fine
     /**
      * Initiates a transition in the game state based on the server's notification.
      *
@@ -276,10 +275,14 @@ public class ClientController implements ClientControllerInterface {
      * @param turnsLeftUntilGameEnds  The number of turns left until the game ends.
      */
     public void transition(int round, int currentPlayerIndex, int turnsLeftUntilGameEnds) {
+        ClientGame thisGame = VIEWMODEL.getCurrentGame();
         if(round != 0)
-            VIEWMODEL.getCurrentGame().setCurrentRound(round);
+            thisGame.setCurrentRound(round);
 
-        VIEWMODEL.getCurrentGame().setCurrentPlayerIndex(currentPlayerIndex);
+        if (turnsLeftUntilGameEnds != -1)
+            thisGame.setTurnsLeftUntilGameEnds(turnsLeftUntilGameEnds);
+
+        thisGame.setCurrentPlayerIndex(currentPlayerIndex);
 
         ((GameScreenState) ViewState.getCurrentState()).transition();
         ViewState.getCurrentState().executeState();
@@ -313,6 +316,8 @@ public class ClientController implements ClientControllerInterface {
                 "Player " + nickname + " has " + (targetPlayer.isActive() ? "reconnected" : "disconnected"),
                 false
         );
+
+        ViewState.getCurrentState().executeState();
     }
 
     /**

@@ -87,7 +87,7 @@ class ClientGameTest {
         clientGame.removeCardFromHand(clientGame.getCardsInHand().getFirst());
         assertEquals(numOfCardsInHand-1 , clientGame.getCardsInHand().size());
 
-        ClientCard cardToAdd = viewModel.CARDS_LIST.get(40);
+        ClientCard cardToAdd = ViewModel.CARDS_LIST.get(40);
 
         clientGame.addCardToHand(cardToAdd);
         assertEquals(numOfCardsInHand , clientGame.getCardsInHand().size());
@@ -101,8 +101,8 @@ class ClientGameTest {
         assertEquals(numOfPlacedGold, clientGame.getPlacedGolds().length);
         assertEquals(numOfPlacedCommonObjectives, clientGame.getCommonObjectives().length);
 
-        ClientCard chosenTopResource = viewModel.CARDS_LIST.get(30);
-        ClientCard chosenTopGold = viewModel.CARDS_LIST.get(50);
+        ClientCard chosenTopResource = ViewModel.CARDS_LIST.get(30);
+        ClientCard chosenTopGold = ViewModel.CARDS_LIST.get(50);
 
         clientGame.setTopDeckResourceCard(chosenTopResource);
         clientGame.setTopDeckGoldCard(chosenTopGold);
@@ -113,9 +113,9 @@ class ClientGameTest {
         int GOLD_CARD_OFFSET = 41;
         int OBJECTIVE_CARD_OFFSET = 87;
         for(int index = 0; index < 2; index++) {
-            ClientCard chosenReplacedResource = viewModel.CARDS_LIST.get(index);
-            ClientCard chosenReplacedGold = viewModel.CARDS_LIST.get(index+GOLD_CARD_OFFSET);
-            ClientCard chosenReplacedObjective = viewModel.CARDS_LIST.get(index+OBJECTIVE_CARD_OFFSET);
+            ClientCard chosenReplacedResource = ViewModel.CARDS_LIST.get(index);
+            ClientCard chosenReplacedGold = ViewModel.CARDS_LIST.get(index + GOLD_CARD_OFFSET);
+            ClientCard chosenReplacedObjective = ViewModel.CARDS_LIST.get(index + OBJECTIVE_CARD_OFFSET);
 
             clientGame.setPlacedResources(chosenReplacedResource, index);
             clientGame.setPlacedGold(chosenReplacedGold, index);
@@ -130,7 +130,7 @@ class ClientGameTest {
 
     @Test
     void assertionsOnOwnObjective(){
-        ClientCard chosenObjective = viewModel.CARDS_LIST.get(100);
+        ClientCard chosenObjective = ViewModel.CARDS_LIST.get(100);
 
         clientGame.setOwnObjective(chosenObjective);
         assertNotNull(clientGame.getOwnObjective());
@@ -154,6 +154,18 @@ class ClientGameTest {
 
         clientGame.setCurrentPlayerIndex(desiredCurrentPlayerIndex);
         assertEquals(desiredCurrentPlayerIndex, clientGame.getCurrentPlayerIndex());
+    }
+
+    @Test
+    void assertionsOnTurnsLeftUntilFinalPhase() {
+        //Since the game was sent during the initialPhase, the counter of turns is set to -1.
+        assertEquals(-1, clientGame.getTurnsLeftUntilGameEnds());
+
+        int desiredTurnsLeftUntilTheGameEnds = 2;
+
+        clientGame.setTurnsLeftUntilGameEnds(desiredTurnsLeftUntilTheGameEnds);
+        assertEquals(desiredTurnsLeftUntilTheGameEnds, clientGame.getTurnsLeftUntilGameEnds());
+
     }
 
     @Test

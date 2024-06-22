@@ -37,7 +37,7 @@ public class ServerJSONParser extends JSONParser {
     private static class PointsConditionAdapter extends TypeAdapter<PointsCondition> {
         //This method is unused and overwritten due to the extends.
         @Override
-        public void write(JsonWriter out, PointsCondition condition) throws IOException {
+        public void write(JsonWriter out, PointsCondition condition) {
             // Unused
         }
 
@@ -89,7 +89,7 @@ public class ServerJSONParser extends JSONParser {
     private static class ResourcesConditionAdapter extends TypeAdapter<ResourcesCondition> {
         //This method is unused and only implemented due to the extends.
         @Override
-        public void write(JsonWriter out, ResourcesCondition condition) throws IOException {
+        public void write(JsonWriter out, ResourcesCondition condition) {
         }
 
         @Override

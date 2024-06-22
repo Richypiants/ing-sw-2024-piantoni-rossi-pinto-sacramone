@@ -18,10 +18,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static it.polimi.ingsw.gc12.Controller.Server.ServerControllerTest.createNetworkSessionStub;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class VictoryCalculationStateTest {
 
@@ -86,6 +88,31 @@ class VictoryCalculationStateTest {
         assertInstanceOf(SetLobbiesCommand.class, receivedCommandsListPlayer1.getLast());
         assertInstanceOf(SetLobbiesCommand.class, receivedCommandsListPlayer2.getLast());
 
+    }
+
+    @Test
+    void correctLeaderboardOnWinForDisconnections() throws Exception {
+        game.getCurrentPlayer().increasePoints(20);
+        game.getCurrentPlayer().toggleActive();
+        gameController.getCurrentState().placeCard(game.getCurrentPlayer(), new GenericPair<>(1, 1), game.getCurrentPlayer().getCardsInHand().getFirst(), Side.FRONT);
+        for (int i = 0; i < 7; i++) {
+            try {
+                gameController.getCurrentState().transition();
+            } catch (NoSuchElementException ignored) {
+            } //FIXME: why is it needed...
+        }
+
+        List<ClientCommand> receivedCommandsListPlayer1 = ((ServerControllerTest.VirtualClientImpl) ((ServerListener) client1.getListener()).getVirtualClient()).receivedCommandsList;
+        List<ClientCommand> receivedCommandsListPlayer2 = ((ServerControllerTest.VirtualClientImpl) ((ServerListener) client2.getListener()).getVirtualClient()).receivedCommandsList;
+
+        assertInstanceOf(EndGameCommand.class, receivedCommandsListPlayer1.get(receivedCommandsListPlayer1.size() - 2));
+        assertInstanceOf(EndGameCommand.class, receivedCommandsListPlayer2.get(receivedCommandsListPlayer2.size() - 2));
+
+        receivedCommandsListPlayer1.getFirst().execute(
+                ((ServerControllerTest.VirtualClientImpl) ((ServerListener) client1.getListener()).getVirtualClient()).myClientController
+        );
+
+        assertNotEquals(((ServerControllerTest.VirtualClientImpl) ((ServerListener) client1.getListener()).getVirtualClient()).myClientController.receivedLeaderboard.getFirst().getX(), game.getCurrentPlayer().getNickname());
     }
 
     @Test

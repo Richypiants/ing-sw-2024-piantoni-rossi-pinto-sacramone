@@ -47,7 +47,7 @@ class ClientPlayerTest {
 
     @Test
     void successfulPlacedCard(){
-        ClientCard placedCard = viewModel.CARDS_LIST.get(1);
+        ClientCard placedCard = ViewModel.CARDS_LIST.get(1);
         GenericPair<Integer, Integer> coordinatePosition = new GenericPair<>(0, 0);
         Side placedSide = Side.FRONT;
 

@@ -58,7 +58,7 @@ public class TUIConnectionView extends TUIView {
         System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
 
         clearTerminal();
-        String nickname = "";
+        String nickname;
         boolean lastInputWasInvalid = false;
         final int MAX_NICK_LENGTH = 10;
 

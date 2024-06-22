@@ -140,9 +140,7 @@ public class GUILobbiesView extends GUIView {
 
     @Override
     public void showNickname() {
-        Platform.runLater(() -> {
-            OWN_NICKNAME_LABEL.setText("Your nickname: " + VIEWMODEL.getOwnNickname());
-        });
+        Platform.runLater(() -> OWN_NICKNAME_LABEL.setText("Your nickname: " + VIEWMODEL.getOwnNickname()));
     }
 
     private HBox createLobbyListElement(Lobby lobby) {

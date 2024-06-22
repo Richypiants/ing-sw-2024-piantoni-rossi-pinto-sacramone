@@ -130,7 +130,12 @@ public class TUIGameView extends TUIView{
         ClientGame thisGame = VIEWMODEL.getCurrentGame();
 
         Ansi printedMessage = thisGame.getCurrentPlayerIndex() != -1 ?
-                ansi().cursor(42, 2).bold().a("It is ").fg(9).a(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname()).reset().bold().a("'s turn! Your available commands are: ") :
+                ansi().cursor(42, 2).bold()
+                        .a(
+                                (thisGame.getTurnsLeftUntilGameEnds() == -1 ? "" : "[" + thisGame.getTurnsLeftUntilGameEnds() + " TURNS LEFT] ") +
+                                        "It is "
+                        ).fg(9).a(thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname())
+                        .reset().bold().a("'s turn! Your available commands are: ") :
                 ViewState.getCurrentState() instanceof AwaitingReconnectionState ?
                         ansi().cursor(42, 2).bold().a("[GAME PAUSED] Awaiting for reconnection of other players...") :
                         ansi().cursor(42, 2).bold().a("[SETUP PHASE] Every player needs to do an action! Your available commands are: ");

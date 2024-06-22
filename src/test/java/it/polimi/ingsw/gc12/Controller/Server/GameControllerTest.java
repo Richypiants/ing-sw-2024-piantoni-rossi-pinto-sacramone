@@ -39,18 +39,14 @@ class GameControllerTest {
             @Override
             public void run() {
             }
-
-            ;
         });
 
         return session;
     }
 
-    ;
-
     static NetworkSession inGamePlayer_1;
     static NetworkSession inGamePlayer_2;
-    static ConnectionController connectionController = ConnectionController.getInstance();;
+    static ConnectionController connectionController = ConnectionController.getInstance();
 
     static GameController gameAssociatedController;
 

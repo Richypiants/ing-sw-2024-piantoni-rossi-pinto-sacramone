@@ -71,13 +71,13 @@ class PlayerTurnPlayStateTest {
     }
 
     @Test
-    void correctThrowsExceptionTest() throws Exception {
+    void correctThrowsExceptionTest() {
         assertThrows(UnexpectedPlayerException.class, () -> gameController.getCurrentState().placeCard(game.getPlayers().getLast(), new GenericPair<>(1, 1), game.getPlayers().getLast().getCardsInHand().getFirst(), Side.FRONT));
 
     }
 
     @Test
-    void transitionFromDisconnectedPlayerTest() throws Exception {
+    void transitionFromDisconnectedPlayerTest() {
         gameController.getCurrentState().playerDisconnected(game.getCurrentPlayer());
         assertInstanceOf(PlayerTurnDrawState.class, gameController.getCurrentState());
     }
