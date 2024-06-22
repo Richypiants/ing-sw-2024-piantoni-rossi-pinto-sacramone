@@ -385,6 +385,8 @@ public class GUIGameView extends GUIView {
     }
 
     private void resetGameScreen() {
+        OverlayPopup.closeLingeringOpenedPopup();
+
         thisGame = VIEWMODEL.getCurrentGame();
         thisPlayer = thisGame.getThisPlayer();
 
@@ -555,11 +557,7 @@ public class GUIGameView extends GUIView {
         LEAVE_BUTTON.setGraphic(leaveImage);
         LEAVE_BUTTON.toFront();
         LEAVE_BUTTON.relocate(screenSizes.getX() - 40 - 50, screenSizes.getY() - 50);
-        LEAVE_BUTTON.setOnMouseClicked((event) -> {
-            resetGameScreen();
-            ViewState.getCurrentState().quit();
-            shouldReset = true;
-        });
+        LEAVE_BUTTON.setOnMouseClicked((event) -> showQuittingConfirmationPrompt());
 
         //FIXME: does this work?
         GAME_STATE_LABEL.setFont(Font.loadFont(GUIApplication.class.getResourceAsStream("/Client/fonts/MedievalSharp-Regular.ttf"), 20));
@@ -1120,6 +1118,8 @@ public class GUIGameView extends GUIView {
 
     @Override
     public void awaitingScreen() {
+        OverlayPopup.closeLingeringOpenedPopup();
+
         Platform.runLater(() -> {
             AWAITING_STATE_BOX.setPrefSize(screenSizes.getX() * 50 / 100, screenSizes.getY() * 40 / 100);
             AWAITING_EXIT_BUTTON.setPrefSize(300, 50);
@@ -1127,10 +1127,8 @@ public class GUIGameView extends GUIView {
             openedAwaitingPopup = drawOverlayPopup(AWAITING_STATE_BOX, false);
 
             AWAITING_EXIT_BUTTON.setOnMouseClicked((mouseEvent -> {
-                resetGameScreen();
-                ViewState.getCurrentState().quit();
+                showQuittingConfirmationPrompt();
                 openedAwaitingPopup.hide();
-                shouldReset = true;
             }));
 
             openedAwaitingPopup.show(stage);
@@ -1182,6 +1180,37 @@ public class GUIGameView extends GUIView {
             }));
 
             createdPopup.show(stage);
+        });
+    }
+
+    private void showQuittingConfirmationPrompt() {
+        Platform.runLater(() -> {
+            VBox quittingConfirmationPopupContent = new VBox();
+            quittingConfirmationPopupContent.getStyleClass().add("decoratedPopup");
+            quittingConfirmationPopupContent.setPrefSize(600, 350);
+
+            Label quittingConfirmationLabel = new Label("Are you sure you want to quit?");
+            quittingConfirmationLabel.getStyleClass().add("popupText");
+
+            Button exitButton = new Button("BACK TO TITLE SCREEN");
+            exitButton.getStyleClass().add("rectangularButton");
+            exitButton.setMaxWidth(350);
+
+            quittingConfirmationPopupContent.getChildren().addAll(quittingConfirmationLabel, exitButton);
+
+            VBox.setMargin(quittingConfirmationLabel, new Insets(30, 30, 0, 30));
+            VBox.setMargin(exitButton, new Insets(0, 0, 30, 0));
+
+            OverlayPopup quittingConfirmationPopup = drawOverlayPopup(quittingConfirmationPopupContent, true);
+
+            exitButton.setOnMouseClicked((event) -> {
+                resetGameScreen();
+                ViewState.getCurrentState().quit();
+                shouldReset = true;
+            });
+
+            quittingConfirmationPopup.centerOnScreen();
+            quittingConfirmationPopup.show(stage);
         });
     }
 

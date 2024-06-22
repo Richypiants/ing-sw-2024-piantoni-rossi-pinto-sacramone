@@ -94,20 +94,6 @@ public class GUIView extends View {
         });
     }
 
-    protected void connectionLoadingScreen() {
-        GUIConnectionLoadingView.getInstance().connectionLoadingScreen();
-    }
-
-    @Override
-    public void titleScreen() {
-        GUITitleView.getInstance().titleScreen();
-    }
-
-    @Override
-    public void connectionSetupScreen() {
-        GUIConnectionSetupView.getInstance().connectionSetupScreen();
-    }
-
     public static OverlayPopup drawOverlayPopup(Pane popupContent, boolean isCloseable) {
         OverlayPopup overlayPopup = new OverlayPopup();
 
@@ -145,6 +131,20 @@ public class GUIView extends View {
         return overlayPopup;
     }
 
+    protected void connectionLoadingScreen() {
+        GUIConnectionLoadingView.getInstance().connectionLoadingScreen();
+    }
+
+    @Override
+    public void titleScreen() {
+        GUITitleView.getInstance().titleScreen();
+    }
+
+    @Override
+    public void connectionSetupScreen() {
+        GUIConnectionSetupView.getInstance().connectionSetupScreen();
+    }
+
     @Override
     public void connectedConfirmation() {
     }
@@ -161,6 +161,8 @@ public class GUIView extends View {
 
     @Override
     public void disconnectedScreen() {
+        OverlayPopup.closeLingeringOpenedPopup();
+
         AtomicReference<OverlayPopup> reconnectingPopup = new AtomicReference<>();
 
         Platform.runLater(() -> {
@@ -173,7 +175,7 @@ public class GUIView extends View {
 
             Button exitButton = new Button("BACK TO TITLE SCREEN");
             exitButton.getStyleClass().add("rectangularButton");
-            exitButton.setMaxWidth(300);
+            exitButton.setMaxWidth(350);
 
             reconnectingPopupContent.getChildren().addAll(reconnectingLabel, exitButton);
 
@@ -205,7 +207,25 @@ public class GUIView extends View {
 
     @Override
     public void quittingScreen() {
-        //TODO: implement quitting screen for GUI
+        OverlayPopup.closeLingeringOpenedPopup();
+
+        Platform.runLater(() -> {
+            VBox quittingPopupContent = new VBox();
+            quittingPopupContent.getStyleClass().add("decoratedPopup");
+            quittingPopupContent.setPrefSize(400, 250);
+
+            Label quittingLabel = new Label("Returning to title screen...");
+            quittingLabel.getStyleClass().add("popupText");
+
+            quittingPopupContent.getChildren().add(quittingLabel);
+
+            VBox.setMargin(quittingLabel, new Insets(30, 30, 30, 30));
+
+            OverlayPopup quittingPopup = drawOverlayPopup(quittingPopupContent, false);
+
+            quittingPopup.centerOnScreen();
+            quittingPopup.show(stage);
+        });
     }
 
     @Override

@@ -48,6 +48,8 @@ public class GUIConnectionLoadingView extends GUIView {
 
     @Override
     protected void connectionLoadingScreen() {
+        OverlayPopup.closeLingeringOpenedPopup();
+
         AnchorPane titleScreenPane = (AnchorPane) stage.getScene().getRoot().lookup("#connectionPane");
         VBox connectionSetupBox = (VBox) titleScreenPane.lookup("#connectionSetupBox");
 

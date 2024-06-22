@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.View.Client.GUI.GUIViews;
 
+import it.polimi.ingsw.gc12.View.Client.GUI.OverlayPopup;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
@@ -57,6 +58,8 @@ public class GUIConnectionSetupView extends GUIView {
 
     @Override
     public void connectionSetupScreen() {
+        OverlayPopup.closeLingeringOpenedPopup();
+
         CONNECTION_TITLE_SCREEN_GAME_LOGO.setImage(new Image(Objects.requireNonNull(GUIView.class.getResourceAsStream("/Client/images/only_center_logo_no_bg.png"))));
         CONNECTION_TITLE_SCREEN_GAME_LOGO.setSmooth(true);
         CONNECTION_TITLE_SCREEN_GAME_LOGO.setFitWidth(screenSizes.getX() * 40 / 100);

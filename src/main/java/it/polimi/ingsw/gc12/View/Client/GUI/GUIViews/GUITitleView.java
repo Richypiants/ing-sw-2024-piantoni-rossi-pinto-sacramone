@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.View.Client.GUI.GUIViews;
 
+import it.polimi.ingsw.gc12.View.Client.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
 import javafx.animation.*;
 import javafx.application.Platform;
@@ -45,6 +46,8 @@ public class GUITitleView extends GUIView {
 
     @Override
     public void titleScreen() {
+        OverlayPopup.closeLingeringOpenedPopup();
+
         Platform.runLater(() -> {
             stage.getScene().setRoot(SCENE_ROOT);
 

@@ -65,6 +65,8 @@ public class GUILobbiesView extends GUIView {
 
     @Override
     public void lobbiesScreen() {
+        OverlayPopup.closeLingeringOpenedPopup();
+
         Platform.runLater(() -> {
             MENU_BUTTONS_BOX.relocate(screenSizes.getX() * 9 / 100, screenSizes.getY() * 9 / 16);
 

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc12.View.Client.GUI;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
@@ -12,6 +13,7 @@ public class OverlayPopup extends Popup {
     private static final AnchorPane DARKENING_PANE = generateDarkeningPane();
 
     private Window ownerWindow = null;
+    private Node ownerRoot = null;
     private ChangeListener<Boolean> ownerWindowFocusedListener;
     private static OverlayPopup openedPopup = null;
 
@@ -28,12 +30,21 @@ public class OverlayPopup extends Popup {
         return darkening;
     }
 
+    public static void closeLingeringOpenedPopup() {
+        Platform.runLater(() -> {
+            if (openedPopup != null) {
+                openedPopup.hide();
+                openedPopup = null;
+            }
+        });
+    }
+
     private void darken() {
         if (ownerWindow == null) return;
 
-        Node root = ownerWindow.getScene().getRoot();
+        ownerRoot = ownerWindow.getScene().getRoot();
 
-        if (root instanceof Pane pane) {
+        if (ownerRoot instanceof Pane pane) {
             pane.setDisable(true);
             DARKENING_PANE.setPrefSize(ownerWindow.getWidth(), ownerWindow.getHeight());
             pane.getChildren().add(DARKENING_PANE);
@@ -46,6 +57,7 @@ public class OverlayPopup extends Popup {
         openedPopup = this;
 
         ownerWindow = window;
+        ownerRoot = window.getScene().getRoot();
         darken();
         getContent().getFirst().setVisible(true);
         if (ownerWindow.focusedProperty().get()) super.show(window);
@@ -71,9 +83,7 @@ public class OverlayPopup extends Popup {
 
         if (ownerWindow == null) return;
 
-        Node root = ownerWindow.getScene().getRoot();
-
-        if (root instanceof Pane pane) {
+        if (ownerRoot instanceof Pane pane) {
             pane.getChildren().remove(DARKENING_PANE);
             pane.setDisable(false);
         }
