@@ -4,10 +4,19 @@ import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
 
 import java.util.List;
 
-public class AwaitingReconnectionState extends GameScreenState{
+/**
+ * Represents the state of the game client where the game is paused awaiting reconnection from disconnected players.
+ * Extends {@link GameScreenState}.
+ */
+public class AwaitingReconnectionState extends GameScreenState {
 
     private final ViewState LAST_STATE;
 
+    /**
+     * Constructs an AwaitingReconnectionState with the last active state before entering this state.
+     *
+     * @param lastState The last active state before entering the awaiting reconnection state.
+     */
     public AwaitingReconnectionState(ViewState lastState) {
         this.LAST_STATE = lastState;
         TUICommands = List.of(
@@ -16,22 +25,36 @@ public class AwaitingReconnectionState extends GameScreenState{
         );
     }
 
+    /**
+     * Executes the behavior of the awaiting reconnection state by displaying the awaiting screen on the selected view.
+     */
     @Override
     public void executeState() {
         ViewState.selectedView.awaitingScreen();
     }
 
-    //Never called at the moment and thus useless, as an awaiting game has one and only one active player by definition,
-    // and reconnecting means that there will be two active players, thus exiting the waiting state.
+    /**
+     * Restores the screen state, though currently unused, as awaiting game states have only one active player by definition,
+     * and reconnecting means there will be two active players, so you can't reconnect to a game which is in this state.
+     */
     @Override
-    public void restoreScreenState(){
+    public void restoreScreenState() {
+        // Not currently used
     }
 
+    /**
+     * Transitions back to the last active state before entering the awaiting reconnection state.
+     */
     @Override
     public void transition() {
         ViewState.currentState = LAST_STATE;
     }
 
+    /**
+     * Returns a string representation of the awaiting reconnection state.
+     *
+     * @return The string "awaiting state".
+     */
     @Override
     public String toString() {
         return "awaiting state";

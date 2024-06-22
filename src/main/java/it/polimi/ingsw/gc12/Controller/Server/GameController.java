@@ -19,26 +19,61 @@ import it.polimi.ingsw.gc12.Utilities.GenericPair;
 
 import java.util.Optional;
 
+/**
+ * The {@code GameController} class extends the {@link ServerController} and manages the game state,
+ * handling player actions such as placing cards, picking objectives, and drawing from decks.
+ * <p>
+ * This class ensures synchronization and state management for the ongoing game.
+ */
 public class GameController extends ServerController {
 
+    /**
+     * The game controlled by this controller.
+     */
     public final Game CONTROLLED_GAME;
+
+    /**
+     * The current state of the game.
+     */
     private GameState currentGameState;
 
+    /**
+     * Constructs a {@code GameController} for the specified game.
+     *
+     * @param controlledGame the game to be controlled
+     */
     public GameController(Game controlledGame) {
         this.CONTROLLED_GAME = controlledGame;
         currentGameState = new ChooseInitialCardsState(this, CONTROLLED_GAME);
     }
 
+    /**
+     * Returns the current state of the game.
+     *
+     * @return the current game state
+     */
     public GameState getCurrentState() {
         return currentGameState;
     }
 
+    /**
+     * Sets the state of the game and notifies clients of the state transition.
+     *
+     * @param state the new state of the game
+     */
     public void setState(GameState state) {
         currentGameState = state;
         System.out.println("[SERVER]: Sending GameTransitionCommand to clients in " + CONTROLLED_GAME);
         CONTROLLED_GAME.notifyListeners(new GameTransitionCommand(CONTROLLED_GAME.getRoundNumber(), CONTROLLED_GAME.getCurrentPlayerIndex(), CONTROLLED_GAME.getFinalPhaseCounter()));
     }
 
+    /**
+     * Checks if the provided card ID is invalid.
+     *
+     * @param sender the network session of the client
+     * @param cardID the card ID to check
+     * @return {@code true} if the card ID is invalid, {@code false} otherwise
+     */
     private boolean invalidCard(NetworkSession sender, int cardID) {
         if (!ServerModel.CARDS_LIST.containsKey(cardID)) {
             sender.getListener().notified(
@@ -51,6 +86,13 @@ public class GameController extends ServerController {
         return false;
     }
 
+    /**
+     * Generates a new player with the given nickname, sends the relevant commands to the client,
+     * and updates the server model with the new player.
+     *
+     * @param sender   the network session of the client
+     * @param nickname the nickname for the new player
+     */
     @Override
     public synchronized void generatePlayer(NetworkSession sender, String nickname) {
         //This is necessary because the createPlayer might have detected this player's INACTIVE_SESSION, but then this
@@ -86,6 +128,14 @@ public class GameController extends ServerController {
         //If the controller had indeed been invalidated, a normal generatePlayer(...) needs to be executed
     }
 
+    /**
+     * Places a card on the game board at the specified coordinates.
+     *
+     * @param sender      the network session of the client
+     * @param coordinates the coordinates to place the card
+     * @param cardID      the ID of the card to be placed
+     * @param playedSide  the side of the card to be played
+     */
     @Override
     public void placeCard(NetworkSession sender, GenericPair<Integer, Integer> coordinates, int cardID, Side playedSide) {
         System.out.println("[CLIENT]: PlaceCardCommand received and being executed");
@@ -141,6 +191,12 @@ public class GameController extends ServerController {
         }
     }
 
+    /**
+     * Picks an objective card for the player.
+     *
+     * @param sender the network session of the client
+     * @param cardID the ID of the card to be picked
+     */
     @Override
     public void pickObjective(NetworkSession sender, int cardID) {
         System.out.println("[CLIENT]: PickObjectiveCommand received and being executed");
@@ -183,6 +239,12 @@ public class GameController extends ServerController {
         }
     }
 
+    /**
+     * Draws a card from the specified deck for the player.
+     *
+     * @param sender the network session of the client
+     * @param deck   the name of the deck to draw from
+     */
     @Override
     public void drawFromDeck(NetworkSession sender, String deck) {
         System.out.println("[CLIENT]: DrawFromDeckCommand received and being executed");
@@ -220,6 +282,13 @@ public class GameController extends ServerController {
         }
     }
 
+    /**
+     * Draws a visible card from the specified deck for the player.
+     *
+     * @param sender   the network session of the client
+     * @param deck     the name of the deck to draw from
+     * @param position the position of the card in the deck
+     */
     @Override
     public void drawFromVisibleCards(NetworkSession sender, String deck, int position) {
         System.out.println("[CLIENT]: DrawFromVisibleCardsCommand received and being executed");
@@ -263,6 +332,12 @@ public class GameController extends ServerController {
         }
     }
 
+    /**
+     * Removes a player from the game, handles the necessary state transitions,
+     * and notifies the relevant components.
+     *
+     * @param sender the network session of the client
+     */
     @Override
     public void leaveGame(NetworkSession sender) {
         System.out.println("[CLIENT]: LeaveGameCommand received and being executed");
@@ -312,6 +387,12 @@ public class GameController extends ServerController {
         });
     }
 
+    /**
+     * Broadcasts a message to all players in the game.
+     *
+     * @param sender  the network session of the client
+     * @param message the message to broadcast
+     */
     @Override
     public void broadcastMessage(NetworkSession sender, String message) {
         System.out.println("[CLIENT]: BroadcastMessageCommand received and being executed");
@@ -326,6 +407,13 @@ public class GameController extends ServerController {
                 .notifyListeners(new AddChatMessageCommand(senderPlayer.getNickname(), message, false));
     }
 
+    /**
+     * Sends a direct message to a specific player in the game.
+     *
+     * @param sender           the network session of the client
+     * @param receiverNickname the nickname of the player to receive the message
+     * @param message          the message to send
+     */
     @Override
     public void directMessage(NetworkSession sender, String receiverNickname, String message) {
         System.out.println("[CLIENT]: DirectMessageCommand received and being executed");

@@ -12,14 +12,37 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.UnavailableColorException;
 
 import java.util.Arrays;
 
+/**
+ * The {@code LobbyController} class extends the {@link ServerController} and is responsible for managing
+ * operations within a game lobby, such as player actions and transitioning from the lobby to an active game.
+ * <p>
+ * This controller handles player color selection and ensures proper synchronization and state updates
+ * when transitioning from a lobby to an in-game state.
+ */
 public class LobbyController extends ServerController {
 
+    /**
+     * The lobby controlled by this controller.
+     */
     public final Lobby CONTROLLED_LOBBY;
 
+    /**
+     * Constructs a new {@code LobbyController} for the specified lobby.
+     *
+     * @param controlledLobby the lobby to be controlled
+     */
     public LobbyController(Lobby controlledLobby) {
         this.CONTROLLED_LOBBY = controlledLobby;
     }
 
+    /**
+     * Handles a player's request to pick a color in the lobby.
+     * If the selected color is valid and available, the player is assigned the color.
+     * If all players have selected their colors, a new game is started.
+     *
+     * @param sender the network session of the player making the request
+     * @param color  the color to be picked
+     */
     @Override
     public synchronized void pickColor(NetworkSession sender, Color color) {
         System.out.println("[CLIENT]: PickColorCommand received and being executed");
@@ -75,6 +98,14 @@ public class LobbyController extends ServerController {
         }
     }
 
+    /**
+     * Handles a player's request to leave the lobby.
+     * If the player is inactive, they are removed from the active players map and their session listeners are canceled.
+     * If the lobby becomes empty, it is destroyed.
+     *
+     * @param sender     the network session of the player leaving the lobby
+     * @param isInactive flag indicating if the player is inactive
+     */
     @Override
     public void leaveLobby(NetworkSession sender, boolean isInactive) {
         System.out.println("[CLIENT]: LeaveLobbyCommand received and being executed");
