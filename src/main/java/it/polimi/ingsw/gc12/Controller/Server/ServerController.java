@@ -14,6 +14,7 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.ForbiddenActionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotExistingPlayerException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -168,7 +169,7 @@ public abstract class ServerController implements ServerControllerInterface {
      */
     public void keepAlive(NetworkSession sender) {
         synchronized (sender) {
-            System.out.println("[CLIENT]: keepAlive command received from " + sender + ". Resetting timeout");
+            System.out.println("[CLIENT]: keepAlive command received from " + sender + " at " + new SimpleDateFormat("HH:mm:ss").format(new Date()) + ". Resetting timeout");
             sender.getTimeoutTask().cancel();
             renewTimeoutTimerTask(sender);
 

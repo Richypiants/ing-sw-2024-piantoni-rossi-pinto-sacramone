@@ -109,7 +109,7 @@ public class ConnectionSetupState extends ViewState {
                 }
 
                 try {
-                    sleep(5000);
+                    sleep(1000);
                 } catch (InterruptedException e) {
                     // When disconnecting, we interrupt keepAlive thread as we no longer have to send pings to server.
                     break;

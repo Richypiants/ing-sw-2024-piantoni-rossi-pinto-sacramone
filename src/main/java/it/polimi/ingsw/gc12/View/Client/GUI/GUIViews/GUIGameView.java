@@ -1304,6 +1304,7 @@ public class GUIGameView extends GUIView {
     public void leaderboardScreen(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
         Platform.runLater(() -> {
             LEADERBOARD_VBOX.setPrefSize(windowSize.getX() * 80 / 100, windowSize.getY() * 90 / 100);
+            LEADERBOARD_VBOX.getChildren().clear();
 
             LEADERBOARD_LABEL.setPrefSize(400, 75);
 
@@ -1329,10 +1330,7 @@ public class GUIGameView extends GUIView {
                     "Since the game ended due to disconnections of all the other players, " : "") +
                     leaderboard.getFirst().getX() + " is the WINNER!");
 
-            LEADERBOARD_VBOX.getChildren().remove(WINNING_PLAYER_LABEL);
             LEADERBOARD_VBOX.getChildren().addLast(WINNING_PLAYER_LABEL);
-
-            LEADERBOARD_VBOX.getChildren().remove(LEADERBOARD_EXIT_BUTTON);
             LEADERBOARD_VBOX.getChildren().addLast(LEADERBOARD_EXIT_BUTTON);
 
             OverlayPopup createdPopup = drawOverlayPopup(LEADERBOARD_VBOX, false);
