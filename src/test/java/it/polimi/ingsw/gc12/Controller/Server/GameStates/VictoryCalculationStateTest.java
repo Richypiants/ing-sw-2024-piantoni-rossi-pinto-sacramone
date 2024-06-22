@@ -93,7 +93,7 @@ class VictoryCalculationStateTest {
     @Test
     void correctLeaderboardOnWinForDisconnections() throws Exception {
         game.getCurrentPlayer().increasePoints(20);
-        game.getCurrentPlayer().toggleActive();
+        game.getCurrentPlayer().setPlayerActivity(false);
         gameController.getCurrentState().placeCard(game.getCurrentPlayer(), new GenericPair<>(1, 1), game.getCurrentPlayer().getCardsInHand().getFirst(), Side.FRONT);
         for (int i = 0; i < 7; i++) {
             try {

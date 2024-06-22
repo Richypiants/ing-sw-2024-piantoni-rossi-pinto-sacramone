@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc12.Model.Server;
 import it.polimi.ingsw.gc12.Commands.ClientCommands.ClientCommand;
 import it.polimi.ingsw.gc12.Commands.ClientCommands.PlaceCardCommand;
 import it.polimi.ingsw.gc12.Commands.ClientCommands.ReplaceCardsCommand;
-import it.polimi.ingsw.gc12.Commands.ClientCommands.ToggleActiveCommand;
+import it.polimi.ingsw.gc12.Commands.ClientCommands.SetPlayerActivityCommand;
 import it.polimi.ingsw.gc12.Listeners.Listenable;
 import it.polimi.ingsw.gc12.Listeners.Listener;
 import it.polimi.ingsw.gc12.Model.ClientModel.ClientCard;
@@ -452,17 +452,16 @@ public class Game extends Room implements Listenable {
     }
 
     /**
-     * Toggles the active status of the specified player.
-     * <p>
-     * This method changes the player's active status to its opposite (active to inactive or inactive to active)
-     * and notifies listeners of this change with a {@link ToggleActiveCommand}.
+     * Changes the active status of the specified player to the given activity status,
+     * and notifies listeners of this change with a {@link SetPlayerActivityCommand}.
      *
      * @param target The player whose active status is to be toggled.
+     * @param isActive The new value for the player's activity status.
      */
-    public void toggleActive(InGamePlayer target) {
-        target.toggleActive();
-        System.out.println("[SERVER]: sending ToggleActiveCommand to clients");
-        notifyListeners(new ToggleActiveCommand(target.getNickname()));
+    public void setPlayerActivity(InGamePlayer target, boolean isActive) {
+        target.setPlayerActivity(isActive);
+        System.out.println("[SERVER]: sending SetPlayerActivityCommand to clients");
+        notifyListeners(new SetPlayerActivityCommand(target.getNickname(), isActive));
     }
 
     /**
@@ -520,7 +519,7 @@ public class Game extends Room implements Listenable {
     public ClientGame generateDTO(InGamePlayer receiver) {
         Map<Integer, ClientCard> clientCards = ServerModel.CLIENTS_CARDS_LIST;
         List<Player> players = this.getPlayers().stream()
-                .map((player) -> new ClientPlayer(player, player.getOpenCorners(), player.getOwnedResources(), player.getPoints()))
+                .map((player) -> new ClientPlayer(player, player.isActive(), player.getOpenCorners(), player.getOwnedResources(), player.getPoints()))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         return new ClientGame(

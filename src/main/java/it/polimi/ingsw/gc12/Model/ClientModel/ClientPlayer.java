@@ -36,19 +36,21 @@ public class ClientPlayer extends Player implements Serializable {
     /**
      * Indicates whether the player is currently active.
      */
-    private boolean isActive = true;
+    private boolean isActive;
 
     /**
      * Constructs a new {@code ClientPlayer} with the specified parameters.
      *
      * @param player the {@link Player} object to base this client player on
+     * @param isActive the value of the activity status
      * @param openCorners the list of positions where the player can place new cards
      * @param ownedResources the resources currently owned by the player
      * @param playerPoints the points currently gained by the player
      */
-    public ClientPlayer(Player player, List<GenericPair<Integer, Integer>> openCorners,
+    public ClientPlayer(Player player, boolean isActive, List<GenericPair<Integer, Integer>> openCorners,
                         EnumMap<Resource, Integer> ownedResources, int playerPoints) {
         super(player);
+        this.isActive = isActive;
         this.openCorners = openCorners;
         this.ownedResources = ownedResources;
         this.PLACED_CARDS = new LinkedHashMap<>();
@@ -139,9 +141,11 @@ public class ClientPlayer extends Player implements Serializable {
     }
 
     /**
-     * Toggles the player's active status.
+     * Changes the player's active status.
+     *
+     * @param isActive The new value for the player's activity status.
      */
-    public void toggleActive() {
-        isActive = !isActive;
+    public void setPlayerActivity(boolean isActive) {
+        this.isActive = isActive;
     }
 }

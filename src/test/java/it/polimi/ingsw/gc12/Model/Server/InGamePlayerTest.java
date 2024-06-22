@@ -206,10 +206,10 @@ class InGamePlayerTest {
     }
 
     @Test
-    void toggleActiveTest() {
+    void setPlayerActivityTest() {
         player = new Player("Sacri");
         playerGame = new InGamePlayer(player);
-        playerGame.toggleActive();
+        playerGame.setPlayerActivity(false);
         assert (!playerGame.isActive());
     }
 }

@@ -314,11 +314,12 @@ public class InGamePlayer extends Player implements Listenable {
     }
 
     /**
-     * Toggles the active status of this player.
-     * If the player is currently active, they will become inactive, and vice versa.
+     * Changes the active status of this player to the given activity value.
+     *
+     * @param isActive The new value for the player's activity status.
      */
-    public synchronized void toggleActive() {
-        active = !active;
+    public synchronized void setPlayerActivity(boolean isActive) {
+        active = isActive;
     }
 
     /**

@@ -303,21 +303,24 @@ public class ClientController implements ClientControllerInterface {
      * Toggles the active status of a player (connected or disconnected).
      *
      * @param nickname The nickname of the player whose active status is toggled.
+     * @param isActive The new value for the player's activity status.
      */
-    public void toggleActive(String nickname) {
+    public void setPlayerActivity(String nickname, boolean isActive) {
         ClientPlayer targetPlayer = VIEWMODEL.getCurrentGame().getPlayers().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
                 .findAny()
                 .orElseThrow();
 
-        targetPlayer.toggleActive();
-        addChatMessage(
-                "SYSTEM",
-                "Player " + nickname + " has " + (targetPlayer.isActive() ? "reconnected" : "disconnected"),
-                false
-        );
+        if (targetPlayer.isActive() != isActive) {
+            targetPlayer.setPlayerActivity(isActive);
+            addChatMessage(
+                    "SYSTEM",
+                    "Player " + nickname + " has " + (targetPlayer.isActive() ? "reconnected" : "disconnected"),
+                    false
+            );
 
-        ViewState.getCurrentState().executeState();
+            ViewState.getCurrentState().executeState();
+        }
     }
 
     /**

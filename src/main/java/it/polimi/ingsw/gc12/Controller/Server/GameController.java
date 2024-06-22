@@ -120,7 +120,7 @@ public class GameController extends ServerController {
 
             sender.setPlayer(targetPlayer);
             putActivePlayer(sender, targetPlayer);
-            CONTROLLED_GAME.toggleActive(targetPlayer);
+            CONTROLLED_GAME.setPlayerActivity(targetPlayer, true);
             CONTROLLED_GAME.addListener(sender.getListener());
             targetPlayer.addListener(sender.getListener());
         } else
@@ -357,7 +357,7 @@ public class GameController extends ServerController {
         // releases the lock.
         Server.getInstance().commandExecutorsPool.submit(() -> {
             synchronized (this) {
-                CONTROLLED_GAME.toggleActive(targetPlayer);
+                CONTROLLED_GAME.setPlayerActivity(targetPlayer, false);
                 removeActivePlayer(sender);
                 INACTIVE_SESSIONS.put(targetPlayer.getNickname(), sender);
 
@@ -377,7 +377,7 @@ public class GameController extends ServerController {
                 if (CONTROLLED_GAME.getCurrentPlayer() == null || CONTROLLED_GAME.getCurrentPlayer().equals(targetPlayer))
                     currentGameState.playerDisconnected(targetPlayer);
 
-                if (CONTROLLED_GAME.getActivePlayers().size() == 1) {
+                if (CONTROLLED_GAME.getActivePlayers().size() == 1 && !(currentGameState instanceof AwaitingReconnectionState)) {
                     System.out.println("[SERVER]: Freezing " + CONTROLLED_GAME + " game");
                     CONTROLLED_GAME.notifyListeners(new PauseGameCommand());
 

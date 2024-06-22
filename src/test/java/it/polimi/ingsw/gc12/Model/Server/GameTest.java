@@ -65,7 +65,7 @@ class GameTest {
 
     @Test
     void toLobbyRemovingAnInactivePlayers(){
-        game.getPlayers().getFirst().toggleActive();
+        game.getPlayers().getFirst().setPlayerActivity(false);
         Lobby lobby = game.toLobby();
 
         assertEquals(game.getPlayers().size()-1, game.getActivePlayers().size());

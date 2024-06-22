@@ -32,7 +32,7 @@ class ClientPlayerTest {
         originalPlayer = new Player("testedPlayer");
         originalResourcesSetup(0);
 
-        testedPlayer = new ClientPlayer(originalPlayer, new ArrayList<>(), originalResources, initialPoints);
+        testedPlayer = new ClientPlayer(originalPlayer, true, new ArrayList<>(), originalResources, initialPoints);
     }
 
     @Test
@@ -82,9 +82,9 @@ class ClientPlayerTest {
         boolean status = testedPlayer.isActive();
         assertTrue(status);
 
-        testedPlayer.toggleActive();
+        testedPlayer.setPlayerActivity(false);
         assertFalse(testedPlayer.isActive());
-        testedPlayer.toggleActive();
+        testedPlayer.setPlayerActivity(true);
         assertTrue(testedPlayer.isActive());
     }
 

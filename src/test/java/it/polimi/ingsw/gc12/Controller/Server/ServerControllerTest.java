@@ -180,7 +180,7 @@ public class ServerControllerTest {
         }
 
         @Override
-        public void toggleActive(String nickname) {
+        public void setPlayerActivity(String nickname, boolean isActive) {
 
         }
 

@@ -27,7 +27,7 @@ import java.util.*;
  *     <li>{@link #receiveObjectiveChoice(List)} - Receives the list of objective cards to choose from.</li>
  *     <li>{@link #receiveCard(int)} - Receives an update related to some new received cards, such as a new card obtained in hand.</li>
  *     <li>{@link #replaceCard(List)} - Replaces cards on the game board, such as visible resources or top of the deck cards.</li>
- *     <li>{@link #toggleActive(String)} - Toggles the active state of a player.</li>
+ *     <li>{@link #setPlayerActivity(String)} - Toggles the active state of a player.</li>
  *     <li>{@link #transition(int, int, int)} - Handles the transitions.</li>
  *     <li>{@link #pauseGame()} - Pauses the game.</li>
  *     <li>{@link #endGame(List, boolean)} - Ends the game and provides the final scores.</li>
@@ -131,12 +131,11 @@ public interface ClientControllerInterface extends ControllerInterface {
     void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements);
 
     /**
-     * Toggles the active status of this player.
-     * If the player is currently active, they will become inactive, and vice versa.
+     * Changes the active status of this player to the given activity status.
      *
      * @param nickname The nickname of the player whose active state is to be toggled.
      */
-    void toggleActive(String nickname);
+    void setPlayerActivity(String nickname, boolean isActive);
 
     /**
      * Handles the transitions, creating and assigning a new GameState.

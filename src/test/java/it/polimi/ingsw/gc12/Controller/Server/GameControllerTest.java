@@ -468,7 +468,7 @@ class GameControllerTest {
     @Test
     void sendDirectMessageToAnInactivePlayerPlayer(){
         doPickObjectivesSelection();
-        gameAssociatedController.CONTROLLED_GAME.toggleActive((InGamePlayer) inGamePlayer_2.getPlayer());
+        gameAssociatedController.CONTROLLED_GAME.setPlayerActivity((InGamePlayer) inGamePlayer_2.getPlayer(), false);
         gameAssociatedController.directMessage(inGamePlayer_1, inGamePlayer_2.getPlayer().getNickname(), "Test Message");
 
         assertInstanceOf(ThrowExceptionCommand.class, ((ServerControllerTest.VirtualClientImpl) ((ServerListener) inGamePlayer_1.getListener()).getVirtualClient()).lastCommandReceived);
