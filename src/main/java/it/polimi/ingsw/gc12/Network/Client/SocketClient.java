@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc12.Network.Client;
 import it.polimi.ingsw.gc12.Commands.ServerCommands.ServerCommand;
 import it.polimi.ingsw.gc12.Controller.Client.ClientController;
 import it.polimi.ingsw.gc12.Network.VirtualServer;
-import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -40,13 +39,6 @@ public class SocketClient implements VirtualServer {
         this.readerExecutor = Executors.newSingleThreadExecutor();
 
         Socket socket = new Socket(Client.getClientInstance().serverIPAddress, 5000);
-
-        //If connection to the server is successful no exception is thrown; the program can get to the following line
-        // and I wake up the ConnectionSetupState.connect() function, which has been continuously retrying to reconnect
-        // every 5 seconds
-        synchronized (ViewState.class) {
-            ViewState.class.notifyAll();
-        }
 
         serverHandler = new SocketServerHandler(socket, ClientController.getInstance());
 

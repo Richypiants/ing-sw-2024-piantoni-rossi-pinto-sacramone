@@ -4,7 +4,6 @@ import it.polimi.ingsw.gc12.Commands.Command;
 import it.polimi.ingsw.gc12.Controller.ControllerInterface;
 
 import java.io.IOException;
-import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -73,14 +72,9 @@ public abstract class SocketHandler extends NetworkSession {
      * @throws IOException if an I/O error occurs while writing the object.
      */
     public void writeObject(Object obj) throws IOException {
-        //FIXME: rimuovere
-        try {
-            objectOutputStream.reset();
-            objectOutputStream.writeObject(obj);
-            objectOutputStream.flush();
-        } catch (NotSerializableException e) {
-            e.printStackTrace();
-        }
+        objectOutputStream.reset();
+        objectOutputStream.writeObject(obj);
+        objectOutputStream.flush();
     }
 
     /**

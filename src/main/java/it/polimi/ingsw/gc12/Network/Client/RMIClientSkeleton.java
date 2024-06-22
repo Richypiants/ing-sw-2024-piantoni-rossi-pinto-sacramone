@@ -7,7 +7,6 @@ import it.polimi.ingsw.gc12.Listeners.NetworkListener;
 import it.polimi.ingsw.gc12.Network.NetworkSession;
 import it.polimi.ingsw.gc12.Network.RMIMainServer;
 import it.polimi.ingsw.gc12.Network.RMIVirtualClient;
-import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
 
 import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
@@ -40,12 +39,6 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
         UnicastRemoteObject.exportObject(this, 0);
         Client.getClientInstance().serverConnection =
                 ((RMIMainServer) registry.lookup("codex_naturalis_rmi")).accept(this);
-
-        //If connection to the server is successful no exception is thrown; the program can get to the following line
-        // and I wake up the connect() function, which has been continuously retrying to reconnect every 5 seconds
-        synchronized (ViewState.class) {
-            ViewState.class.notifyAll();
-        }
     }
 
     /**

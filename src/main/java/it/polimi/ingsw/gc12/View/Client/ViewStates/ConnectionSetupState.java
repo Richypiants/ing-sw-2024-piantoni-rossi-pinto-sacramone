@@ -35,24 +35,18 @@ public class ConnectionSetupState extends ViewState {
      */
     @Override
     public void connect(String serverIPAddress, String communicationTechnology, String nickname) {
-        boolean isDisconnected;
-
         synchronized (ViewState.class) {
             do {
                 CLIENT.setupCommunication(serverIPAddress, communicationTechnology);
                 try {
                     // Wait 25 seconds before asking whether to retry connecting to the server.
                     // Notified by SocketClient or RMIClientSkeleton when they successfully establish a connection.
-                    ViewState.class.wait(30000);
+                    ViewState.class.wait();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e); // Should never happen
                 }
 
-                synchronized (CLIENT.DISCONNECTED_LOCK) {
-                    isDisconnected = CLIENT.disconnected;
-                }
-
-                if (CLIENT.serverConnection == null && !isDisconnected) {
+                if (CLIENT.serverConnection == null) {
                     if (!selectedView.retryConnectionPrompt(true)) {
                         selectedView.quittingScreen();
                         System.exit(0);
@@ -67,17 +61,13 @@ public class ConnectionSetupState extends ViewState {
         // This wait(...) gets notified by the updateNickname function below.
         synchronized (ViewState.class) {
             try {
-                ViewState.class.wait(5000);
+                ViewState.class.wait(10000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e); // Should never happen
             }
         }
 
-        synchronized (CLIENT.DISCONNECTED_LOCK) {
-            isDisconnected = CLIENT.disconnected;
-        }
-
-        if (CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname().isEmpty() && !isDisconnected) {
+        if (CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname().isEmpty()) {
             if (selectedView.retryConnectionPrompt(false)) {
                 CLIENT_CONTROLLER.VIEWMODEL.clearModel();
                 currentState = new TitleScreenState();
@@ -102,10 +92,11 @@ public class ConnectionSetupState extends ViewState {
         CLIENT.keepAlive = new Thread(() -> {
             CLIENT.disconnected = true;
             while (true) {
+                //FIXME: forse invertire la synchronized con la riga sopra?
                 CLIENT.requestToServer(new KeepAliveCommand());
                 synchronized (CLIENT.DISCONNECTED_LOCK) {
                     try {
-                        CLIENT.DISCONNECTED_LOCK.wait(15000);
+                        CLIENT.DISCONNECTED_LOCK.wait(5000);
                         if (CLIENT.disconnected) {
                             selectedView.disconnectedScreen();
                             (new Thread(this::tryReconnection)).start();

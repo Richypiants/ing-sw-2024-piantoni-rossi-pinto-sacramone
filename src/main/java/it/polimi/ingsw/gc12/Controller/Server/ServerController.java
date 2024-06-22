@@ -167,12 +167,14 @@ public abstract class ServerController implements ServerControllerInterface {
      * @param sender the network session sending the keep-alive command
      */
     public void keepAlive(NetworkSession sender) {
-        System.out.println("[CLIENT]: keepAlive command received from " + sender + ". Resetting timeout");
-        sender.getTimeoutTask().cancel();
-        renewTimeoutTimerTask(sender);
+        synchronized (sender) {
+            System.out.println("[CLIENT]: keepAlive command received from " + sender + ". Resetting timeout");
+            sender.getTimeoutTask().cancel();
+            renewTimeoutTimerTask(sender);
 
-        if (!(sender.getPlayer() instanceof InGamePlayer targetPlayer) || targetPlayer.isActive())
-            sender.getListener().notified(new KeepAliveCommand());
+            if (!(sender.getPlayer() instanceof InGamePlayer targetPlayer) || targetPlayer.isActive())
+                sender.getListener().notified(new KeepAliveCommand());
+        }
     }
 
     /**

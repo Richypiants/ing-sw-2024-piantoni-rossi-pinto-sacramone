@@ -60,7 +60,7 @@ public class Client {
         this.session = null;
         this.serverIPAddress = "localhost";
         this.keepAlive = null;
-        this.disconnected = false;
+        this.disconnected = true;
 
         if (commandSenderExecutor != null)
             this.commandSenderExecutor.shutdownNow();
@@ -88,9 +88,15 @@ public class Client {
                             session.close();
                         Client.getClientInstance().session = RMIClientSkeleton.getInstance();
                     }
-                    default ->
-                            ViewState.printError(new RuntimeException("Communication technology " + communicationTechnology + " not supported"));
+                    default -> ViewState.printError(
+                            new RuntimeException("Communication technology " + communicationTechnology + " not supported")
+                    );
                 }
+
+                //If connection to the server is successful no exception is thrown; the program can get to the following line
+                // and I wake up the ConnectionSetupState.connect() function, which has been continuously retrying to reconnect
+                // every 5 seconds
+                ViewState.class.notifyAll();
             }
         });
     }

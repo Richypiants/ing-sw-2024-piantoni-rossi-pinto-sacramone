@@ -51,7 +51,6 @@ public class SocketClientHandler extends SocketHandler implements VirtualClient 
      */
     @Override
     protected void executeReceivedCommand(Command receivedCommand) {
-        System.out.println("[SOCKET][CLIENT]: Request from " + this);
         try {
             Server.getInstance().commandExecutorsPool.submit(
                     () -> ((ServerCommand) receivedCommand).execute(
