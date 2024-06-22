@@ -76,7 +76,7 @@ public class Server extends Thread implements RMIMainServer {
 
         //Socket server setup
         try (
-                ServerSocket serverSocket = new ServerSocket();
+                ServerSocket serverSocket = new ServerSocket()
         ) {
             serverSocket.bind(new InetSocketAddress(serverIPAddress, 5000));
             System.out.println("[SOCKET]: Server listening on {" + serverSocket.getInetAddress() + "}");

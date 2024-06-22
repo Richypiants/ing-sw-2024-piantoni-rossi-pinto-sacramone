@@ -47,44 +47,44 @@ The project consists of a Java version of the board game **Codex Naturalis**, ma
 
 ## Download to play guide
 
-### Before all:
+### TUI/CLI Setup:
 
 * *If your OS is **Windows 11** follow this step for [command prompt configuration](FIleReadMe/WIN11.md)*
 * *If your OS is **Mac OS** or **Linux** follow this step for [command prompt configuration](FIleReadMe/MacOS.md)*
-* *if you have any other **OS** you can skip **command prompt configuration***
+* *We currently do not support other OSs*
 
-### First Step:
+### Download links:
 
-Download :
+Click on the links below to be redirected to the download page, where you can download the self-contained all-in-one
+.jar files.
+Please note that you will still need to download the correct version of the JRE to run this program (which is written
+with JDK 21,
+and thus needs a JRE of XXXXXX or higher to be run);
 
 * [*Codex Naturalis Client*]()
-* [*Codex Naturalis Server*]() --> *needed only in the host machine*
+* [*Codex Naturalis Server*]() --> *needed only in the machine which is going to host it*
 
-### Second step:
+### Server configuration:
 
-* open the command prompt on the host machine
+* Open the command prompt on the host machine;
 * Navigate through the directories using the appropriate commands for your command prompt (these may vary based on the
-  operating system)
-  <br>and position yourself in the file path where the ```CodexNaturalisServer.jar``` is located
-* Run with this command the jar file -> ```java -jar CodexNaturalisServer.jar```
-* Complete the on-screen instructions to finalize the server configuration.
+  operating system) and position yourself in the file path where the ```CodexNaturalisServer.jar``` is located;
+* Run the .jar file for the server with the following command -> ```java -jar CodexNaturalisServer.jar```;
+* Follow the instructions that appear on the screen to finalize the server configuration.
 
-### Third step (Final step):
+### Clients' configuration:
 
-* open the command prompt on the clients machine
-
+* Open the command prompt on the clients' machines;
 * Navigate through the directories using the appropriate commands for your command prompt (these may vary based on the
-  operating system).
-  <br>and position yourself in the file path where the ```CodexNaturalisClient.jar``` is located.
-
-
-* Run with this command the jar file -> ```java -jar CodexNaturalisClient.jar```
-* Complete the on-screen instructions to start a game -> Ensure to enter the IP address used by the server when you have
-  to choose the IP to connect to.
+  operating system) and position yourself in the file path where the file ```CodexNaturalisClient.jar``` is located;
+* Run the .jar file for the server with the following command -> ```java -jar CodexNaturalisClient.jar```
+* Follow the instructions that appear on the screen to start a game (make sure to enter the correct IP address used by
+  the server when you have to choose the IP to connect to).
 
 **IMPORTANT -->** : If you aim to play with different devices over the net, you can achieve this by using a third-party
 software such as [Hamachi](https://vpn.net/), ZeroTier, Wireguard or properly set forward rules on the router where the
-server is located.
+server is located. In case you want to play with RMI over the Internet, remember to launch the jar with the command
+```java -Djava.rmi.server.hostname=[YOUR_PUBLIC_IP_ADDRESS] -jar CodexNaturalisClient.jar```
 
 ## Software used:
 
@@ -105,7 +105,7 @@ server is located.
 
 ### Copyright and License:
 
-Codex Naturalis is the intellectual property of Cranio Creations. All content, including but not limited to, game
+Codex Naturalis is an intellectual property of Cranio Creations. All content, including but not limited to, game
 mechanics, design, artwork, and assets, is protected under copyright law.
 Unauthorized reproduction, distribution, or modification of this material is prohibited
 without prior written consent from Cranio Creations. This project is released under the  **[MIT License](LICENSE.txt)**.

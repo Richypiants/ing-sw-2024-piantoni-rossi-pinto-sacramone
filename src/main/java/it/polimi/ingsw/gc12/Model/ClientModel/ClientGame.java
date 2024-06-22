@@ -62,6 +62,12 @@ public class ClientGame extends Room implements Serializable {
      * The log of all chat messages received during the game.
      */
     private final List<String> CHAT_LOG;
+    /**
+     * The number of turns after which the game will end.
+     * A value of -1 means that the final phase of the game
+     * hasn't started yet.
+     */
+    private int turnsLeftUntilGameEnds;
 
     /**
      * Constructs a new ClientGame with the specified parameters.
@@ -77,6 +83,7 @@ public class ClientGame extends Room implements Serializable {
      * @param ownObjective the secret objective card chosen by the player
      * @param currentRound the current round of the game
      * @param currentPlayerIndex the index of the player currently playing
+     * @param turnsLeftUntilGameEnds the number of turns after which the game will end
      */
     public ClientGame(
             UUID uuid,
@@ -90,7 +97,8 @@ public class ClientGame extends Room implements Serializable {
             ClientCard topDeckGoldCard,
             ClientCard ownObjective,
             int currentRound,
-            int currentPlayerIndex
+            int currentPlayerIndex,
+            int turnsLeftUntilGameEnds
             ){
         super(uuid, players);
         this.MYSELF = myself;
@@ -103,6 +111,7 @@ public class ClientGame extends Room implements Serializable {
         this.ownObjective = ownObjective;
         this.currentRound = currentRound;
         this.currentPlayerIndex = currentPlayerIndex;
+        this.turnsLeftUntilGameEnds = turnsLeftUntilGameEnds;
         this.CHAT_LOG = new ArrayList<>();
     }
 
@@ -281,6 +290,24 @@ public class ClientGame extends Room implements Serializable {
      * @param currentRound the round number to be set
      */
     public void setCurrentRound(int currentRound){ this.currentRound = currentRound; }
+
+    /**
+     * Returns the number of turns until the game end.
+     *
+     * @return the current number of turns left
+     */
+    public int getTurnsLeftUntilGameEnds() {
+        return turnsLeftUntilGameEnds;
+    }
+
+    /**
+     * Sets the number of turns until the game ends.
+     *
+     * @param turnsLeftUntilGameEnds the number of turns left to be set
+     */
+    public void setTurnsLeftUntilGameEnds(int turnsLeftUntilGameEnds) {
+        this.turnsLeftUntilGameEnds = turnsLeftUntilGameEnds;
+    }
 
     /**
      * Returns the index of the current player.

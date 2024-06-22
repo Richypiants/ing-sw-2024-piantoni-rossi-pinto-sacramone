@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PatternConditionTest {
 
     private static ArrayList<ResourceCard> resourceCards;
-    private static ArrayList<GoldCard> goldCards;
     private static ArrayList<InitialCard> initialCards;
     private static ArrayList<ObjectiveCard> objectiveCards;
 
@@ -37,8 +36,6 @@ class PatternConditionTest {
     @BeforeAll
     static void setCardsLists() {
         resourceCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.RESOURCE_DECK_FILENAME, new TypeToken<>() {
-        });
-        goldCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.GOLD_DECK_FILENAME, new TypeToken<>() {
         });
         initialCards = CardDeckTest.loadCardDeckAsArrayList(CardDeckTest.INITIAL_DECK_FILENAME, new TypeToken<>() {
         });

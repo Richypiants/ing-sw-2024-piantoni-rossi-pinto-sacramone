@@ -71,8 +71,8 @@ class InGamePlayerTest {
 
     @Test
     void addCardToHand() {
-        playerGame.addCardToHand(initialCards.get(0));
-        boolean result = playerGame.getCardsInHand().contains(initialCards.get(0));
+        playerGame.addCardToHand(initialCards.getFirst());
+        boolean result = playerGame.getCardsInHand().contains(initialCards.getFirst());
 
         assertTrue(result);
     }
@@ -126,8 +126,8 @@ class InGamePlayerTest {
 
     @Test
     void setSecretObjective() {
-        playerGame.setSecretObjective(objectiveCards.get(0));
-        assertEquals(objectiveCards.get(0), playerGame.getSecretObjective());
+        playerGame.setSecretObjective(objectiveCards.getFirst());
+        assertEquals(objectiveCards.getFirst(), playerGame.getSecretObjective());
     }
 
     @Test
@@ -181,8 +181,8 @@ class InGamePlayerTest {
     @Test
     void PointsAwarded() throws Throwable {
 
-        playerGame.addCardToHand(initialCards.get(0));
-        playerGame.placeCard(new GenericPair<>(0, 0), initialCards.get(0), Side.BACK);
+        playerGame.addCardToHand(initialCards.getFirst());
+        playerGame.placeCard(new GenericPair<>(0, 0), initialCards.getFirst(), Side.BACK);
 
         playerGame.addCardToHand(resourceCards.get(0));
         playerGame.addCardToHand(resourceCards.get(2));

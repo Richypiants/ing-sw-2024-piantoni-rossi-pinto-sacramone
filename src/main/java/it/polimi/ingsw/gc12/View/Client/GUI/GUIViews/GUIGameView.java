@@ -40,10 +40,7 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -52,22 +49,23 @@ public class GUIGameView extends GUIView {
     private static GUIGameView gameScreenController = null;
 
     private final DataFormat PLACE_CARD_DATA_FORMAT = new DataFormat("text/genericpair<integer,side>");
-    private final String RED_WHITE_STYLE = "-fx-font-family: 'Bell MT'; -fx-background-color: #f0f0f0; -fx-border-color: #D50A0AFF; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+    private final String RED_WHITE_STYLE = "-fx-font-family: 'Bell MT'; -fx-background-color: #AEA175; -fx-border-color: #5B5437; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px;";
 
     private final List<Transition> RUNNING_TRANSITIONS;
 
+    private final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:mm:ss");
     private final Label RESOURCE_CARDS_LABEL;
-    private final Label COMMON_OBJECTIVES_LABEL;
-
-    private final Button ZOOM_OWN_FIELD_BUTTON;
 
     private ClientGame thisGame = null;
     private ClientPlayer thisPlayer = null;
-    private final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH-mm-ss");
+    private final Label COMMON_OBJECTIVES_LABEL;
 
     private final ArrayList<GenericPair<Double, Double>> RELATIVE_SCOREBOARD_TOKEN_POSITIONS_OFFSETS;
 
     private final double PADDING_SIZE;
+    private final Button ZOOM_OWN_FIELD_BUTTON;
+    protected boolean shouldReset = true;
+    private OverlayPopup openedAwaitingPopup = null;
 
     private final Parent SCENE_ROOT;
     private final AnchorPane OWN_FIELD_PANE;
@@ -94,10 +92,8 @@ public class GUIGameView extends GUIView {
     private final AnchorPane DECKS_AND_VISIBLE_CARDS_PANE;
     private final Label GOLD_CARDS_LABEL;
     private final HBox GOLD_CARDS_HBOX;
-    protected boolean shouldReset = true;
     private final HBox COMMON_OBJECTIVES_HBOX;
     private final HBox SECRET_OBJECTIVE_HBOX;
-    private OverlayPopup openedAwaitingPopup = null;
     private final Label SECRET_OBJECTIVE_LABEL;
     private final VBox AWAITING_STATE_BOX;
     private final Button AWAITING_EXIT_BUTTON;
@@ -351,8 +347,18 @@ public class GUIGameView extends GUIView {
         clippedPane.setScaleY(scaleFactor);
 
         fieldPane.setContent(new Group(clippedPane));
-        fieldPane.setHvalue((fieldPane.getHmax() + fieldPane.getHmin()) / 2);
-        fieldPane.setVvalue((fieldPane.getVmax() + fieldPane.getVmin()) / 2);
+        GenericPair<Integer, Integer> lastPlacedCardCoordinates;
+        try {
+            lastPlacedCardCoordinates = player.getPlacedCards().sequencedKeySet().getLast();
+        } catch (NoSuchElementException e) {
+            lastPlacedCardCoordinates = new GenericPair<>(0, 0);
+        }
+        fieldPane.setHvalue((fieldPane.getHmax() + fieldPane.getHmin()) * (
+                clippedPaneSize.getX() / 2 + cardSizes.getX() * (1 - cornerScaleFactor.getX()) * lastPlacedCardCoordinates.getX()
+        ) / clippedPaneSize.getX());
+        fieldPane.setVvalue((fieldPane.getVmax() + fieldPane.getVmin()) * (
+                clippedPaneSize.getY() / 2 - cardSizes.getY() * (1 - cornerScaleFactor.getY()) * lastPlacedCardCoordinates.getY()
+        ) / clippedPaneSize.getY());
 
         openCornersBlinkTransition.play();
         RUNNING_TRANSITIONS.add(openCornersBlinkTransition);
@@ -368,9 +374,7 @@ public class GUIGameView extends GUIView {
             pane.toFront();
         });
 
-        pane.setOnMouseDragged((event) -> {
-            pane.relocate(event.getScreenX() + xOffset.get(), event.getScreenY() + yOffset.get());
-        });
+        pane.setOnMouseDragged((event) -> pane.relocate(event.getScreenX() + xOffset.get(), event.getScreenY() + yOffset.get()));
     }
 
     private void togglePane(Pane popupPane) {
@@ -430,6 +434,9 @@ public class GUIGameView extends GUIView {
         SECRET_OBJECTIVE_LABEL_PANE.getChildren().add(secretObjectiveLabelBanner);
         secretObjectiveLabelBanner.toBack();
         SECRET_OBJECTIVE_LABEL.relocate(50, 12);
+        ImageView secretObjectiveCardView = (ImageView) SECRET_OBJECTIVE_HBOX.lookup("#secretObjectiveCard");
+        if (secretObjectiveCardView != null)
+            SECRET_OBJECTIVE_HBOX.getChildren().remove(secretObjectiveCardView);
         SECRET_OBJECTIVE_HBOX.relocate(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 22 / 100, DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 83 / 100);
         SECRET_OBJECTIVE_HBOX.setMinHeight(DECKS_AND_VISIBLE_CARDS_PANE.getPrefHeight() * 15 / 100);
 
@@ -588,15 +595,16 @@ public class GUIGameView extends GUIView {
             if (ViewState.getCurrentState() instanceof AwaitingReconnectionState)
                 printedMessage = "[GAME PAUSED] Awaiting for reconnection of other players...";
             else if (thisGame.getCurrentPlayerIndex() != -1)
-                printedMessage = (ViewState.getCurrentState() instanceof PlayerTurnPlayState ? "[PLAY PHASE]" : "[DRAW PHASE]") +
-                        " It is " + thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname() + "'s turn!";
+                printedMessage =
+                        ((thisGame.getTurnsLeftUntilGameEnds() == -1) ? "" : "[" + thisGame.getTurnsLeftUntilGameEnds() + " TURNS LEFT]\n") +
+                                (ViewState.getCurrentState() instanceof PlayerTurnPlayState ? "[PLAY PHASE]" : "[DRAW PHASE]") +
+                                "\nIt is " + thisGame.getPlayers().get(thisGame.getCurrentPlayerIndex()).getNickname() + "'s turn!";
             else printedMessage = "[SETUP PHASE] Every player needs to do an action!";
 
             GAME_STATE_LABEL.setText(printedMessage);
         });
     }
 
-    //TODO: centrare l'opponentField sulla carta nuova appena piazzata?
     private void showOpponentsFieldsMiniaturized() {
         OPPONENTS_FIELDS_PANE.getChildren().clear();
 
@@ -790,6 +798,7 @@ public class GUIGameView extends GUIView {
 
             if (thisGame.getOwnObjective() != null && SECRET_OBJECTIVE_HBOX.getChildren().size() < 2) {
                 ImageView secretObjective = new ImageView(String.valueOf(GUIView.class.getResource(thisGame.getOwnObjective().GUI_SPRITES.get(Side.FRONT))));
+                secretObjective.setId("secretObjectiveCard");
                 secretObjective.setSmooth(true);
                 secretObjective.setFitWidth(DECKS_AND_VISIBLE_CARDS_PANE.getPrefWidth() * 25 / 100);
                 secretObjective.setPreserveRatio(true);

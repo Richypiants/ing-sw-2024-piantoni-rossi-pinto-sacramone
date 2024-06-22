@@ -70,9 +70,7 @@ public class TUIParser {
                     errorMessage = "expected a valid lobbyUUID as first argument";
                     currentState.joinLobby((UUID.fromString(tokens.removeFirst())));
                 }
-                case "selectcolor", "sc" -> {
-                    currentState.selectColor(convertColor(tokens.removeFirst()));
-                }
+                case "selectcolor", "sc" -> currentState.selectColor(convertColor(tokens.removeFirst()));
                 case "leavelobby", "ll" -> currentState.leaveLobby();
                 case "pickinitial", "pi" ->
                         currentState.placeCard(new GenericPair<>(0, 0), 1, convertSide(tokens.removeFirst()));

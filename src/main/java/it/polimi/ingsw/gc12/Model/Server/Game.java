@@ -24,12 +24,12 @@ import java.util.stream.Collectors;
 
 /**
  * Represents a game session after it has started, keeping track of the players in the associated game lobby.
- *
+ * <p>
  * This class extends the {@link Room} class and manages the state of the game after it has started.
  * It tracks the players in the game lobby, manages decks of cards, and maintains players' information
  * related to the game, such as their hands, fields, and secret objectives.
  * Additionally, it oversees the current state of the game, including round information and active player status.
- *
+ * <p>
  * As an implementation of the {@link Listenable} interface, this class supports listener registration,
  * removal, and notification for various game events such as card placements and player actions.
  */
@@ -543,7 +543,8 @@ public class Game extends Room implements Listenable {
                 clientCards.get(getGoldCardsDeck().peek() == null ? -1 : getGoldCardsDeck().peek().ID),
                 receiver.getSecretObjective() == null ? null : clientCards.get(receiver.getSecretObjective().ID),
                 getRoundNumber(),
-                getPlayers().indexOf(getCurrentPlayer())
+                getPlayers().indexOf(getCurrentPlayer()),
+                getFinalPhaseCounter()
         );
     }
 

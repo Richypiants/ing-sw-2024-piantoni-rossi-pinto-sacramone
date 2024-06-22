@@ -31,12 +31,12 @@ public class ClientCard implements Serializable {
      * Each card side is visualized through two entries, each corresponding to one side of the card.
      * The external list represents the rows of the card (in this project, each card has 5 rows).
      * Each row contains a list of triplets, where each triplet represents a visual segment of the row.
-     *
+     * <p>
      * The triplet consists of:
      * - A string: typically a character (either a space or a printable character).
      * - An array of integers: representing the foreground and background color codes.
      * - An integer: indicating the length for which this visual pattern should be repeated.
-     *
+     * <p>
      * For example, if a row in a card consists entirely of the same character and color, the length will
      * reflect the number of characters to be displayed on the screen.
      */

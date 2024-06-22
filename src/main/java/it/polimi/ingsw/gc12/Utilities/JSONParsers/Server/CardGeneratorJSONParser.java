@@ -124,7 +124,7 @@ public class CardGeneratorJSONParser extends ServerJSONParser {
             sequence.getFirst().add(new Triplet<>(" ", new Integer[]{-1, cardColor}, 11));
         else if (card instanceof GoldCard && ((GoldCard) card).getPointsCondition() != null) {
             PointsCondition cardCondition = ((GoldCard) card).getPointsCondition();
-            String stringForCondition = "";
+            String stringForCondition;
             int colorForCondition = Resource.EMPTY.ANSI_COLOR;
             if (cardCondition instanceof CornersCondition)
                 stringForCondition = "C";

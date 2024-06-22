@@ -175,12 +175,15 @@ public class ClientController implements ClientControllerInterface {
         }
     }
 
-    //FIXME: implementare visivamente numero di turni alla fine
     public void transition(int round, int currentPlayerIndex, int turnsLeftUntilGameEnds) {
+        ClientGame thisGame = VIEWMODEL.getCurrentGame();
         if(round != 0)
-            VIEWMODEL.getCurrentGame().setCurrentRound(round);
+            thisGame.setCurrentRound(round);
 
-        VIEWMODEL.getCurrentGame().setCurrentPlayerIndex(currentPlayerIndex);
+        if (turnsLeftUntilGameEnds != -1)
+            thisGame.setTurnsLeftUntilGameEnds(turnsLeftUntilGameEnds);
+
+        thisGame.setCurrentPlayerIndex(currentPlayerIndex);
 
         ((GameScreenState) ViewState.getCurrentState()).transition();
         ViewState.getCurrentState().executeState();
@@ -206,6 +209,8 @@ public class ClientController implements ClientControllerInterface {
                 "Player " + nickname + " has " + (targetPlayer.isActive() ? "reconnected" : "disconnected"),
                 false
         );
+
+        ViewState.getCurrentState().executeState();
     }
 
     public void endGame(List<Triplet<String, Integer, Integer>> pointsStats, boolean gameEndedDueToDisconnections) {
