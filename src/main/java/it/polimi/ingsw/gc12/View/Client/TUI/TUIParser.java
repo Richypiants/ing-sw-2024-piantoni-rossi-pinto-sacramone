@@ -12,22 +12,39 @@ import java.util.*;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+/**
+ * Singleton class responsible for parsing and executing commands input through the Terminal User Interface (TUI).
+ */
 public class TUIParser {
 
+    /** The singleton instance of the {@code TUIParser}. */
     private static TUIParser SINGLETON_TUI_LISTENER;
+    /** The row of the terminal where commands submitted by the client are written */
     public static int COMMAND_INPUT_ROW = 48;
+    /** The column of the terminal where commands submitted by the client are written */
     public static int COMMAND_INPUT_COLUMN = 6;
+    /** The row of the terminal where exceptions are printed */
     public static int EXCEPTIONS_ROW = 49;
 
-    private TUIParser() {
-    }
+    /**
+     * Private constructor to enforce Singleton pattern.
+     */
+    private TUIParser() {}
 
+    /**
+     * Returns the single instance of TUIParser, creating it if necessary.
+     *
+     * @return The singleton instance of TUIParser.
+     */
     public static TUIParser getInstance() {
         if (SINGLETON_TUI_LISTENER == null)
             SINGLETON_TUI_LISTENER = new TUIParser();
         return SINGLETON_TUI_LISTENER;
     }
 
+    /**
+     * Starts reading commands from the console in a separate thread.
+     */
     public void startReading() {
         Console console = System.console();
         Thread reader = new Thread(() -> {
@@ -47,6 +64,11 @@ public class TUIParser {
         reader.start();
     }
 
+    /**
+     * Parses and executes the command from the given list of tokens.
+     *
+     * @param tokens The list of tokens composing the command.
+     */
     private void runCommand(ArrayList<String> tokens) {
         ViewState currentState = ViewState.getCurrentState();
         String errorMessage = "";
@@ -119,6 +141,11 @@ public class TUIParser {
         }
     }
 
+    /**
+     * Parses the input command string into tokens and executes the corresponding command.
+     *
+     * @param input The input command string.
+     */
     public void parseCommand(String input) {
         if (input == null) return;
 
@@ -133,6 +160,14 @@ public class TUIParser {
         runCommand(tokens);
     }
 
+
+    /**
+     * Converts the input string to a {@link Side} enum.
+     *
+     * @param input The input string representing a side.
+     * @return The corresponding Side enum.
+     * @throws IllegalArgumentException If the input is not a valid side.
+     */
     private Side convertSide(String input) {
         return switch(input.trim().toLowerCase()){
             case "front" -> Side.FRONT;
@@ -141,6 +176,13 @@ public class TUIParser {
         };
     }
 
+    /**
+     * Converts the input string to a {@link Color} enum.
+     *
+     * @param input The input string representing a color.
+     * @return The corresponding Color enum.
+     * @throws IllegalArgumentException If the input is not a valid color.
+     */
     private Color convertColor(String input) {
         return Arrays.stream(Color.values())
                 .filter((color) -> color.name().equalsIgnoreCase(input))

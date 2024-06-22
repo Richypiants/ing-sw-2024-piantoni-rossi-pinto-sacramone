@@ -20,26 +20,70 @@ import java.util.function.ToIntBiFunction;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+/**
+ * The TUIGameView class represents the textual user interface (TUI) view for displaying the game
+ * and all the details composing the game board.
+ * <p>
+ * This class handles the rendering of various game elements including player stats, cards, decks, opponent fields,
+ * and the player's own field. It utilizes the Ansi library for terminal control and color rendering.
+ */
 public class TUIGameView extends TUIView{
 
+    /**
+     * Singleton instance of the TUIGameView class.
+     */
     private static TUIGameView gameView = null;
 
+    /**
+     * Dimensions of the field where the game is displayed (height, width).
+     */
     private final GenericPair<Integer, Integer> FIELD_SIZE = new GenericPair<>(30, 105); //x: height, y: width
+
+    /**
+     * Top-left position of the game field (startingRow, startingColumn).
+     */
     private final GenericPair<Integer, Integer> FIELD_TOP_LEFT = new GenericPair<>(10, 105); //x: startingRow, y: startingColumn
+
+    /**
+     * Center of the game field, computed from FIELD_TOP_LEFT and FIELD_SIZE.
+     */
     private final GenericPair<Integer, Integer> FIELD_CENTER = new GenericPair<>(
             FIELD_TOP_LEFT.getX() + (FIELD_SIZE.getX() / 2),
             FIELD_TOP_LEFT.getY() + (FIELD_SIZE.getY() / 2)
     );
+
+    /**
+     * Size of a card in rows and columns.
+     */
     private final GenericPair<Integer, Integer> CARD_SIZE = new GenericPair<>(13, 5);
-    //Manually computed over examples
+
+    /**
+     * Offset used for cursor positioning while printing multiple cards, manually computed.
+     */
     private final GenericPair<Integer, Integer> CURSOR_OFFSET = new GenericPair<>(3, 11);
+
+    /**
+     * Dynamic center of the game field, adjusted during field movement.
+     */
     private GenericPair<Integer, Integer> dynamicFieldCenter = new GenericPair<>(0, 0);
+
+    /**
+     * Index of the currently displayed player's field.
+     */
     private int currentShownPlayerIndex = -1;
 
+    /**
+     * Private constructor to enforce Singleton pattern.
+     */
     private TUIGameView() {
         super();
     }
 
+    /**
+     * Retrieves the singleton instance of TUIGameView.
+     *
+     * @return Singleton instance of TUIGameView.
+     */
     public static TUIGameView getInstance() {
         if (gameView == null) {
             gameView = new TUIGameView();
@@ -106,6 +150,9 @@ public class TUIGameView extends TUIView{
         return sprite;
     }
 
+    /**
+     * Prints all the game elements composing the game board and illustrating the information related to the game.
+     */
     @Override
     public void gameScreen() {
         clearTerminal();
@@ -121,11 +168,17 @@ public class TUIGameView extends TUIView{
         printStateCommandInfo();
     }
 
+    /**
+     * Refreshes the screen to print the message that the game is currently paused due to disconnections.
+     */
     @Override
     public void awaitingScreen() {
         gameScreen();
     }
 
+    /**
+     * Renders the current state and available command information at the bottom of the screen.
+     */
     private void printStateCommandInfo() {
         ClientGame thisGame = VIEWMODEL.getCurrentGame();
 
@@ -153,11 +206,17 @@ public class TUIGameView extends TUIView{
         }
     }
 
+    /**
+     * Prints the current round information at the top of the screen.
+     */
     private void printRoundInfo() {
         printToPosition(ansi().cursor(2,2).bold().a("[TURN #" +
                 VIEWMODEL.getCurrentGame().getCurrentRound() + "]").reset());
     }
 
+    /**
+     * Prints the player statistics table at the top of the screen.
+     */
     private void printStatsTable() {
         int i = 2;
         printToPosition(ansi().cursor(i++, 23)
@@ -191,6 +250,9 @@ public class TUIGameView extends TUIView{
         }
     }
 
+    /**
+     * Prints the common placed cards (resources, gold, objectives) on the left side of the screen.
+     */
     @Override
     public void showCommonPlacedCards() {
         //Erasing old placed cards
@@ -226,6 +288,9 @@ public class TUIGameView extends TUIView{
         ));
     }
 
+    /**
+     * Prints the decks (resource and gold) on the center left side of the screen.
+     */
     private void printDecks() {
         printToPosition(ansi().cursor(8, 68).bold().a("Decks: "));
 
@@ -235,6 +300,9 @@ public class TUIGameView extends TUIView{
         printToPosition(ansi().cursor(16, 64).a(standardAnsi(card, Side.BACK)));
     }
 
+    /**
+     * Prints truncated miniaturized views of opponents' fields on the right side of the screen.
+     */
     private void printOpponentsFieldsMiniaturized() {
         GenericPair<Integer, Integer> REDUCED_FIELD_SIZE = new GenericPair<>(11, 9);
         GenericPair<Integer, Integer> TOP_LEFT_REDUCED_FIELD = new GenericPair<>(10, 85);
@@ -274,6 +342,9 @@ public class TUIGameView extends TUIView{
         }
     }
 
+    /**
+     * Prints the current chat log messages in the bottom-right corner of the screen.
+     */
     @Override
     public void updateChat() {
         List<String> chatLog = VIEWMODEL.getCurrentGame().getChatLog();
@@ -284,6 +355,10 @@ public class TUIGameView extends TUIView{
             );
     }
 
+    /**
+     * Clears the terminal area corresponding to the initial cards choice section and displays
+     * the initial card side selection for the player to choose from.
+     */
     @Override
     public void showInitialCardsChoice() {
         //Erasing field area
@@ -298,6 +373,12 @@ public class TUIGameView extends TUIView{
         printToPosition(ansi().cursor(20, 170).a(upscaledAnsi(card, Side.BACK)));
     }
 
+    /**
+     * Clears the terminal area corresponding to the objective cards choice section and displays
+     * the available secret objective card selection for the player to choose as their secret objective.
+     *
+     * @param objectivesSelection The list of objective cards available for selection.
+     */
     @Override
     public void showObjectiveCardsChoice(ArrayList<ClientCard> objectivesSelection) {
         //Erasing field area
@@ -315,6 +396,13 @@ public class TUIGameView extends TUIView{
         }
     }
 
+    /**
+     * Finds extreme coordinates (min or max)over the cartesian filed of cards placed on a player's field.
+     *
+     * @param target   The player whose field is being examined.
+     * @param criterion Function to determine whether to find min or max coordinates.
+     * @return Extreme coordinates based on the given criterion.
+     */
     private GenericPair<Integer, Integer> findExtremeCoordinates(ClientPlayer target, ToIntBiFunction<Integer, Integer> criterion) {
         return target.getPlacedCards().keySet().stream()
                 .reduce(new GenericPair<>(0, 0),
@@ -325,6 +413,11 @@ public class TUIGameView extends TUIView{
                 );
     }
 
+    /**
+     * Displays the field of the specified player on the terminal.
+     *
+     * @param player The player whose field is to be displayed.
+     */
     @Override
     public void showField(ClientPlayer player) {
         dynamicFieldCenter = new GenericPair<>(0, 0);
@@ -332,6 +425,16 @@ public class TUIGameView extends TUIView{
         moveField(new GenericPair<>(0, 0));
     }
 
+    /**
+     * Moves and displays the field currently displayed by x cards left and y cards down.
+     * <p>
+     * This method updates the dynamic field center based on the provided offset
+     * redrawing the player's field including placed cards
+     * and open corners. The field is centered around the calculated field center of gravity.
+     * </p>
+     *
+     * @param dynamicFieldCenterOffset The offset to adjust the field view.
+     */
     @Override
     public void moveField(GenericPair<Integer, Integer> dynamicFieldCenterOffset) {
         dynamicFieldCenter = new GenericPair<>(
@@ -396,6 +499,13 @@ public class TUIGameView extends TUIView{
                 );
     }
 
+    /**
+     * Checks if a card would be printed out of the visible field area.
+     *
+     * @param printRow    Row position to check.
+     * @param printColumn Column position to check.
+     * @return True if the card is out of bounds, false otherwise.
+     */
     private boolean checkCardOutOfFieldBorder(int printRow, int printColumn) {
         boolean outOfBounds = false;
 
@@ -429,6 +539,9 @@ public class TUIGameView extends TUIView{
         return outOfBounds;
     }
 
+    /**
+     * Prints the leaderboard at the end of the game, showing player rankings and points.
+     */
     @Override
     public void leaderboardScreen(List<Triplet<String, Integer, Integer>> leaderboard, boolean gameEndedDueToDisconnections) {
         int FIRST_ROW = 15;
@@ -475,6 +588,9 @@ public class TUIGameView extends TUIView{
                 .a("> [" + VIEWMODEL.getOwnNickname() + "] "));
     }
 
+    /**
+     * Prints the player's hand (front and back sides) in the bottom left corner of the screen.
+     */
     @Override
     public void showHand() {
         int column = 10;

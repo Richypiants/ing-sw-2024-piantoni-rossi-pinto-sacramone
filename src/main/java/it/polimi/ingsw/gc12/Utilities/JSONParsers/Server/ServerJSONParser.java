@@ -22,6 +22,9 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Utility class to handle JSON parsing and serialization for various card types and conditions on the server.
+ */
 public class ServerJSONParser extends JSONParser {
 
     /**

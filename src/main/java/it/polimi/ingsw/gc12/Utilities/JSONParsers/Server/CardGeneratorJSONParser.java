@@ -19,6 +19,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * Utility class to generate JSON files by parsing the objects on the server
+ * when modifications to the graphical resources of cards on the TUI are required.
+ */
 public class CardGeneratorJSONParser extends ServerJSONParser {
 
     /**
