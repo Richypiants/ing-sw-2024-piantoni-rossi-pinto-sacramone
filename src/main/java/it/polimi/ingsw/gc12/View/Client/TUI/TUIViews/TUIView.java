@@ -17,16 +17,35 @@ import java.util.List;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+/**
+ * Singleton class representing the Terminal User Interface (TUI) view.
+ * It extends the abstract View class and implements various methods for displaying
+ * different screens and handling user input in the terminal.
+ */
 public class TUIView extends View {
 
+    /** Singleton instance of TUIView. */
     private static TUIView SINGLETON_TUI_INSTANCE = null;
+
+    /** Instance of TUIParser for parsing user input commands. */
     public static TUIParser listener;
+
+    /** Console instance for reading user input. */
     public static final Console console = System.console();
 
+    /** Terminal size configuration (rows x columns).*/
     private final GenericPair<Integer, Integer> TERMINAL_SIZE = new GenericPair<>(49, 211); //x: rows, y:columns
 
+    /**
+     * Private constructor to enforce Singleton pattern.
+     */
     public TUIView() {}
 
+    /**
+     * Returns the single instance of TUIView, creating it if necessary.
+     *
+     * @return The singleton instance of TUIView.
+     */
     public static TUIView getInstance() {
         if (SINGLETON_TUI_INSTANCE == null) {
             SINGLETON_TUI_INSTANCE = new TUIView();
@@ -50,6 +69,10 @@ public class TUIView extends View {
         return SINGLETON_TUI_INSTANCE;
     }
 
+
+    /**
+     * Clears the terminal screen and positions the cursor for new input.
+     */
     public static void clearTerminal() {
         System.out.print(ansi()
                 .saveCursorPosition()
@@ -64,6 +87,11 @@ public class TUIView extends View {
         );
     }
 
+    /**
+     * Prints an error message at the designated position in the terminal.
+     *
+     * @param error The throwable containing the error message.
+     */
     @Override
     public void printError(Throwable error) {
         System.out.print(ansi().saveCursorPosition()
@@ -73,6 +101,11 @@ public class TUIView extends View {
         );
     }
 
+    /**
+     * Prints the provided ANSI formatted content at the current cursor position.
+     *
+     * @param toPrint The ANSI content to print.
+     */
     public void printToPosition(Ansi toPrint) {
         System.out.print(ansi().saveCursorPosition()
                 .a(toPrint).reset()
@@ -81,93 +114,160 @@ public class TUIView extends View {
         );
     }
 
+    /**
+     * Displays the title screen.
+     */
     @Override
     public void titleScreen() {
         TUITitleView.getInstance().titleScreen();
     }
 
+    /**
+     * Displays the connection setup screen.
+     */
     @Override
     public void connectionSetupScreen() {
         TUIConnectionView.getInstance().connectionSetupScreen();
     }
 
+    /**
+     * Prompts the user to retry the connection if it failed.
+     *
+     * @param causedByNetworkError True if the connection failed due to a network error.
+     * @return True if the user decides to retry the connection.
+     */
     @Override
     public boolean retryConnectionPrompt(boolean causedByNetworkError) {
         return TUIConnectionView.getInstance().retryConnectionPrompt(causedByNetworkError);
     }
 
+    /**
+     * Displays a confirmation message for a successful connection.
+     */
     @Override
     public void connectedConfirmation() {
         TUIConnectionView.getInstance().connectedConfirmation();
     }
 
+
+    /**
+     * Displays the disconnected screen and attempts to reconnect.
+     */
     @Override
     public void disconnectedScreen() {
         clearTerminal();
         printToPosition(ansi().cursor(1, 1).a("Connection to server lost: trying to reconnect..."));
     }
 
+    /**
+     * Displays the quitting screen.
+     */
     @Override
     public void quittingScreen() {
         clearTerminal();
         printToPosition(ansi().cursor(1, 1).a("Returning to title screen..."));
     }
 
+    /**
+     * Displays the lobbies screen.
+     */
     @Override
     public void lobbiesScreen(){
         TUILobbiesView.getInstance().lobbiesScreen();
     }
 
+    /**
+     * Displays the user's nickname.
+     */
     @Override
     public void showNickname() {
         TUILobbiesView.getInstance().showNickname();
     }
 
+    /**
+     * Displays the game screen.
+     */
     @Override
     public void gameScreen() {
         TUIGameView.getInstance().gameScreen();
     }
 
+    /**
+     * Displays the awaiting screen while waiting for other players.
+     */
     @Override
     public void awaitingScreen() {
         TUIGameView.getInstance().awaitingScreen();
     }
 
+    /**
+     * Updates the chat screen.
+     */
     @Override
     public void updateChat() {
         TUIGameView.getInstance().updateChat();
     }
 
+    /**
+     * Displays the initial card choice screen.
+     */
     @Override
     public void showInitialCardsChoice(){
         TUIGameView.getInstance().showInitialCardsChoice();
     }
 
+    /**
+     * Displays the objective card choice screen.
+     *
+     * @param objectivesSelection List of objective cards to choose from.
+     */
     @Override
     public void showObjectiveCardsChoice(ArrayList<ClientCard> objectivesSelection) {
         TUIGameView.getInstance().showObjectiveCardsChoice(objectivesSelection);
     }
 
+    /**
+     * Displays the common placed cards on the game board.
+     */
     @Override
     public void showCommonPlacedCards(){
         TUIGameView.getInstance().showCommonPlacedCards();
     }
 
+    /**
+     * Displays the leaderboard screen with the given points statistics.
+     *
+     * @param POINTS_STATS List of triplets containing player names, scores, and ranks.
+     * @param gameEndedDueToDisconnections True if the game ended due to disconnections.
+     */
     @Override
     public void leaderboardScreen(List<Triplet<String, Integer, Integer>> POINTS_STATS, boolean gameEndedDueToDisconnections) {
         TUIGameView.getInstance().leaderboardScreen(POINTS_STATS, gameEndedDueToDisconnections);
     }
 
+    /**
+     * Displays the field of the specified player.
+     *
+     * @param player The player whose field is to be displayed.
+     */
     @Override
     public void showField(ClientPlayer player) {
         TUIGameView.getInstance().showField(player);
     }
 
+    /**
+     * Moves the field currently displayed by x cards left and y cards down.
+     *
+     * @param centerOffset The offset by which to move the field view.
+     */
     @Override
     public void moveField(GenericPair<Integer, Integer> centerOffset) {
         TUIGameView.getInstance().moveField(centerOffset);
     }
 
+    /**
+     * Displays the user's hand of cards.
+     */
     @Override
     public void showHand() {
         TUIGameView.getInstance().showHand();

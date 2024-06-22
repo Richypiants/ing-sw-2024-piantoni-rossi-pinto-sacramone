@@ -9,14 +9,29 @@ import org.fusesource.jansi.Ansi;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+/**
+ * Singleton class representing the lobbies view in the Terminal User Interface (TUI).
+ * It extends the TUIView class and implements methods for displaying and interacting with the lobbies.
+ */
 public class TUILobbiesView extends TUIView{
 
+    /**
+     * Singleton instance of TUILobbiesView.
+     */
     private static TUILobbiesView lobbiesView = null;
 
+    /**
+     * Private constructor to enforce Singleton pattern.
+     */
     private TUILobbiesView() {
         super();
     }
 
+    /**
+     * Returns the single instance of TUILobbiesView, creating it if necessary.
+     *
+     * @return The singleton instance of TUILobbiesView.
+     */
     public static TUILobbiesView getInstance() {
         if (lobbiesView == null) {
             lobbiesView = new TUILobbiesView();
@@ -24,6 +39,13 @@ public class TUILobbiesView extends TUIView{
         return lobbiesView;
     }
 
+    /**
+     * Builds a string representation of a lobby, including its UUID, maximum players, current players,
+     * and available colors (printed with ANSI colors!).
+     *
+     * @param lobby The lobby to build the message for.
+     * @return A StringBuilder containing the formatted lobby information.
+     */
     private StringBuilder buildLobbyMessage(Lobby lobby) {
         StringBuilder thisLobbyMessage = new StringBuilder(Ansi.ansi().a(lobby.getRoomUUID() + " -> #MaxPlayers: " + lobby.getMaxPlayers()).reset().toString());
 
@@ -48,6 +70,10 @@ public class TUILobbiesView extends TUIView{
         return thisLobbyMessage;
     }
 
+    /**
+     * Displays the lobbies screen, showing the player's nickname, available commands, current lobby,
+     * and other active lobbies.
+     */
     @Override
     public void lobbiesScreen() {
         clearTerminal();
@@ -77,6 +103,9 @@ public class TUILobbiesView extends TUIView{
         }
     }
 
+    /**
+     * Updates the player's nickname and redisplays the lobbies screen.
+     */
     @Override
     public void showNickname() {
         TUIParser.COMMAND_INPUT_COLUMN = 6 + VIEWMODEL.getOwnNickname().length();

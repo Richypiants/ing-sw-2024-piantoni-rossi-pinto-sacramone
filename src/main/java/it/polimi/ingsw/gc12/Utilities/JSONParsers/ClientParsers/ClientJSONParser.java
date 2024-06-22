@@ -9,6 +9,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * Utility class to handle JSON parsing and serialization for various card types on the client.
+ */
 public class ClientJSONParser extends JSONParser {
 
     private static final Gson CARD_IMAGE_RESOURCES_BUILDER = new Gson();

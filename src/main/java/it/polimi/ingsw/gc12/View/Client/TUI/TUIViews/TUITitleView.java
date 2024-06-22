@@ -7,14 +7,29 @@ import org.fusesource.jansi.Ansi;
 import static java.lang.Thread.sleep;
 import static org.fusesource.jansi.Ansi.ansi;
 
+/**
+ * Singleton class representing the title view in the Terminal User Interface (TUI).
+ * It extends the TUIView class and implements methods for displaying the title screen.
+ */
 public class TUITitleView extends TUIView{
 
+    /**
+     * Singleton instance of TUITitleView.
+     */
     private static TUITitleView titleView = null;
 
+    /**
+     * Private constructor to enforce singleton pattern.
+     */
     private TUITitleView() {
         super();
     }
 
+    /**
+     * Returns the single instance of TUITitleView, creating it if necessary.
+     *
+     * @return The singleton instance of TUITitleView.
+     */
     public static TUITitleView getInstance() {
         if (titleView == null) {
             titleView = new TUITitleView();
@@ -22,6 +37,9 @@ public class TUITitleView extends TUIView{
         return titleView;
     }
 
+    /**
+     * Displays the title screen which the ASCIIArts, waits for user input to proceed, and transitions to the next view state.
+     */
     @Override
     public void titleScreen() {
         TUIParser.COMMAND_INPUT_COLUMN = 6 + VIEWMODEL.getOwnNickname().length();

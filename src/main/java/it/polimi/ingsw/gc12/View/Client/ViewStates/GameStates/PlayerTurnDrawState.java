@@ -93,7 +93,7 @@ public class PlayerTurnDrawState extends GameScreenState {
     }
 
     /**
-     * Moves the field view by a specified offset.
+     * Moves the field currently displayed by x cards left and y cards down.
      *
      * @param centerOffset The offset by which to move the field view.
      */
