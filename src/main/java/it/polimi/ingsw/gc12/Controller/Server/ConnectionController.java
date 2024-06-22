@@ -11,17 +11,40 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.FullLobbyException;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * The {@code ConnectionController} class extends the {@link ServerController} and manages the initial
+ * connection state of players, handling operations like setting nicknames, creating lobbies, and joining lobbies.
+ * <p>
+ * This class ensures synchronization and state management for players connecting to the server.
+ */
 public class ConnectionController extends ServerController {
 
+    /**
+     * The singleton instance of the {@code ConnectionController}.
+     */
     private static final ConnectionController SINGLETON_INSTANCE = new ConnectionController();
 
-    private ConnectionController() {
-    }
+    /**
+     * Private constructor to prevent instantiation.
+     */
+    private ConnectionController() {}
 
+    /**
+     * Returns the singleton instance of the {@code ConnectionController}.
+     *
+     * @return the singleton instance
+     */
     public static ConnectionController getInstance() {
         return SINGLETON_INSTANCE;
     }
 
+    /**
+     * Generates a new player with the given nickname, sends the relevant commands to the client,
+     * and updates the server model with the new player.
+     *
+     * @param sender   the network session of the client
+     * @param nickname the nickname for the new player
+     */
     @Override
     protected void generatePlayer(NetworkSession sender, String nickname) {
         Player target = new Player(nickname);
@@ -41,6 +64,12 @@ public class ConnectionController extends ServerController {
         MODEL.addListener(sender.getListener());
     }
 
+    /**
+     * Sets the nickname for a player. If the nickname is already taken, an exception is thrown.
+     *
+     * @param sender   the network session of the client
+     * @param nickname the new nickname for the player
+     */
     @Override
     public void setNickname(NetworkSession sender, String nickname) {
         System.out.println("[CLIENT]: SetNicknameCommand received and being executed");
@@ -68,6 +97,13 @@ public class ConnectionController extends ServerController {
         }
     }
 
+    /**
+     * Creates a new lobby with the specified maximum number of players.
+     * If the number of players is out of the valid range, an exception is thrown.
+     *
+     * @param sender     the network session of the client
+     * @param maxPlayers the maximum number of players for the lobby
+     */
     @Override
     public void createLobby(NetworkSession sender, int maxPlayers) {
         System.out.println("[CLIENT]: CreateLobbyCommand received and being executed");
@@ -97,10 +133,15 @@ public class ConnectionController extends ServerController {
             MODEL.LOBBY_CONTROLLERS_LOCK.writeLock().unlock();
         }
         sender.setController(controller);
-
-
     }
 
+    /**
+     * Adds a player to an existing lobby identified by the given UUID.
+     * If the lobby is full or does not exist, an exception is thrown.
+     *
+     * @param sender    the network session of the client
+     * @param lobbyUUID the UUID of the lobby to join
+     */
     @Override
     public void joinLobby(NetworkSession sender, UUID lobbyUUID) {
         System.out.println("[CLIENT]: JoinLobbyCommand received and being executed");

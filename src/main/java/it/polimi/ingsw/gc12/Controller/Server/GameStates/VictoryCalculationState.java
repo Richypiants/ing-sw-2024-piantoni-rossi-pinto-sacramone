@@ -16,15 +16,35 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Represents the game state where victory points are calculated and the game ends.
+ */
 public class VictoryCalculationState extends GameState {
 
+    /**
+     * Constructs a VictoryCalculationState object with the specified controller and game.
+     *
+     * @param controller The GameController managing the game flow.
+     * @param thisGame   The current Game instance.
+     */
     public VictoryCalculationState(GameController controller, Game thisGame) {
         super(controller, thisGame, "victoryCalculationState");
     }
 
+    /**
+     * Handles the disconnection of a player during the victory calculation phase.
+     *
+     * @param target The player who disconnected.
+     */
     @Override
-    public void playerDisconnected(InGamePlayer target) {}
+    public void playerDisconnected(InGamePlayer target) {
+        // No action needed on player disconnection during victory calculation phase
+    }
 
+    /**
+     * Calculates the final points for each player, sends leaderboard stats to clients,
+     * handles player sessions, and destroys the game controller.
+     */
     @Override
     public void transition() {
         ArrayList<InGamePlayer> players = GAME.getPlayers();
@@ -41,12 +61,12 @@ public class VictoryCalculationState extends GameState {
             else pointsStats.add(new Triplet<>(target.getNickname(), -1, -1));
         }
 
+        // Sort the leaderboard by points in descending order
         pointsStats.sort(Comparator.comparingInt(Triplet<String, Integer, Integer>::getY)
                 .thenComparingInt(Triplet::getZ)
-        );
-        pointsStats = new ArrayList<>(pointsStats.reversed());
+                .reversed());
 
-        //If there's only one player connected to the game, he's the winner and placed #1 in the leaderboard.
+        // If only one player remains connected, they are the winner and placed first in the leaderboard
         boolean gameEndedDueToDisconnections = GAME.getActivePlayers().size() == 1;
         if(gameEndedDueToDisconnections){
             String winnerNickname = GAME.getActivePlayers().getFirst().getNickname();
@@ -83,6 +103,7 @@ public class VictoryCalculationState extends GameState {
 
         System.out.println("[SERVER]: Sending lobbies to clients previously in " + GAME);
 
+        // Send updated lobbies to clients
         GameController.MODEL.LOBBY_CONTROLLERS_LOCK.readLock().lock();
         try {
             GAME.notifyListeners(new SetLobbiesCommand(GameController.MODEL.getLobbiesMap()));
@@ -90,6 +111,7 @@ public class VictoryCalculationState extends GameState {
             GameController.MODEL.LOBBY_CONTROLLERS_LOCK.readLock().unlock();
         }
 
+        // Reassign players to sessions and update listeners
         int currentIndex = 0;
         synchronized (GAME_CONTROLLER) {
             for (var inGamePlayer : GAME.getActivePlayers()) {
@@ -106,6 +128,7 @@ public class VictoryCalculationState extends GameState {
             }
         }
 
+        // Destroy the game controller instance
         GameController.MODEL.destroyGameController(GAME_CONTROLLER);
     }
 }

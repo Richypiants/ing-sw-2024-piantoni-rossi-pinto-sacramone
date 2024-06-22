@@ -19,30 +19,62 @@ import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
 
 import java.util.*;
 
+/**
+ * The ClientController class manages client-side operations and interactions with the game server.
+ * It handles network communication, updates client-side data (ViewModel), manages game states,
+ * and interacts with the user interface (ViewState).
+ */
 public class ClientController implements ClientControllerInterface {
 
+    /** The Singleton instance of ClientController. */
     private static final ClientController SINGLETON_INSTANCE = new ClientController();
 
+    /**
+     * The ViewModel instance that holds client-side data related to the game state,
+     * lobby information, and player details.
+     */
     public final ViewModel VIEWMODEL;
 
+    /**
+     * The Client instance responsible for network communication with the game server.
+     */
     public final Client CLIENT;
 
+    /**
+     * The ErrorLogger instance for logging errors and exceptions that occur on the client side.
+     */
     public final ErrorLogger ERROR_LOGGER;
 
+    /**
+     * Private constructor to enforce Singleton pattern.
+     */
     private ClientController() {
         VIEWMODEL = new ViewModel();
         CLIENT = Client.getClientInstance();
         ERROR_LOGGER = new ErrorLogger();
     }
 
+    /**
+     * Retrieves the Singleton instance of ClientController.
+     *
+     * @return The Singleton instance of ClientController.
+     */
     public static ClientController getInstance() {
         return SINGLETON_INSTANCE;
     }
 
+    /**
+     * Handles exceptions thrown during client operation by printing them to the current view state.
+     *
+     * @param e The exception to handle.
+     */
     public void throwException(Exception e) {
         ViewState.printError(e);
     }
 
+    /**
+     * Sends a keep-alive command to the server to indicate that the client is still active.
+     */
     public void keepAlive() {
         synchronized (CLIENT.DISCONNECTED_LOCK) {
             CLIENT.disconnected = false;
@@ -50,6 +82,11 @@ public class ClientController implements ClientControllerInterface {
         }
     }
 
+    /**
+     * Sets the nickname of the client and updates the ViewModel and refreshes the view state.
+     *
+     * @param nickname The nickname to set for the client.
+     */
     //TODO: check that without synchronized everything still works fine
     public void setNickname(String nickname) {
         synchronized (CLIENT.DISCONNECTED_LOCK) {
@@ -60,6 +97,11 @@ public class ClientController implements ClientControllerInterface {
         ViewState.getCurrentState().updateNickname();
     }
 
+    /**
+     * Sets the lobbies received from the server in the ViewModel and updates the current view state.
+     *
+     * @param lobbies The map of lobbies received from the server.
+     */
     public void setLobbies(Map<UUID, Lobby> lobbies) {
         VIEWMODEL.setLobbies(lobbies);
         if (!(ViewState.getCurrentState() instanceof LeaderboardScreenState)) {
@@ -71,6 +113,13 @@ public class ClientController implements ClientControllerInterface {
         }
     }
 
+    /**
+     * Updates the lobby in the ViewModel and updates the current view state.
+     * When a lobby has no players, it gets deleted, if contains this client's nickname, the client joins it on the ViewModel,
+     * if the client isn't in the received lobby anymore, and it was in previously, leaves it and update the ViewModel accordingly.
+     *
+     * @param lobby The updated lobby received from the server.
+     */
     public void updateLobby(Lobby lobby) {
         //The received lobbies with a playersNumber equal to zero or below are removed from the ClientModel
         if(lobby.getPlayersNumber() <= 0)
@@ -93,12 +142,24 @@ public class ClientController implements ClientControllerInterface {
         }
     }
 
+    /**
+     * Initiates the game on the client side with the provided game data received from the server.
+     *
+     * @param gameDTO The initial game data received from the server.
+     */
     public void startGame(ClientGame gameDTO) {
         VIEWMODEL.joinRoom(gameDTO);
 
         ViewState.setCurrentState(new ChooseInitialCardsState());
     }
 
+    /**
+     * Restores the game state on the client side after reconnecting, using the provided game data.
+     *
+     * @param gameDTO         The game data received from the server.
+     * @param currentState    The state of the game when the client disconnected.
+     * @param PLAYERS_FIELD   The field state of players when the client disconnected.
+     */
     public void restoreGame(ClientGame gameDTO, String currentState, Map<String, LinkedHashMap<GenericPair<Integer, Integer>, GenericPair<Integer, Side>>> PLAYERS_FIELD) {
         for(var playerEntry : PLAYERS_FIELD.entrySet()) {
             var clientPlayerInstance = gameDTO.getPlayers().stream()
@@ -121,6 +182,11 @@ public class ClientController implements ClientControllerInterface {
         restoredGameState.restoreScreenState();
     }
 
+    /**
+     * Receives the chosen objective cards from the server and updates the client state accordingly.
+     *
+     * @param cardIDs The IDs of the objective cards chosen by the client.
+     */
     public void receiveObjectiveChoice(List<Integer> cardIDs) {
         ChooseObjectiveCardsState newState = new ChooseObjectiveCardsState();
         ViewState.setCurrentState(newState);
@@ -131,11 +197,27 @@ public class ClientController implements ClientControllerInterface {
         newState.executeState();
     }
 
+    /**
+     * Confirms the chosen objective card ID and sets it in the client's game state.
+     *
+     * @param cardID The ID of the objective card chosen by the client.
+     */
     public void confirmObjectiveChoice(int cardID) {
         VIEWMODEL.getCurrentGame().setOwnObjective(ViewModel.CARDS_LIST.get(cardID));
         ViewState.getCurrentState().executeState();
     }
 
+    /**
+     * Executes the placement of a card on the game board and updates the client's game state.
+     *
+     * @param nickname       The nickname of the player who placed the card.
+     * @param coordinates    The coordinates where the card was placed.
+     * @param cardID         The ID of the card placed.
+     * @param playedSide     The side of the card that was played (top or bottom).
+     * @param ownedResources The resources owned by the player after placing the card.
+     * @param openCorners    The open corners on the player's tableau after placing the card.
+     * @param points         The points scored by the player after placing the card.
+     */
     public void placeCard(String nickname, GenericPair<Integer, Integer> coordinates, int cardID,
                           Side playedSide, EnumMap<Resource, Integer> ownedResources,
                           List<GenericPair<Integer, Integer>> openCorners, int points) {
@@ -154,12 +236,22 @@ public class ClientController implements ClientControllerInterface {
         ViewState.getCurrentState().showPlacedCard(nickname);
     }
 
+    /**
+     * Receives a card from the server and adds it to the client's hand.
+     *
+     * @param cardID The ID of the card received.
+     */
     public void receiveCard(int cardID) {
         VIEWMODEL.getCurrentGame().addCardToHand(ViewModel.CARDS_LIST.get(cardID));
 
         ViewState.getCurrentState().executeState();
     }
 
+    /**
+     * Updates the provided cards on the game board after a certain action and a replacement happens.
+     *
+     * @param cardPlacements The details of cards and their new positions on the game board.
+     */
     public void replaceCard(List<Triplet<Integer, String, Integer>> cardPlacements) {
         for(var cardPlacement : cardPlacements) {
             ClientCard card = ViewModel.CARDS_LIST.get(cardPlacement.getX());
@@ -176,6 +268,13 @@ public class ClientController implements ClientControllerInterface {
     }
 
     //FIXME: implementare visivamente numero di turni alla fine
+    /**
+     * Initiates a transition in the game state based on the server's notification.
+     *
+     * @param round                   The current round number in the game.
+     * @param currentPlayerIndex      The index of the current player in the game.
+     * @param turnsLeftUntilGameEnds  The number of turns left until the game ends.
+     */
     public void transition(int round, int currentPlayerIndex, int turnsLeftUntilGameEnds) {
         if(round != 0)
             VIEWMODEL.getCurrentGame().setCurrentRound(round);
@@ -186,6 +285,9 @@ public class ClientController implements ClientControllerInterface {
         ViewState.getCurrentState().executeState();
     }
 
+    /**
+     * Pauses the game and waits for reconnection after a disconnection.
+     */
     public void pauseGame() {
         AwaitingReconnectionState newState = new AwaitingReconnectionState(ViewState.getCurrentState());
         ViewState.setCurrentState(newState);
@@ -194,6 +296,11 @@ public class ClientController implements ClientControllerInterface {
         newState.executeState();
     }
 
+    /**
+     * Toggles the active status of a player (connected or disconnected).
+     *
+     * @param nickname The nickname of the player whose active status is toggled.
+     */
     public void toggleActive(String nickname) {
         ClientPlayer targetPlayer = VIEWMODEL.getCurrentGame().getPlayers().stream()
                 .filter((player) -> player.getNickname().equals(nickname))
@@ -208,16 +315,34 @@ public class ClientController implements ClientControllerInterface {
         );
     }
 
+    /**
+     * Ends the game and displays the leaderboard with final scores.
+     *
+     * @param pointsStats                   The list of player nicknames, their total points, and points from objectives.
+     * @param gameEndedDueToDisconnections  Flag indicating if the game ended due to disconnections.
+     */
     public void endGame(List<Triplet<String, Integer, Integer>> pointsStats, boolean gameEndedDueToDisconnections) {
         LeaderboardScreenState newState = new LeaderboardScreenState(pointsStats, gameEndedDueToDisconnections);
         ViewState.setCurrentState(newState);
         newState.executeState();
     }
 
+    /**
+     * Adds a chat message to the current view state for display.
+     *
+     * @param senderNickname  The nickname of the sender of the chat message.
+     * @param chatMessage     The content of the chat message.
+     * @param isPrivate       Flag indicating if the message is private.
+     */
     public void addChatMessage(String senderNickname, String chatMessage, boolean isPrivate) {
         ViewState.getCurrentState().showReceivedChatMessage(((isPrivate) ? "<Private> " : "") + "[" + senderNickname + "] " + chatMessage);
     }
 
+    /**
+     * Checks if it's currently the client's turn in the game.
+     *
+     * @return {@code True} if it's the client's turn, {@code false} otherwise.
+     */
     public boolean isThisClientTurn(){
         ClientGame game = VIEWMODEL.getCurrentGame();
         return game.getPlayers()

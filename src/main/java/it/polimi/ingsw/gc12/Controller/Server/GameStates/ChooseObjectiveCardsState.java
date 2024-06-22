@@ -10,13 +10,29 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.CardNotInHandException;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * Represents the state where players choose their secret objective cards.
+ * In this state, each player selects one secret objective card from a pre-defined selection.
+ */
 public class ChooseObjectiveCardsState extends GameState {
+    /** Contains the possible choices that a player can select his secret objective card from.*/
     private Map<InGamePlayer, ArrayList<ObjectiveCard>> objectiveCardsToPlayers;
 
+    /**
+     * Constructs a new ChooseObjectiveCardsState instance.
+     *
+     * @param controller The GameController managing the game state transitions and actions.
+     * @param thisGame   The Game instance associated with this state.
+     */
     public ChooseObjectiveCardsState(GameController controller, Game thisGame) {
         super(controller, thisGame, "objectiveState");
     }
 
+    /**
+     * Generates the selection of secret objective cards for each player.
+     * This method is called upon entering the state to initialize the selection process.
+     * It also handles disconnected players who are unable to perform a choice during this game phase.
+     */
     protected void generateObjectivesChoice(){
         objectiveCardsToPlayers = GAME.generateSecretObjectivesSelection();
 
@@ -25,6 +41,15 @@ public class ChooseObjectiveCardsState extends GameState {
             playerDisconnected(player);
     }
 
+    /**
+     * Allows a player to pick their secret objective card.
+     * Checks if all players have selected their objectives and triggers a transition if true.
+     *
+     * @param targetPlayer The player attempting to pick the objective card.
+     * @param objective    The objective card to be picked.
+     * @throws CardNotInHandException If the objective card is not in the player's available selection.
+     * @throws AlreadySetCardException If the player has already selected a secret objective card.
+     */
     @Override
     public void pickObjective(InGamePlayer targetPlayer, ObjectiveCard objective)
             throws CardNotInHandException, AlreadySetCardException {
@@ -43,6 +68,12 @@ public class ChooseObjectiveCardsState extends GameState {
         }
     }
 
+    /**
+     * Handles the scenario where a player disconnects during the selection of secret objective cards.
+     * If the player has not yet selected a secret objective card, an arbitrary card is chosen for them.
+     *
+     * @param target The player who disconnected.
+     */
     @Override
     public void playerDisconnected(InGamePlayer target){
         //The first objectiveCard of the selection is chosen if the player hasn't done it before disconnecting
@@ -57,6 +88,10 @@ public class ChooseObjectiveCardsState extends GameState {
         }
     }
 
+    /**
+     * Executes the transition to the next game state after all players have selected their secret objectives.
+     * Increases the round count, advances to the next player, and transitions to the player turn play state.
+     */
     @Override
     public void transition() {
         GAME.increaseRound();

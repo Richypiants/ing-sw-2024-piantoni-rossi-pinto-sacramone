@@ -14,8 +14,18 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.InvalidCardPositionException;
 import it.polimi.ingsw.gc12.Utilities.Exceptions.NotEnoughResourcesException;
 import it.polimi.ingsw.gc12.Utilities.GenericPair;
 
+/**
+ * Represents the initial state where players choose how to place their starting cards.
+ * In this state, each player receives an initial card from a pre-defined deck.
+ */
 public class ChooseInitialCardsState extends GameState {
 
+    /**
+     * Constructs a new ChooseInitialCardsState instance.
+     *
+     * @param controller The GameController managing the game state transitions and actions.
+     * @param thisGame   The Game instance associated with this state.
+     */
     public ChooseInitialCardsState(GameController controller, Game thisGame) {
         super(controller, thisGame, "initialState");
 
@@ -36,6 +46,18 @@ public class ChooseInitialCardsState extends GameState {
         }
     }
 
+    /**
+     * Handles the action of placing a card on the board.
+     * Checks if all players have placed their initial cards and triggers a transition if true.
+     *
+     * @param target      The player attempting to place the card.
+     * @param coordinates The coordinates where the card should be placed.
+     * @param card        The playable card to be placed.
+     * @param playedSide  The side on which the card is played.
+     * @throws CardNotInHandException     If the card to be played is not in the player's hand.
+     * @throws NotEnoughResourcesException If the player does not have enough resources to play the card.
+     * @throws InvalidCardPositionException If the provided coordinates are not valid for placing a card.
+     */
     @Override
     public void placeCard(InGamePlayer target, GenericPair<Integer, Integer> coordinates, PlayableCard card, Side playedSide)
             throws CardNotInHandException, NotEnoughResourcesException, InvalidCardPositionException {
@@ -49,6 +71,12 @@ public class ChooseInitialCardsState extends GameState {
         }
     }
 
+    /**
+     * Handles the scenario where a player disconnects during the selection of the initial card placement.
+     * If the player hasn't placed their initial card before disconnecting, an arbitrary card placement is attempted.
+     *
+     * @param target The player who disconnected.
+     */
     @Override
     public void playerDisconnected(InGamePlayer target){
         //an arbitrary action of placing the initial card is done if the player hasn't done it before disconnecting
@@ -62,6 +90,10 @@ public class ChooseInitialCardsState extends GameState {
             }
     }
 
+    /**
+     * Transitions from this state to the next game state.
+     * Draws additional cards for each player, generates common objectives and top of the decks.
+     */
     @Override
     public void transition() {
         for (InGamePlayer target : GAME.getPlayers()) {
