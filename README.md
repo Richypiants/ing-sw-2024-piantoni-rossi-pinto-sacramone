@@ -45,6 +45,10 @@ The project consists of a Java version of the board game **Codex Naturalis**, ma
 | **Chat**                         |      ✅      |
 | **Persistence**                  |      ⛔      |
 
+| **[Javadocs](deliverables/JavaDoc)**          |   
+|-----------------------------------------------|
+| [![i1][javadocs-image]](deliverables/JavaDoc) |
+
 ## Download to play guide
 
 ### TUI/CLI Setup:
@@ -115,3 +119,5 @@ distribution of the game.
 
 
 [license-image]: https://img.shields.io/badge/License-MIT-blue.svg
+
+[javadocs-image]: FIleReadMe/Artboard2.png
