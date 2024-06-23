@@ -75,7 +75,7 @@ public class SocketClientHandler extends SocketHandler implements VirtualClient 
      */
     @Override
     public void printError(Exception e) {
-        e.printStackTrace();
+        //e.printStackTrace();
     }
 
     /**

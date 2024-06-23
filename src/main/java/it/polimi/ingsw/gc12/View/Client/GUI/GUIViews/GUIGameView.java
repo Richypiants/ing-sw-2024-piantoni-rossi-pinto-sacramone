@@ -9,6 +9,7 @@ import it.polimi.ingsw.gc12.Utilities.GenericPair;
 import it.polimi.ingsw.gc12.Utilities.Triplet;
 import it.polimi.ingsw.gc12.View.Client.GUI.OverlayPopup;
 import it.polimi.ingsw.gc12.View.Client.ViewStates.GameStates.AwaitingReconnectionState;
+import it.polimi.ingsw.gc12.View.Client.ViewStates.GameStates.ChooseInitialCardsState;
 import it.polimi.ingsw.gc12.View.Client.ViewStates.GameStates.PlayerTurnPlayState;
 import it.polimi.ingsw.gc12.View.Client.ViewStates.ViewState;
 import javafx.animation.*;
@@ -502,7 +503,8 @@ public class GUIGameView extends GUIView {
      * Initializes the game screen elements, resetting all of them to their default values and contents.
      */
     private void resetGameScreen() {
-        OverlayPopup.closeLingeringOpenedPopup();
+        if (!(ViewState.getCurrentState() instanceof ChooseInitialCardsState))
+            OverlayPopup.closeLingeringOpenedPopup();
 
         thisGame = VIEWMODEL.getCurrentGame();
         thisPlayer = thisGame.getThisPlayer();

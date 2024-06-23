@@ -6,8 +6,8 @@
 
 Official game site: [**CranioCreations**](https://www.craniocreations.it/prodotto/codex-naturalis).
 
-[**Game rules** (EN)](FIleReadMe/CODEX_Rulebook_EN.pdf)
-[**Game rules** (IT)](FIleReadMe/CODEX_Rulebook_IT.pdf)
+[**Game rules** (EN)](readmeFiles/CODEX_Rulebook_EN.pdf)
+[**Game rules** (IT)](readmeFiles/CODEX_Rulebook_IT.pdf)
 
 Software Engineering group project following the conclusion of the **Software Engineering** course in the Computer
 Science and
@@ -19,7 +19,7 @@ Teacher: Cugola Gianpaolo
 
 The project consists of a Java version of the board game **Codex Naturalis**, made by Cranio Creations.
 
-[**Project requirements**](FIleReadMe/requirements.pdf)
+[**Project requirements**](readmeFiles/requirements.pdf)
 
 **The final version of the game includes:**
 
@@ -53,8 +53,8 @@ The project consists of a Java version of the board game **Codex Naturalis**, ma
 
 ### TUI/CLI Setup:
 
-* *If your OS is **Windows 11** follow this step for [command prompt configuration](FIleReadMe/WIN11.md)*
-* *If your OS is **Mac OS** or **Linux** follow this step for [command prompt configuration](FIleReadMe/MacOS.md)*
+* *If your OS is **Windows 11** follow this step for [command prompt configuration](readmeFiles/WIN11.md)*
+* *If your OS is **Mac OS** or **Linux** follow this step for [command prompt configuration](readmeFiles/MacOS.md)*
 * *We currently do not support other OSs*
 
 ### Download links:
@@ -120,4 +120,4 @@ distribution of the game.
 
 [license-image]: https://img.shields.io/badge/License-MIT-blue.svg
 
-[javadocs-image]: FIleReadMe/Artboard2.png
+[javadocs-image]: readmeFiles/Artboard2.png
