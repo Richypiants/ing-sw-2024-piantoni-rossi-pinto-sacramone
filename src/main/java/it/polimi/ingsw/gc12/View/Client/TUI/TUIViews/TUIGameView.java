@@ -327,7 +327,7 @@ public class TUIGameView extends TUIView{
                         TOP_LEFT_REDUCED_FIELD.getX() + REDUCED_FIELD_SIZE.getY() / 2,
                         TOP_LEFT_REDUCED_FIELD.getY() + REDUCED_FIELD_SIZE.getX() / 2
                 );
-        int FIELD_SPACING = REDUCED_FIELD_SIZE.getY() + 1;
+        int FIELD_SPACING = REDUCED_FIELD_SIZE.getY();
         int INITIAL_NICKNAME_POSITION = 9;
 
         printToPosition(ansi().cursor(8, 82).bold().a("Opponents' Fields: "));
@@ -349,7 +349,7 @@ public class TUIGameView extends TUIView{
                                     Math.abs(entry.getKey().getY()) <= REDUCED_FIELD_SIZE.getY()/2)
                     .toList()) {
                 printToPosition(ansi().cursor(
-                                (playerIndex * FIELD_SPACING) + CENTER_REDUCED_FIELD.getX() - entry.getKey().getY(),
+                                (playerIndex * (FIELD_SPACING+2)) + CENTER_REDUCED_FIELD.getX() - entry.getKey().getY(),
                                 CENTER_REDUCED_FIELD.getY() + entry.getKey().getX())
                         .bg(entry.getValue().getX().TUI_SPRITES.get(Side.BACK).get(2).getFirst().getY()[1]).a(" ")
                 );
