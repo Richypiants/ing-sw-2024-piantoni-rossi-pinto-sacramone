@@ -39,7 +39,7 @@ public class ConnectionSetupState extends ViewState {
             do {
                 CLIENT.setupCommunication(serverIPAddress, communicationTechnology);
                 try {
-                    // Wait 25 seconds before asking whether to retry connecting to the server.
+                    // Wait before asking whether to retry connecting to the server.
                     // Notified by SocketClient or RMIClientSkeleton when they successfully establish a connection.
                     ViewState.class.wait();
                 } catch (InterruptedException e) {
@@ -92,7 +92,6 @@ public class ConnectionSetupState extends ViewState {
         CLIENT.keepAlive = new Thread(() -> {
             CLIENT.disconnected = true;
             while (true) {
-                //FIXME: forse invertire la synchronized con la riga sopra?
                 CLIENT.requestToServer(new KeepAliveCommand());
                 synchronized (CLIENT.DISCONNECTED_LOCK) {
                     try {

@@ -240,7 +240,9 @@ public class GUIView extends View {
 
             reconnectingPopup.set(drawOverlayPopup(reconnectingPopupContent, false));
 
-            exitButton.setOnMouseClicked((event) -> ViewState.getCurrentState().quit());
+            exitButton.setOnMouseClicked((event) -> {
+                ViewState.getCurrentState().quit();
+            });
 
             reconnectingPopup.get().centerOnScreen();
             reconnectingPopup.get().show(stage);
@@ -253,7 +255,7 @@ public class GUIView extends View {
                     try {
                         CLIENT_CONTROLLER.CLIENT.DISCONNECTED_LOCK.wait();
                     } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                        throw new RuntimeException(e); //Should never happen
                     }
             }
 

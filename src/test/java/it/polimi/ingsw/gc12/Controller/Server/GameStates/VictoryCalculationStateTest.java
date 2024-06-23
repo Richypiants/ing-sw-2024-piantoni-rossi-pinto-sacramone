@@ -99,7 +99,7 @@ class VictoryCalculationStateTest {
             try {
                 gameController.getCurrentState().transition();
             } catch (NoSuchElementException ignored) {
-            } //FIXME: why is it needed...
+            }
         }
 
         List<ClientCommand> receivedCommandsListPlayer1 = ((ServerControllerTest.VirtualClientImpl) ((ServerListener) client1.getListener()).getVirtualClient()).receivedCommandsList;

@@ -226,7 +226,7 @@ public class TUIGameView extends TUIView{
      * Prints the current round information at the top of the screen.
      */
     private void printRoundInfo() {
-        printToPosition(ansi().cursor(2,2).bold().a("[TURN #" +
+        printToPosition(ansi().cursor(2, 2).bold().a("[ROUND #" +
                 VIEWMODEL.getCurrentGame().getCurrentRound() + "]").reset());
     }
 

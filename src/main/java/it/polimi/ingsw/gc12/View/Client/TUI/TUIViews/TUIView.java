@@ -160,6 +160,9 @@ public class TUIView extends View {
      */
     @Override
     public void disconnectedScreen() {
+        TUIParser.COMMAND_INPUT_COLUMN = 6;
+        TUIParser.isReading = false;
+        System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseLine(Ansi.Erase.FORWARD));
         clearTerminal();
         printToPosition(ansi().cursor(1, 1).a("Connection to server lost: trying to reconnect..."));
     }

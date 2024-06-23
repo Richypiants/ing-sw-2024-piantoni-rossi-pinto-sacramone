@@ -90,6 +90,8 @@ public class GUILobbiesView extends GUIView {
     public void lobbiesScreen() {
         OverlayPopup.closeLingeringOpenedPopup();
 
+        final Lobby currentLobby = VIEWMODEL.getCurrentLobby();
+
         Platform.runLater(() -> {
             MENU_BUTTONS_BOX.relocate(windowSize.getX() * 9 / 100, windowSize.getY() * 9 / 16);
 
@@ -145,10 +147,7 @@ public class GUILobbiesView extends GUIView {
             LOBBIES_LIST.setPrefWidth(LOBBIES_PANE.getPrefWidth() * 98 / 100);
             LOBBIES_LIST.getChildren().clear();
 
-            //FIXME: brutto...
-            Lobby currentLobby;
             try {
-                currentLobby = VIEWMODEL.getCurrentLobby();
                 if (VIEWMODEL.inRoom() && currentLobby != null)
                     LOBBIES_LIST.getChildren().add(createLobbyListElement(currentLobby));
 

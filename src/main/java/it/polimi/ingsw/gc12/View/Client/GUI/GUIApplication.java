@@ -34,7 +34,6 @@ public class GUIApplication extends Application {
      */
     @Override
     public void start(Stage stage) {
-        //FIXME: are these all needed?
         Font.loadFont(GUIApplication.class.getResourceAsStream("/Client/fonts/MedievalSharp-Regular.ttf"), 16);
         Font.loadFont(GUIApplication.class.getResourceAsStream("/Client/fonts/MedievalSharp-Regular.ttf"), 18);
         Font.loadFont(GUIApplication.class.getResourceAsStream("/Client/fonts/MedievalSharp-Regular.ttf"), 20);

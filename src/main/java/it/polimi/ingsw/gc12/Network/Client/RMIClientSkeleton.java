@@ -32,7 +32,8 @@ public class RMIClientSkeleton extends NetworkSession implements RMIVirtualClien
      */
     private RMIClientSkeleton(ControllerInterface controller) throws RemoteException, NotBoundException {
         super(controller);
-        //FIXME: remove IP!
+        //Property needed while trying to connect with RMI outside a LAN due to protocol specifications
+        //The same functionality can be achieved using the -Djava.rmi.server.hostname=YOUR_PUBLIC_IP_ADDRESS while running the .jar
         //System.setProperty("java.rmi.server.hostname", ipClient);
 
         Registry registry = LocateRegistry.getRegistry(Client.getClientInstance().serverIPAddress, 5001);

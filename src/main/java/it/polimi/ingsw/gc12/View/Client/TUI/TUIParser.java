@@ -30,10 +30,6 @@ public class TUIParser {
      */
     public static int EXCEPTIONS_ROW = 49;
     /**
-     * The Thread which continuously reads and parses input from the console after being started.
-     */
-    public static Thread parserThread;
-    /**
      * A boolean value which is true if the TUIParser is currently reading from the console.
      */
     public static boolean isReading = false;
@@ -66,7 +62,7 @@ public class TUIParser {
     public void startReading() {
         Console console = System.console();
         isReading = true;
-        parserThread = new Thread(() -> {
+        new Thread(() -> {
             String command = "";
             do {
                 try {
@@ -77,8 +73,7 @@ public class TUIParser {
                 System.out.print(ansi().cursor(COMMAND_INPUT_ROW, COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
                 parseCommand(command);
             } while (isReading && command != null && !command.equalsIgnoreCase("quit"));
-        });
-        parserThread.start();
+        }).start();
     }
 
     /**

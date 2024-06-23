@@ -89,14 +89,14 @@ public class VictoryCalculationState extends GameState {
             if (player.isActive())
                 GAME_CONTROLLER.getSessionFromActivePlayer(player).setController(ConnectionController.getInstance());
             else
-                //FIXME: una volta ha lanciato exception la remove che ha trovato null
                 try {
                     (GameController.INACTIVE_SESSIONS.remove(player.getNickname())).setController(ConnectionController.getInstance());
                 } catch (NullPointerException e) {
-                    //No session found, already removed???
+                    //No session found, already removed (by one of the players themselves reconnecting too late or by
+                    // the last player remained disconnecting), so it's not a problem
                 }
 
-        //Re-creating the lobby to re-convert the InGamePlayers in normal Players,and then discarding it
+        //Re-creating the lobby to re-convert the InGamePlayers in normal Players, and then discarding it
         //In future releases, one might consider keeping this lobby and the players in it, so that they
         // can start a new game if they want.
         Lobby returnLobby = GAME.toLobby();

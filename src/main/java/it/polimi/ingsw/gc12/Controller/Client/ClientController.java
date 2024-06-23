@@ -87,7 +87,6 @@ public class ClientController implements ClientControllerInterface {
      *
      * @param nickname The nickname to set for the client.
      */
-    //TODO: check that without synchronized everything still works fine
     public void setNickname(String nickname) {
         synchronized (CLIENT.DISCONNECTED_LOCK) {
             CLIENT.disconnected = false;

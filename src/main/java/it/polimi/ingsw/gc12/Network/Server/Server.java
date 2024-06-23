@@ -99,7 +99,7 @@ public class Server extends Thread implements RMIMainServer {
                                     clientHandler.read();
                                 } catch (IOException e) {
                                     clientHandler.close();
-                                    e.printStackTrace();
+                                    //e.printStackTrace();
                                     break;
                                 }
                             }

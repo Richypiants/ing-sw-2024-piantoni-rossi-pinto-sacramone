@@ -11,7 +11,7 @@ import it.polimi.ingsw.gc12.Utilities.Exceptions.UnavailableColorException;
 import org.junit.jupiter.api.Test;
 
 import static it.polimi.ingsw.gc12.Controller.Server.ServerControllerTest.createNetworkSessionStub;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 
 class LobbyControllerTest {
     static NetworkSession inLobbyPlayer;
@@ -50,11 +50,10 @@ class LobbyControllerTest {
         associatedLobbyController.leaveLobby(lobbyCreatorPlayer, true);
 
         synchronized (this) {
-            wait(10);
+            wait(100);
         }
 
-        //FIXME: fallito!
-        //assertEquals(1, associatedLobbyController.CONTROLLED_LOBBY.getPlayersNumber());
+        assertEquals(1, associatedLobbyController.CONTROLLED_LOBBY.getPlayersNumber());
     }
 
     @Test
@@ -74,12 +73,12 @@ class LobbyControllerTest {
         Server.getInstance().commandExecutorsPool.submit(() -> associatedLobbyController.leaveLobby(joiningPlayer, isInactive));
 
         synchronized (this) {
-            wait(10);
+            wait(100);
         }
 
-        //assertInstanceOf(ConnectionController.class, joiningPlayer.getController());
-        //assertFalse(associatedLobbyController.CONTROLLED_LOBBY.getPlayers().contains(joiningPlayer.getPlayer()));
-        //assertEquals(1, associatedLobbyController.CONTROLLED_LOBBY.getPlayers().size());
+        assertInstanceOf(ConnectionController.class, joiningPlayer.getController());
+        assertFalse(associatedLobbyController.CONTROLLED_LOBBY.getPlayers().contains(joiningPlayer.getPlayer()));
+        assertEquals(1, associatedLobbyController.CONTROLLED_LOBBY.getPlayers().size());
     }
 
     @Test
@@ -100,7 +99,7 @@ class LobbyControllerTest {
         Server.getInstance().commandExecutorsPool.submit(() -> associatedLobbyController.createTimeoutTask(joiningPlayer).run());
 
         synchronized (this) {
-            wait(10);
+            wait(100);
         }
 
         //FIXME: anche il controller è sbagliato dopo la rilevazione disconnessioni client!
