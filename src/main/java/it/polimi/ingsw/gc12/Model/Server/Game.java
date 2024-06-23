@@ -210,7 +210,6 @@ public class Game extends Room implements Listenable {
         return null;
     }
 
-
     /**
      * Handles the management of the current player index, looking for the next active player eligible to play.
      * It also increased the current round value after everyone has played in the current round

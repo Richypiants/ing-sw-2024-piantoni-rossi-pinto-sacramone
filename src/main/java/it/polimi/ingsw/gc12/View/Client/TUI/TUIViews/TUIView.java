@@ -154,7 +154,6 @@ public class TUIView extends View {
         TUIConnectionView.getInstance().connectedConfirmation();
     }
 
-
     /**
      * Displays the disconnected screen and attempts to reconnect.
      */
