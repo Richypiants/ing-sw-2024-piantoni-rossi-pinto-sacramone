@@ -85,7 +85,7 @@ and thus needs a JRE of XXXXXX or higher to be run);
 **IMPORTANT -->** : If you aim to play with different devices over the net, you can achieve this by using a third-party
 software such as [Hamachi](https://vpn.net/), ZeroTier, Wireguard or properly set forward rules on the router where the
 server is located. In case you want to play with RMI over the Internet, remember to launch the jar with the command
-```java -Djava.rmi.server.hostname=[YOUR_PUBLIC_IP_ADDRESS] -jar CodexNaturalisClient.jar```
+```java -Djava.rmi.server.hostname=YOUR_PUBLIC_IP_ADDRESS -jar CodexNaturalisClient.jar```
 
 ## Software used:
 

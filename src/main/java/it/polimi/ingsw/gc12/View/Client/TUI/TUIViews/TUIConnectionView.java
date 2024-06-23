@@ -121,7 +121,7 @@ public class TUIConnectionView extends TUIView {
                 causedByNetworkError ?
                         "a network error occurred" :
                         "your chosen nickname is already in use"
-        ) + ": would you like to retry? (Yes-No):";
+        ) + ": would you like to retry? (Press ENTER and then write Yes-No):";
 
         String wantsToRetry = readUntil(ansi().cursor(1, 1).a(promptText), List.of("yes", "no"));
         System.out.print(ansi().cursor(TUIParser.COMMAND_INPUT_ROW, TUIParser.COMMAND_INPUT_COLUMN).eraseScreen(Ansi.Erase.FORWARD));
