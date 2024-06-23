@@ -61,8 +61,9 @@ Please note that you will still need to download the correct version of the JRE 
 with JDK 21,
 and thus needs a JRE of XXXXXX or higher to be run);
 
-* [*Codex Naturalis Client*]()
-* [*Codex Naturalis Server*]() --> *needed only in the machine which is going to host it*
+* [*Codex Naturalis Client*](deliverables/CodexNaturalisClient.jar)
+* [*Codex Naturalis Server*](deliverables/CodexNaturalisServer.jar) --> *needed only in the machine which is going to
+  host it*
 
 ### Server configuration:
 
