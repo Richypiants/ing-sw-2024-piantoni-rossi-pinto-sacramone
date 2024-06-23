@@ -128,6 +128,9 @@ public class GUIConnectionLoadingView extends GUIView {
 
             YES_BUTTON.setMinWidth(100);
             YES_BUTTON.setOnAction(event -> {
+                if (stage.getScene().getRoot() != SCENE_ROOT) {
+                    GUIView.getInstance().disconnectedScreen();
+                }
                 synchronized (this) {
                     wantsToRetry.set(true);
                     this.notifyAll();

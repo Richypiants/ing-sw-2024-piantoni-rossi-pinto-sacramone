@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc12.Commands.ServerCommands.LeaveLobbyCommand;
 import it.polimi.ingsw.gc12.Commands.ServerCommands.PickColorCommand;
 import it.polimi.ingsw.gc12.Commands.SetNicknameCommand;
 import it.polimi.ingsw.gc12.Utilities.Enums.Color;
+import it.polimi.ingsw.gc12.Utilities.Exceptions.ForbiddenActionException;
 
 import java.util.List;
 import java.util.UUID;
@@ -67,7 +68,10 @@ public class LobbiesScreenState extends ViewState {
      */
     @Override
     public void createLobby(int maxPlayers){
-        CLIENT.requestToServer(new CreateLobbyCommand(maxPlayers));
+        if (!CLIENT_CONTROLLER.VIEWMODEL.inRoom())
+            CLIENT.requestToServer(new CreateLobbyCommand(maxPlayers));
+        else
+            printError(new ForbiddenActionException("Cannot execute this action while in a lobby!"));
     }
 
     /**
@@ -77,7 +81,10 @@ public class LobbiesScreenState extends ViewState {
      */
     @Override
     public void joinLobby(UUID lobbyUUID){
-        CLIENT.requestToServer(new JoinLobbyCommand(lobbyUUID));
+        if (!CLIENT_CONTROLLER.VIEWMODEL.inRoom())
+            CLIENT.requestToServer(new JoinLobbyCommand(lobbyUUID));
+        else
+            printError(new ForbiddenActionException("Cannot execute this action while in a lobby!"));
     }
 
     /**
@@ -87,7 +94,10 @@ public class LobbiesScreenState extends ViewState {
      */
     @Override
     public void selectColor(Color color) {
-        CLIENT.requestToServer(new PickColorCommand(color));
+        if (CLIENT_CONTROLLER.VIEWMODEL.inRoom())
+            CLIENT.requestToServer(new PickColorCommand(color));
+        else
+            printError(new ForbiddenActionException("Cannot execute this action while not in a lobby!"));
     }
 
     /**
@@ -95,7 +105,10 @@ public class LobbiesScreenState extends ViewState {
      */
     @Override
     public void leaveLobby(){
-        CLIENT.requestToServer(new LeaveLobbyCommand(false));
+        if (CLIENT_CONTROLLER.VIEWMODEL.inRoom())
+            CLIENT.requestToServer(new LeaveLobbyCommand(false));
+        else
+            printError(new ForbiddenActionException("Cannot execute this action while in a lobby!"));
     }
 
     /**

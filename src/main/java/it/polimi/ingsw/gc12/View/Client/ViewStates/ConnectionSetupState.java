@@ -61,7 +61,7 @@ public class ConnectionSetupState extends ViewState {
         // This wait(...) gets notified by the updateNickname function below.
         synchronized (ViewState.class) {
             try {
-                ViewState.class.wait(10000);
+                ViewState.class.wait(15000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e); // Should never happen
             }
@@ -69,7 +69,7 @@ public class ConnectionSetupState extends ViewState {
 
         if (CLIENT_CONTROLLER.VIEWMODEL.getOwnNickname().isEmpty()) {
             if (selectedView.retryConnectionPrompt(false)) {
-                CLIENT_CONTROLLER.VIEWMODEL.clearModel();
+                //CLIENT_CONTROLLER.VIEWMODEL.clearModel();
                 currentState = new TitleScreenState();
                 currentState.executeState();
             } else {

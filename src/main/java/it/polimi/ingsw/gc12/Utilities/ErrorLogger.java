@@ -32,7 +32,7 @@ public class ErrorLogger {
         String date = formatter.format(new Date());
 
         try {
-            err = new PrintStream(new FileOutputStream("logs/log_" + date + ".txt", false));
+            err = new PrintStream(new FileOutputStream("log_" + date + ".txt", false));
             System.setErr(err);
         } catch (FileNotFoundException e) {
             System.err.println("Could not create a file for logging: logging on System.err...");
