@@ -44,5 +44,6 @@ out
 script.bat
 powershell_game_run.bat
 GC12.iml
+deliverables/logs
 log_*.txt
 /src/main/resources/META-INF

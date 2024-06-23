@@ -102,10 +102,9 @@ class LobbyControllerTest {
             wait(100);
         }
 
-        //FIXME: anche il controller è sbagliato dopo la rilevazione disconnessioni client!
-        //assertInstanceOf(ConnectionController.class, joiningPlayer.getController());
-        //assertFalse( associatedLobbyController.CONTROLLED_LOBBY.getPlayers().contains(joiningPlayer.getPlayer()));
-        //assertEquals(1, associatedLobbyController.CONTROLLED_LOBBY.getPlayersNumber());
+        assertInstanceOf(ConnectionController.class, joiningPlayer.getController());
+        assertFalse(associatedLobbyController.CONTROLLED_LOBBY.getPlayers().contains(joiningPlayer.getPlayer()));
+        assertEquals(1, associatedLobbyController.CONTROLLED_LOBBY.getPlayersNumber());
     }
 
 }
