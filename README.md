@@ -63,7 +63,7 @@ Click on the links below to be redirected to the download page, where you can do
 .jar files.
 Please note that you will still need to download the correct version of the JRE to run this program (which is written
 with JDK 21,
-and thus needs a JRE of XXXXXX or higher to be run);
+and thus needs a JRE of 65.0 or higher to be run);
 
 * [*Codex Naturalis Client*](deliverables/CodexNaturalisClient.jar)
 * [*Codex Naturalis Server*](deliverables/CodexNaturalisServer.jar) --> *needed only in the machine which is going to
