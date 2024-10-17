@@ -1,0 +1,3 @@
+WARNING!
+The structure of the codebase has been greatly modified since the writing of this peer review document, after which we have received advice on the best-practices for the management of controllers and network communication from the teacher.
+For the latest version, please refer to the final UML of the project.
