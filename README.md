@@ -14,6 +14,7 @@ Science and
 Engineering Bachelor's Degree at Politecnico di Milano (2023/2024).
 
 Teacher: Cugola Gianpaolo
+Grade: 30L/30
 
 ## Project specification
 
